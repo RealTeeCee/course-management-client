@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ["Poppins", "sans-serif;"],
+        primary: ["Rubik", "sans-serif;"],
+        secondary: ["Poppins", "sans-serif;"],
+        third: ["Roboto", "sans-serif;"],
       },
       colors: {
         primary: "#7366ff",
