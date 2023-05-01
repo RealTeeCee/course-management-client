@@ -6,6 +6,7 @@ import ErrorCom from "../components/common/ErrorCom";
 
 const LayoutAuthentication = ({ children }) => {
   return (
+    // Dark Mode: add dark:bg-tw-dark, then in HTML tag add class="dark"
     <div className="container-fluid p-0">
       <div className="row m-0">
         <div className="col-12 p-0">

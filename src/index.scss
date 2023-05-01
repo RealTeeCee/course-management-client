@@ -3,6 +3,14 @@
 @tailwind utilities;
 @layer base {
   body {
-    @apply font-primary text-base leading-normal;
+    @apply font-tw-primary text-base leading-normal;
   }
+}
+
+@layer components {
+  // ******** GENERAL CUSTOM CSS *********
+  .tw-transition-all {
+    @apply transition-all duration-300;
+  }
+  // ******** END GENERAL CUSTOM CSS *********
 }

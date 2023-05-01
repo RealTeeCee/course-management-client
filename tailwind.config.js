@@ -4,18 +4,18 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ["Rubik", "sans-serif;"],
-        secondary: ["Poppins", "sans-serif;"],
-        third: ["Roboto", "sans-serif;"],
+        "tw-primary": ["Rubik", "sans-serif;"],
+        "tw-secondary": ["Poppins", "sans-serif;"],
+        "tw-third": ["Roboto", "sans-serif;"],
       },
       colors: {
-        primary: "#7366ff",
-        danger: "#dc3545",
-        warning: "#f8d62b",
-        info: "#a927f9",
-        success: "#51bb25",
-        light: "#f4f4f4",
-        dark: "#2c323f",
+        "tw-primary": "#7366ff",
+        "tw-danger": "#dc3545",
+        "tw-warning": "#f8d62b",
+        "tw-info": "#a927f9",
+        "tw-success": "#51bb25",
+        "tw-light": "#f4f4f4",
+        "tw-dark": "#2c323f",
       }
     },
   },

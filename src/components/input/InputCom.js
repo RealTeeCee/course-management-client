@@ -3,14 +3,15 @@ import { useController } from "react-hook-form";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
-import useToggleBoolean from "../../hooks/useToggleBoolean";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 
 const InputCom = (props) => {
   const {
+    register = () => {},
     control,
     name,
     type = "text",
-    toggleShowHide = false,
+    isTypePassword = false,
     errorMsg = "",
     children,
     ...rest
@@ -22,30 +23,40 @@ const InputCom = (props) => {
     defaultValue: "",
   });
 
-  const { value: showPassword, handleToggleBoolean: handleToggleShowHide } =
-    useToggleBoolean();
+  const {
+    value: showPassword,
+    handleToggleBoolean: handleClickToggleShowHide,
+  } = useClickToggleBoolean();
 
   return (
-    <div className="form-input position-relative">
-      <input
-        id={name}
-        className={`form-control ${errorMsg && "is-invalid !border-danger"}`}
-        required=""
-        type={type === "password" ? (showPassword ? "text" : "password") : type}
-        {...rest}
-        {...fields}
-      />
-      {toggleShowHide && (
-        <div className="show-hide">
-          <span
-            className={showPassword ? "" : "show"}
-            onClick={handleToggleShowHide}
-          ></span>
-        </div>
+    <>
+      <div className="form-input position-relative">
+        <input
+          id={name}
+          className={`form-control tw-transition-all ${
+            errorMsg && errorMsg.length > 0 && "is-invalid !border-tw-danger !text-tw-danger"
+          }`}
+          type={
+            type === "password" ? (showPassword ? "text" : "password") : type
+          }
+          {...register(name)}
+          {...fields}
+          {...rest}
+        />
+        {isTypePassword && (
+          <div className="show-hide">
+            <span
+              className={`mr-2 px-1 bg-tw-light ${showPassword ? "" : "show"}`}
+              onClick={handleClickToggleShowHide}
+            ></span>
+          </div>
+        )}
+        {children}
+      </div>
+      {errorMsg && errorMsg.length > 0 && (
+        <span className="text-tw-danger text-sm">{errorMsg}</span>
       )}
-      {children}
-      {errorMsg && <span className="!text-danger">{errorMsg}</span>}
-    </div>
+    </>
   );
 };
 
@@ -54,6 +65,7 @@ InputCom.propTypes = {
   type: PropTypes.string,
   errorMsg: PropTypes.string,
   control: PropTypes.any.isRequired,
+  register: PropTypes.func.isRequired,
   children: PropTypes.node,
 };
 export default withErrorBoundary(InputCom, {

@@ -4,9 +4,19 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 
-const ButtonSocialCom = ({ url = "", onClick = () => {}, children }) => {
+const ButtonSocialCom = ({
+  url = "",
+  className = "",
+  onClick = () => {},
+  children,
+}) => {
   return (
-    <Link className="btn btn-light" to={url} onClick={onClick} target="_blank">
+    <Link
+      className={`btn btn-light ${className}`}
+      to={url}
+      onClick={onClick}
+      target="_blank"
+    >
       {children}
     </Link>
   );
