@@ -11,7 +11,7 @@ import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { HeadingFormH5Com } from "../../components/heading";
-import { IconFacebookCom, InconGmailCom } from "../../components/icon";
+import { IconFacebookCom, IconGmailCom } from "../../components/icon";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -141,7 +141,7 @@ const SignUpPage = () => {
           <div className="btn-showcase">
             <ButtonSocialCom url="https://www.gmail.com/">
               <div className="flex justify-center items-center">
-                <InconGmailCom></InconGmailCom>
+                <IconGmailCom></IconGmailCom>
                 <span className="ml-1">Gmail</span>
               </div>
             </ButtonSocialCom>

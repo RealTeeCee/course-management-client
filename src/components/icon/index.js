@@ -1,3 +1,3 @@
 export const { default: IconFacebookCom } = require("./IconFacebookCom");
-export const { default: InconGmailCom } = require("./InconGmailCom");
+export const { default: IconGmailCom } = require("./IconGmailCom");
 
