@@ -6,31 +6,56 @@ import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
-import useToggleBoolean from "../../hooks/useToggleBoolean";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { HeadingFormH5Com } from "../../components/heading";
+import { IconFacebookCom, InconGmailCom } from "../../components/icon";
 
-const schema = yup
-  .object({
-    first_name: yup.string().required(process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"),
-  })
-  .required();
+const schemaValidation = yup.object().shape({
+  first_name: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .min(3, "Minimum is 3 letters")
+    .max(
+      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
+      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
+    ),
+  email: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .email(process.env.REACT_APP_MESSAGE_EMAIL ?? "Invalid email"),
+  password: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .min(8, "Minimum is 8 letters")
+    .max(
+      process.env.REACT_APP_MAX_LENGTH_VARCHAR ?? 255,
+      `Maximum ${process.env.REACT_APP_MAX_LENGTH_VARCHAR ?? 255} letters`
+    ),
+});
 
 const SignUpPage = () => {
-
   const {
-    handleSubmit,
     control,
+    register,
+    handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schemaValidation),
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
-    useToggleBoolean();
+    useClickToggleBoolean();
 
   const handleSignUp = (values) => {
     console.log(values);
@@ -45,7 +70,7 @@ const SignUpPage = () => {
   return (
     <LayoutAuthentication>
       <form className="theme-form" onSubmit={handleSubmit(handleSignUp)}>
-        <h4>Create your account</h4>
+        <HeadingFormH5Com>Create your account</HeadingFormH5Com>
         <p>Enter your personal details to create account</p>
         <FormGroupCom>
           <LabelCom htmlFor="first_name">Your Name</LabelCom>
@@ -53,8 +78,8 @@ const SignUpPage = () => {
             <div className="col-6">
               <InputCom
                 control={control}
-                type="text"
                 name="first_name"
+                register={register}
                 placeholder="First name"
                 errorMsg={errors.first_name?.message}
               ></InputCom>
@@ -62,8 +87,8 @@ const SignUpPage = () => {
             <div className="col-6">
               <InputCom
                 control={control}
-                type="text"
                 name="last_name"
+                register={register}
                 placeholder="Last name"
               ></InputCom>
             </div>
@@ -72,20 +97,24 @@ const SignUpPage = () => {
         <FormGroupCom>
           <LabelCom htmlFor="email">Email Address</LabelCom>
           <InputCom
+            type="text"
             control={control}
-            type="email"
             name="email"
+            register={register}
             placeholder="test123@gmail.com"
+            errorMsg={errors.email?.message}
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
           <LabelCom htmlFor="password">Password</LabelCom>
           <InputCom
-            control={control}
             type="password"
+            control={control}
             name="password"
-            placeholder="********"
-            toggleShowHide={true}
+            register={register}
+            placeholder="Input your password"
+            isTypePassword={true}
+            errorMsg={errors.password?.message}
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
@@ -97,7 +126,7 @@ const SignUpPage = () => {
           >
             Agree with
             <Link
-              className="ms-2 !text-primary hover:opacity-60 transition-all duration-300"
+              className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
               to="#"
             >
               Privacy Policy
@@ -110,14 +139,12 @@ const SignUpPage = () => {
         <h6 className="text-muted mt-4 or">Or signup with</h6>
         <div className="social mt-4">
           <div className="btn-showcase">
-            {/* <Link
-              className="btn btn-light"
-              to="https://www.linkedin.com/login"
-              target="_blank"
-            >
-              <i className="txt-linkedin" data-feather="linkedin"></i>
-              LinkedIn{" "}
-            </Link> */}
+            <ButtonSocialCom url="https://www.gmail.com/">
+              <div className="flex justify-center items-center">
+                <InconGmailCom></InconGmailCom>
+                <span className="ml-1">Gmail</span>
+              </div>
+            </ButtonSocialCom>
             <ButtonSocialCom url="https://www.linkedin.com/login">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -137,47 +164,17 @@ const SignUpPage = () => {
               </svg>
               LinkedIn
             </ButtonSocialCom>
-            {/* <ButtonSocialCom url="https://twitter.com/login?lang=en">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-twitter txt-twitter inline"
-              >
-                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-              </svg>
-              Twitter
-            </ButtonSocialCom> */}
-            <ButtonSocialCom url="https://www.facebook.com/">
-              {/* <i className="txt-fb" data-feather="facebook"></i> */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-facebook txt-fb inline"
-              >
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-              </svg>
-              Facebook
+
+            <ButtonSocialCom url="https://www.facebook.com/" className="">
+              <IconFacebookCom></IconFacebookCom>
+              <span>Facebook</span>
             </ButtonSocialCom>
           </div>
         </div>
         <p className="mt-4 mb-0">
           Already have an account?
           <Link
-            className="ms-2 !text-primary hover:opacity-60 transition-all duration-300"
+            className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
             to="/sign-in"
           >
             Sign in
