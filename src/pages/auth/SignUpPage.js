@@ -24,6 +24,16 @@ const schemaValidation = yup.object().shape({
       process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
       `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
     ),
+  last_name: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .min(3, "Minimum is 3 letters")
+    .max(
+      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
+      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
+    ),
   email: yup
     .string()
     .required(
@@ -90,6 +100,7 @@ const SignUpPage = () => {
                 name="last_name"
                 register={register}
                 placeholder="Last name"
+                errorMsg={errors.last_name?.message}
               ></InputCom>
             </div>
           </div>
