@@ -1,10 +1,15 @@
 # Getting Started with Project Development using GIT CLI
 - Open new tab of Terminal and run command 
-    ```bash git clone git@github.com:ricpham/course-management-client.git```
+
+```git clone git@github.com:ricpham/course-management-client.git```
+ 
 - Step 2: run command 
-    ```bash cd course-management-client```
+
+```cd course-management-client```
+
 - Step 3: run command 
-    ```bash git checkout dev```
+
+```git checkout dev```
 
 # Config .env
 - Remove .dist file `.env.dist`
