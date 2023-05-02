@@ -5,8 +5,8 @@ import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-x-10 flex-1">
+    <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between gap-x-10 flex-1">
         <img
           srcSet="logo192.png"
           className="w-12 h-12"

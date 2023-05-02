@@ -3,9 +3,9 @@ import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
 
 const LayoutHome = ({ children }) => {
   return (
-    <div className="px-10 py-6 bg-tw-light text-black">
+    <div className="px-10 py-6 bg-tw-light text-black min-h-screen">
       <HomeTopbarMod></HomeTopbarMod>
-      <div>
+      <div className="flex gap-x-10 items-start">
         <HomeSidebarMod></HomeSidebarMod>
         {children}
       </div>

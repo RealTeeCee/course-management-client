@@ -13,6 +13,7 @@ function App() {
       <Route path="/" element={<HomePage></HomePage>}></Route>
 
 
+
         {/* ********* Authentication ********* */}
         <Route path="/sign-up" element={<SignUpPage></SignUpPage>}></Route>
         {/* ********* END Authentication ********* */}
