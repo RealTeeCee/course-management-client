@@ -3,7 +3,7 @@ import { IconSearchCom } from "../components/icon";
 
 const HomeSearchMod = () => {
   return (
-    <div className="bg-tw-light rounded-full shadow-[10px_10px_20px_rgba(218,213,213,0.15)] p-2 w-full flex items-center">
+    <div className="bg-tw-light rounded-full shadow-primary p-2 w-full flex items-center">
       <div className="flex-1 px-2">
         <input
           type="text"
