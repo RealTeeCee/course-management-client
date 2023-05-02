@@ -5,6 +5,9 @@
   body {
     @apply font-tw-primary text-base leading-normal;
   }
+  h1{
+    @apply text-3xl md:text-4xl font-bold;
+  }
 }
 
 @layer components {
