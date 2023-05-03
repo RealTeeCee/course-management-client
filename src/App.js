@@ -10,7 +10,7 @@ function App() {
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>
-      <Route path="/" element={<HomePage></HomePage>}></Route>
+        <Route path="/" element={<HomePage></HomePage>}></Route>
 
 
 
