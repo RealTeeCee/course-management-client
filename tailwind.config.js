@@ -12,7 +12,7 @@ module.exports = {
         "tw-primary": "#7366ff",
         "tw-danger": "#dc3545",
         "tw-warning": "#f8d62b",
-        "tw-info": "#a927f9",
+        "tw-info": "#2cccff",
         "tw-success": "#51bb25",
         "tw-light": "#f4f4f4",
         "tw-dark": "#2c323f",

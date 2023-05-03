@@ -40,7 +40,7 @@ const sidebarItems = [
 
 const HomeSidebarMod = () => {
   return (
-    <div className="w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col">
+    <div className="sidebar w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0">
       {sidebarItems.map((item) => (
         <NavLink
           key={item.title}

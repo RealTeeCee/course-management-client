@@ -5,8 +5,28 @@ import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
   return (
-    <div className="flex items-center justify-between mb-8">
-      <div className="flex items-center justify-between gap-x-10 flex-1">
+    <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
+      <div>
+        <img
+          srcSet="logo192.png"
+          className="w-12 h-12"
+          alt="Course Management Logo"
+        />
+      </div>
+      <div className="w-full max-w-[458px]">
+        <HomeSearchMod></HomeSearchMod>
+      </div>
+
+      <div className="flex items-center justify-between gap-x-5">
+        <span className="text-base font-medium text-gray-500">My course</span>
+        <IconBellCom></IconBellCom>
+        <img
+          srcSet="assets/images/user/default.jpg"
+          className="object-cover rounded-full w-12 h-12"
+          alt="User Default"
+        />
+      </div>
+      {/* <div className="flex items-center justify-between gap-x-10 flex-1">
         <img
           srcSet="logo192.png"
           className="w-12 h-12"
@@ -21,7 +41,7 @@ const HomeTopbarMod = () => {
         <span className="text-base font-medium text-gray-500">My course</span>
         <IconBellCom></IconBellCom>
         <img srcSet="assets/images/user/default.jpg" className="object-cover rounded-full w-12 h-12" alt="User Default" />
-      </div>
+      </div> */}
     </div>
   );
 };
