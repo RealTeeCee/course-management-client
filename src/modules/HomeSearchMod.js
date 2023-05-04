@@ -8,7 +8,7 @@ const HomeSearchMod = () => {
         <input
           type="text"
           placeholder="Search course, video, blog..."
-          className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full"
+          className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full outline-none"
         />
       </div>
       <button className="w-[72px] h-10 rounded-full bg-primary text-tw-light flex items-center justify-center flex-shrink-0">
