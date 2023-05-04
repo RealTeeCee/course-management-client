@@ -47,7 +47,7 @@ const HomeSidebarMod = () => {
           // className={``}
           className={({ isActive }) =>
             isActive
-              ? "active tw-transition-all text-center bg-gray-200 block p-3 rounded-xl last:mt-auto last:shadow-primary"
+              ? "active tw-transition-all text-center bg-gray-200 block p-3 rounded-xl last:mt-auto last:shadow-primary text-tw-primary"
               : "tw-transition-all text-center bg-tw-light block p-3 rounded-xl last:mt-auto last:shadow-primary"
           }
           to={item.url}
