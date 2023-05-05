@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LayoutAuthentication from "../../layouts/LayoutAuthentication";
-import { HeadingFormH5Com } from "../../components/heading";
+import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import { LabelCom } from "../../components/label";
 import { InputCom } from "../../components/input";
@@ -55,9 +55,10 @@ const SignInPage = () => {
   return (
     <LayoutAuthentication>
       <form className="theme-form" onSubmit={handleSubmit(handleSignIn)}>
-        <h1 class="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
-          Login your account
-        </h1>
+        {/* <HeadingFormH1Com class="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
+          Sign in your account
+        </HeadingFormH1Com> */}
+        <HeadingFormH5Com>Sign in your account</HeadingFormH5Com>
         <FormGroupCom>
           <LabelCom htmlFor="email">Email Address</LabelCom>
           <InputCom
@@ -82,9 +83,20 @@ const SignInPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
+          <div class="form-group mb-0">
+            <div class="checkbox p-0">
+              <input id="checkbox1" type="checkbox"/>
+                <label class="text-muted" for="checkbox1">Remember password
+                </label>
+            </div>
+            <div>
+              <a class="link" href="forget-password.html">Forgot password?</a>
+            </div>
+          </div>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
-            Login
+            Sign in
           </ButtonCom>
+          
         </FormGroupCom>
         <h6 className="text-muted mt-4 or">Or sign up with</h6>
         <div className="social mt-4">
