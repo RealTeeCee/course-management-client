@@ -22,4 +22,6 @@
 - Run command `yarn start` to start Server
 
 # *** Other ***
+- Lib Material UI Docs version 5.12.3: `https://mui.com/material-ui/react-rating/`
+
 - Font: change link css in `public/index.html`
