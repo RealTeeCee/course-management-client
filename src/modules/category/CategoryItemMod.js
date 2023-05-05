@@ -1,23 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { IconFolderCom } from "../../components/icon";
+import { RatingMuiCom } from "../../components/mui";
+import { CategoryTagMod } from "../category";
 
 const CategoryItemMod = () => {
   return (
-    <div className="category-item">
+    <div className="c-card category-item">
       <Link to="/" className="tw-transition-all hover:opacity-80">
-        <div className="h-[158px]">
+        <div className="c-card-header h-[158px]">
           <img
             srcSet="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjaG9vbHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
             alt=""
             className="w-full h-full object-cover rounded-2xl"
           />
         </div>
-        <div className="px-[1.25rem] py-[1rem]">
-          <div className="flex items-center gap-x-2 tw-transition-all text-xs font-medium text-gray-400 mb-[1rem]">
-            <IconFolderCom></IconFolderCom>
-            <span>Programming</span>
-          </div>
+        <div className="c-card-body py-[1rem]">
+          <CategoryTagMod icon={<IconFolderCom />}>Programming</CategoryTagMod>
 
           <h3 className="font-semibold text-black mb-1 text-lg">
             Top Programming Course
@@ -38,15 +37,20 @@ const CategoryItemMod = () => {
               <span className="text-xs text-gray-400">Total Purchased</span>
             </div>
           </div>
-          <div className="flex items-center gap-x-3">
-            <img
-              srcSet="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-              className="w-8 h-8 rounded-full object-cover"
-              alt="User Avatar"
-            />
-            <p className="text-xs text-gray-400">
-                By <span className="text-gray-600 font-semibold">FPT Aptech</span>
-            </p>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-x-3">
+              <img
+                srcSet="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+                className="w-8 h-8 rounded-full object-cover"
+                alt="User Avatar"
+              />
+              <p className="text-xs text-gray-400">
+                By{" "}
+                <span className="text-gray-600 font-semibold">FPT Aptech</span>
+              </p>
+            </div>
+            <RatingMuiCom defaultValue={4.6} readOnly></RatingMuiCom>
           </div>
         </div>
       </Link>
