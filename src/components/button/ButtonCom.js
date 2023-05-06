@@ -27,7 +27,7 @@ const ButtonCom = (props) => {
 
   return (
     <button
-      className={`${backgroundColor} btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] ${className} ${
+      className={`${backgroundColor} btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] px-10 ${className} ${
         !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
       }`}
       type={type}

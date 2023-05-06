@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./index.scss";
+import 'swiper/css';
 import { Provider } from "react-redux";
 import { store } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
