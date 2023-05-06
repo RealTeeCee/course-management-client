@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   IconBlogCom,
@@ -39,10 +39,31 @@ const sidebarItems = [
 ];
 
 const HomeSidebarMod = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      const sidebar = document.querySelector(".sidebar");
+      if (!sidebar) return;
+      const { top } = sidebar.getBoundingClientRect();
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const actualTop = top + scrollY;
+      if(actualTop > 500){
+
+        setIsScrolled(true);
+      }else {
+        setIsScrolled(false);
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   return (
     <>
       <div className="sidebar-hidden w-full md:w-[76px]"></div>
-      <div className="sidebar fixed w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0">
+      <div className={`${isScrolled ? "sidebar fixed animate-slide-in w-full md:w-[76px] rounded-3xl bg-tw-light shadow-2xl text-center text-xs flex flex-col flex-shrink-0" : "sidebar fixed w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0"}`}>
         {sidebarItems.map((item) => (
           <NavLink
             key={item.title}
