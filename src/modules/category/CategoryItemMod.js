@@ -26,7 +26,7 @@ const CategoryItemMod = () => {
             architecto iusto quidem eos quia rerum doloribus reiciendis a culpa
             pariatur
           </p>
-          <div className="flex items-start justify-between gap-x-5 mb-5">
+          {/* <div className="flex items-start justify-between gap-x-5 mb-5">
             <div className="flex flex-col gap-y-1">
               <h4 className="text-gray-600 text-sm font-semibold">$800</h4>
               <span className="text-xs text-gray-400">Sale only $300</span>
@@ -51,7 +51,7 @@ const CategoryItemMod = () => {
               </p>
             </div>
             <RatingMuiCom defaultValue={4.6} readOnly></RatingMuiCom>
-          </div>
+          </div> */}
         </div>
       </Link>
     </div>

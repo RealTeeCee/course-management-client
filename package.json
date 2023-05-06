@@ -39,6 +39,7 @@
     "slugify": "^1.6.5",
     "styled-components": "^5.3.10",
     "sweetalert2": "^11.4.17",
+    "swiper": "^9.2.4",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"
