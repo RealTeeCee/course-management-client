@@ -23,5 +23,6 @@
 
 # *** Other ***
 - Lib Material UI Docs version 5.12.3: `https://mui.com/material-ui/react-rating/`
+- Lib Ant Design UI Docs version 5.4.6: `https://ant.design/components/overview`
 
 - Font: change link css in `public/index.html`

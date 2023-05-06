@@ -2,8 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 
-const SignUpPage = lazy(() => import("./pages/auth/SignUpPage.js"));
-const SignInPage = lazy(() => import("./pages/auth/SignInPage.js"));
+const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
+const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
@@ -17,8 +17,8 @@ function App() {
 
 
         {/* ********* Authentication ********* */}
-        <Route path="/sign-up" element={<SignUpPage></SignUpPage>}></Route>
-        <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
+        <Route path="/register" element={<RegisterPage></RegisterPage>}></Route>
+        <Route path="/login" element={<LoginPage></LoginPage>}></Route>
         {/* ********* END Authentication ********* */}
       </Routes>
     </Suspense>

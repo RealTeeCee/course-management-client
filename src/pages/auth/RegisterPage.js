@@ -1,18 +1,39 @@
 import React, { useState } from "react";
-import LayoutAuthentication from "../../layouts/LayoutAuthentication";
-import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
-import FormGroupCom from "../../components/common/FormGroupCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { CheckBoxCom } from "../../components/checkbox";
-import { ButtonCom, ButtonSocialCom } from "../../components/button";
-import { IconFacebookCom, IconGmailCom } from "../../components/icon";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { ButtonCom, ButtonSocialCom } from "../../components/button";
+import { CheckBoxCom } from "../../components/checkbox";
+import FormGroupCom from "../../components/common/FormGroupCom";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
+import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { HeadingFormH5Com } from "../../components/heading";
+import { IconFacebookCom, IconGmailCom } from "../../components/icon";
 
 const schemaValidation = yup.object().shape({
+  first_name: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .min(3, "Minimum is 3 letters")
+    .max(
+      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
+      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
+    ),
+  last_name: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    )
+    .min(3, "Minimum is 3 letters")
+    .max(
+      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
+      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
+    ),
   email: yup
     .string()
     .required(
@@ -31,7 +52,7 @@ const schemaValidation = yup.object().shape({
     ),
 });
 
-const SignInPage = () => {
+const RegisterPage = () => {
   const {
     control,
     register,
@@ -43,7 +64,10 @@ const SignInPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = (values) => {
+  const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
+    useClickToggleBoolean();
+
+  const handleRegister = (values) => {
     console.log(values);
     setIsLoading(!isLoading);
 
@@ -52,13 +76,35 @@ const SignInPage = () => {
     }, 1000);
   };
 
+  console.log(errors);
   return (
     <LayoutAuthentication>
-      <form className="theme-form" onSubmit={handleSubmit(handleSignIn)}>
-        {/* <HeadingFormH1Com class="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
-          Sign in your account
-        </HeadingFormH1Com> */}
-        <HeadingFormH5Com>Sign in your account</HeadingFormH5Com>
+      <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
+        <HeadingFormH5Com>Create your account</HeadingFormH5Com>
+        <p>Enter your personal details to create account</p>
+        <FormGroupCom>
+          <LabelCom htmlFor="first_name">Your Name</LabelCom>
+          <div className="row g-2">
+            <div className="col-6">
+              <InputCom
+                control={control}
+                name="first_name"
+                register={register}
+                placeholder="First name"
+                errorMsg={errors.first_name?.message}
+              ></InputCom>
+            </div>
+            <div className="col-6">
+              <InputCom
+                control={control}
+                name="last_name"
+                register={register}
+                placeholder="Last name"
+                errorMsg={errors.last_name?.message}
+              ></InputCom>
+            </div>
+          </div>
+        </FormGroupCom>
         <FormGroupCom>
           <LabelCom htmlFor="email">Email Address</LabelCom>
           <InputCom
@@ -83,22 +129,25 @@ const SignInPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <div class="form-group mb-0">
-            <div class="checkbox p-0">
-              <input id="checkbox1" type="checkbox"/>
-                <label class="text-muted" for="checkbox1">Remember password
-                </label>
-            </div>
-            <div>
-              <a class="link" href="forget-password.html">Forgot password?</a>
-            </div>
-          </div>
+          {/* If acceptTerm = true will checked */}
+          <CheckBoxCom
+            name="term"
+            checked={acceptTerm}
+            onClick={handleToggleTerm}
+          >
+            Agree with
+            <Link
+              className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
+              to="#"
+            >
+              Privacy Policy
+            </Link>
+          </CheckBoxCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
-            Sign in
+            Create Account
           </ButtonCom>
-          
         </FormGroupCom>
-        <h6 className="text-muted mt-4 or">Or sign up with</h6>
+        <h6 className="text-muted mt-4 or">Or register with</h6>
         <div className="social mt-4">
           <div className="btn-showcase">
             <ButtonSocialCom url="https://www.gmail.com/">
@@ -134,12 +183,12 @@ const SignInPage = () => {
           </div>
         </div>
         <p className="mt-4 mb-0">
-          Not yet have an account?
+          Already have an account?
           <Link
             className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
-            to="/sign-in"
+            to="/login"
           >
-            Sign up
+            Login
           </Link>
         </p>
       </form>
@@ -147,4 +196,4 @@ const SignInPage = () => {
   );
 };
 
-export default SignInPage;
+export default RegisterPage;
