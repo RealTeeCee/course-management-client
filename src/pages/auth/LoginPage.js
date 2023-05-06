@@ -62,7 +62,8 @@ const LoginPage = () => {
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
         </HeadingFormH1Com> */}
-        <HeadingFormH5Com>Login your account</HeadingFormH5Com>
+        {/* <HeadingFormH5Com>Login your account</HeadingFormH5Com> */}
+        <HeadingFormH1Com>Login Page</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="email">Email Address</LabelCom>
           <InputCom

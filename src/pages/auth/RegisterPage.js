@@ -10,7 +10,7 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { HeadingFormH5Com } from "../../components/heading";
+import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
 import { IconFacebookCom, IconGmailCom } from "../../components/icon";
 
 const schemaValidation = yup.object().shape({
@@ -80,8 +80,9 @@ const RegisterPage = () => {
   return (
     <LayoutAuthentication>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
-        <HeadingFormH5Com>Create your account</HeadingFormH5Com>
-        <p>Enter your personal details to create account</p>
+        {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
+        <p>Enter your personal details to create account</p> */}
+        <HeadingFormH1Com>Register Page</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="first_name">Your Name</LabelCom>
           <div className="row g-2">
