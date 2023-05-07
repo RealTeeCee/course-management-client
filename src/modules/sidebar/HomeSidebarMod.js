@@ -22,8 +22,8 @@ const sidebarItems = [
   },
   {
     icon: <IconLearnCom className="mx-auto" />,
-    title: "Learn",
-    url: "/learning",
+    title: "Course",
+    url: "/courses",
   },
   {
     icon: <IconBlogCom className="mx-auto" />,
@@ -40,6 +40,7 @@ const sidebarItems = [
 
 const HomeSidebarMod = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const navLinkClass = "tw-transition-all text-center block p-3 rounded-xl last:mt-auto last:shadow-primary bg-tw-light";
 
   useEffect(() => {
     function handleScroll() {
@@ -70,8 +71,8 @@ const HomeSidebarMod = () => {
             // className={``}
             className={({ isActive }) =>
               isActive
-                ? "active tw-transition-all text-center bg-gray-200 block p-3 rounded-xl last:mt-auto last:shadow-primary text-tw-primary"
-                : "tw-transition-all text-center bg-tw-light block p-3 rounded-xl last:mt-auto last:shadow-primary"
+                ? `active ${navLinkClass} bg-gray-200 text-tw-primary`
+                : navLinkClass
             }
             to={item.url}
           >
