@@ -9,6 +9,9 @@ export const { default: IconBlogCom } = require("./IconBlogCom");
 export const { default: IconSunCom } = require("./IconSunCom");
 export const { default: IconMoonCom } = require("./IconMoonCom");
 export const { default: IconFolderCom } = require("./IconFolderCom");
+export const { default: IconRemoveCom } = require("./IconRemoveCom");
+
+
 
 
 

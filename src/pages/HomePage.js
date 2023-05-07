@@ -14,8 +14,8 @@ const HomePage = () => {
       <Swiper
         // slidesPerView={3}
         slidesPerView={"auto"}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper) => console.log(swiper)}
+        // onSlideChange={() => console.log("slide change")}
+        // onSwiper={(swiper) => console.log(swiper)}
         grabCursor="true"
       >
         <SwiperSlide>
