@@ -8,7 +8,6 @@ import { CourseGridMod, CourseItemMod } from "../modules/course";
 import { formatNumber } from "../utils/helper";
 
 const CoursePage = () => {
-
   const { startOffSet, endOffSet, currentPage, handleChangePage } =
     usePagination(1);
 
