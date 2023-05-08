@@ -66,7 +66,7 @@ const HomePage = () => {
             <CategoryItemMod key={v4()}></CategoryItemMod>
           ))}
       </CategoryGridMod>
-      <GapYCom></GapYCom>
+      
       {/* Selling Course */}
       <HeadingH2Com className="text-tw-primary">Best Selling Course</HeadingH2Com>
       <CourseGridMod>
@@ -77,7 +77,7 @@ const HomePage = () => {
           ))}
       </CourseGridMod>
 
-      <GapYCom></GapYCom>
+      
       {/* Free Course */}
       <HeadingH2Com className="text-tw-primary">Free Course</HeadingH2Com>
       <CourseGridMod>
