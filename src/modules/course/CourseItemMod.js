@@ -31,8 +31,12 @@ const CourseItemMod = () => {
 
           <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
             <div className="flex flex-col gap-y-1">
-              <h4 className="text-gray-600 text-base font-semibold line-through">$800</h4>
-              <span className="text-sm text-gray-400">Sale only <strong className="text-tw-light-pink">$300</strong></span>
+              <h4 className="text-gray-600 text-base font-semibold line-through">
+                $800
+              </h4>
+              <span className="text-sm text-gray-400">
+                Sale only <strong className="text-tw-light-pink">$300</strong>
+              </span>
             </div>
 
             <div className="flex flex-col gap-y-1">
@@ -41,7 +45,10 @@ const CourseItemMod = () => {
             </div>
           </div>
 
-          <CourseAuthorMod authorName="FPT Aptech" rating={4.6}></CourseAuthorMod>
+          <CourseAuthorMod
+            authorName="FPT Aptech"
+            rating={4.6}
+          ></CourseAuthorMod>
         </div>
       </Link>
     </div>
