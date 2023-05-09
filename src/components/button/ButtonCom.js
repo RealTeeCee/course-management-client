@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
+import { NavLink } from "react-router-dom";
 
 const ButtonCom = (props) => {
   const {
@@ -25,14 +26,42 @@ const ButtonCom = (props) => {
     children
   );
 
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] px-8 ${className} ${
+    !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
+  }`;
+  switch (rest.mainColor) {
+    case "primary":
+      defaultClassName += " bg-tw-primary text-white";
+      break;
+    case "info":
+      defaultClassName += " bg-tw-info text-white";
+      break;
+    case "light-pink":
+      defaultClassName += " bg-tw-light-pink text-white";
+      break;
+    default:
+      defaultClassName += ` ${backgroundColor}`;
+      break;
+  }
+
+  // If existed rest.to
+  if (rest.to) {
+    return (
+      <NavLink
+        to={rest.to}
+        className={({ isActive }) =>
+          isActive
+            ? `active ${defaultClassName} !bg-tw-light-pink text-white`
+            : defaultClassName
+        }
+      >
+        {child}
+      </NavLink>
+    );
+  }
+
   return (
-    <button
-      className={`${backgroundColor} btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] px-10 ${className} ${
-        !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
-      }`}
-      type={type}
-      {...rest}
-    >
+    <button className={defaultClassName} type={type} {...rest}>
       {child}
     </button>
   );
@@ -42,6 +71,8 @@ ButtonCom.propTypes = {
   type: PropTypes.string,
   className: PropTypes.string,
   isLoading: PropTypes.bool,
+  to: PropTypes.string,
+  mainColor: PropTypes.oneOf(["primary", "info", "light-pink"]),
   children: PropTypes.node,
 };
 
