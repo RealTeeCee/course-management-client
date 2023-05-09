@@ -22,7 +22,7 @@ const HomeTopbarMod = () => {
 
       <div className="flex items-center justify-between gap-x-5">
         <ButtonCom to="/my-courses" className="flex items-center">
-          <span className="text-base font-medium">My Courses</span>
+          <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>
         <IconBellCom></IconBellCom>
         <img
