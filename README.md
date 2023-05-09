@@ -12,7 +12,7 @@
 ```git checkout dev```
 
 # Config .env
-- Remove .dist file `.env.dist`
+- Copy file `.env.dist` then please change the name of new File to `.env`
 
 # Getting Started with Create React App and Redux
 
