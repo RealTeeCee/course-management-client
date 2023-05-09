@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ButtonCom } from "../../components/button";
 import { IconBellCom } from "../../components/icon";
 import HomeSearchMod from "../HomeSearchMod";
@@ -7,21 +8,25 @@ const HomeTopbarMod = () => {
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       <div>
-        <img
-          srcSet="logo192.png"
-          className="w-12 h-12"
-          alt="Course Management Logo"
-        />
+        <Link to="/" className="inline-block">
+          <img
+            srcSet="/logo192.png"
+            className="w-12 h-12"
+            alt="Course Management Logo"
+          />
+        </Link>
       </div>
       <div className="w-full max-w-[458px]">
         <HomeSearchMod></HomeSearchMod>
       </div>
 
       <div className="flex items-center justify-between gap-x-5">
-        <span className="text-base font-medium text-gray-500">My course</span>
+        <ButtonCom to="/my-courses" className="flex items-center">
+          <span className="text-base font-medium">My Courses</span>
+        </ButtonCom>
         <IconBellCom></IconBellCom>
         <img
-          srcSet="assets/images/user/default.jpg"
+          srcSet="/assets/images/user/default.jpg"
           className="object-cover rounded-full w-12 h-12"
           alt="User Default"
         />

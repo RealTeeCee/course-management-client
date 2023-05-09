@@ -5,7 +5,7 @@ import { RatingMuiCom } from "../../components/mui";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
-const CourseItemMod = () => {
+const CourseItemMod = ({ isPaid = false }) => {
   return (
     <div className="c-card course-item">
       <Link to="/" className="tw-transition-all hover:opacity-80">
@@ -29,21 +29,23 @@ const CourseItemMod = () => {
             pariatur
           </CourseDescMod>
 
-          <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
-            <div className="flex flex-col gap-y-1">
-              <h4 className="text-gray-600 text-base font-semibold line-through">
-                $800
-              </h4>
-              <span className="text-sm text-gray-400">
-                Sale only <strong className="text-tw-light-pink">$300</strong>
-              </span>
-            </div>
+          {!isPaid && (
+            <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
+              <div className="flex flex-col gap-y-1">
+                <h4 className="text-gray-600 text-base font-semibold line-through">
+                  $800
+                </h4>
+                <span className="text-sm text-gray-400">
+                  Sale only <strong className="text-tw-light-pink">$300</strong>
+                </span>
+              </div>
 
-            <div className="flex flex-col gap-y-1">
-              <h4 className="text-gray-600 text-base font-semibold">1800</h4>
-              <span className="text-sm text-gray-400">Total Purchased</span>
+              <div className="flex flex-col gap-y-1">
+                <h4 className="text-gray-600 text-base font-semibold">1800</h4>
+                <span className="text-sm text-gray-400">Total Purchased</span>
+              </div>
             </div>
-          </div>
+          )}
 
           <CourseAuthorMod
             authorName="FPT Aptech"
