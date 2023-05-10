@@ -7,6 +7,7 @@ import LayoutHome from "../../layouts/LayoutHome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../components/button";
+import { SelectSearchAntCom } from "../../components/ant";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -14,12 +15,28 @@ const schemaValidation = yup.object().shape({
     .required(
       process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
     ),
-  //   password: yup
-  //     .string()
-  //     .required(
-  //       process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-  //     ),
+  // category_id: yup
+  //   .string()
+  //   .required(
+  //     process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+  //   ),
 });
+
+// Label is category name , value is category_id
+const categoryItems = [
+  {
+    value: 1,
+    label: "Programming",
+  },
+  {
+    value: 2,
+    label: "Marketing",
+  },
+  {
+    value: 3,
+    label: "Contructor",
+  },
+];
 
 const CreateCoursePage = () => {
   const {
@@ -32,16 +49,24 @@ const CreateCoursePage = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [categoryId, setCategoryId] = useState(0);
 
   const handleSubmitForm = (values) => {
-    const { name } = values;
+    const { name, category_id } = values;
     console.log(values);
     setIsLoading(!isLoading);
 
     // After done, remove loading
-    // setTimeout(() => {
-    //   setIsLoading(false);
-    // }, 1000);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  /********* Library Function Area ********* */
+  const handleCategoryChange = (value) => {
+    setCategoryId(value);
+    const form = document.querySelector("#form-create");
+    form.querySelector('input[name="category_id"]').value = value;
   };
 
   return (
@@ -53,6 +78,7 @@ const CreateCoursePage = () => {
             <form
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
+              id="form-create"
             >
               {/* <div className="card-header">
                 <h5>Form Create Course</h5>
@@ -90,15 +116,35 @@ const CreateCoursePage = () => {
                 <div className="row">
                   <div className="col-sm-6">
                     <div className="mb-3">
-                      <LabelCom htmlFor="category">Category</LabelCom>
-                      <InputCom
+                      <LabelCom htmlFor="category_id">Category</LabelCom>
+                      {/* <InputCom
                         type="text"
                         control={control}
                         name="category"
                         register={register}
                         placeholder="Input Category"
                         errorMsg={errors.category?.message}
-                      ></InputCom>
+                      ></InputCom> */}
+                      <div>
+                        <SelectSearchAntCom
+                          listItems={categoryItems}
+                          onChange={handleCategoryChange}
+                          className="w-full py-1"
+                          status={
+                            errors.category_id &&
+                            errors.category_id.message &&
+                            "error"
+                          }
+                          errorMsg={errors.category_id?.message}
+                          placeholder="Input category to search"
+                        ></SelectSearchAntCom>
+                        <InputCom
+                          type="hidden"
+                          control={control}
+                          name="category_id"
+                          register={register}
+                        ></InputCom>
+                      </div>
                     </div>
                   </div>
                   <div className="col-sm-6">
