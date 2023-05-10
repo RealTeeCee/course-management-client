@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
@@ -6,6 +6,7 @@ import { LabelCom } from "../../components/label";
 import LayoutHome from "../../layouts/LayoutHome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { ButtonCom } from "../../components/button";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -30,9 +31,17 @@ const CreateCoursePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmitForm = (values) => {
     const { name } = values;
     console.log(values);
+    setIsLoading(!isLoading);
+
+    // After done, remove loading
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 1000);
   };
 
   return (
@@ -41,15 +50,15 @@ const CreateCoursePage = () => {
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
-            <div className="card-header">
-              <h5>Default Form Layout</h5>
-              <span>Lorem ipsum dolor sit amet consectetur</span>
-            </div>
-            <div className="card-body">
-              <form
-                className="theme-form"
-                onSubmit={handleSubmit(handleSubmitForm)}
-              >
+            <form
+              className="theme-form"
+              onSubmit={handleSubmit(handleSubmitForm)}
+            >
+              {/* <div className="card-header">
+                <h5>Form Create Course</h5>
+                <span>Lorem ipsum dolor sit amet consectetur</span>
+              </div> */}
+              <div className="card-body">
                 <div className="row">
                   <div className="col-sm-6">
                     <div className="mb-3">
@@ -157,28 +166,26 @@ const CreateCoursePage = () => {
                         placeholder="Input Description"
                         errorMsg={errors.description?.message}
                       ></InputCom> */}
-                      <textarea name="description" className="form-control" id="" cols="30" rows="10"></textarea>
+                      <textarea
+                        name="description"
+                        className="form-control"
+                        id=""
+                        cols="30"
+                        rows="10"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
-              </form>
-            </div>
-            <div className="card-footer text-end">
-              <button
-                className="btn btn-primary mr-2"
-                data-bs-original-title=""
-                title=""
-              >
-                Create
-              </button>
-              <button
-                className="btn btn-secondary"
-                data-bs-original-title=""
-                title=""
-              >
-                Cancel
-              </button>
-            </div>
+              </div>
+              <div className="card-footer flex justify-end gap-x-5">
+                <ButtonCom type="submit" isLoading={isLoading}>
+                  Create
+                </ButtonCom>
+                <ButtonCom backgroundColor="danger" type="reset">
+                  Cancel
+                </ButtonCom>
+              </div>
+            </form>
           </div>
         </div>
       </div>

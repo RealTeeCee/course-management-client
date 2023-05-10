@@ -10,7 +10,7 @@ const ButtonCom = (props) => {
     className = "",
     isLoading = false,
     children,
-    backgroundColor = "btn-primary",
+    backgroundColor="primary",
     ...rest
   } = props;
 
@@ -21,7 +21,7 @@ const ButtonCom = (props) => {
 
   // !!isLoading convert to boolean
   const child = !!isLoading ? (
-    <div className="w-8 h-8 rounded-full border-4 border-t-transparent border-b-transparent animate-spin mx-auto"></div>
+    <div className="w-6 h-6 rounded-full border-4 border-t-transparent border-b-transparent animate-spin mx-auto"></div>
   ) : (
     children
   );
@@ -29,18 +29,21 @@ const ButtonCom = (props) => {
   let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] px-8 ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
-  switch (rest.mainColor) {
+  switch (backgroundColor) {
     case "primary":
       defaultClassName += " bg-tw-primary text-white";
       break;
     case "info":
       defaultClassName += " bg-tw-info text-white";
       break;
+    case "danger":
+      defaultClassName += " bg-tw-danger text-white";
+      break;
     case "light-pink":
       defaultClassName += " bg-tw-light-pink text-white";
       break;
     default:
-      defaultClassName += ` ${backgroundColor}`;
+      // defaultClassName += ` ${backgroundColor}`;
       break;
   }
 
@@ -71,8 +74,8 @@ ButtonCom.propTypes = {
   type: PropTypes.string,
   className: PropTypes.string,
   isLoading: PropTypes.bool,
-  to: PropTypes.string,
-  mainColor: PropTypes.oneOf(["primary", "info", "light-pink"]),
+  rest: PropTypes.any,
+  backgroundColor: PropTypes.oneOf(["primary", "info", "danger", "light-pink"]),
   children: PropTypes.node,
 };
 
