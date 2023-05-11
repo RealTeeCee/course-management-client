@@ -1,10 +1,10 @@
 import { Pagination } from "antd";
 import React from "react";
 import { v4 } from "uuid";
-import { HeadingH1Com } from "../components/heading";
-import usePagination from "../hooks/usePagination";
-import { CourseGridMod, CourseItemMod } from "../modules/course";
-import { formatNumber } from "../utils/helper";
+import { HeadingH1Com } from "../../components/heading";
+import usePagination from "../../hooks/usePagination";
+import { CourseGridMod, CourseItemMod } from "../../modules/course";
+import { formatNumber } from "../../utils/helper";
 
 const CoursePage = () => {
   const { startOffSet, endOffSet, currentPage, handleChangePage } =

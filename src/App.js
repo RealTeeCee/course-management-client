@@ -8,11 +8,11 @@ const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
-const CoursePage = lazy(() => import("./pages/CoursePage.js"));
-const MyCoursePage = lazy(() => import("./pages/user/MyCoursePage.js"));
+const CoursePage = lazy(() => import("./pages/course/CoursePage.js"));
+const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
 const CreateCoursePage = lazy(() =>
-  import("./pages/admin/CreateCoursePage.js")
+  import("./pages/course/CreateCoursePage.js")
 );
 
 function App() {
