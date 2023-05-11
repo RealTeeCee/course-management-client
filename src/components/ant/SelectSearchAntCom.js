@@ -3,7 +3,6 @@ import { Select } from "antd";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
-import { useController } from "react-hook-form";
 
 // Sample items
 // const items = [
@@ -43,6 +42,7 @@ const SelectSearchAntCom = (props) => {
     ...rest
   } = props;
 
+
   return (
     <>
       <Select
@@ -78,6 +78,7 @@ SelectSearchAntCom.propTypes = {
     })
   ).isRequired,
   status: PropTypes.string,
+  isReset: PropTypes.bool,
   onChange: PropTypes.func,
   className: PropTypes.string,
   errorMsg: PropTypes.string,

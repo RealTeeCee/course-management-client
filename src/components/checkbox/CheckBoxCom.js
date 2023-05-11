@@ -1,13 +1,23 @@
 import React from "react";
 
 const CheckBoxCom = (props) => {
-  const { checked = false, name = "", onClick = () => {}, children } = props;
-  
+  const {
+    checked = false,
+    name = "",
+    onClick = () => {},
+    labelClassName = "",
+    children,
+  } = props;
+
   return (
     <div className="checkbox p-0">
       <input type="checkbox" id={name} name={name} onChange={() => {}} />
       {children && (
-        <label className="text-muted" htmlFor={name} onClick={onClick}>
+        <label
+          className={`text-muted ${labelClassName}`}
+          htmlFor={name}
+          onClick={onClick}
+        >
           {children}
         </label>
       )}

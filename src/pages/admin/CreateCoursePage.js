@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
@@ -8,6 +8,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../components/button";
 import { SelectSearchAntCom } from "../../components/ant";
+import { TextAreaCom } from "../../components/textarea";
+import ReactQuill, { Quill } from "react-quill";
+import ImageUploader from "quill-image-uploader";
+Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -15,11 +19,11 @@ const schemaValidation = yup.object().shape({
     .required(
       process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
     ),
-  // category_id: yup
-  //   .string()
-  //   .required(
-  //     process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-  //   ),
+  category_id: yup
+    .string()
+    .required(
+      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
+    ),
 });
 
 // Label is category name , value is category_id
@@ -43,13 +47,14 @@ const CreateCoursePage = () => {
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [categoryId, setCategoryId] = useState(0);
+  const [description, setDescription] = useState("");
 
   const handleSubmitForm = (values) => {
     const { name, category_id } = values;
@@ -64,10 +69,26 @@ const CreateCoursePage = () => {
 
   /********* Library Function Area ********* */
   const handleCategoryChange = (value) => {
-    setCategoryId(value);
-    const form = document.querySelector("#form-create");
-    form.querySelector('input[name="category_id"]').value = value;
+    console.log(value);
+    setValue("category_id", value);
   };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: async (file) => {},
+      },
+    }),
+    []
+  );
 
   return (
     <LayoutHome>
@@ -88,7 +109,9 @@ const CreateCoursePage = () => {
                 <div className="row">
                   <div className="col-sm-6">
                     <div className="mb-3">
-                      <LabelCom htmlFor="name">Course Name</LabelCom>
+                      <LabelCom htmlFor="name" isRequired>
+                        Course Name
+                      </LabelCom>
                       <InputCom
                         type="text"
                         control={control}
@@ -116,15 +139,9 @@ const CreateCoursePage = () => {
                 <div className="row">
                   <div className="col-sm-6">
                     <div className="mb-3">
-                      <LabelCom htmlFor="category_id">Category</LabelCom>
-                      {/* <InputCom
-                        type="text"
-                        control={control}
-                        name="category"
-                        register={register}
-                        placeholder="Input Category"
-                        errorMsg={errors.category?.message}
-                      ></InputCom> */}
+                      <LabelCom htmlFor="category_id" isRequired>
+                        Choose Category
+                      </LabelCom>
                       <div>
                         <SelectSearchAntCom
                           listItems={categoryItems}
@@ -204,21 +221,18 @@ const CreateCoursePage = () => {
                   <div className="col-sm-12">
                     <div className="mb-3">
                       <LabelCom htmlFor="description">Description</LabelCom>
-                      {/* <InputCom
-                        type="text"
+                      {/* <TextAreaCom
+                        name="description"
                         control={control}
-                        name="description"
                         register={register}
-                        placeholder="Input Description"
-                        errorMsg={errors.description?.message}
-                      ></InputCom> */}
-                      <textarea
-                        name="description"
-                        className="form-control"
-                        id=""
-                        cols="30"
-                        rows="10"
-                      ></textarea>
+                        placeholder="Describe your course ..."
+                      ></TextAreaCom> */}
+                      <ReactQuill
+                        modules={modules}
+                        theme="snow"
+                        value={description}
+                        onChange={setDescription}
+                      ></ReactQuill>
                     </div>
                   </div>
                 </div>

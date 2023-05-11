@@ -82,9 +82,9 @@ const RegisterPage = () => {
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
         {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
         <p>Enter your personal details to create account</p> */}
-        <HeadingFormH1Com>Register Page</HeadingFormH1Com>
+        <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="first_name">Your Name</LabelCom>
+          <LabelCom htmlFor="first_name" isRequired>Your Name</LabelCom>
           <div className="row g-2">
             <div className="col-6">
               <InputCom
@@ -107,7 +107,7 @@ const RegisterPage = () => {
           </div>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="email">Email Address</LabelCom>
+          <LabelCom htmlFor="email" isRequired>Email Address</LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -118,7 +118,7 @@ const RegisterPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="password">Password</LabelCom>
+          <LabelCom htmlFor="password" isRequired>Password</LabelCom>
           <InputCom
             type="password"
             control={control}
