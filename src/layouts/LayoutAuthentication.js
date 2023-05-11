@@ -1,10 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../components/common/ErrorCom";
 
-const LayoutAuthentication = ({ children }) => {
+const LayoutAuthentication = () => {
   return (
     // Dark Mode: add dark:bg-tw-dark, then in HTML tag add class="dark"
     <div className="container-fluid p-0">
@@ -21,7 +21,9 @@ const LayoutAuthentication = ({ children }) => {
                   />
                 </Link>
               </div>
-              <div className="login-main">{children}</div>
+              <div className="login-main">
+                <Outlet></Outlet>
+              </div>
             </div>
           </div>
         </div>

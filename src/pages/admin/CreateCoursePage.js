@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
-import LayoutHome from "../../layouts/LayoutHome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../components/button";
@@ -92,7 +91,7 @@ const CreateCoursePage = () => {
   );
 
   return (
-    <LayoutHome>
+    <>
       <HeadingH1Com>Create Courses</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
@@ -252,7 +251,7 @@ const CreateCoursePage = () => {
           </div>
         </div>
       </div>
-    </LayoutHome>
+    </>
   );
 };
 

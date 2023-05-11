@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import { LabelCom } from "../../components/label";
@@ -60,7 +59,7 @@ const LoginPage = () => {
   };
 
   return (
-    <LayoutAuthentication>
+    <>
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
@@ -171,7 +170,7 @@ const LoginPage = () => {
           </Link>
         </p>
       </form>
-    </LayoutAuthentication>
+    </>
   );
 };
 

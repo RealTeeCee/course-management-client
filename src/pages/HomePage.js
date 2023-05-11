@@ -1,7 +1,6 @@
 import React from "react";
 import { v4 } from "uuid";
 import { HeadingH2Com } from "../components/heading";
-import LayoutHome from "../layouts/LayoutHome";
 import { CategoryGridMod, CategoryItemMod } from "../modules/category";
 import { CourseGridMod, CourseItemMod } from "../modules/course";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,7 +9,7 @@ import GapYCom from "../components/common/GapYCom";
 
 const HomePage = () => {
   return (
-    <LayoutHome>
+    <>
       <Swiper
         // slidesPerView={3}
         slidesPerView={"auto"}
@@ -87,7 +86,7 @@ const HomePage = () => {
             <CourseItemMod key={v4()}></CourseItemMod>
           ))}
       </CourseGridMod>
-    </LayoutHome>
+    </>
   );
 };
 

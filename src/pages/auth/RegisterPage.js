@@ -7,7 +7,6 @@ import FormGroupCom from "../../components/common/FormGroupCom";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
@@ -78,7 +77,7 @@ const RegisterPage = () => {
 
   console.log(errors);
   return (
-    <LayoutAuthentication>
+    <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
         {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
         <p>Enter your personal details to create account</p> */}
@@ -193,7 +192,7 @@ const RegisterPage = () => {
           </Link>
         </p>
       </form>
-    </LayoutAuthentication>
+    </>
   );
 };
 

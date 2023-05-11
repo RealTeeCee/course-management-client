@@ -3,7 +3,6 @@ import React from "react";
 import { v4 } from "uuid";
 import { HeadingH1Com } from "../../components/heading";
 import usePagination from "../../hooks/usePagination";
-import LayoutHome from "../../layouts/LayoutHome";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 import { formatNumber } from "../../utils/helper";
 
@@ -12,7 +11,7 @@ const MyCoursePage = () => {
     usePagination(1);
 
   return (
-    <LayoutHome>
+    <>
       <HeadingH1Com number={formatNumber(5)}>My Courses</HeadingH1Com>
       <CourseGridMod>
         {Array(5)
@@ -31,7 +30,7 @@ const MyCoursePage = () => {
         onChange={handleChangePage}
         className="mt-[1rem] text-center"
       />
-    </LayoutHome>
+    </>
   );
 };
 

@@ -1,9 +1,8 @@
 import { Pagination } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import { v4 } from "uuid";
 import { HeadingH1Com } from "../components/heading";
 import usePagination from "../hooks/usePagination";
-import LayoutHome from "../layouts/LayoutHome";
 import { CourseGridMod, CourseItemMod } from "../modules/course";
 import { formatNumber } from "../utils/helper";
 
@@ -12,7 +11,7 @@ const CoursePage = () => {
     usePagination(1);
 
   return (
-    <LayoutHome>
+    <>
       <HeadingH1Com number={formatNumber(63)}>All Courses</HeadingH1Com>
       <CourseGridMod>
         {Array(63)
@@ -31,7 +30,7 @@ const CoursePage = () => {
         onChange={handleChangePage}
         className="mt-[1rem] text-center"
       />
-    </LayoutHome>
+    </>
   );
 };
 
