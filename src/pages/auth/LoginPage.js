@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -37,6 +38,8 @@ const LoginPage = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const { value: isRemember, handleToggleBoolean: handleToggleRemember } =
+  useClickToggleBoolean();
   const navigate = useNavigate();
 
   const handleLogin = (values) => {
@@ -63,9 +66,11 @@ const LoginPage = () => {
           Sign in your account
         </HeadingFormH1Com> */}
         {/* <HeadingFormH5Com>Login your account</HeadingFormH5Com> */}
-        <HeadingFormH1Com>Login Page</HeadingFormH1Com>
+        <HeadingFormH1Com>Login Form</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="email">Email Address</LabelCom>
+          <LabelCom htmlFor="email" isRequired>
+            Email Address
+          </LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -75,8 +80,10 @@ const LoginPage = () => {
             errorMsg={errors.email?.message}
           ></InputCom>
         </FormGroupCom>
-        <FormGroupCom>
-          <LabelCom htmlFor="password">Password</LabelCom>
+        <FormGroupCom className="mb-0">
+          <LabelCom htmlFor="password" isRequired>
+            Password
+          </LabelCom>
           <InputCom
             type="password"
             control={control}
@@ -88,8 +95,8 @@ const LoginPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <div className="form-group mb-0">
-            <div className="checkbox p-0">
+          <div className="pl-4">
+            {/* <div className="checkbox p-0">
               <input id="checkbox1" type="checkbox" />
               <label className="text-muted" htmlFor="checkbox1">
                 Remember password
@@ -99,7 +106,21 @@ const LoginPage = () => {
               <a className="link" href="forget-password.html">
                 Forgot password?
               </a>
-            </div>
+            </div> */}
+            <CheckBoxCom
+              name="term"
+              checked={isRemember}
+              onClick={handleToggleRemember}
+              labelClassName="!flex !justify-between"
+            >
+              Remember password
+              <Link
+                className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
+                to="#"
+              >
+                Forgot password?
+              </Link>
+            </CheckBoxCom>
           </div>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
