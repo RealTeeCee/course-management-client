@@ -48,6 +48,7 @@ const CreateCoursePage = () => {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -69,8 +70,8 @@ const CreateCoursePage = () => {
 
   /********* Library Function Area ********* */
   const handleCategoryChange = (value) => {
-    console.log(value);
     setValue("category_id", value);
+    setError("category_id", { message: "" });
   };
 
   const modules = useMemo(
@@ -232,6 +233,8 @@ const CreateCoursePage = () => {
                         theme="snow"
                         value={description}
                         onChange={setDescription}
+                        placeholder="Describe your course ..."
+                        className="h-36"
                       ></ReactQuill>
                     </div>
                   </div>
