@@ -1,10 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { ButtonCom } from "../../components/button";
 import { IconBellCom } from "../../components/icon";
+import { selectUserData, selectUserIsSuccess } from "../../store/user/selector";
 import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
+  const navigate = useNavigate();
+  const currentUser = useSelector(selectUserData);
+
+  const getCurrentUserSuccess = useSelector(selectUserIsSuccess);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       <div>
@@ -26,10 +32,17 @@ const HomeTopbarMod = () => {
         </ButtonCom>
         <IconBellCom></IconBellCom>
         <img
-          srcSet="/assets/images/user/default.jpg"
+          srcSet={
+            getCurrentUserSuccess && currentUser.imageUrl != null
+              ? currentUser.imageUrl
+              : "assets/images/user/default.jpg"
+          }
           className="object-cover rounded-full w-12 h-12"
           alt="User Default"
+          referrerPolicy="no-referrer"
         />
+        <button onClick={() => navigate("/login")}>Login</button>
+        {getCurrentUserSuccess && currentUser.name}
       </div>
       {/* <div className="flex items-center justify-between gap-x-10 flex-1">
         <img

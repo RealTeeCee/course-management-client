@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
-import FormGroupCom from "../../components/common/FormGroupCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { CheckBoxCom } from "../../components/checkbox";
-import { ButtonCom, ButtonSocialCom } from "../../components/button";
-import { IconFacebookCom, IconGmailCom } from "../../components/icon";
-import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { AlertAntCom } from "../../components/ant/index";
+import { ButtonCom } from "../../components/button";
+import FormGroupCom from "../../components/common/FormGroupCom";
+import { HeadingFormH1Com } from "../../components/heading";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
+import { loginStart } from "../../store/login/action";
+import { selectLoginIsSuccess } from "../../store/login/selector";
+import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -27,6 +30,12 @@ const schemaValidation = yup.object().shape({
 });
 
 const LoginPage = () => {
+  const isLoginSuccess = useSelector(selectLoginIsSuccess);
+  const navigate = useNavigate();
+  useEffect(() => {
+    isLoginSuccess && navigate("/");
+  }, [isLoginSuccess, navigate]);
+
   const {
     control,
     register,
@@ -37,39 +46,50 @@ const LoginPage = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const searchParams = new URLSearchParams(location.search);
+  const isVerify = searchParams.get("verify"); //=== "verified";
   const { value: isRemember, handleToggleBoolean: handleToggleRemember } =
-  useClickToggleBoolean();
-  const navigate = useNavigate();
+    useClickToggleBoolean();
 
   const handleLogin = (values) => {
-    const { email, password } = values;
-    setIsLoading(!isLoading);
-    // If Login correct
-    if (email === "admin@gmail.com" && password === "123456") {
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/");
-      }, 1000);
-    }
+    // const { email, password } = values;
+    // setIsLoading(!isLoading);
+    // // If Login correct
+    // if (email === "admin@gmail.com" && password === "123456") {
+    //   setTimeout(() => {
+    //     setIsLoading(false);
+    //     navigate("/");
+    //   }, 1000);
+    // }
 
-    // If Login Wrong, remove loading
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    // // If Login Wrong, remove loading
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 1000);
+    dispatch(loginStart(values));
   };
 
   return (
     <>
+      {!isVerify ? null : isVerify === "success" ? (
+        <AlertAntCom
+          type="success"
+          msg="Email is active. You can login here."
+        />
+      ) : (
+        <AlertAntCom type="success" msg="Email have already actived" />
+      )}
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
         </HeadingFormH1Com> */}
         {/* <HeadingFormH5Com>Login your account</HeadingFormH5Com> */}
-        <HeadingFormH1Com>Login Form</HeadingFormH1Com>
+        <HeadingFormH1Com>Login Page</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="email" isRequired>
-            Email Address
-          </LabelCom>
+          <LabelCom htmlFor="email">Email Address</LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -79,10 +99,8 @@ const LoginPage = () => {
             errorMsg={errors.email?.message}
           ></InputCom>
         </FormGroupCom>
-        <FormGroupCom className="mb-0">
-          <LabelCom htmlFor="password" isRequired>
-            Password
-          </LabelCom>
+        <FormGroupCom>
+          <LabelCom htmlFor="password">Password</LabelCom>
           <InputCom
             type="password"
             control={control}
@@ -94,8 +112,8 @@ const LoginPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <div className="pl-4">
-            {/* <div className="checkbox p-0">
+          <div className="form-group mb-0">
+            <div className="checkbox p-0">
               <input id="checkbox1" type="checkbox" />
               <label className="text-muted" htmlFor="checkbox1">
                 Remember password
@@ -105,61 +123,14 @@ const LoginPage = () => {
               <a className="link" href="forget-password.html">
                 Forgot password?
               </a>
-            </div> */}
-            <CheckBoxCom
-              name="term"
-              checked={isRemember}
-              onClick={handleToggleRemember}
-              labelClassName="!flex !justify-between"
-            >
-              Remember password
-              <Link
-                className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
-                to="#"
-              >
-                Forgot password?
-              </Link>
-            </CheckBoxCom>
+            </div>
           </div>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
           </ButtonCom>
         </FormGroupCom>
         <h6 className="text-muted mt-4 or">Or login with</h6>
-        <div className="social mt-4">
-          <div className="btn-showcase">
-            <ButtonSocialCom url="https://www.gmail.com/">
-              <div className="flex justify-center items-center">
-                <IconGmailCom></IconGmailCom>
-                <span className="ml-1">Gmail</span>
-              </div>
-            </ButtonSocialCom>
-            <ButtonSocialCom url="https://www.linkedin.com/login">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-linkedin txt-linkedin inline"
-              >
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                <rect x="2" y="9" width="4" height="12"></rect>
-                <circle cx="4" cy="4" r="2"></circle>
-              </svg>
-              LinkedIn
-            </ButtonSocialCom>
-
-            <ButtonSocialCom url="https://www.facebook.com/" className="">
-              <IconFacebookCom></IconFacebookCom>
-              <span>Facebook</span>
-            </ButtonSocialCom>
-          </div>
-        </div>
+        <OAuth2Page />
         <p className="mt-4 mb-0">
           Not yet have an account?
           <Link

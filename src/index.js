@@ -3,7 +3,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
-import { store } from "./store/configureStore";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
 
 import "./assets/css/font-awesome.css";
@@ -21,17 +22,17 @@ import "./assets/css/color-1.css";
 import "./assets/css/responsive.css";
 
 import "./index.scss";
-import 'swiper/css';
-
+import "swiper/css";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
     </BrowserRouter>
   </Provider>
 );

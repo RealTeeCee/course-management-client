@@ -1,6 +1,10 @@
-import React, { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { lazy, Suspense, useEffect } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
+import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUser } from "./store/user/action.js";
+import { selectLoginIsSuccess } from "./store/login/selector.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 
@@ -9,6 +13,8 @@ const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
+
+const ErrorPage = lazy(() => import("./pages/ErrorPage.js"));
 
 const CoursePage = lazy(() => import("./pages/course/CoursePage.js"));
 const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
@@ -21,6 +27,21 @@ const CreateCoursePage = lazy(() =>
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 function App() {
+  const dispatch = useDispatch();
+  const selectLoginSuccess = useSelector(selectLoginIsSuccess);
+
+  // useEffect(() => {
+  //   //If cannot refresh token => nagivate to /login
+  //   console.log("selectLoginSuccess", selectLoginSuccess);
+  //   if (!selectLoginSuccess) {
+  //     navigate("/login");
+  //   }
+  // }, [navigate, selectLoginSuccess]);
+
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
+
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>
@@ -36,8 +57,18 @@ function App() {
             element={<MyCoursePage></MyCoursePage>}
           ></Route>
 
+          {/* ********* Error ********* */}
+          <Route path="*" element={<ErrorPage></ErrorPage>}></Route>
+          {/* ********* END Error ********* */}
+          <Route
+            path="/oauth2/redirect"
+            element={<OAuth2RedirectPage></OAuth2RedirectPage>}
+          ></Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
-          <Route path="/blogs/:id" element={<BlogDetailsPage></BlogDetailsPage>} />
+          <Route
+            path="/blogs/:id"
+            element={<BlogDetailsPage></BlogDetailsPage>}
+          />
 
           {/* ********* ADMIN ********* */}
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
@@ -54,7 +85,17 @@ function App() {
             path="/register"
             element={<RegisterPage></RegisterPage>}
           ></Route>
-          <Route path="/login" element={<LoginPage></LoginPage>}></Route>
+          <Route
+            path="/login"
+            render
+            element={
+              selectLoginSuccess ? (
+                <Navigate to="/"></Navigate>
+              ) : (
+                <LoginPage></LoginPage>
+              )
+            }
+          ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
       </Routes>
