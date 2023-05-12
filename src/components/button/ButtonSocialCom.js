@@ -11,12 +11,7 @@ const ButtonSocialCom = ({
   children,
 }) => {
   return (
-    <Link
-      className={`btn btn-light ${className}`}
-      to={url}
-      onClick={onClick}
-      target="_blank"
-    >
+    <Link className={`btn btn-light ${className}`} to={url} onClick={onClick}>
       {children}
     </Link>
   );
