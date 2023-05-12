@@ -1,9 +1,10 @@
 import React from "react";
-import { IconBellCom } from "../../components/icon";
-import HomeSearchMod from "../HomeSearchMod";
 import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { ButtonCom } from "../../components/button";
+import { IconBellCom } from "../../components/icon";
 import { selectUserData, selectUserIsSuccess } from "../../store/user/selector";
-import { useNavigate } from "react-router-dom";
+import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
   const navigate = useNavigate();
@@ -13,21 +14,25 @@ const HomeTopbarMod = () => {
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       <div>
-        <img
-          srcSet="logo192.png"
-          className="w-12 h-12"
-          alt="Course Management Logo"
-        />
+        <Link to="/" className="inline-block">
+          <img
+            srcSet="/logo192.png"
+            className="w-12 h-12"
+            alt="Course Management Logo"
+          />
+        </Link>
       </div>
       <div className="w-full max-w-[458px]">
         <HomeSearchMod></HomeSearchMod>
       </div>
 
       <div className="flex items-center justify-between gap-x-5">
-        <span className="text-base font-medium text-gray-500">My course</span>
+        <ButtonCom to="/my-courses" className="flex items-center">
+          <span className="text-sm font-medium">My Courses</span>
+        </ButtonCom>
         <IconBellCom></IconBellCom>
         <img
-          src={
+          srcSet={
             getCurrentUserSuccess && currentUser.imageUrl != null
               ? currentUser.imageUrl
               : "assets/images/user/default.jpg"

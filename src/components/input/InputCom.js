@@ -8,6 +8,7 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 const InputCom = (props) => {
   const {
     register = () => {},
+    onChange = () => {},
     control,
     name,
     type = "text",
@@ -34,11 +35,12 @@ const InputCom = (props) => {
         <input
           id={name}
           className={`form-control tw-transition-all ${
-            errorMsg && errorMsg.length > 0 && "is-invalid !border-tw-danger !text-tw-danger"
+            errorMsg && errorMsg.length > 0 && "is-invalid border-tw-danger text-tw-danger"
           }`}
           type={
             type === "password" ? (showPassword ? "text" : "password") : type
           }
+          onChange={onChange}
           {...register(name)}
           {...fields}
           {...rest}

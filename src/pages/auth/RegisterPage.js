@@ -7,7 +7,6 @@ import FormGroupCom from "../../components/common/FormGroupCom";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import LayoutAuthentication from "../../layouts/LayoutAuthentication";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
@@ -84,13 +83,13 @@ const RegisterPage = () => {
 
   console.log(errors);
   return (
-    <LayoutAuthentication>
+    <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
         {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
         <p>Enter your personal details to create account</p> */}
-        <HeadingFormH1Com>Register Page</HeadingFormH1Com>
+        <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="first_name">Your Name</LabelCom>
+          <LabelCom htmlFor="first_name" isRequired>Your Name</LabelCom>
           <div className="row g-2">
             <div className="col-6">
               <InputCom
@@ -113,7 +112,7 @@ const RegisterPage = () => {
           </div>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="email">Email Address</LabelCom>
+          <LabelCom htmlFor="email" isRequired>Email Address</LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -124,7 +123,7 @@ const RegisterPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="password">Password</LabelCom>
+          <LabelCom htmlFor="password" isRequired>Password</LabelCom>
           <InputCom
             type="password"
             control={control}
@@ -166,7 +165,7 @@ const RegisterPage = () => {
           </Link>
         </p>
       </form>
-    </LayoutAuthentication>
+    </>
   );
 };
 

@@ -2,12 +2,27 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import "./index.scss";
-import "swiper/css";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
+
+import "./assets/css/font-awesome.css";
+import "./assets/css/vendors/icofont.css";
+import "./assets/css/vendors/themify.css";
+import "./assets/css/vendors/flag-icon.css";
+import "./assets/css/vendors/feather-icon.css";
+import "./assets/css/vendors/scrollbar.css";
+import "./assets/css/vendors/animate.css";
+import "./assets/css/vendors/chartist.css";
+import "./assets/css/vendors/date-picker.css";
+import "./assets/css/vendors/bootstrap.css";
+import "./assets/css/style.css";
+import "./assets/css/color-1.css";
+import "./assets/css/responsive.css";
+
+import "./index.scss";
+import "swiper/css";
 
 const container = document.getElementById("root");
 const root = createRoot(container);

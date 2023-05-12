@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
+  IconAdminCom,
   IconBlogCom,
   IconHomeCom,
   IconLearnCom,
@@ -18,7 +19,7 @@ const sidebarItems = [
   {
     icon: <IconMapCom className="mx-auto" />,
     title: "Route",
-    url: "/route-map",
+    url: "/routes",
   },
   {
     icon: <IconLearnCom className="mx-auto" />,
@@ -28,7 +29,12 @@ const sidebarItems = [
   {
     icon: <IconBlogCom className="mx-auto" />,
     title: "Blog",
-    url: "/blog",
+    url: "/blogs",
+  },
+  {
+    icon: <IconAdminCom className="mx-auto" />,
+    title: "Admin",
+    url: "/admin",
   },
   {
     icon: <IconMoonCom className="mx-auto" />,
