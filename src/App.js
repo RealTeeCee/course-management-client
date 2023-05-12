@@ -18,7 +18,8 @@ const CourseDetailPage = lazy(() =>
 const CreateCoursePage = lazy(() =>
   import("./pages/course/CreateCoursePage.js")
 );
-
+const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
+const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 function App() {
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
@@ -34,6 +35,9 @@ function App() {
             path="/my-courses"
             element={<MyCoursePage></MyCoursePage>}
           ></Route>
+
+          <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
+          <Route path="/blogs/:id" element={<BlogDetailsPage></BlogDetailsPage>} />
 
           {/* ********* ADMIN ********* */}
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>

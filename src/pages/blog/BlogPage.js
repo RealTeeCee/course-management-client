@@ -4,12 +4,12 @@ import LayoutHome from "../../layouts/LayoutHome";
 
 const BlogPage = () => {
   return (
-    <div>
-      <LayoutHome>
+    <>
+     
         <BlogCarouselPage />
         <BlogSelectPage />
-      </LayoutHome>
-    </div>
+   
+    </>
   );
 };
 

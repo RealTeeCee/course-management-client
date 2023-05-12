@@ -4,10 +4,9 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { blog } from "../../assets/blog_data/data";
-import LayoutHome from "../../layouts/LayoutHome";
 import { HeadingH2Com } from "../../components/heading";
 
-const DetailsPage = () => {
+const BlogDetailsPage = () => {
   const { id } = useParams();
   const [blogs, setBlogs] = useState(null);
 
@@ -19,7 +18,7 @@ const DetailsPage = () => {
   }, []);
 
   return (
-       <LayoutHome>
+       <>
       {blogs ? (
         <section className=" bg-white max-w-[1240px] mx-auto py-10 px-24 ">
           <div className="container">
@@ -81,8 +80,8 @@ const DetailsPage = () => {
           </div>
         </section>
       ) : null}
-    </LayoutHome>
+    </>
   );
 };
 
-export default DetailsPage;
+export default BlogDetailsPage;

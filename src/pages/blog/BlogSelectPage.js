@@ -53,7 +53,7 @@ const BlogSelectPage = () => {
               </div>
               
               <div id="details">
-                <Link to={`/details/${blog.id}`}>
+                <Link to={`/blogs/${blog.id}`}>
                   <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
                     <h3 className="font-[500]">{blog.title}</h3>
                   </div>
