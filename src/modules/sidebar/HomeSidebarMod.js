@@ -55,8 +55,7 @@ const HomeSidebarMod = () => {
       const { top } = sidebar.getBoundingClientRect();
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
       const actualTop = top + scrollY;
-      if(actualTop > 500){
-
+      if(actualTop > 200){
         setIsScrolled(true);
       }else {
         setIsScrolled(false);
@@ -74,7 +73,6 @@ const HomeSidebarMod = () => {
         {sidebarItems.map((item) => (
           <NavLink
             key={item.title}
-            // className={``}
             className={({ isActive }) =>
               isActive
                 ? `active ${navLinkClass} bg-gray-200 text-tw-primary`
