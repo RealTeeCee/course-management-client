@@ -1,29 +1,61 @@
 import React from "react";
 import { Select } from "antd";
+import PropTypes from "prop-types";
+import { withErrorBoundary } from "react-error-boundary";
+import ErrorCom from "../common/ErrorCom";
 
-const options = [];
-
-const SelectTagAntCom = () => {
-  for (let i = 10; i < 36; i++) {
-    options.push({
-      value: i.toString(36) + i,
-      label: i.toString(36) + i,
-    });
-  }
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+// const tagItems = [
+//   {
+//     value: "Programming",
+//     label: "Programming",
+//   },
+//   {
+//     value: "PHP",
+//     label: "PHP",
+//   },
+// ];
+// Automatic tokenization
+const SelectTagAntCom = ({
+  listItems = [],
+  onChange = () => {},
+  status = "",
+  errorMsg = "",
+  placeholder = "Input your tags",
+  className = "",
+}) => {
   return (
-    <Select
-      mode="tags"
-      style={{
-        width: "100%",
-      }}
-      placeholder="Tags Mode"
-      onChange={handleChange}
-      options={options}
-    />
+    <>
+      <Select
+        status={status}
+        size="large"
+        mode="tags"
+        style={{
+          width: "100%",
+        }}
+        placeholder={placeholder}
+        onChange={onChange}
+        options={listItems}
+      />
+      {errorMsg && errorMsg.length > 0 && (
+        <span className="text-tw-danger text-sm">{errorMsg}</span>
+      )}
+    </>
   );
 };
 
-export default SelectTagAntCom;
+SelectTagAntCom.propTypes = {
+  listItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  status: PropTypes.string,
+  onChange: PropTypes.func,
+  className: PropTypes.string,
+  placeholder: PropTypes.string,
+  errorMsg: PropTypes.string,
+};
+export default withErrorBoundary(SelectTagAntCom, {
+  FallbackComponent: ErrorCom,
+});

@@ -1,7 +1,7 @@
 import React from "react";
 
-const GapYCom = () => {
-  return <div className="mb-8"></div>;
+const GapYCom = ({ className = "mb-8" }) => {
+  return <div className={`mb-8 ${className}`}></div>;
 };
 
 export default GapYCom;

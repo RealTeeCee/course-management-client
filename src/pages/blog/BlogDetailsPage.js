@@ -18,7 +18,7 @@ const BlogDetailsPage = () => {
   }, []);
 
   return (
-       <>
+    <>
       {blogs ? (
         <section className=" bg-white max-w-[1240px] mx-auto py-10 px-24 ">
           <div className="container">
@@ -39,7 +39,9 @@ const BlogDetailsPage = () => {
                 </button>
               </div>
               <h1 className="text-3xl font-medium">{blogs.title}</h1>
-              <HeadingH2Com className="my-5 text-lg capitalize leading-7">{blogs.desc}</HeadingH2Com>
+              <HeadingH2Com className="my-5 text-lg capitalize leading-7">
+                {blogs.desc}
+              </HeadingH2Com>
               <p className="my-5 text-lg capitalize leading-7">
                 "But I must explain to you how all this mistaken idea of
                 denouncing pleasure and praising pain was born and I will give

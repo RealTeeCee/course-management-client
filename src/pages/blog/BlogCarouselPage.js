@@ -26,13 +26,12 @@ const BlogCarouselPage = () => {
         {/* <BsArrowLeftSquareFill onClick={prevSlide} className="absolute top-[50%] text-3xl text-white cursor-pointer left-8"/>
         <BsArrowRightSquareFill onClick={nextSlide} className="absolute top-[50%] text-3xl text-white cursor-pointer right-8"/> */}
       {sliderData.map((item, index) => (
-        <div className={index === slide ? 'opacity-100 ' : 'opacity-0'} >
+        <div key={`${item} ${index}`} className={index === slide ? 'opacity-100 ' : 'opacity-0'} >
             {index === slide && (<img 
             src={item.url} 
             alt="/"
             className="w-full h-60 rounded-lg"
             />)}
-            
         </div>
 
       ))}

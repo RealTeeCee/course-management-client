@@ -37,11 +37,10 @@ const SelectSearchAntCom = (props) => {
     listItems,
     onChange = () => {},
     status = "",
-    className = "",
     errorMsg = "",
+    className = "",
     ...rest
   } = props;
-
 
   return (
     <>
@@ -78,7 +77,6 @@ SelectSearchAntCom.propTypes = {
     })
   ).isRequired,
   status: PropTypes.string,
-  isReset: PropTypes.bool,
   onChange: PropTypes.func,
   className: PropTypes.string,
   errorMsg: PropTypes.string,

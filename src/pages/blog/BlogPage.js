@@ -5,10 +5,8 @@ import LayoutHome from "../../layouts/LayoutHome";
 const BlogPage = () => {
   return (
     <>
-     
         <BlogCarouselPage />
         <BlogSelectPage />
-   
     </>
   );
 };
