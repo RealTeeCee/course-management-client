@@ -6,10 +6,10 @@ import { RatingMuiCom } from "../../components/mui";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
-const CourseItemMod = ({ isPaid = false }) => {
+const CourseItemMod = ({ url = "/", isPaid = false }) => {
   return (
     <div className="c-card course-item">
-      <Link to="/" className="tw-transition-all hover:opacity-80">
+      <Link to={url} className="tw-transition-all hover:opacity-80">
         <div className="c-card-header h-[158px]">
           <ImageCom
             srcSet="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjaG9vbHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"

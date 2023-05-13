@@ -18,7 +18,7 @@ const CoursePage = () => {
           .fill(0)
           .map((item, index) => {
             if (index >= startOffSet && index < endOffSet) {
-              return <CourseItemMod key={v4()}></CourseItemMod>;
+              return <CourseItemMod url={`/courses/learn-php-${++index}`} key={v4()}></CourseItemMod>;
             }
             return null;
           })}
