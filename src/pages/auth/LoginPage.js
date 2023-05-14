@@ -46,6 +46,7 @@ const LoginPage = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const location = useLocation();
   const dispatch = useDispatch();
@@ -55,33 +56,28 @@ const LoginPage = () => {
     useClickToggleBoolean();
 
   const handleLogin = (values) => {
-    // const { email, password } = values;
-    // setIsLoading(!isLoading);
-    // // If Login correct
-    // if (email === "admin@gmail.com" && password === "123456") {
-    //   setTimeout(() => {
-    //     setIsLoading(false);
-    //     navigate("/");
-    //   }, 1000);
-    // }
+    const { email, password } = values;
+    setIsError(false);
+    setIsLoading(!isLoading);
+    // If Login correct
+    if (email === "admin@gmail.com" && password === "123456") {
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate("/");
+      }, 1000);
+    }
 
-    // // If Login Wrong, remove loading
-    // setTimeout(() => {
-    //   setIsLoading(false);
-    // }, 1000);
+    // If Login Wrong, remove loading
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsError(true);
+    }, 1000);
     dispatch(loginStart(values));
   };
 
   return (
     <>
-      {!isVerify ? null : isVerify === "success" ? (
-        <AlertAntCom
-          type="success"
-          msg="Email is active. You can login here."
-        />
-      ) : (
-        <AlertAntCom type="success" msg="Email have already actived" />
-      )}
+        {isError && <AlertAntCom type="error" message="Invalid Username or Password !"></AlertAntCom>}
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
