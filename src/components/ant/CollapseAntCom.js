@@ -1,21 +1,56 @@
 import { Collapse } from "antd";
 const { Panel } = Collapse;
-const text = `
-  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere aperiam saepe ex sunt dignissimos, natus corporis mollitia tempore, voluptate iusto eveniet blanditiis unde suscipit, dolores possimus facilis ab necessitatibus repellat.
-`;
-const CollapseAntCom = () => {
-  const onChange = (key) => {
-    // console.log(key);
-  };
+
+const CollapseAntCom = ({
+  openKeys = ["1"],
+  onChange = () => {},
+  isOpen = false,
+  parentItems = [],
+  childItems = [],
+}) => {
+  const ids = parentItems.map((item) => String(item.id));
+  console.log(`inside Collapse: ${isOpen}`);
+  console.log(`inside openKeys ${openKeys}`);
   return (
-    <Collapse defaultActiveKey={["1"]} onChange={onChange} size="large">
-      <Panel header="Introduce" key="1">
+    <Collapse
+      // defaultActiveKey={["1"]}
+      // activeKey={isOpen ? ["1", "2", "3"] : openKeys}
+      defaultActiveKey={String(parentItems[0].id)}
+      activeKey={isOpen ? ids : openKeys}
+      // activeKey={openKeys}
+      onChange={onChange}
+      size="large"
+    >
+      {parentItems &&
+        parentItems.length > 0 &&
+        parentItems.map((parent, index) => {
+          let lessionNo = 1;
+          return (
+            <Panel header={parent.name} key={parent.id}>
+              {childItems &&
+                childItems.length > 0 &&
+                // eslint-disable-next-line array-callback-return
+                childItems.map((child, i) => {
+                  if (child.section_id === parent.id) {
+                    return (
+                      <div
+                        key={child.id}
+                        className="flex justify-between items-center"
+                      >
+                        <span>
+                          {lessionNo++}. {child.name}
+                        </span>
+                        <span>{child.duration}</span>
+                      </div>
+                    );
+                  }
+                })}
+            </Panel>
+          );
+        })}
+      {/* <Panel header="Introduce" key="1">
         <div className="flex justify-between items-center">
           <span>1.{text}</span>
-          <span>03:58</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span>2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus ad quidem tempore iusto nesciunt voluptatum doloremque adipisci velit? Maiores magnam sapiente reiciendis vero quas beatae, illo alias qui iste corporis! </span>
           <span>03:58</span>
         </div>
       </Panel>
@@ -24,7 +59,7 @@ const CollapseAntCom = () => {
       </Panel>
       <Panel header="Learning PHP core" key="3">
         <p>{text}</p>
-      </Panel>
+      </Panel> */}
     </Collapse>
   );
 };
