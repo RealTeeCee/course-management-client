@@ -10,7 +10,7 @@ const ButtonCom = (props) => {
     className = "",
     isLoading = false,
     children,
-    backgroundColor="primary",
+    backgroundColor = "primary",
     ...rest
   } = props;
 
@@ -42,6 +42,9 @@ const ButtonCom = (props) => {
     case "light-pink":
       defaultClassName += " bg-tw-light-pink text-white";
       break;
+    case "gradient":
+      defaultClassName +=
+        " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white";
     default:
       // defaultClassName += ` ${backgroundColor}`;
       break;
@@ -75,7 +78,7 @@ ButtonCom.propTypes = {
   className: PropTypes.string,
   isLoading: PropTypes.bool,
   rest: PropTypes.any,
-  backgroundColor: PropTypes.oneOf(["primary", "info", "danger", "light-pink"]),
+  backgroundColor: PropTypes.oneOf(["primary", "info", "danger", "light-pink", "gradient"]),
   children: PropTypes.node,
 };
 
