@@ -1,5 +1,6 @@
 import { Pagination } from "antd";
 import React, { useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
@@ -59,6 +60,7 @@ const totalLession = 2;
 
 const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { slug } = useParams();
   // const [openKeys, setOpenKeys] = useState(["1"]);
   const [openKeys, setOpenKeys] = useState(String(sessionItems[0].id));
   const relatedCourseLimitPage = 4;
@@ -177,12 +179,14 @@ const CourseDetailPage = () => {
                     Buy only <span className="text-tw-light-pink">$300</span>
                   </HeadingH2Com>
                 )}
-                <ButtonCom
-                  backgroundColor="gradient"
-                  className="rounded transition-all duration-300 hover:bg-gradient-to-l"
-                >
-                  Enrolling Now
-                </ButtonCom>
+                <Link to={`/checkout/${slug}`}>
+                  <ButtonCom
+                    backgroundColor="gradient"
+                    className="rounded transition-all duration-300 hover:bg-gradient-to-l"
+                  >
+                    Enrolling Now
+                  </ButtonCom>
+                </Link>
                 <GapYCom></GapYCom>
                 <div className="pl-[10.5rem] mx-auto text-start text-sm">
                   <div className="flex flex-col gap-y-2">

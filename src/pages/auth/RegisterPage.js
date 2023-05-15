@@ -89,7 +89,9 @@ const RegisterPage = () => {
         <p>Enter your personal details to create account</p> */}
         <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="first_name" isRequired>Your Name</LabelCom>
+          <LabelCom htmlFor="first_name" isRequired>
+            Your Name
+          </LabelCom>
           <div className="row g-2">
             <div className="col-6">
               <InputCom
@@ -112,7 +114,9 @@ const RegisterPage = () => {
           </div>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="email" isRequired>Email Address</LabelCom>
+          <LabelCom htmlFor="email" isRequired>
+            Email Address
+          </LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -123,7 +127,9 @@ const RegisterPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="password" isRequired>Password</LabelCom>
+          <LabelCom htmlFor="password" isRequired>
+            Password
+          </LabelCom>
           <InputCom
             type="password"
             control={control}
