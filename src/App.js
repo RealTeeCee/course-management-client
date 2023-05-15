@@ -27,6 +27,7 @@ const CreateCoursePage = lazy(() =>
 );
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
+const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
 
 const customStyles = {
   content: {},
@@ -65,6 +66,10 @@ function App() {
             path="/my-courses"
             element={<MyCoursePage></MyCoursePage>}
           ></Route>
+          <Route
+            path="/checkout/:slug"
+            element={<CheckoutPage></CheckoutPage>}
+          ></Route>
 
           {/* ********* Error ********* */}
           <Route path="*" element={<ErrorPage></ErrorPage>}></Route>
@@ -78,7 +83,6 @@ function App() {
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
-
           {/* ********* ADMIN ********* */}
           <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
           <Route
