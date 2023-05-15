@@ -11,6 +11,7 @@ const ButtonCom = (props) => {
     isLoading = false,
     children,
     backgroundColor = "primary",
+    padding = "px-8",
     ...rest
   } = props;
 
@@ -26,7 +27,7 @@ const ButtonCom = (props) => {
     children
   );
 
-  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] px-8 ${className} ${
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] ${padding} ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
   switch (backgroundColor) {
@@ -78,7 +79,13 @@ ButtonCom.propTypes = {
   className: PropTypes.string,
   isLoading: PropTypes.bool,
   rest: PropTypes.any,
-  backgroundColor: PropTypes.oneOf(["primary", "info", "danger", "light-pink", "gradient"]),
+  backgroundColor: PropTypes.oneOf([
+    "primary",
+    "info",
+    "danger",
+    "light-pink",
+    "gradient",
+  ]),
   children: PropTypes.node,
 };
 

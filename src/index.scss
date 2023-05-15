@@ -23,6 +23,19 @@
   .tw-bg-gradient-dark {
     @apply bg-gradient-to-t from-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0.5)];
   }
+
+  // ***** Modal ******
+  .ReactModal__Body--open {
+    overflow: hidden !important;
+  }
+  .scroll-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scroll-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  // ***** END Modal ******
   // ******** END GENERAL CUSTOM CSS *********
 
   // ******** SIDE BAR ********

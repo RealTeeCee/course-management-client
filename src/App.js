@@ -5,6 +5,7 @@ import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "./store/user/action.js";
 import { selectLoginIsSuccess } from "./store/login/selector.js";
+import Modal from "react-modal";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 
@@ -26,6 +27,14 @@ const CreateCoursePage = lazy(() =>
 );
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
+
+const customStyles = {
+  content: {},
+};
+
+Modal.setAppElement("#root");
+Modal.defaultStyles = {};
+
 function App() {
   const dispatch = useDispatch();
   const selectLoginSuccess = useSelector(selectLoginIsSuccess);
