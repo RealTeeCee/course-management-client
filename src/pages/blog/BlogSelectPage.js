@@ -1,4 +1,4 @@
-import React from "react";
+import {React, useEffect} from "react";
 import { HeadingFormH1Com, HeadingH2Com } from "../../components/heading";
 import {
   BsFillPersonVcardFill,
@@ -11,8 +11,19 @@ import { Link } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import Stack from "@mui/material/Stack";
+import {useDispatch} from 'react-redux';
+import { fetchBlogStart } from "../../store/blog/action";
 
 const BlogSelectPage = () => {
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(fetchBlogStart(0,10))
+  },[dispatch])
+
+  const handleChange = async (event, page) => {
+    dispatch(fetchBlogStart(page-1,10))
+  };
   return (
     <>
       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">

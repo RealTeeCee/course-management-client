@@ -66,7 +66,7 @@ const LoginPage = () => {
         navigate("/");
       }, 1000);
     }
-
+ 
     // If Login Wrong, remove loading
     setTimeout(() => {
       setIsLoading(false);

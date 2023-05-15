@@ -50,5 +50,37 @@ export const blog = [
     author: "Beau Carnes",
   },
 
+  {
+    id: 6,
+    title:
+      "WordPress and Elementor Tutorial – How to Easily Create a Blog or Website",
+    desc: "WordPress is one of the most popular–and easiest–ways to create a website or blog.",
+    category: "Wordpress",
+    cover: "Carousel_9.jpg",
+    date: "November 17, 2022",
+    author: "Beau Carnes",
+  },
+
+  {
+    id: 7,
+    title:
+      "WordPress and Elementor Tutorial – How to Easily Create a Blog or Website",
+    desc: "WordPress is one of the most popular–and easiest–ways to create a website or blog.",
+    category: "Wordpress",
+    cover: "Carousel_9.jpg",
+    date: "November 17, 2022",
+    author: "Beau Carnes",
+  },
+
+  {
+    id: 8,
+    title:
+      "WordPress and Elementor Tutorial – How to Easily Create a Blog or Website",
+    desc: "WordPress is one of the most popular–and easiest–ways to create a website or blog.",
+    category: "Wordpress",
+    cover: "Carousel_9.jpg",
+    date: "November 17, 2022",
+    author: "Beau Carnes",
+  },
 
 ];
