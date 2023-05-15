@@ -1,4 +1,6 @@
+import { Pagination } from "antd";
 import React, { useState } from "react";
+import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
@@ -11,6 +13,8 @@ import {
   IconLearnCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
+import usePagination from "../../hooks/usePagination";
+import { CourseGridMod, CourseItemMod } from "../../modules/course";
 
 const sessionItems = [
   {
@@ -57,6 +61,9 @@ const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   // const [openKeys, setOpenKeys] = useState(["1"]);
   const [openKeys, setOpenKeys] = useState(String(sessionItems[0].id));
+  const relatedCourseLimitPage = 4;
+  const { startOffSet, endOffSet, currentPage, handleChangePage } =
+    usePagination(1, relatedCourseLimitPage);
 
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
@@ -219,6 +226,28 @@ const CourseDetailPage = () => {
             </div>
           </div>
         </div>
+        <GapYCom></GapYCom>
+        {/* Free Course */}
+        <HeadingH2Com className="text-tw-primary" number={23}>
+          Related Course
+        </HeadingH2Com>
+        <CourseGridMod>
+          {Array(23)
+            .fill(0)
+            .map((item, index) => {
+              if (index >= startOffSet && index < endOffSet) {
+                return <CourseItemMod key={v4()}></CourseItemMod>;
+              }
+              return null;
+            })}
+        </CourseGridMod>
+        <Pagination
+          current={currentPage}
+          defaultPageSize={relatedCourseLimitPage}
+          total={23}
+          onChange={handleChangePage}
+          className="mt-[1rem] text-end"
+        />
       </div>
     </>
   );
