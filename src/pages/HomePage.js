@@ -10,7 +10,7 @@ import GapYCom from "../components/common/GapYCom";
 const HomePage = () => {
   return (
     <>
-      <div className="h-[200vh] relative ">
+      <div className="h-[200vh] relative">
         <Swiper
           // slidesPerView={3}
           slidesPerView={"auto"}
@@ -59,8 +59,7 @@ const HomePage = () => {
         </Swiper>
       </div>
 
-      <div className="relative z-10 -mt-[160vh] min-h-screen bg-tw-light">
-        <GapYCom></GapYCom>
+      <div className="relative z-10 -mt-[160vh] pt-3 min-h-screen bg-tw-light">
         {/* Category  */}
         <HeadingH2Com className="text-tw-primary" number={4}>
           Category

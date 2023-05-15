@@ -87,7 +87,7 @@ const CourseDetailPage = () => {
       </div>
       <div className="course-detail-body">
         <div className="row">
-          <div className="col-sm-7">
+          <div className="col-sm-7 relative">
             <div className="course-detail-header">
               <HeadingH1Com className="course-detail-title !mb-3">
                 Become Master PHP
@@ -152,64 +152,66 @@ const CourseDetailPage = () => {
             </div>
           </div>
           <div className="col-sm-5">
-            <div className="course-detail-image h-60">
-              <ImageCom
-                srcSet="https://media.istockphoto.com/id/1477080857/photo/online-course-learn-to-code-sign-with-headset-microphone-and-coffee.jpg?b=1&s=170667a&w=0&k=20&c=DLFOezLOyv0MMFqNjYO1Li4Yvqt5qixce_LU1naZXV0="
-                alt="Default Course Detail Thumb"
-              ></ImageCom>
-            </div>
-            <GapYCom></GapYCom>
-            <div className="text-center mx-auto">
-              {false ? (
-                <HeadingH2Com className="text-tw-light-pink !text-3xl">
-                  Free Course
-                </HeadingH2Com>
-              ) : (
-                <HeadingH2Com className="!text-3xl">
-                  Buy only <span className="text-tw-light-pink">$300</span>
-                </HeadingH2Com>
-              )}
-              <ButtonCom
-                backgroundColor="gradient"
-                className="rounded transition-all duration-300 hover:bg-gradient-to-l"
-              >
-                Enrolling Now
-              </ButtonCom>
+            <div className="sticky top-0">
+              <div className="course-detail-image h-60">
+                <ImageCom
+                  srcSet="https://media.istockphoto.com/id/1477080857/photo/online-course-learn-to-code-sign-with-headset-microphone-and-coffee.jpg?b=1&s=170667a&w=0&k=20&c=DLFOezLOyv0MMFqNjYO1Li4Yvqt5qixce_LU1naZXV0="
+                  alt="Default Course Detail Thumb"
+                ></ImageCom>
+              </div>
               <GapYCom></GapYCom>
-              <div className="pl-[10.5rem] mx-auto text-start text-sm">
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex items-center gap-x-2">
-                    {false ? (
-                      <IconCircleCom className="text-tw-danger bg-tw-danger rounded-full"></IconCircleCom>
-                    ) : (
-                      <IconCircleCom className="text-tw-success bg-tw-success rounded-full"></IconCircleCom>
-                    )}
-                    <div className="flex-1">Basic Course</div>
-                  </div>
-                  <div className="flex items-center gap-x-2">
-                    <IconLearnCom className="text-tw-info"></IconLearnCom>
-                    <div className="flex-1">
-                      Total: <span className="font-medium">4</span> courses
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-x-2">
-                    <IconClockCom className="text-tw-primary"></IconClockCom>
-                    <div className="flex-1">
-                      Time learning:{" "}
-                      <span className="font-medium">15 minute</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-x-2">
-                    <IconImportantCom className="text-tw-danger"></IconImportantCom>
-                    <div className="flex-1">
-                      Requirement:{" "}
-                      {true ? (
-                        <span className="font-medium">
-                          Know basic programming
-                        </span>
+              <div className="text-center mx-auto">
+                {false ? (
+                  <HeadingH2Com className="text-tw-light-pink !text-3xl">
+                    Free Course
+                  </HeadingH2Com>
+                ) : (
+                  <HeadingH2Com className="!text-3xl">
+                    Buy only <span className="text-tw-light-pink">$300</span>
+                  </HeadingH2Com>
+                )}
+                <ButtonCom
+                  backgroundColor="gradient"
+                  className="rounded transition-all duration-300 hover:bg-gradient-to-l"
+                >
+                  Enrolling Now
+                </ButtonCom>
+                <GapYCom></GapYCom>
+                <div className="pl-[10.5rem] mx-auto text-start text-sm">
+                  <div className="flex flex-col gap-y-2">
+                    <div className="flex items-center gap-x-2">
+                      {false ? (
+                        <IconCircleCom className="text-tw-danger bg-tw-danger rounded-full"></IconCircleCom>
                       ) : (
-                        <span className="font-medium">No</span>
+                        <IconCircleCom className="text-tw-success bg-tw-success rounded-full"></IconCircleCom>
                       )}
+                      <div className="flex-1">Basic Course</div>
+                    </div>
+                    <div className="flex items-center gap-x-2">
+                      <IconLearnCom className="text-tw-info"></IconLearnCom>
+                      <div className="flex-1">
+                        Total: <span className="font-medium">4</span> courses
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-x-2">
+                      <IconClockCom className="text-tw-primary"></IconClockCom>
+                      <div className="flex-1">
+                        Time learning:{" "}
+                        <span className="font-medium">15 minute</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-x-2">
+                      <IconImportantCom className="text-tw-danger"></IconImportantCom>
+                      <div className="flex-1">
+                        Requirement:{" "}
+                        {true ? (
+                          <span className="font-medium">
+                            Know basic programming
+                          </span>
+                        ) : (
+                          <span className="font-medium">No</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

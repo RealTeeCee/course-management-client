@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import GapYCom from "../components/common/GapYCom";
 import OverplayCom from "../components/common/OverplayCom";
 import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
 
@@ -13,6 +14,10 @@ const LayoutHome = () => {
         <div className="flex-1">
           <Outlet></Outlet>
         </div>
+      </div>
+      <GapYCom></GapYCom>
+      <div className="bg-black text-white flex justify-center items-center text-4xl h-[30vh] z-10 relative">
+        Footer
       </div>
     </div>
   );
