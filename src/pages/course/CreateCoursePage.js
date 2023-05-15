@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
@@ -15,6 +15,8 @@ import { TextAreaCom } from "../../components/textarea";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../components/common/GapYCom";
+import axios from "axios";
+import { toast } from "react-toastify";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -73,6 +75,9 @@ const CreateCoursePage = () => {
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+  /********* API Area ********* */
+  const [tag, setTag] = useState([]);
+  /********* END API Area ********* */
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -90,6 +95,19 @@ const CreateCoursePage = () => {
     }, 1000);
   };
 
+  /********* Fetch API Area ********* */
+  useEffect(() => {
+    async function fetchTags() {
+      try {
+        // const res = await axios.get(``);
+        // setTag(res.data);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
+  }, []);
+  /********* END Fetch API Area ********* */
+
   /********* Library Function Area ********* */
   const handleChangeCategory = (value) => {
     setValue("category_id", value);
@@ -98,6 +116,7 @@ const CreateCoursePage = () => {
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
+    console.log(itemsArrs);
     if (isError) {
       setIsError(false);
       setMsg("Successfully");
