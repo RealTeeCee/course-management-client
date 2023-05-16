@@ -10,6 +10,7 @@ import FormGroupCom from "../../components/common/FormGroupCom";
 import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
+import { MESSAGE_EMAIL, MESSAGE_REQUIRED } from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { loginStart } from "../../store/login/action";
 import { selectLoginIsSuccess } from "../../store/login/selector";
@@ -18,15 +19,11 @@ import OAuth2Page from "./OAuth2Page";
 const schemaValidation = yup.object().shape({
   email: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
-    .email(process.env.REACT_APP_MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .email(MESSAGE_EMAIL ?? "Invalid email"),
   password: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+    .required(MESSAGE_REQUIRED ?? "This fields is required"),
 });
 
 const LoginPage = () => {

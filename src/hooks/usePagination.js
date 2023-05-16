@@ -1,13 +1,13 @@
 import { useState } from "react";
+import { LIMIT_PAGE } from "../constants/config";
 
 export default function usePagination(
   initialPage = 1,
-  defaultPageSize = process.env.REACT_APP_LIMIT_PAGE
+  defaultPageSize = LIMIT_PAGE
 ) {
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  const startOffSet =
-    (currentPage - 1) * parseInt(defaultPageSize);
+  const startOffSet = (currentPage - 1) * parseInt(defaultPageSize);
   const endOffSet = startOffSet + parseInt(defaultPageSize);
 
   const handleChangePage = (page) => {

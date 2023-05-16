@@ -12,13 +12,10 @@ import { LabelCom } from "../components/label";
 import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
 import * as yup from "yup";
 import { InputCom } from "../components/input";
+import { MESSAGE_REQUIRED } from "../constants/config";
 
 const schemaValidation = yup.object().shape({
-  name: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
 });
 
 const LayoutHome = () => {

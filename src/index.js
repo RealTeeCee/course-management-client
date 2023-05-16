@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
 
 import "./assets/css/font-awesome.css";
 import "./assets/css/vendors/icofont.css";
@@ -23,6 +24,7 @@ import "./assets/css/responsive.css";
 
 import "./index.scss";
 import "swiper/css";
+import { ToastContainer } from "react-toastify";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -32,6 +34,7 @@ root.render(
     <BrowserRouter>
       <PersistGate loading={null} persistor={persistor}>
         <App />
+        <ToastContainer />
       </PersistGate>
     </BrowserRouter>
   </Provider>

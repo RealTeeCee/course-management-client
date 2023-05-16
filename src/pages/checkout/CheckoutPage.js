@@ -16,29 +16,26 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import DividerCom from "../../components/common/DividerCom";
+import {
+  BASE_API_URL,
+  MESSAGE_EMAIL,
+  MESSAGE_REQUIRED,
+} from "../../constants/config";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+    .required(MESSAGE_REQUIRED ?? "This fields is required"),
   last_name: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
-  phone: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+    .required(MESSAGE_REQUIRED ?? "This fields is required"),
+  phone: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
   email: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
-    .email(process.env.REACT_APP_MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .email(MESSAGE_EMAIL ?? "Invalid email"),
 });
 
 const CheckoutPage = () => {
@@ -55,15 +52,18 @@ const CheckoutPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmitForm = (values) => {
-    const { name } = values;
-    console.log(values);
-    setIsLoading(!isLoading);
-
-    // After done, remove loading
-    setTimeout(() => {
+  const handleSubmitForm = async (values) => {
+    try {
+      setIsLoading(!isLoading);
+      const res = await axios.post(`${BASE_API_URL}/checkout`, {
+        ...values,
+      });
+      toast.success(`${res.message}`);
       setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      toast.error(`${error.message}`);
+      setIsLoading(false);
+    }
   };
 
   return (

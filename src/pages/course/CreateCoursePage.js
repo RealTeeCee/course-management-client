@@ -17,24 +17,15 @@ import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../components/common/GapYCom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BASE_API_URL, MESSAGE_REQUIRED } from "../../constants/config";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
   category_id: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
-  tags: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+    .required(MESSAGE_REQUIRED ?? "This fields is required"),
+  tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
 });
 
 // Label is category name , value is category_id
@@ -80,31 +71,36 @@ const CreateCoursePage = () => {
   /********* END API Area ********* */
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [msg, setMsg] = useState("Successfully");
   const [description, setDescription] = useState("");
 
-  const handleSubmitForm = (values) => {
-    const { name, category_id } = values;
-    console.log(values);
-    setIsLoading(!isLoading);
+  const resetValues = () => {};
 
-    // After done, remove loading
-    setTimeout(() => {
+  const handleSubmitForm = async (values) => {
+    console.log(values);
+    try {
+      setIsLoading(!isLoading);
+      const res = await axios.post(`${BASE_API_URL}/admin/course/create`, {
+        ...values,
+      });
+      toast.success(`${res.message}`);
       setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      toast.error(`${error.message}`);
+      setIsLoading(false);
+    }
   };
 
   /********* Fetch API Area ********* */
   useEffect(() => {
-    async function fetchTags() {
+    const getTags = async () => {
       try {
-        // const res = await axios.get(``);
-        // setTag(res.data);
+        const res = await axios.get(``);
+        setTag(res.data);
       } catch (error) {
         toast.error(error.message);
       }
-    }
+    };
+    // getTags();
   }, []);
   /********* END Fetch API Area ********* */
 
@@ -117,18 +113,12 @@ const CreateCoursePage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
     console.log(itemsArrs);
-    if (isError) {
-      setIsError(false);
-      setMsg("Successfully");
-    }
+
     const regex = /[,!@#$%^&*()+=\[\]\\';./{}|":<>?~_]/;
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
-      setIsError(true);
-      setMsg(
-        "Dont accept special character!But you can using - for split string"
-      );
+      toast.error("Invalid tag! Only accept: - for special character");
       setValue("tags", "");
       setError("tags", { message: "Invalid tags fields" });
       return;
@@ -139,7 +129,7 @@ const CreateCoursePage = () => {
       item.replace(/\s+/g, " ").replace(/-+/g, "-")
     );
     const itemsString = strReplace.join(",");
-    setIsError(false);
+
     setValue("tags", itemsString);
     setError("tags", { message: "" });
   };
@@ -149,7 +139,7 @@ const CreateCoursePage = () => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
-    setIsError(false);
+
     setValue("archivements", itemsString);
     setError("archivements", { message: "" });
   };
@@ -173,7 +163,7 @@ const CreateCoursePage = () => {
 
   return (
     <>
-      {isError && <AlertAntCom type="error" msg={msg}></AlertAntCom>}
+      {/* {isError && <AlertAntCom type={type} msg={msg}></AlertAntCom>} */}
       <HeadingH1Com>Create Courses</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
@@ -341,10 +331,19 @@ const CreateCoursePage = () => {
                       modules={modules}
                       theme="snow"
                       value={description}
-                      onChange={setDescription}
+                      onChange={(description) => {
+                        setValue("description", description);
+                        setDescription(description);
+                      }}
                       placeholder="Describe your course ..."
                       className="h-36"
                     ></ReactQuill>
+                    {/* <TextAreaCom
+                      control={control}
+                      name="description"
+                      register={register}
+                      // className="hidden"
+                    ></TextAreaCom> */}
                   </div>
                 </div>
               </div>
