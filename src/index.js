@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 import "./assets/css/font-awesome.css";
 import "./assets/css/vendors/icofont.css";
@@ -34,7 +34,7 @@ root.render(
     <BrowserRouter>
       <PersistGate loading={null} persistor={persistor}>
         <App />
-        <ToastContainer />
+        <ToastContainer bodyClassName="font-tw-primary" />
       </PersistGate>
     </BrowserRouter>
   </Provider>

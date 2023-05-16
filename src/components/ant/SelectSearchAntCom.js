@@ -32,6 +32,7 @@ import ErrorCom from "../common/ErrorCom";
 //   },
 // ];
 
+// Select with search field
 const SelectSearchAntCom = (props) => {
   const {
     listItems,
@@ -39,12 +40,14 @@ const SelectSearchAntCom = (props) => {
     status = "",
     errorMsg = "",
     className = "",
+    selectedValue = null,
     ...rest
   } = props;
 
   return (
     <>
       <Select
+        value={selectedValue}
         status={status}
         size="large"
         showSearch
