@@ -15,9 +15,10 @@ import { TextAreaCom } from "../../components/textarea";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../components/common/GapYCom";
-import axios from "axios";
+import axiosInstance from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { BASE_API_URL, MESSAGE_REQUIRED } from "../../constants/config";
+import { forEach } from "lodash";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -77,14 +78,48 @@ const CreateCoursePage = () => {
 
   const handleSubmitForm = async (values) => {
     console.log(values);
+    const {
+      archivements,
+      category_id,
+      description,
+      name,
+      price,
+      sale_price,
+      tags,
+      image,
+    } = values;
+
     try {
       setIsLoading(!isLoading);
-      const res = await axios.post(`${BASE_API_URL}/admin/course/create`, {
-        ...values,
-      });
-      toast.success(`${res.message}`);
+      let formData = new FormData();
+      formData.append(
+        "courseJson",
+        JSON.stringify({
+          archivements,
+          category_id,
+          description,
+          name,
+          price,
+          sale_price,
+          tags,
+        })
+      );
+
+      formData.append("file", image[0]);
+      console.log(formData);
+      const res = await axiosInstance.post(
+        `${BASE_API_URL}/admin/course/create`,
+        formData,
+        {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        }
+      );
+      toast.success(`${res.data.message}`);
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
       toast.error(`${error.message}`);
       setIsLoading(false);
     }
@@ -94,8 +129,8 @@ const CreateCoursePage = () => {
   useEffect(() => {
     const getTags = async () => {
       try {
-        const res = await axios.get(``);
-        setTag(res.data);
+        //const res = await axios.get(``);
+        // setTag(res.data);
       } catch (error) {
         toast.error(error.message);
       }
