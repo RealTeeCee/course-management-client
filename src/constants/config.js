@@ -8,11 +8,17 @@ export const LIMIT_PAGE = 12;
 
 export const MESSAGE_GENERAL = "Something was wrong!";
 export const MESSAGE_REQUIRED = "This field is required";
+export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL = "Invalid email! Correct: example@fpt.com";
 export const MESSAGE_UPLOAD_IMAGE = "Upload image error!";
 export const MESSAGE_NUMBER_POSITIVE = "This field must be greater than or equal to 0";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
+export const MESSAGE_REGISTER_FAILED = "Register new account failed !";
+export const MESSAGE_LOGIN_FAILED = "Login failed !";
+
+export const MESSAGE_REGISTER_SUCCESS = "You have registered new account successfully !";
+export const MESSAGE_LOGIN_SUCCESS = "You have logged successfully !";
 
 export const STATUS_SUCCESS = 200;
 export const STATUS_CREATED = 201;

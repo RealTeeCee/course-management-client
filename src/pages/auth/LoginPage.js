@@ -1,7 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+//*** Nguyễn Code***
+// import { useDispatch, useSelector } from "react-redux";
+//***END Nguyễn Code***
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
@@ -12,8 +15,10 @@ import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import { MESSAGE_EMAIL, MESSAGE_REQUIRED } from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { loginStart } from "../../store/login/action";
-import { selectLoginIsSuccess } from "../../store/login/selector";
+import { onLogin } from "../../store/auth/authSlice";
+//*** Nguyễn Code***
+// import { selectLoginIsSuccess } from "../../store/login/selector";
+//*** END Nguyễn Code***
 import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
@@ -27,11 +32,14 @@ const schemaValidation = yup.object().shape({
 });
 
 const LoginPage = () => {
-  const isLoginSuccess = useSelector(selectLoginIsSuccess);
   const navigate = useNavigate();
-  useEffect(() => {
-    isLoginSuccess && navigate("/");
-  }, [isLoginSuccess, navigate]);
+  //*** Nguyễn Code***
+  // const isLoginSuccess = useSelector(selectLoginIsSuccess);
+
+  // useEffect(() => {
+  //   isLoginSuccess && navigate("/");
+  // }, [isLoginSuccess, navigate]);
+  //*** END Nguyễn Code***
 
   const {
     control,
@@ -52,21 +60,12 @@ const LoginPage = () => {
     useClickToggleBoolean();
 
   const handleLogin = (values) => {
-    // const { email, password } = values;
-    // setIsLoading(!isLoading);
-    // // If Login correct
-    // if (email === "admin@gmail.com" && password === "123456") {
-    //   setTimeout(() => {
-    //     setIsLoading(false);
-    //     navigate("/");
-    //   }, 1000);
-    // }
+    setIsLoading(!isLoading);
+    dispatch(onLogin(values));
 
-    // // If Login Wrong, remove loading
-    // setTimeout(() => {
-    //   setIsLoading(false);
-    // }, 1000);
-    dispatch(loginStart(values));
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   };
 
   return (

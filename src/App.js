@@ -1,13 +1,10 @@
-import React, { lazy, Suspense, useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import LoaderCom from "./components/common/LoaderCom.js";
-import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { useDispatch, useSelector } from "react-redux";
-import { getCurrentUser } from "./store/user/action.js";
-import { selectLoginIsSuccess } from "./store/login/selector.js";
+import React, { lazy, Suspense } from "react";
 import Modal from "react-modal";
+import { Route, Routes } from "react-router-dom";
+import LoaderCom from "./components/common/LoaderCom.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
+import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -37,20 +34,6 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
-  const dispatch = useDispatch();
-  const selectLoginSuccess = useSelector(selectLoginIsSuccess);
-
-  // useEffect(() => {
-  //   //If cannot refresh token => nagivate to /login
-  //   console.log("selectLoginSuccess", selectLoginSuccess);
-  //   if (!selectLoginSuccess) {
-  //     navigate("/login");
-  //   }
-  // }, [navigate, selectLoginSuccess]);
-
-  useEffect(() => {
-    dispatch(getCurrentUser());
-  }, [dispatch]);
 
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
@@ -101,13 +84,7 @@ function App() {
           <Route
             path="/login"
             render
-            element={
-              selectLoginSuccess ? (
-                <Navigate to="/"></Navigate>
-              ) : (
-                <LoginPage></LoginPage>
-              )
-            }
+            element={<LoginPage></LoginPage>}
           ></Route>
         </Route>
         {/* ********* END Authentication ********* */}

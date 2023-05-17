@@ -23,6 +23,8 @@ import {
   MESSAGE_EMAIL,
   MESSAGE_REQUIRED,
 } from "../../constants/config";
+import { useDispatch } from "react-redux";
+import { onRegister } from "../../store/auth/authSlice";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -53,24 +55,27 @@ const RegisterPage = () => {
   const {
     control,
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  const handleRegister = (values) => {
+  const handleRegister = async (values) => {
     console.log(values);
     setIsLoading(!isLoading);
-
+    dispatch(onRegister(values));
     setTimeout(() => {
+      reset();
       setIsLoading(false);
-    }, 1000);
+    }, 2000);
   };
 
   console.log(errors);

@@ -17,6 +17,7 @@ import {
   IMG_BB_API,
   MESSAGE_GENERAL,
   MESSAGE_INVALID,
+  MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_REQUIRED,
@@ -26,11 +27,11 @@ import axiosInstance from "../../api/axiosInstance";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  // name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  // name: yup.string().required(MESSAGE_REQUIRED),
   // category_id: yup
   //   .string()
-  //   .required(MESSAGE_REQUIRED ?? "This fields is required"),
-  // tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  //   .required(MESSAGE_REQUIRED),
+  // tags: yup.string().required(MESSAGE_REQUIRED),
   // price: yup
   //   .number()
   //   .nullable()
@@ -113,9 +114,17 @@ const CreateCoursePage = () => {
       description,
     } = values;
 
-    if (sale_price > price) {
-      const salePriceInput = document.querySelector('input[name="sale_price"]');
-      if (salePriceInput) salePriceInput.focus();
+    if (image === "" || image[0] === undefined) {
+      const imageSelector = document.querySelector('input[name="image"]');
+      if (imageSelector) imageSelector.focus();
+      toast.error(MESSAGE_GENERAL);
+      setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
+      setValue("image", null);
+    } else if (sale_price > price) {
+      const salePriceSelector = document.querySelector(
+        'input[name="sale_price"]'
+      );
+      if (salePriceSelector) salePriceSelector.focus();
       toast.error(MESSAGE_GENERAL);
       setError("sale_price", { message: "Sale Price cannot > Price" });
     } else {
@@ -213,16 +222,6 @@ const CreateCoursePage = () => {
     setArchivementSelected(itemsArrs);
   };
 
-  const handleChangeImage = (e) => {
-    console.log(e);
-    const file = e.target.files;
-    if (!file) return;
-    // const fd = new FormData();
-    // fd.append("image", file[0]);
-    console.log(e);
-    setValue("image", file);
-  };
-
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -297,7 +296,6 @@ const CreateCoursePage = () => {
                       name="image"
                       register={register}
                       placeholder="Upload image"
-                      // onChange={handleChangeImage}
                       errorMsg={errors.image?.message}
                     ></InputCom>
                     {/* <ImageUploadCom
