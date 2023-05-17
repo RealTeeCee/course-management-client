@@ -6,16 +6,11 @@ import { LabelCom } from "../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../components/button";
-import {
-  AlertAntCom,
-  SelectSearchAntCom,
-  SelectTagAntCom,
-} from "../../components/ant";
-import { TextAreaCom } from "../../components/textarea";
+import { SelectSearchAntCom, SelectTagAntCom } from "../../components/ant";
+import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../components/common/GapYCom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import {
   BASE_API_URL,
@@ -27,24 +22,25 @@ import {
   MESSAGE_REQUIRED,
 } from "../../constants/config";
 import ImageUploadCom from "../../components/image/ImageUploadCom";
+import axiosInstance from "../../api/axiosInstance";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
-  category_id: yup
-    .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
-  tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
-  price: yup
-    .number()
-    .nullable()
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
-  sale_price: yup
-    .number()
-    .nullable()
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
+  // name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  // category_id: yup
+  //   .string()
+  //   .required(MESSAGE_REQUIRED ?? "This fields is required"),
+  // tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  // price: yup
+  //   .number()
+  //   .nullable()
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
+  // sale_price: yup
+  //   .number()
+  //   .nullable()
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -91,14 +87,12 @@ const CreateCoursePage = () => {
   /********* END API Area ********* */
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isClear, setIsClear] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
   const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
 
   const resetValues = () => {
-    setIsClear(!isClear);
     setCategorySelected(null);
     setTagsSelected([]);
     setArchivementSelected([]);
@@ -108,7 +102,18 @@ const CreateCoursePage = () => {
 
   const handleSubmitForm = async (values) => {
     console.log(values);
-    if (values.sale_price > values.price) {
+    const {
+      name,
+      category_id,
+      price,
+      sale_price,
+      image,
+      tags,
+      archivements,
+      description,
+    } = values;
+
+    if (sale_price > price) {
       const salePriceInput = document.querySelector('input[name="sale_price"]');
       if (salePriceInput) salePriceInput.focus();
       toast.error(MESSAGE_GENERAL);
@@ -117,9 +122,31 @@ const CreateCoursePage = () => {
       resetValues();
       try {
         setIsLoading(!isLoading);
-        const res = await axios.post(`${BASE_API_URL}/admin/course/create`, {
-          ...values,
-        });
+        let fd = new FormData();
+        fd.append(
+          "courseJson",
+          JSON.stringify({
+            name,
+            category_id,
+            price,
+            sale_price,
+            tags,
+            archivements,
+            description,
+          })
+        );
+
+        fd.append("file", image[0]);
+        console.log(fd);
+        const res = await axiosInstance.post(
+          `${BASE_API_URL}/admin/course/create`,
+          fd,
+          {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          }
+        );
         toast.success(`${res.message}`);
         setIsLoading(false);
         reset();
@@ -154,7 +181,7 @@ const CreateCoursePage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
     console.log(itemsArrs);
-    const regex = /[,!@#$%^&*()+=\[\]\\';./{}|":<>?~_]/;
+    const regex = /[,!@#$%^&*()+=[\]\\';./{}|":<>?~_]/;
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
@@ -186,6 +213,16 @@ const CreateCoursePage = () => {
     setArchivementSelected(itemsArrs);
   };
 
+  const handleChangeImage = (e) => {
+    console.log(e);
+    const file = e.target.files;
+    if (!file) return;
+    // const fd = new FormData();
+    // fd.append("image", file[0]);
+    console.log(e);
+    setValue("image", file);
+  };
+
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -201,7 +238,7 @@ const CreateCoursePage = () => {
           const fd = new FormData();
           fd.append("image", file);
           try {
-            const res = await axios({
+            const res = await axiosInstance({
               method: "POST",
               url: IMG_BB_API,
               data: fd,
@@ -231,6 +268,7 @@ const CreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
               id="form-create"
+              encType="multipart/form-data"
             >
               {/* <div className="card-header">
                 <h5>Form Create Course</h5>
@@ -253,23 +291,23 @@ const CreateCoursePage = () => {
                   </div>
                   <div className="col-sm-6">
                     <LabelCom htmlFor="image">Image</LabelCom>
-                    {/* <InputCom
+                    <InputCom
                       type="file"
                       control={control}
                       name="image"
                       register={register}
-                      placeholder="Input Image"
-                      onChange={handleChangeImage}
+                      placeholder="Upload image"
+                      // onChange={handleChangeImage}
                       errorMsg={errors.image?.message}
-                    ></InputCom> */}
-                    <ImageUploadCom
+                    ></InputCom>
+                    {/* <ImageUploadCom
                       // control={control}
                       // register={register}
                       name="image"
                       placeholder="Upload Image"
                       errorMsg={errors.image?.message}
                       onSetValue={setValue}
-                    ></ImageUploadCom>
+                    ></ImageUploadCom> */}
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
