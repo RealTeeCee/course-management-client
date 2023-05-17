@@ -17,43 +17,35 @@ import {
   GOOGLE_AUTH_URL,
 } from "../../api/url";
 import OAuth2Page from "./OAuth2Page";
+import {
+  MAX_LENGTH_NAME,
+  MAX_LENGTH_VARCHAR,
+  MESSAGE_EMAIL,
+  MESSAGE_REQUIRED,
+} from "../../constants/config";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
     .min(3, "Minimum is 3 letters")
-    .max(
-      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
-      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
-    ),
+    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
   last_name: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
     .min(3, "Minimum is 3 letters")
-    .max(
-      process.env.REACT_APP_MAX_LENGTH_NAME ?? 100,
-      `Maximum ${process.env.REACT_APP_MAX_LENGTH_NAME ?? 100} letters`
-    ),
+    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
   email: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
-    .email(process.env.REACT_APP_MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .email(MESSAGE_EMAIL ?? "Invalid email"),
   password: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    )
+    .required(MESSAGE_REQUIRED ?? "This fields is required")
     .min(8, "Minimum is 8 letters")
     .max(
-      process.env.REACT_APP_MAX_LENGTH_VARCHAR ?? 255,
-      `Maximum ${process.env.REACT_APP_MAX_LENGTH_VARCHAR ?? 255} letters`
+      MAX_LENGTH_VARCHAR ?? 255,
+      `Maximum ${MAX_LENGTH_VARCHAR ?? 255} letters`
     ),
 });
 
@@ -89,7 +81,9 @@ const RegisterPage = () => {
         <p>Enter your personal details to create account</p> */}
         <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
-          <LabelCom htmlFor="first_name" isRequired>Your Name</LabelCom>
+          <LabelCom htmlFor="first_name" isRequired>
+            Your Name
+          </LabelCom>
           <div className="row g-2">
             <div className="col-6">
               <InputCom
@@ -112,7 +106,9 @@ const RegisterPage = () => {
           </div>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="email" isRequired>Email Address</LabelCom>
+          <LabelCom htmlFor="email" isRequired>
+            Email Address
+          </LabelCom>
           <InputCom
             type="text"
             control={control}
@@ -123,7 +119,9 @@ const RegisterPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <LabelCom htmlFor="password" isRequired>Password</LabelCom>
+          <LabelCom htmlFor="password" isRequired>
+            Password
+          </LabelCom>
           <InputCom
             type="password"
             control={control}

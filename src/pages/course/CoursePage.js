@@ -2,6 +2,7 @@ import { Pagination } from "antd";
 import React from "react";
 import { v4 } from "uuid";
 import { HeadingH1Com } from "../../components/heading";
+import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 import { formatNumber } from "../../utils/helper";
@@ -18,14 +19,19 @@ const CoursePage = () => {
           .fill(0)
           .map((item, index) => {
             if (index >= startOffSet && index < endOffSet) {
-              return <CourseItemMod url={`/courses/learn-php-${++index}`} key={v4()}></CourseItemMod>;
+              return (
+                <CourseItemMod
+                  url={`/courses/learn-php-${++index}`}
+                  key={v4()}
+                ></CourseItemMod>
+              );
             }
             return null;
           })}
       </CourseGridMod>
       <Pagination
         current={currentPage}
-        defaultPageSize={process.env.REACT_APP_LIMIT_PAGE}
+        defaultPageSize={LIMIT_PAGE}
         total={63}
         onChange={handleChangePage}
         className="mt-[1rem] text-center"

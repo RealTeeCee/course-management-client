@@ -1,6 +1,6 @@
 import React from "react";
 
-const IconRemoveCom = ({ className }) => {
+const IconImportantCom = ({ className = "" }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,12 +12,13 @@ const IconRemoveCom = ({ className }) => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`feather feather-x ${className}`}
+      className={`feather feather-alert-circle ${className}`}
     >
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12" y2="16"></line>
     </svg>
   );
 };
 
-export default IconRemoveCom;
+export default IconImportantCom;

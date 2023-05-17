@@ -1,6 +1,6 @@
 import React from "react";
 
-const IconRemoveCom = ({ className }) => {
+const IconCheckCom = ({ className = ""}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,12 +12,11 @@ const IconRemoveCom = ({ className }) => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`feather feather-x ${className}`}
+      className={`feather feather-check ${className}`}
     >
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
+      <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
   );
 };
 
-export default IconRemoveCom;
+export default IconCheckCom;

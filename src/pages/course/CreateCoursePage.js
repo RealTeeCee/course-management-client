@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
@@ -15,24 +15,36 @@ import { TextAreaCom } from "../../components/textarea";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../components/common/GapYCom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import {
+  BASE_API_URL,
+  IMG_BB_API,
+  MESSAGE_GENERAL,
+  MESSAGE_INVALID,
+  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_REQUIRED,
+} from "../../constants/config";
+import ImageUploadCom from "../../components/image/ImageUploadCom";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
   category_id: yup
     .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
-  tags: yup
-    .string()
-    .required(
-      process.env.REACT_APP_MESSAGE_REQUIRED ?? "This fields is required"
-    ),
+    .required(MESSAGE_REQUIRED ?? "This fields is required"),
+  tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  price: yup
+    .number()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
+  sale_price: yup
+    .number()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -69,49 +81,86 @@ const CreateCoursePage = () => {
     handleSubmit,
     setValue,
     setError,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+  /********* API Area ********* */
+  // const [tagItems, setTagItems] = useState([]);
+  /********* END API Area ********* */
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [msg, setMsg] = useState("Successfully");
+  const [isClear, setIsClear] = useState(false);
+  const [categorySelected, setCategorySelected] = useState(null);
+  const [tagsSelected, setTagsSelected] = useState([]);
+  const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
 
-  const handleSubmitForm = (values) => {
-    const { name, category_id } = values;
-    console.log(values);
-    setIsLoading(!isLoading);
-
-    // After done, remove loading
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+  const resetValues = () => {
+    setIsClear(!isClear);
+    setCategorySelected(null);
+    setTagsSelected([]);
+    setArchivementSelected([]);
+    setDescription("");
+    reset();
   };
+
+  const handleSubmitForm = async (values) => {
+    console.log(values);
+    if (values.sale_price > values.price) {
+      const salePriceInput = document.querySelector('input[name="sale_price"]');
+      if (salePriceInput) salePriceInput.focus();
+      toast.error(MESSAGE_GENERAL);
+      setError("sale_price", { message: "Sale Price cannot > Price" });
+    } else {
+      resetValues();
+      try {
+        setIsLoading(!isLoading);
+        const res = await axios.post(`${BASE_API_URL}/admin/course/create`, {
+          ...values,
+        });
+        toast.success(`${res.message}`);
+        setIsLoading(false);
+        reset();
+      } catch (error) {
+        toast.error(`${MESSAGE_GENERAL} ${error.message}`);
+        setIsLoading(false);
+      }
+    }
+  };
+
+  /********* Fetch API Area ********* */
+  useEffect(() => {
+    // const getTags = async () => {
+    //   try {
+    //     const res = await axios.get(``);
+    //     setTagItems(res.data);
+    //   } catch (error) {
+    //     toast.error(error.message);
+    //   }
+    // };
+    // getTags();
+  }, []);
+  /********* END Fetch API Area ********* */
 
   /********* Library Function Area ********* */
   const handleChangeCategory = (value) => {
     setValue("category_id", value);
     setError("category_id", { message: "" });
+    setCategorySelected(value);
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
-    if (isError) {
-      setIsError(false);
-      setMsg("Successfully");
-    }
+    console.log(itemsArrs);
     const regex = /[,!@#$%^&*()+=\[\]\\';./{}|":<>?~_]/;
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
-      setIsError(true);
-      setMsg(
-        "Dont accept special character!But you can using - for split string"
-      );
+      toast.error("Invalid tag! Only accept: - for special character");
       setValue("tags", "");
-      setError("tags", { message: "Invalid tags fields" });
+      setError("tags", { message: MESSAGE_INVALID });
       return;
     }
 
@@ -120,9 +169,10 @@ const CreateCoursePage = () => {
       item.replace(/\s+/g, " ").replace(/-+/g, "-")
     );
     const itemsString = strReplace.join(",");
-    setIsError(false);
+
     setValue("tags", itemsString);
     setError("tags", { message: "" });
+    setTagsSelected(itemsArrs);
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
@@ -130,9 +180,10 @@ const CreateCoursePage = () => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
-    setIsError(false);
+
     setValue("archivements", itemsString);
     setError("archivements", { message: "" });
+    setArchivementSelected(itemsArrs);
   };
 
   const modules = useMemo(
@@ -146,7 +197,24 @@ const CreateCoursePage = () => {
         ["link", "image"],
       ],
       imageUploader: {
-        upload: async (file) => {},
+        upload: async (file) => {
+          const fd = new FormData();
+          fd.append("image", file);
+          try {
+            const res = await axios({
+              method: "POST",
+              url: IMG_BB_API,
+              data: fd,
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+            return res.data.data.url;
+          } catch (error) {
+            toast.error(error.message);
+            return;
+          }
+        },
       },
     }),
     []
@@ -154,7 +222,7 @@ const CreateCoursePage = () => {
 
   return (
     <>
-      {isError && <AlertAntCom type="error" msg={msg}></AlertAntCom>}
+      {/* {isError && <AlertAntCom type={type} msg={msg}></AlertAntCom>} */}
       <HeadingH1Com>Create Courses</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
@@ -185,13 +253,47 @@ const CreateCoursePage = () => {
                   </div>
                   <div className="col-sm-6">
                     <LabelCom htmlFor="image">Image</LabelCom>
-                    <InputCom
+                    {/* <InputCom
                       type="file"
                       control={control}
                       name="image"
                       register={register}
                       placeholder="Input Image"
+                      onChange={handleChangeImage}
                       errorMsg={errors.image?.message}
+                    ></InputCom> */}
+                    <ImageUploadCom
+                      // control={control}
+                      // register={register}
+                      name="image"
+                      placeholder="Upload Image"
+                      errorMsg={errors.image?.message}
+                      onSetValue={setValue}
+                    ></ImageUploadCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="price">Price</LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="price"
+                      register={register}
+                      placeholder="Input Price"
+                      errorMsg={errors.price?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="sale_price">Sale Price</LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="sale_price"
+                      register={register}
+                      placeholder="Input Sale Price"
+                      errorMsg={errors.sale_price?.message}
                     ></InputCom>
                   </div>
                 </div>
@@ -203,6 +305,7 @@ const CreateCoursePage = () => {
                     </LabelCom>
                     <div>
                       <SelectSearchAntCom
+                        selectedValue={categorySelected}
                         listItems={categoryItems}
                         onChange={handleChangeCategory}
                         className="w-full py-1"
@@ -233,6 +336,7 @@ const CreateCoursePage = () => {
                     </LabelCom>
                     <SelectTagAntCom
                       listItems={tagItems}
+                      selectedValue={tagsSelected}
                       onChange={handleChangeTags}
                       placeholder="Search or Input new Tags..."
                       status={errors.tags && errors.tags.message && "error"}
@@ -255,6 +359,7 @@ const CreateCoursePage = () => {
                     </LabelCom>
                     <SelectTagAntCom
                       listItems={[]}
+                      selectedValue={archivementSelected}
                       onChange={handleChangeArchivements}
                       placeholder="Input the archivement..."
                       status={
@@ -269,31 +374,6 @@ const CreateCoursePage = () => {
                       control={control}
                       name="archivements"
                       register={register}
-                    ></InputCom>
-                  </div>
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="price">Price</LabelCom>
-                    <InputCom
-                      type="text"
-                      control={control}
-                      name="price"
-                      register={register}
-                      placeholder="Input Price"
-                      errorMsg={errors.price?.message}
-                    ></InputCom>
-                  </div>
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="sale_price">Sale Price</LabelCom>
-                    <InputCom
-                      type="text"
-                      control={control}
-                      name="sale_price"
-                      register={register}
-                      placeholder="Input Sale Price"
-                      errorMsg={errors.sale_price?.message}
                     ></InputCom>
                   </div>
                 </div>
@@ -322,10 +402,19 @@ const CreateCoursePage = () => {
                       modules={modules}
                       theme="snow"
                       value={description}
-                      onChange={setDescription}
+                      onChange={(description) => {
+                        setValue("description", description);
+                        setDescription(description);
+                      }}
                       placeholder="Describe your course ..."
                       className="h-36"
                     ></ReactQuill>
+                    {/* <TextAreaCom
+                      control={control}
+                      name="description"
+                      register={register}
+                      // className="hidden"
+                    ></TextAreaCom> */}
                   </div>
                 </div>
               </div>

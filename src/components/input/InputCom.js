@@ -21,7 +21,7 @@ const InputCom = (props) => {
   const { fields } = useController({
     control,
     name,
-    defaultValue: "",
+    defaultValue: type === "number" ? 0 : "",
   });
 
   const {
@@ -35,7 +35,9 @@ const InputCom = (props) => {
         <input
           id={name}
           className={`form-control tw-transition-all ${
-            errorMsg && errorMsg.length > 0 && "is-invalid border-tw-danger text-tw-danger"
+            errorMsg &&
+            errorMsg.length > 0 &&
+            "is-invalid border-tw-danger text-tw-danger"
           }`}
           type={
             type === "password" ? (showPassword ? "text" : "password") : type
@@ -63,11 +65,12 @@ const InputCom = (props) => {
 };
 
 InputCom.propTypes = {
+  control: PropTypes.any.isRequired,
+  register: PropTypes.func.isRequired,
   name: PropTypes.string,
   type: PropTypes.string,
   errorMsg: PropTypes.string,
-  control: PropTypes.any.isRequired,
-  register: PropTypes.func.isRequired,
+  isTypePassword: PropTypes.bool,
   children: PropTypes.node,
 };
 export default withErrorBoundary(InputCom, {

@@ -21,11 +21,13 @@ const SelectTagAntCom = ({
   status = "",
   errorMsg = "",
   placeholder = "Input your tags",
+  selectedValue = [],
   className = "",
 }) => {
   return (
     <>
       <Select
+        value={selectedValue}
         status={status}
         size="large"
         mode="tags"
