@@ -1,29 +1,16 @@
-import {React, useEffect} from "react";
-import { HeadingFormH1Com, HeadingH2Com } from "../../components/heading";
-import {
-  BsFillPersonVcardFill,
-  BsArrowLeftSquareFill,
-  BsArrowRightSquareFill,
-} from "react-icons/bs";
+import React from "react";
+import { HeadingFormH1Com } from "../../components/heading";
+import { BsFillPersonVcardFill } from "react-icons/bs";
 import { AiOutlineTags, AiOutlineClockCircle } from "react-icons/ai";
 import { blog } from "../../assets/blog_data/data";
 import { Link } from "react-router-dom";
-import Pagination from "@mui/material/Pagination";
-import PaginationItem from "@mui/material/PaginationItem";
-import Stack from "@mui/material/Stack";
-import {useDispatch} from 'react-redux';
-import { fetchBlogStart } from "../../store/blog/action";
+import { Pagination } from "antd";
+import Carousel_3 from "../../assets/blog_image/Carousel_3.jpg";
+import usePaginationBlog from "../../hooks/usePaginationBlog";
 
 const BlogSelectPage = () => {
-  const dispatch = useDispatch();
-
-  useEffect(()=>{
-    dispatch(fetchBlogStart(0,10))
-  },[dispatch])
-
-  const handleChange = async (event, page) => {
-    dispatch(fetchBlogStart(page-1,10))
-  };
+  const { startOffSet, endOffSet, currentPage, handleChangePage, limit } =
+  usePaginationBlog(1);
   return (
     <>
       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">
@@ -47,7 +34,7 @@ const BlogSelectPage = () => {
           </div>
         </h2>
       </div>
-      <section className="my-12">
+      {/* <section className="my-12">
         <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
           {blog.map((blog) => (
             <Link key={blog.id} to={`/blogs/${blog.id}`}>
@@ -67,11 +54,11 @@ const BlogSelectPage = () => {
                 </div>
 
                 <div id="details">
-                  {/* <Link to={`/blogs/${blog.id}`}> */}
+                 
                   <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
                     <h3 className="font-[500]">{blog.title}</h3>
                   </div>
-                  {/* </Link> */}
+             
                   <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
                     {blog.desc}...
                   </p>
@@ -90,24 +77,70 @@ const BlogSelectPage = () => {
             </Link>
           ))}
         </div>
-      </section>
-
-      <Stack spacing={2}>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <Pagination
-            count={10}
-            renderItem={(item) => (
-              <PaginationItem
-                slots={{
-                  previous: BsArrowLeftSquareFill,
-                  next: BsArrowRightSquareFill,
-                }}
-                {...item}
-              />
-            )}
-          />
+      </section> */}
+      <section className="my-12">
+        <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
+          {Array(10)
+            .fill(0)
+            .map((item, index) => {
+              if (index >= startOffSet && index < endOffSet) {
+                return (
+                  <Link key={blog.id} to={`/blogs/${2}`}>
+                    <div
+                      key={index}
+                      className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"
+                    >
+                      <div id="img">
+                        <img
+                          src={Carousel_3}
+                          alt=""
+                          className="w-full h-[250px] object-cover rounded-[10px] mb-[20px]"
+                        />
+                      </div>
+                      <div className="flex items-center mb-3">
+                        <AiOutlineTags className="mr-[10px] text-[25px]" />
+                        <label className="block mr-[20px] mb-0 text-[#999] text-[15px]">
+                          NextJs
+                        </label>
+                      </div>
+                      <div id="details">
+                        <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
+                          <h3 className="font-[500]">
+                            Ghost CMS is a popular content management system
+                            that many devs and companies use to host their
+                            blogs...
+                          </h3>
+                        </div>
+                        <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
+                          You might be using a comment system to manage your
+                          blog's discussions and comments...
+                        </p>
+                        <div id="date" className="flex items-center mt-3">
+                          <AiOutlineClockCircle className="mr-[10px] text-[40px]" />
+                          <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                            May 13, 2022
+                          </label>
+                          <BsFillPersonVcardFill className="mr-[10px] text-[40px]" />
+                          <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                            Rajdeep Singh
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              }
+              return null;
+            })}
         </div>
-      </Stack>
+      </section>
+      <Pagination
+        current={currentPage}
+        onChange={handleChangePage}
+        total={10}
+        defaultPageSize={limit}
+        className="mt-[1rem] text-center"
+      />
     </>
   );
 };
