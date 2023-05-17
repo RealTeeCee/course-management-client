@@ -20,8 +20,8 @@ import OAuth2Page from "./OAuth2Page";
 import {
   MAX_LENGTH_NAME,
   MAX_LENGTH_VARCHAR,
-  MESSAGE_EMAIL,
-  MESSAGE_REQUIRED,
+  MESSAGE_EMAIL_INVALID,
+  MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
 import { useDispatch } from "react-redux";
 import { onRegister } from "../../store/auth/authSlice";
@@ -29,21 +29,21 @@ import { onRegister } from "../../store/auth/authSlice";
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(3, "Minimum is 3 letters")
-    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   last_name: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(3, "Minimum is 3 letters")
-    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   email: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_FIELD_REQUIRED)
+    .email(MESSAGE_EMAIL_INVALID ?? "Invalid email"),
   password: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(8, "Minimum is 8 letters")
     .max(
       MAX_LENGTH_VARCHAR ?? 255,
@@ -75,7 +75,7 @@ const RegisterPage = () => {
     setTimeout(() => {
       reset();
       setIsLoading(false);
-    }, 2000);
+    }, 2500);
   };
 
   console.log(errors);

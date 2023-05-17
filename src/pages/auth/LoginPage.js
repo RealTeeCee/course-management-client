@@ -13,7 +13,11 @@ import FormGroupCom from "../../components/common/FormGroupCom";
 import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
-import { MESSAGE_EMAIL, MESSAGE_REQUIRED } from "../../constants/config";
+import {
+  MESSAGE_EMAIL_INVALID,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_VERIFY_SUCCESS,
+} from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
 //*** Nguyễn Code***
@@ -24,22 +28,14 @@ import OAuth2Page from "./OAuth2Page";
 const schemaValidation = yup.object().shape({
   email: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required")
+    .email(MESSAGE_EMAIL_INVALID ?? "Invalid email"),
   password: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
+    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required"),
 });
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  //*** Nguyễn Code***
-  // const isLoginSuccess = useSelector(selectLoginIsSuccess);
-
-  // useEffect(() => {
-  //   isLoginSuccess && navigate("/");
-  // }, [isLoginSuccess, navigate]);
-  //*** END Nguyễn Code***
 
   const {
     control,
@@ -52,8 +48,10 @@ const LoginPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
   const searchParams = new URLSearchParams(location.search);
   const isVerify = searchParams.get("verify"); //=== "verified";
   const { value: isRemember, handleToggleBoolean: handleToggleRemember } =
@@ -65,16 +63,14 @@ const LoginPage = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+      navigate("/");
+    }, 2300);
   };
 
   return (
     <>
       {!isVerify ? null : isVerify === "success" ? (
-        <AlertAntCom
-          type="success"
-          msg="Email is active. You can login here."
-        />
+        <AlertAntCom type="success" msg={MESSAGE_VERIFY_SUCCESS} />
       ) : (
         <AlertAntCom type="success" msg="Email have already actived" />
       )}
@@ -128,7 +124,7 @@ const LoginPage = () => {
         <h6 className="text-muted mt-4 or">Or login with</h6>
         <OAuth2Page />
         <p className="mt-4 mb-0">
-          Not yet have an account?
+          Don't have an account?
           <Link
             className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
             to="/register"

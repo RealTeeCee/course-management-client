@@ -1,5 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -34,7 +35,16 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
+  const {user} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    if(user && user.email) {
+      
+    }else {
+      
+    }
+  }, [user]);
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 import axios from "axios";
-import { IMG_BB_API, MESSAGE_UPLOAD_IMAGE } from "../../constants/config";
+import { IMG_BB_API, MESSAGE_UPLOAD_IMAGE_FAILED } from "../../constants/config";
 import { REFRESH_TOKEN_URL } from "../../api/url";
 import { toast } from "react-toastify";
 
@@ -42,7 +42,7 @@ const ImageUploadCom = (props) => {
 
       const imgUrl = res.data.data.url;
       if (!imgUrl) {
-        toast.error(MESSAGE_UPLOAD_IMAGE);
+        toast.error(MESSAGE_UPLOAD_IMAGE_FAILED);
         return;
       }
       // CallBack

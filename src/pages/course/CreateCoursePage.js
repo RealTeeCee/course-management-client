@@ -15,33 +15,33 @@ import { toast } from "react-toastify";
 import {
   BASE_API_URL,
   IMG_BB_API,
-  MESSAGE_GENERAL,
-  MESSAGE_INVALID,
+  MESSAGE_GENERAL_FAILED,
+  MESSAGE_FIELD_INVALID,
   MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_REQUIRED,
+  MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
 import ImageUploadCom from "../../components/image/ImageUploadCom";
 import axiosInstance from "../../api/axiosInstance";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  // name: yup.string().required(MESSAGE_REQUIRED),
-  // category_id: yup
-  //   .string()
-  //   .required(MESSAGE_REQUIRED),
-  // tags: yup.string().required(MESSAGE_REQUIRED),
-  // price: yup
-  //   .number()
-  //   .nullable()
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(0, MESSAGE_NUMBER_POSITIVE),
-  // sale_price: yup
-  //   .number()
-  //   .nullable()
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(0, MESSAGE_NUMBER_POSITIVE),
+  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  category_id: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED),
+  tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  price: yup
+    .number()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
+  sale_price: yup
+    .number()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -117,7 +117,7 @@ const CreateCoursePage = () => {
     if (image === "" || image[0] === undefined) {
       const imageSelector = document.querySelector('input[name="image"]');
       if (imageSelector) imageSelector.focus();
-      toast.error(MESSAGE_GENERAL);
+      toast.error(MESSAGE_GENERAL_FAILED);
       setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("image", null);
     } else if (sale_price > price) {
@@ -125,7 +125,7 @@ const CreateCoursePage = () => {
         'input[name="sale_price"]'
       );
       if (salePriceSelector) salePriceSelector.focus();
-      toast.error(MESSAGE_GENERAL);
+      toast.error(MESSAGE_GENERAL_FAILED);
       setError("sale_price", { message: "Sale Price cannot > Price" });
     } else {
       resetValues();
@@ -160,7 +160,7 @@ const CreateCoursePage = () => {
         setIsLoading(false);
         reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL} ${error.message}`);
+        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.message}`);
         setIsLoading(false);
       }
     }
@@ -196,7 +196,7 @@ const CreateCoursePage = () => {
     if (hasSpecialChar) {
       toast.error("Invalid tag! Only accept: - for special character");
       setValue("tags", "");
-      setError("tags", { message: MESSAGE_INVALID });
+      setError("tags", { message: MESSAGE_FIELD_INVALID });
       return;
     }
 
