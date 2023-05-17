@@ -6,7 +6,8 @@ import { blog } from "../../assets/blog_data/data";
 import { Link } from "react-router-dom";
 import { Pagination } from "antd";
 import Carousel_3 from "../../assets/blog_image/Carousel_3.jpg";
-import usePaginationBlog from "../../hooks/usePaginationBlog";
+import usePaginationBlog from "../../hooks/usePagination";
+import { LIMIT_PAGE } from "../../constants/config";
 
 const BlogSelectPage = () => {
   const { startOffSet, endOffSet, currentPage, handleChangePage, limit } =
@@ -80,7 +81,7 @@ const BlogSelectPage = () => {
       </section> */}
       <section className="my-12">
         <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
-          {Array(10)
+          {Array(20)
             .fill(0)
             .map((item, index) => {
               if (index >= startOffSet && index < endOffSet) {
@@ -137,8 +138,8 @@ const BlogSelectPage = () => {
       <Pagination
         current={currentPage}
         onChange={handleChangePage}
-        total={10}
-        defaultPageSize={limit}
+        total={20}
+        defaultPageSize={LIMIT_PAGE}
         className="mt-[1rem] text-center"
       />
     </>
