@@ -3,6 +3,10 @@ export const BASE_API_URL =
 export const IMG_BB_API =
   "https://api.imgbb.com/1/upload?key=a3677081e3e3345b34519f94cd1017e1";
 
+export const COOKIE_ACCESS_TOKEN_KEY = "course_access_token";
+export const COOKIE_REFRESH_TOKEN_KEY = "course_refresh_token";
+export const COOKIE_EXPIRED_DAYS = 30;
+
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
 export const LIMIT_PAGE = 12;
@@ -25,7 +29,8 @@ export const MESSAGE_LOGIN_SUCCESS = "You have logged successfully !";
 export const MESSAGE_VERIFY_SUCCESS =
   "Your email has been verified! You can login now";
 
-export const MESSAGE_UNAUTHORIZE = "You dont have permission to access this page";
+export const MESSAGE_UNAUTHORIZE =
+  "You dont have permission to access this page";
 
 export const STATUS_SUCCESS = 200;
 export const STATUS_CREATED = 201;

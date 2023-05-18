@@ -10,18 +10,17 @@ const AdminPage = () => {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  console.log("User: ", user);
-  console.log("User: ", user.email);
   useEffect(() => {
     if (!user || !user.email) {
       navigate("/login");
     }
-    if (user.role !== "ADMIN") {
+    if (user && user.role !== "ADMIN") {
       toast.error(MESSAGE_UNAUTHORIZE);
-      navigate("/");
+      navigate("/admin");
       return;
     }
   }, [navigate, user]);
+
   return (
     <>
       <HeadingH1Com>Admin Page</HeadingH1Com>

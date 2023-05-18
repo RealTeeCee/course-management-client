@@ -8,8 +8,13 @@ import {
   MESSAGE_UNAUTHORIZE,
 } from "../../constants/config";
 import { saveToken } from "../../utils/auth";
-import { requestGetUser, requestLogin, requestRegister } from "./authRequests";
-import { onUpdateUser } from "./authSlice";
+import {
+  requestGetUser,
+  requestLogin,
+  requestRefreshToken,
+  requestRegister,
+} from "./authRequests";
+import { onUpdateUserToken } from "./authSlice";
 
 /**
  * *** Handler ***
@@ -49,12 +54,11 @@ function* handleOnLogin(action) {
 }
 
 function* handleGetUser({ token }) {
-  console.log("handle GetUser: ", token);
   try {
     const res = yield call(requestGetUser, token);
     if (res.data.type === "success") {
       yield put(
-        onUpdateUser({
+        onUpdateUserToken({
           user: res.data,
           access_token: token,
         })
@@ -67,4 +71,17 @@ function* handleGetUser({ token }) {
   }
 }
 
-export { handleOnRegister, handleOnLogin, handleGetUser };
+function* handleRefreshToken(action) {
+  try {
+    const res = yield call(requestRefreshToken, action.payload);
+    if (res.data.type === "success") {
+      saveToken(res.data.access_token, res.data.refresh_token);
+      yield call(handleGetUser, { token: res.data.access_token });
+    }
+  } catch (error) {
+    toast.error("Lỗi refresh Handler: ", error.message);
+  }
+  yield 1;
+}
+
+export { handleOnRegister, handleOnLogin, handleGetUser, handleRefreshToken };

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   IconAdminCom,
   IconBlogCom,
@@ -9,6 +11,7 @@ import {
   IconMoonCom,
   IconSunCom,
 } from "../../components/icon";
+import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const sidebarItems = [
   {
@@ -45,8 +48,11 @@ const sidebarItems = [
 ];
 
 const HomeSidebarMod = () => {
+  const { user } = useSelector((state) => state.auth);
+
   const [isScrolled, setIsScrolled] = useState(false);
-  const navLinkClass = "tw-transition-all text-center block p-3 rounded-xl last:mt-auto last:shadow-primary bg-tw-light";
+  const navLinkClass =
+    "tw-transition-all text-center block p-3 rounded-xl last:mt-auto last:shadow-primary bg-tw-light";
 
   useEffect(() => {
     function handleScroll() {
@@ -55,9 +61,9 @@ const HomeSidebarMod = () => {
       const { top } = sidebar.getBoundingClientRect();
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
       const actualTop = top + scrollY;
-      if(actualTop > 200){
+      if (actualTop > 200) {
         setIsScrolled(true);
-      }else {
+      } else {
         setIsScrolled(false);
       }
     }
@@ -69,21 +75,49 @@ const HomeSidebarMod = () => {
   return (
     <>
       <div className="sidebar-hidden w-full md:w-[76px]"></div>
-      <div className={`${isScrolled ? "sidebar fixed animate-slide-in w-full md:w-[76px] rounded-3xl bg-tw-light shadow-2xl text-center text-xs flex flex-col flex-shrink-0" : "sidebar fixed w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0"}`}>
-        {sidebarItems.map((item) => (
-          <NavLink
-            key={item.title}
-            className={({ isActive }) =>
-              isActive
-                ? `active ${navLinkClass} bg-gray-200 text-tw-primary`
-                : navLinkClass
+      <div
+        className={`${
+          isScrolled
+            ? "sidebar fixed animate-slide-in w-full md:w-[76px] rounded-3xl bg-tw-light shadow-2xl text-center text-xs flex flex-col flex-shrink-0"
+            : "sidebar fixed w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0"
+        }`}
+      >
+        {sidebarItems.map((item) => {
+          if (item.url === "/admin") {
+            if (user && user.role === "ADMIN") {
+              return (
+                <NavLink
+                  key={item.title}
+                  className={({ isActive }) =>
+                    isActive
+                      ? `active ${navLinkClass} bg-gray-200 text-tw-primary`
+                      : navLinkClass
+                  }
+                  to={item.url}
+                >
+                  <span>{item.icon}</span>
+                  <div className="mt-1">{item.title}</div>
+                </NavLink>
+              );
             }
-            to={item.url}
-          >
-            <span>{item.icon}</span>
-            <div className="mt-1">{item.title}</div>
-          </NavLink>
-        ))}
+          } else {
+            return (
+              <NavLink
+                key={item.title}
+                className={({ isActive }) =>
+                  isActive
+                    ? `active ${navLinkClass} bg-gray-200 text-tw-primary`
+                    : navLinkClass
+                }
+                to={item.url}
+              >
+                <span>{item.icon}</span>
+                <div className="mt-1">{item.title}</div>
+              </NavLink>
+            );
+          }
+          return null;
+        })}
       </div>
     </>
   );

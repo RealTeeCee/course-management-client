@@ -18,7 +18,7 @@ const authSlice = createSlice({
       ...state,
       ...action.payload,
     }),
-    onUpdateUser: (state, action) => ({
+    onUpdateUserToken: (state, action) => ({
       ...state,
       user: action.payload.user,
       access_token: action.payload.access_token,
@@ -28,12 +28,13 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRefreshToken: (state, action) => ({
-      
-    })
+      ...state,
+      ...action.payload,
+    }),
   },
 });
 
-export const { onLogin, onRegister, onUpdateUser, onGetUser } =
+export const { onLogin, onRegister, onUpdateUserToken, onGetUser, onRefreshToken } =
   authSlice.actions;
 // authReducer
 export default authSlice.reducer;

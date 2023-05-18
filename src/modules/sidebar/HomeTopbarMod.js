@@ -6,6 +6,8 @@ import { IconBellCom } from "../../components/icon";
 import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
+  const { user } = useSelector((state) => state.auth);
+  console.log("TopBar: ", user);
   const navigate = useNavigate();
 
   return (

@@ -6,6 +6,8 @@ import LoaderCom from "./components/common/LoaderCom.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import { onRefreshToken, onUpdateUserToken } from "./store/auth/authSlice.js";
+import { getToken } from "./utils/auth.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -35,16 +37,22 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
-  const {user} = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(user && user.email) {
-      
-    }else {
-      
+    const { access_token, refresh_token } = getToken();
+    if (user && user.email) {
+      dispatch(
+        onUpdateUserToken({
+          user,
+          access_token,
+        })
+      );
+    } else {
+      if (refresh_token) dispatch(onRefreshToken(refresh_token));
     }
-  }, [user]);
+  }, [dispatch, user, user?.email]);
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>
@@ -91,11 +99,7 @@ function App() {
             path="/register"
             element={<RegisterPage></RegisterPage>}
           ></Route>
-          <Route
-            path="/login"
-            render
-            element={<LoginPage></LoginPage>}
-          ></Route>
+          <Route path="/login" render element={<LoginPage></LoginPage>}></Route>
         </Route>
         {/* ********* END Authentication ********* */}
       </Routes>

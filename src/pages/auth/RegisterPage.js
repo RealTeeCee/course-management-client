@@ -75,7 +75,7 @@ const RegisterPage = () => {
     setTimeout(() => {
       reset();
       setIsLoading(false);
-    }, 2500);
+    }, 3000);
   };
 
   console.log(errors);
