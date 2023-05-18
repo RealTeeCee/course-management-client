@@ -107,17 +107,30 @@ const CreateCoursePage = () => {
 
       formData.append("file", image[0]);
       console.log(formData);
-      const res = await axiosInstance.post(
-        `${BASE_API_URL}/admin/course/create`,
-        formData,
-        {
-          headers: {
-            "content-type": "multipart/form-data",
-          },
-        }
-      );
-      toast.success(`${res.data.message}`);
-      setIsLoading(false);
+      // const res = await axiosInstance.post(
+      //   `${BASE_API_URL}/admin/course/create`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "content-type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+
+      axiosInstance({
+        method: "POST",
+        url: `${BASE_API_URL}/admin/course/create`,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+        .then((res) => {
+          toast.success(`${res.data.message}`);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(`${err.message}`);
+          setIsLoading(false);
+        });
     } catch (error) {
       console.log(error);
       toast.error(`${error.message}`);

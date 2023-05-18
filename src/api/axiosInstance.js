@@ -7,6 +7,7 @@ import {
   refreshTokenSuccess,
 } from "../store/login/action";
 
+let _isRetry = false;
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
@@ -32,6 +33,7 @@ const accessTokenHoc = (previousAPI) => {
 
     if (res) {
       if (res.data.access_token && res.data.refresh_token) {
+        _isRetry = false;
         localStorage.setItem("accessToken", res.data.access_token);
         localStorage.setItem("refreshToken", res.data.refresh_token);
         previousAPI.headers.Authorization = `Bearer ${res.data.access_token}`;
@@ -51,8 +53,9 @@ axiosInstance.interceptors.response.use(null, function (error) {
   if (
     error.config &&
     (error.response?.status === 401 || error.response?.status === 403) &&
-    !error.config.__isRetry
+    !_isRetry
   ) {
+    _isRetry = true;
     return new Promise((resolve, reject) => {
       store.dispatch(refreshToken());
       const callAccess = accessTokenHoc(error.config);

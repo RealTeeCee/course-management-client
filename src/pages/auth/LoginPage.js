@@ -71,10 +71,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <img
-        src="http://localhost:8080/admin/course/download?fileName=555.jpg&courseId=1"
-        alt="Test"
-      ></img>
+      <img src="http://localhost:8080/admin/course/2" alt="Test"></img>
       {!isVerify ? null : isVerify === "success" ? (
         <AlertAntCom
           type="success"
