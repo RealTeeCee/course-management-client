@@ -114,12 +114,12 @@ function App() {
         </Route>
         {/* ********* END Authentication ********* */}
 
-        <Route element={<LayoutHome></LayoutHome>}>
+        {/* <Route element={<LayoutHome></LayoutHome>}>
           <Route
             path="/user"
             element={<UserProfilePage></UserProfilePage>}
           ></Route>
-        </Route>
+        </Route> */}
       </Routes>
     </Suspense>
   );
