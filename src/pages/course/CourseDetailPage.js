@@ -54,7 +54,7 @@ const lessionItems = [
     section_id: 2,
   },
 ];
-
+ 
 const sessionIds = sessionItems.map((item) => String(item.id));
 const totalLession = 2;
 

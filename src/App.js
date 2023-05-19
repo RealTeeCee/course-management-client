@@ -28,7 +28,9 @@ const CreateCoursePage = lazy(() =>
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
-
+const UserProfilePage = lazy(() =>
+  import("./pages/user_profile/UserProfilePage.js")
+);
 const customStyles = {
   content: {},
 };
@@ -111,6 +113,13 @@ function App() {
           ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
+
+        <Route element={<LayoutHome></LayoutHome>}>
+          <Route
+            path="/user"
+            element={<UserProfilePage></UserProfilePage>}
+          ></Route>
+        </Route>
       </Routes>
     </Suspense>
   );
