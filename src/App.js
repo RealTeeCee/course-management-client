@@ -1,13 +1,15 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
+import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
+import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { onRefreshToken, onUpdateUserToken } from "./store/auth/authSlice.js";
-import { getToken } from "./utils/auth.js";
+import { getToken, removeToken } from "./utils/auth.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -15,7 +17,7 @@ const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
-const ErrorPage = lazy(() => import("./pages/ErrorPage.js"));
+const ErrorPage = lazy(() => import("./pages/errors/ErrorPage.js"));
 
 const CoursePage = lazy(() => import("./pages/course/CoursePage.js"));
 const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
@@ -50,7 +52,12 @@ function App() {
         })
       );
     } else {
-      if (refresh_token) dispatch(onRefreshToken(refresh_token));
+      if (refresh_token) {
+        dispatch(onRefreshToken(refresh_token));
+      } else {
+        dispatch(onUpdateUserToken({}));
+        removeToken();
+      }
     }
   }, [dispatch, user, user?.email]);
   return (
@@ -58,6 +65,14 @@ function App() {
       <Routes>
         <Route element={<LayoutHome></LayoutHome>}>
           <Route path="/" element={<HomePage></HomePage>}></Route>
+          <Route
+            path="/unauthorize"
+            element={<ErrorPage status={401}></ErrorPage>}
+          ></Route>
+          <Route
+            path="/forbidden"
+            element={<ErrorPage status={403}></ErrorPage>}
+          ></Route>
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -73,7 +88,10 @@ function App() {
           ></Route>
 
           {/* ********* Error ********* */}
-          <Route path="*" element={<ErrorPage></ErrorPage>}></Route>
+          <Route
+            path="*"
+            element={<ErrorPage status={404}></ErrorPage>}
+          ></Route>
           {/* ********* END Error ********* */}
           <Route
             path="/oauth2/redirect"
@@ -85,11 +103,20 @@ function App() {
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
           {/* ********* ADMIN ********* */}
-          <Route path="/admin" element={<AdminPage></AdminPage>}></Route>
           <Route
-            path="/admin/create-course"
-            element={<CreateCoursePage></CreateCoursePage>}
-          ></Route>
+            path="/admin"
+            element={
+              <CheckAuthPage
+                allowPermissions={permissions.admin.ROLE}
+              ></CheckAuthPage>
+            }
+          >
+            <Route index element={<AdminPage></AdminPage>}></Route>
+            <Route
+              path="create-course"
+              element={<CreateCoursePage></CreateCoursePage>}
+            ></Route>
+          </Route>
           {/* ******* END ADMIN ******* */}
         </Route>
 
@@ -99,7 +126,23 @@ function App() {
             path="/register"
             element={<RegisterPage></RegisterPage>}
           ></Route>
-          <Route path="/login" render element={<LoginPage></LoginPage>}></Route>
+
+          <Route
+            path="/login"
+            render
+            element={
+              user && user.email ? (
+                <Navigate to="/"></Navigate>
+              ) : (
+                <LoginPage></LoginPage>
+              )
+            }
+          ></Route>
+          <Route
+            path="/logout"
+            render
+            element={<Navigate to="/"></Navigate>}
+          ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
       </Routes>

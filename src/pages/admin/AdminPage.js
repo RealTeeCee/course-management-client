@@ -7,19 +7,18 @@ import { HeadingH1Com } from "../../components/heading";
 import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const AdminPage = () => {
-  const { user } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
+  // const { user } = useSelector((state) => state.auth);
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user || !user.email) {
-      navigate("/login");
-    }
-    if (user && user.role !== "ADMIN") {
-      toast.error(MESSAGE_UNAUTHORIZE);
-      navigate("/admin");
-      return;
-    }
-  }, [navigate, user]);
+  // useEffect(() => {
+  //   if (!user || !user.email) {
+  //     navigate("/login");
+  //   }
+  //   if (user && user.role !== "ADMIN") {
+  //     toast.error(MESSAGE_UNAUTHORIZE);
+  //     return;
+  //   }
+  // }, [navigate, user]);
 
   return (
     <>

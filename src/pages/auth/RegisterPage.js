@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ButtonCom, ButtonSocialCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
@@ -11,11 +11,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
 import { IconFacebookCom, IconGmailCom } from "../../components/icon";
-import {
-  FACEBOOK_AUTH_URL,
-  GITHUB_AUTH_URL,
-  GOOGLE_AUTH_URL,
-} from "../../api/url";
 import OAuth2Page from "./OAuth2Page";
 import {
   MAX_LENGTH_NAME,
@@ -63,18 +58,19 @@ const RegisterPage = () => {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
   const handleRegister = async (values) => {
-    console.log(values);
     setIsLoading(!isLoading);
-    dispatch(onRegister(values));
+    dispatch(onRegister({ ...values, permissions: [] }));
     setTimeout(() => {
       reset();
       setIsLoading(false);
+      navigate("/login");
     }, 3000);
   };
 

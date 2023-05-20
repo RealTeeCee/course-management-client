@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 //*** Nguyễn Code***
 // import { useDispatch, useSelector } from "react-redux";
 //***END Nguyễn Code***
@@ -36,7 +36,6 @@ const schemaValidation = yup.object().shape({
 });
 
 const LoginPage = () => {
-
   const {
     control,
     register,
@@ -46,6 +45,7 @@ const LoginPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const { user } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ const LoginPage = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/");
+      // navigate("/");
     }, 2300);
   };
 

@@ -35,8 +35,8 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-    <App />
-        <ToastContainer bodyClassName="font-tw-primary" />
+      <App />
+      <ToastContainer bodyClassName="font-tw-primary" />
     </BrowserRouter>
   </Provider>
 );

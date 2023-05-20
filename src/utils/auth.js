@@ -1,5 +1,9 @@
 import Cookies from "js-cookie";
-import { COOKIE_ACCESS_TOKEN_KEY, COOKIE_EXPIRED_DAYS, COOKIE_REFRESH_TOKEN_KEY } from "../constants/config";
+import {
+  COOKIE_ACCESS_TOKEN_KEY,
+  COOKIE_EXPIRED_DAYS,
+  COOKIE_REFRESH_TOKEN_KEY,
+} from "../constants/config";
 
 const objCookies = {
   expires: COOKIE_EXPIRED_DAYS,
@@ -38,4 +42,21 @@ export const getToken = () => {
     access_token,
     refresh_token,
   };
+};
+
+export const removeToken = () => {
+  const access_token = Cookies.get(COOKIE_ACCESS_TOKEN_KEY);
+  if (access_token) {
+    Cookies.remove(COOKIE_ACCESS_TOKEN_KEY, {
+      ...objCookies,
+      path: "/",
+      domain: process.env.REACT_APP_COOKIE_DOMAIN,
+    });
+
+    Cookies.remove(COOKIE_REFRESH_TOKEN_KEY, {
+      ...objCookies,
+      path: "/",
+      domain: process.env.REACT_APP_COOKIE_DOMAIN,
+    });
+  }
 };

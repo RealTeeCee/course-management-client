@@ -14,7 +14,7 @@ import GapYCom from "../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
   BASE_API_URL,
-  IMG_BB_API,
+  IMG_BB_URL,
   MESSAGE_GENERAL_FAILED,
   MESSAGE_FIELD_INVALID,
   MESSAGE_UPLOAD_REQUIRED,
@@ -239,7 +239,7 @@ const CreateCoursePage = () => {
           try {
             const res = await axiosInstance({
               method: "POST",
-              url: IMG_BB_API,
+              url: IMG_BB_URL,
               data: fd,
               headers: {
                 "Content-Type": "multipart/form-data",
