@@ -1,21 +1,21 @@
 import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 import { MESSAGE_GENERAL_FAILED } from "../../constants/config";
-import { removeToken, saveToken } from "../../utils/auth";
+import { removeToken, setToken } from "../../utils/auth";
 import {
   requestGetUser,
   requestLogin,
   requestRefreshToken,
   requestRegister,
 } from "./authRequests";
-import { onUpdateUserToken } from "./authSlice";
+import { onLoading, onLoginSuccess, onUpdateUserToken } from "./authSlice";
 
 /**
  * *** Handler ***
  */
 function* handleOnRegister(action) {
   try {
-    const res = yield call(requestRegister, action.payload);  
+    const res = yield call(requestRegister, action.payload);
     if (res.data.type === "success") {
       toast.success(res.data.message);
     } else if (res.data.type === "warning") {
@@ -34,25 +34,26 @@ function* handleOnRegister(action) {
 
 function* handleOnLogin(action) {
   try {
+    yield put(onLoading(true));
     const res = yield call(requestLogin, action.payload);
     if (res.data.type === "success") {
-      toast.success(res.data.message);
-
+      yield put(onLoginSuccess(true));
       if (res.data.access_token && res.data.refresh_token) {
-        
-        saveToken(res.data.access_token, res.data.refresh_token);
+        setToken(res.data.access_token, res.data.refresh_token);
         yield call(handleOnGetUser, { token: res.data.access_token });
       }
+      toast.success(res.data.message);
     } else {
       toast.error(res.data.message);
     }
   } catch (error) {
-    console.log(error);
     if (error.response && error.response.data) {
       toast.error(error.response.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
     }
+  } finally {
+    yield put(onLoading(false));
   }
 }
 
@@ -78,7 +79,7 @@ function* handleOnRefreshToken(action) {
   try {
     const res = yield call(requestRefreshToken, action.payload);
     if (res.data.type === "success") {
-      saveToken(res.data.access_token, res.data.refresh_token);
+      setToken(res.data.access_token, res.data.refresh_token);
       yield call(handleOnGetUser, { token: res.data.access_token });
     } else {
       yield call(handleOnRemoveToken());

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,31 +16,33 @@ import { onRemoveToken } from "../../store/auth/authSlice";
 import { removeToken } from "../../utils/auth";
 import HomeSearchMod from "../HomeSearchMod";
 
-const userItems = [
-  {
-    icon: <IconUserCom />,
-    title: "Profile",
-    url: "/profile",
-  },
-  {
-    icon: <IconRegisterCom />,
-    title: "Register",
-    url: "/register",
-  },
-  {
-    icon: <IconLoginCom />,
-    title: "Log in",
-    url: "/login",
-  },
-  {
-    icon: <IconLogoutCom />,
-    title: "Log out",
-    url: "/logout",
-  },
-];
-
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
+  const userName = user?.email.split('@')[0];
+  const userItems = [
+    {
+      icon: <IconUserCom />,
+      title: "Profile",
+      url: `/profile/${userName}`,
+    },
+    {
+      icon: <IconRegisterCom />,
+      title: "Register",
+      url: "/register",
+    },
+    {
+      icon: <IconLoginCom />,
+      title: "Log in",
+      url: "/login",
+    },
+    {
+      icon: <IconLogoutCom />,
+      title: "Log out",
+      url: "/logout",
+    },
+  ];
+  
+  console.log("User: ", user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -64,7 +67,8 @@ const HomeTopbarMod = () => {
         </ButtonCom>
         <IconBellCom></IconBellCom>
         <ul className="nav-menus">
-          <li className="profile-nav onhover-dropdown p-0 me-0">
+          <li className="profile-nav onhover-dropdown p-0 me-0 relative">
+            <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>
             <div className="media profile-media gap-x-2">
               <img
                 className="object-cover rounded-full w-12 h-12"
@@ -89,7 +93,6 @@ const HomeTopbarMod = () => {
             </div>
             <ul className="profile-dropdown onhover-show-div active top-14 w-36">
               {userItems.map((item, index) => {
-                const isLast = index === userItems.length - 1;
                 // If user is login, exclude "/register" and "/login" URLs
                 if (
                   user &&
@@ -100,7 +103,7 @@ const HomeTopbarMod = () => {
                 // If user is not login, exclude "/logout" URL
                 if (
                   !user &&
-                  (item.url === "/logout" || item.url === "/profile")
+                  (item.url === "/logout" || item.url.includes('/profile'))
                 ) {
                   return null;
                 }
@@ -113,17 +116,19 @@ const HomeTopbarMod = () => {
                         },
                       }
                     : {};
+
                 return (
                   <UserItems
                     key={item.title}
                     url={item.url}
                     title={item.title}
                     icon={item.icon}
-                    isLast={isLast}
                     {...rest}
                   ></UserItems>
                 );
               })}
+              {/* <UserItems url={`/profile/${user.email}`} title="Profile"></UserItems>
+              <UserItems url={`/logout`} title="Logout" icon={}></UserItems> */}
             </ul>
           </li>
         </ul>
@@ -145,7 +150,6 @@ const UserItems = ({
   url = "/",
   title = "",
   icon = <IconUserCom />,
-  isLast = false,
   ...rest
 }) => {
   return (

@@ -10,34 +10,18 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import axiosInstance from "../api/axiosInstance";
 
 const HomePage = () => {
-  const axiosPrivate = useAxiosPrivate();
-  useEffect(() => {
-    const getCourses = async () => {
-      try {
-        const res = await axiosPrivate.get("/course");
-        console.log(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getCourses();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  // const axiosPrivate = useAxiosPrivate();
   // useEffect(() => {
-  //   try {
-  //     const testA = async () => {
-  //       const res = await axios.get(
-  //         `http://localhost:8080/auth/refresh-token/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFjaC5hb2Zhc2hpb25zQGdtYWlsLmNvbSIsImlhdCI6MTY4NDU3NzgwMiwiZXhwIjoxNjg1MTgyNjAyfQ.XMsaiLrvHzRBkEzXd1H_Fy43nYIrZmZ5ZHJ698dWkZo`
-  //       );
-
-  //       console.log("res: ", res);
+  //   const getCourses = async () => {
+  //     try {
+  //       const res = await axiosPrivate.get("/course");
+  //       console.log(res.data);
+  //     } catch (error) {
+  //       console.log(error);
   //     }
-
-  //     testA();
-  //   } catch (error) {
-  //     console.log("Error: ", error);
-  //   }
+  //   };
+  //   getCourses();
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
   return (
     <>

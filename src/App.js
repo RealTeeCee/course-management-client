@@ -8,12 +8,23 @@ import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+
 import { onRefreshToken, onUpdateUserToken } from "./store/auth/authSlice.js";
 import { getToken, removeToken } from "./utils/auth.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
+
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
+const AdminCreateCoursePage = lazy(() =>
+  import("./pages/admin/course/AdminCreateCoursePage.js")
+);
+const AdminCreateSessionPage = lazy(() =>
+  import("./pages/admin/session/AdminCreateSessionPage.js")
+);
+const AdminCreateLessionPage = lazy(() =>
+  import("./pages/admin/lession/AdminCreateLessionPage.js")
+);
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
@@ -24,12 +35,13 @@ const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
 const CourseDetailPage = lazy(() =>
   import("./pages/course/CourseDetailPage.js")
 );
-const CreateCoursePage = lazy(() =>
-  import("./pages/course/CreateCoursePage.js")
-);
+
+const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
+
+const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
+
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
-const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
 
 const customStyles = {
   content: {},
@@ -65,6 +77,11 @@ function App() {
       <Routes>
         <Route element={<LayoutHome></LayoutHome>}>
           <Route path="/" element={<HomePage></HomePage>}></Route>
+          {/* ********* Error ********* */}
+          <Route
+            path="*"
+            element={<ErrorPage status={404}></ErrorPage>}
+          ></Route>
           <Route
             path="/unauthorize"
             element={<ErrorPage status={401}></ErrorPage>}
@@ -73,6 +90,7 @@ function App() {
             path="/forbidden"
             element={<ErrorPage status={403}></ErrorPage>}
           ></Route>
+          {/* ********* END Error ********* */}
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -87,21 +105,21 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
 
-          {/* ********* Error ********* */}
           <Route
-            path="*"
-            element={<ErrorPage status={404}></ErrorPage>}
+            path="/profile/:slug"
+            element={<UserProfilePage></UserProfilePage>}
           ></Route>
-          {/* ********* END Error ********* */}
-          <Route
-            path="/oauth2/redirect"
-            element={<OAuth2RedirectPage></OAuth2RedirectPage>}
-          ></Route>
+
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
+
+          <Route
+            path="/oauth2/redirect"
+            element={<OAuth2RedirectPage></OAuth2RedirectPage>}
+          ></Route>
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"
@@ -114,8 +132,17 @@ function App() {
             <Route index element={<AdminPage></AdminPage>}></Route>
             <Route
               path="create-course"
-              element={<CreateCoursePage></CreateCoursePage>}
+              element={<AdminCreateCoursePage></AdminCreateCoursePage>}
             ></Route>
+            <Route
+              path="create-session"
+              element={<AdminCreateSessionPage></AdminCreateSessionPage>}
+            ></Route>
+            <Route
+              path="create-lession"
+              element={<AdminCreateLessionPage></AdminCreateLessionPage>}
+            ></Route>
+            
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>

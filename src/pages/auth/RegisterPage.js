@@ -17,9 +17,11 @@ import {
   MAX_LENGTH_VARCHAR,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_POLICY_REQUIRED,
 } from "../../constants/config";
 import { useDispatch } from "react-redux";
 import { onRegister } from "../../store/auth/authSlice";
+import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -35,15 +37,12 @@ const schemaValidation = yup.object().shape({
   email: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
-    .email(MESSAGE_EMAIL_INVALID ?? "Invalid email"),
+    .email(MESSAGE_EMAIL_INVALID),
   password: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(8, "Minimum is 8 letters")
-    .max(
-      MAX_LENGTH_VARCHAR ?? 255,
-      `Maximum ${MAX_LENGTH_VARCHAR ?? 255} letters`
-    ),
+    .max(MAX_LENGTH_VARCHAR, `Maximum ${MAX_LENGTH_VARCHAR} letters`),
 });
 
 const RegisterPage = () => {
@@ -65,6 +64,10 @@ const RegisterPage = () => {
     useClickToggleBoolean();
 
   const handleRegister = async (values) => {
+    if (!acceptTerm) {
+      toast.warning(MESSAGE_POLICY_REQUIRED);
+      return;
+    }
     setIsLoading(!isLoading);
     dispatch(onRegister({ ...values, permissions: [] }));
     setTimeout(() => {
@@ -74,12 +77,9 @@ const RegisterPage = () => {
     }, 3000);
   };
 
-  console.log(errors);
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
-        {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
-        <p>Enter your personal details to create account</p> */}
         <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="first_name" isRequired>

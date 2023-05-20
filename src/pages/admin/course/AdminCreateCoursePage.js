@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { HeadingH1Com } from "../../components/heading";
-import { InputCom } from "../../components/input";
-import { LabelCom } from "../../components/label";
+import { HeadingH1Com } from "../../../components/heading";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { ButtonCom } from "../../components/button";
-import { SelectSearchAntCom, SelectTagAntCom } from "../../components/ant";
+import { ButtonCom } from "../../../components/button";
+import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
-import GapYCom from "../../components/common/GapYCom";
+import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
   BASE_API_URL,
@@ -21,16 +21,14 @@ import {
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_FIELD_REQUIRED,
-} from "../../constants/config";
-import ImageUploadCom from "../../components/image/ImageUploadCom";
-import axiosInstance from "../../api/axiosInstance";
+} from "../../../constants/config";
+import ImageUploadCom from "../../../components/image/ImageUploadCom";
+import axiosInstance from "../../../api/axiosInstance";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  category_id: yup
-    .string()
-    .required(MESSAGE_FIELD_REQUIRED),
+  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
     .number()
@@ -71,7 +69,7 @@ const tagItems = [
   },
 ];
 
-const CreateCoursePage = () => {
+const AdminCreateCoursePage = () => {
   const {
     control,
     register,
@@ -189,7 +187,6 @@ const CreateCoursePage = () => {
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
-    console.log(itemsArrs);
     const regex = /[,!@#$%^&*()+=[\]\\';./{}|":<>?~_]/;
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
@@ -258,7 +255,6 @@ const CreateCoursePage = () => {
 
   return (
     <>
-      {/* {isError && <AlertAntCom type={type} msg={msg}></AlertAntCom>} */}
       <HeadingH1Com>Create Courses</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
@@ -470,4 +466,4 @@ const CreateCoursePage = () => {
   );
 };
 
-export default CreateCoursePage;
+export default AdminCreateCoursePage;

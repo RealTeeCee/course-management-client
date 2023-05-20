@@ -10,7 +10,7 @@ const objCookies = {
   domain: process.env.REACT_APP_COOKIE_DOMAIN,
 };
 
-export const saveToken = (access_token, refresh_token) => {
+export const setToken = (access_token, refresh_token) => {
   if (access_token && refresh_token) {
     Cookies.set(COOKIE_ACCESS_TOKEN_KEY, access_token, {
       ...objCookies,

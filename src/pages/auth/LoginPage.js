@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,11 +10,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
 import { ButtonCom } from "../../components/button";
+import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
+  APP_KEY_NAME,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_VERIFY_SUCCESS,
@@ -40,13 +43,14 @@ const LoginPage = () => {
     control,
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user } = useSelector((state) => state.auth);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isLoginSuccess } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,18 +58,23 @@ const LoginPage = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const isVerify = searchParams.get("verify"); //=== "verified";
-  const { value: isRemember, handleToggleBoolean: handleToggleRemember } =
+  const { value: isRemember, handleToggleBoolean: setIsRemember } =
     useClickToggleBoolean();
 
   const handleLogin = (values) => {
-    setIsLoading(!isLoading);
     dispatch(onLogin(values));
-
-    setTimeout(() => {
-      setIsLoading(false);
-      // navigate("/");
-    }, 2300);
   };
+
+  useEffect(() => {
+    if (isLoginSuccess) {
+      if (isRemember) {
+        const values = getValues();
+        Cookies.set(`${APP_KEY_NAME}_email`, values.email);
+        Cookies.set(`${APP_KEY_NAME}_password`, values.password);
+      }
+      navigate("/");
+    }
+  }, [isLoginSuccess, navigate, isRemember, getValues]);
 
   return (
     <>
@@ -104,18 +113,17 @@ const LoginPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <div className="form-group mb-0">
-            <div className="checkbox p-0">
-              <input id="checkbox1" type="checkbox" />
-              <label className="text-muted" htmlFor="checkbox1">
-                Remember password
-              </label>
-            </div>
-            <div>
-              <a className="link" href="forget-password.html">
-                Forgot password?
-              </a>
-            </div>
+          <CheckBoxCom
+            name="remember"
+            onClick={setIsRemember}
+            checked={isRemember}
+          >
+            Remember password
+          </CheckBoxCom>
+          <div>
+            <a className="link" href="forget-password.html">
+              Forgot password?
+            </a>
           </div>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
