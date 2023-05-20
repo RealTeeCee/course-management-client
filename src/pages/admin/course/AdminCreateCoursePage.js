@@ -1,40 +1,35 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { HeadingH1Com } from "../../components/heading";
-import { InputCom } from "../../components/input";
-import { LabelCom } from "../../components/label";
+import { HeadingH1Com } from "../../../components/heading";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { ButtonCom } from "../../components/button";
-import {
-  AlertAntCom,
-  SelectSearchAntCom,
-  SelectTagAntCom,
-} from "../../components/ant";
-import { TextAreaCom } from "../../components/textarea";
+import { ButtonCom } from "../../../components/button";
+import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
+import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
-import GapYCom from "../../components/common/GapYCom";
-import axios from "axios";
+import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
   BASE_API_URL,
-  IMG_BB_API,
-  MESSAGE_GENERAL,
-  MESSAGE_INVALID,
+  IMG_BB_URL,
+  MESSAGE_GENERAL_FAILED,
+  MESSAGE_FIELD_INVALID,
+  MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_REQUIRED,
-} from "../../constants/config";
-import ImageUploadCom from "../../components/image/ImageUploadCom";
+  MESSAGE_FIELD_REQUIRED,
+} from "../../../constants/config";
+import ImageUploadCom from "../../../components/image/ImageUploadCom";
+import axiosInstance from "../../../api/axiosInstance";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
-  category_id: yup
-    .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
-  tags: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
     .number()
     .nullable()
@@ -74,7 +69,7 @@ const tagItems = [
   },
 ];
 
-const CreateCoursePage = () => {
+const AdminCreateCoursePage = () => {
   const {
     control,
     register,
@@ -91,14 +86,12 @@ const CreateCoursePage = () => {
   /********* END API Area ********* */
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isClear, setIsClear] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
   const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
 
   const resetValues = () => {
-    setIsClear(!isClear);
     setCategorySelected(null);
     setTagsSelected([]);
     setArchivementSelected([]);
@@ -108,23 +101,64 @@ const CreateCoursePage = () => {
 
   const handleSubmitForm = async (values) => {
     console.log(values);
-    if (values.sale_price > values.price) {
-      const salePriceInput = document.querySelector('input[name="sale_price"]');
-      if (salePriceInput) salePriceInput.focus();
-      toast.error(MESSAGE_GENERAL);
+    const {
+      name,
+      category_id,
+      price,
+      sale_price,
+      image,
+      tags,
+      archivements,
+      description,
+    } = values;
+
+    if (image === "" || image[0] === undefined) {
+      const imageSelector = document.querySelector('input[name="image"]');
+      if (imageSelector) imageSelector.focus();
+      toast.error(MESSAGE_GENERAL_FAILED);
+      setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
+      setValue("image", null);
+    } else if (sale_price > price) {
+      const salePriceSelector = document.querySelector(
+        'input[name="sale_price"]'
+      );
+      if (salePriceSelector) salePriceSelector.focus();
+      toast.error(MESSAGE_GENERAL_FAILED);
       setError("sale_price", { message: "Sale Price cannot > Price" });
     } else {
       resetValues();
       try {
         setIsLoading(!isLoading);
-        const res = await axios.post(`${BASE_API_URL}/admin/course/create`, {
-          ...values,
-        });
+        let fd = new FormData();
+        fd.append(
+          "courseJson",
+          JSON.stringify({
+            name,
+            category_id,
+            price,
+            sale_price,
+            tags,
+            archivements,
+            description,
+          })
+        );
+
+        fd.append("file", image[0]);
+        console.log(fd);
+        const res = await axiosInstance.post(
+          `${BASE_API_URL}/admin/course/create`,
+          fd,
+          {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          }
+        );
         toast.success(`${res.message}`);
         setIsLoading(false);
         reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL} ${error.message}`);
+        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.message}`);
         setIsLoading(false);
       }
     }
@@ -153,14 +187,13 @@ const CreateCoursePage = () => {
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeTags = (itemsArrs) => {
-    console.log(itemsArrs);
-    const regex = /[,!@#$%^&*()+=\[\]\\';./{}|":<>?~_]/;
+    const regex = /[,!@#$%^&*()+=[\]\\';./{}|":<>?~_]/;
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
       toast.error("Invalid tag! Only accept: - for special character");
       setValue("tags", "");
-      setError("tags", { message: MESSAGE_INVALID });
+      setError("tags", { message: MESSAGE_FIELD_INVALID });
       return;
     }
 
@@ -201,9 +234,9 @@ const CreateCoursePage = () => {
           const fd = new FormData();
           fd.append("image", file);
           try {
-            const res = await axios({
+            const res = await axiosInstance({
               method: "POST",
-              url: IMG_BB_API,
+              url: IMG_BB_URL,
               data: fd,
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -222,7 +255,6 @@ const CreateCoursePage = () => {
 
   return (
     <>
-      {/* {isError && <AlertAntCom type={type} msg={msg}></AlertAntCom>} */}
       <HeadingH1Com>Create Courses</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
@@ -231,6 +263,7 @@ const CreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
               id="form-create"
+              encType="multipart/form-data"
             >
               {/* <div className="card-header">
                 <h5>Form Create Course</h5>
@@ -253,23 +286,22 @@ const CreateCoursePage = () => {
                   </div>
                   <div className="col-sm-6">
                     <LabelCom htmlFor="image">Image</LabelCom>
-                    {/* <InputCom
+                    <InputCom
                       type="file"
                       control={control}
                       name="image"
                       register={register}
-                      placeholder="Input Image"
-                      onChange={handleChangeImage}
+                      placeholder="Upload image"
                       errorMsg={errors.image?.message}
-                    ></InputCom> */}
-                    <ImageUploadCom
+                    ></InputCom>
+                    {/* <ImageUploadCom
                       // control={control}
                       // register={register}
                       name="image"
                       placeholder="Upload Image"
                       errorMsg={errors.image?.message}
                       onSetValue={setValue}
-                    ></ImageUploadCom>
+                    ></ImageUploadCom> */}
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
@@ -434,4 +466,4 @@ const CreateCoursePage = () => {
   );
 };
 
-export default CreateCoursePage;
+export default AdminCreateCoursePage;

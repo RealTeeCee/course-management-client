@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ButtonCom, ButtonSocialCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
@@ -11,74 +11,75 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
 import { IconFacebookCom, IconGmailCom } from "../../components/icon";
-import {
-  FACEBOOK_AUTH_URL,
-  GITHUB_AUTH_URL,
-  GOOGLE_AUTH_URL,
-} from "../../api/url";
 import OAuth2Page from "./OAuth2Page";
 import {
   MAX_LENGTH_NAME,
   MAX_LENGTH_VARCHAR,
-  MESSAGE_EMAIL,
-  MESSAGE_REQUIRED,
+  MESSAGE_EMAIL_INVALID,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_POLICY_REQUIRED,
 } from "../../constants/config";
+import { useDispatch } from "react-redux";
+import { onRegister } from "../../store/auth/authSlice";
+import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(3, "Minimum is 3 letters")
-    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   last_name: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(3, "Minimum is 3 letters")
-    .max(MAX_LENGTH_NAME ?? 100, `Maximum ${MAX_LENGTH_NAME ?? 100} letters`),
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   email: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_FIELD_REQUIRED)
+    .email(MESSAGE_EMAIL_INVALID),
   password: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
+    .required(MESSAGE_FIELD_REQUIRED)
     .min(8, "Minimum is 8 letters")
-    .max(
-      MAX_LENGTH_VARCHAR ?? 255,
-      `Maximum ${MAX_LENGTH_VARCHAR ?? 255} letters`
-    ),
+    .max(MAX_LENGTH_VARCHAR, `Maximum ${MAX_LENGTH_VARCHAR} letters`),
 });
 
 const RegisterPage = () => {
   const {
     control,
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  const handleRegister = (values) => {
-    console.log(values);
+  const handleRegister = async (values) => {
+    if (!acceptTerm) {
+      toast.warning(MESSAGE_POLICY_REQUIRED);
+      return;
+    }
     setIsLoading(!isLoading);
-
+    dispatch(onRegister({ ...values, permissions: [] }));
     setTimeout(() => {
+      reset();
       setIsLoading(false);
-    }, 1000);
+      navigate("/login");
+    }, 3000);
   };
 
-  console.log(errors);
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
-        {/* <HeadingFormH5Com>Create your account</HeadingFormH5Com>
-        <p>Enter your personal details to create account</p> */}
         <HeadingFormH1Com>Register Form</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="first_name" isRequired>

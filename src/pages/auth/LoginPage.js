@@ -1,81 +1,85 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+//*** Nguyễn Code***
+// import { useDispatch, useSelector } from "react-redux";
+//***END Nguyễn Code***
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
 import { ButtonCom } from "../../components/button";
+import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
-import { MESSAGE_EMAIL, MESSAGE_REQUIRED } from "../../constants/config";
+import {
+  APP_KEY_NAME,
+  MESSAGE_EMAIL_INVALID,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_VERIFY_SUCCESS,
+} from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { loginStart } from "../../store/login/action";
-import { selectLoginIsSuccess } from "../../store/login/selector";
+import { onLogin } from "../../store/auth/authSlice";
+//*** Nguyễn Code***
+// import { selectLoginIsSuccess } from "../../store/login/selector";
+//*** END Nguyễn Code***
 import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   email: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required")
+    .email(MESSAGE_EMAIL_INVALID ?? "Invalid email"),
   password: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
+    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required"),
 });
 
 const LoginPage = () => {
-  const isLoginSuccess = useSelector(selectLoginIsSuccess);
-  const navigate = useNavigate();
-  useEffect(() => {
-    isLoginSuccess && navigate("/");
-  }, [isLoginSuccess, navigate]);
-
   const {
     control,
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isLoginSuccess } = useSelector((state) => state.auth);
 
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
   const searchParams = new URLSearchParams(location.search);
   const isVerify = searchParams.get("verify"); //=== "verified";
-  const { value: isRemember, handleToggleBoolean: handleToggleRemember } =
+  const { value: isRemember, handleToggleBoolean: setIsRemember } =
     useClickToggleBoolean();
 
   const handleLogin = (values) => {
-    // const { email, password } = values;
-    // setIsLoading(!isLoading);
-    // // If Login correct
-    // if (email === "admin@gmail.com" && password === "123456") {
-    //   setTimeout(() => {
-    //     setIsLoading(false);
-    //     navigate("/");
-    //   }, 1000);
-    // }
-
-    // // If Login Wrong, remove loading
-    // setTimeout(() => {
-    //   setIsLoading(false);
-    // }, 1000);
-    dispatch(loginStart(values));
+    dispatch(onLogin(values));
   };
+
+  useEffect(() => {
+    if (isLoginSuccess) {
+      if (isRemember) {
+        const values = getValues();
+        Cookies.set(`${APP_KEY_NAME}_email`, values.email);
+        Cookies.set(`${APP_KEY_NAME}_password`, values.password);
+      }
+      navigate("/");
+    }
+  }, [isLoginSuccess, navigate, isRemember, getValues]);
 
   return (
     <>
       {!isVerify ? null : isVerify === "success" ? (
-        <AlertAntCom
-          type="success"
-          msg="Email is active. You can login here."
-        />
+        <AlertAntCom type="success" msg={MESSAGE_VERIFY_SUCCESS} />
       ) : (
         <AlertAntCom type="success" msg="Email have already actived" />
       )}
@@ -109,18 +113,17 @@ const LoginPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          <div className="form-group mb-0">
-            <div className="checkbox p-0">
-              <input id="checkbox1" type="checkbox" />
-              <label className="text-muted" htmlFor="checkbox1">
-                Remember password
-              </label>
-            </div>
-            <div>
-              <a className="link" href="forget-password.html">
-                Forgot password?
-              </a>
-            </div>
+          <CheckBoxCom
+            name="remember"
+            onClick={setIsRemember}
+            checked={isRemember}
+          >
+            Remember password
+          </CheckBoxCom>
+          <div>
+            <a className="link" href="forget-password.html">
+              Forgot password?
+            </a>
           </div>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
@@ -129,7 +132,7 @@ const LoginPage = () => {
         <h6 className="text-muted mt-4 or">Or login with</h6>
         <OAuth2Page />
         <p className="mt-4 mb-0">
-          Not yet have an account?
+          Don't have an account?
           <Link
             className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all"
             to="/register"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { v4 } from "uuid";
 import { HeadingH2Com } from "../components/heading";
 import { CategoryGridMod, CategoryItemMod } from "../modules/category";
@@ -6,8 +6,23 @@ import { CourseGridMod, CourseItemMod } from "../modules/course";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import axiosInstance from "../api/axiosInstance";
 
 const HomePage = () => {
+  // const axiosPrivate = useAxiosPrivate();
+  // useEffect(() => {
+  //   const getCourses = async () => {
+  //     try {
+  //       const res = await axiosPrivate.get("/course");
+  //       console.log(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   getCourses();
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
   return (
     <>
       <div className="h-[200vh] relative">

@@ -18,24 +18,20 @@ import FormLabel from "@mui/material/FormLabel";
 import DividerCom from "../../components/common/DividerCom";
 import {
   BASE_API_URL,
-  MESSAGE_EMAIL,
-  MESSAGE_REQUIRED,
+  MESSAGE_EMAIL_INVALID,
+  MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
-  first_name: yup
-    .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
-  last_name: yup
-    .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required"),
-  phone: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  first_name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  last_name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  phone: yup.string().required(MESSAGE_FIELD_REQUIRED),
   email: yup
     .string()
-    .required(MESSAGE_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL ?? "Invalid email"),
+    .required(MESSAGE_FIELD_REQUIRED)
+    .email(MESSAGE_EMAIL_INVALID),
 });
 
 const CheckoutPage = () => {
