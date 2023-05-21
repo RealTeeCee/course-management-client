@@ -6,7 +6,7 @@ import { TableCom } from "../../../components/table";
 
 const columns = [
   {
-    name: "Customer Name",
+    name: "Course Name",
     selector: (row) => row.firstName,
     sortable: true,
   },
@@ -19,7 +19,7 @@ const columns = [
     selector: (row) => row.email,
   },
   {
-    name: "Số Điện Thoại",
+    name: "Phone",
     selector: (row) => row.phone,
   },
   {
@@ -48,16 +48,16 @@ const columns = [
 ];
 
 const AdminCourseListPage = () => {
-  const [customers, setCustomers] = useState([]);
-  const [filterCustomer, setFilterCustomer] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
 
   const getCustomers = async () => {
     try {
       const res = await axiosInstance.get("https://dummyjson.com/users");
-      setCustomers(res.data.users);
-      setFilterCustomer(res.data.users);
-      console.log(customers);
+      setCourses(res.data.users);
+      setFilterCourse(res.data.users);
+      console.log(courses);
     } catch (error) {
       console.log(error);
     }
@@ -68,11 +68,11 @@ const AdminCourseListPage = () => {
   }, []);
 
   useEffect(() => {
-    const result = customers.filter((customer) => {
-      return customer.firstName.toLowerCase().match(search.toLowerCase());
+    const result = courses.filter((course) => {
+      return course.firstName.toLowerCase().match(search.toLowerCase());
     });
-    setFilterCustomer(result);
-  }, [customers, search]);
+    setFilterCourse(result);
+  }, [courses, search]);
   return (
     <>
       <HeadingH1Com>Admin Courses</HeadingH1Com>
@@ -85,9 +85,10 @@ const AdminCourseListPage = () => {
               </HeadingH2Com> */}
               <span>
                 <TableCom
+                  urlCreate="/admin/create-course"
                   title="List Courses"
                   columns={columns}
-                  items={filterCustomer}
+                  items={filterCourse}
                   search={search}
                   setSearch={setSearch}
                 ></TableCom>

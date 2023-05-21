@@ -43,7 +43,7 @@ const ButtonCom = (props) => {
     case "danger":
       defaultClassName += " bg-tw-danger text-white";
       break;
-    case "light-pink":
+    case "pink":
       defaultClassName += " bg-tw-light-pink text-white";
       break;
     case "gradient":
@@ -88,7 +88,7 @@ ButtonCom.propTypes = {
     "success",
     "info",
     "danger",
-    "light-pink",
+    "pink",
     "gradient",
   ]),
   children: PropTypes.node,
