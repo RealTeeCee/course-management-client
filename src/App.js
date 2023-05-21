@@ -16,6 +16,9 @@ const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
+const AdminCourseListPage = lazy(() =>
+  import("./pages/admin/course/AdminCourseListPage.js")
+);
 const AdminCreateCoursePage = lazy(() =>
   import("./pages/admin/course/AdminCreateCoursePage.js")
 );
@@ -131,6 +134,10 @@ function App() {
           >
             <Route index element={<AdminPage></AdminPage>}></Route>
             <Route
+              path="courses"
+              element={<AdminCourseListPage></AdminCourseListPage>}
+            ></Route>
+            <Route
               path="create-course"
               element={<AdminCreateCoursePage></AdminCreateCoursePage>}
             ></Route>
@@ -142,7 +149,6 @@ function App() {
               path="create-lession"
               element={<AdminCreateLessionPage></AdminCreateLessionPage>}
             ></Route>
-            
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>

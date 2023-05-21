@@ -79,6 +79,7 @@ const HomePage = () => {
         <HeadingH2Com className="text-tw-primary" number={4}>
           Category
         </HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CategoryGridMod>
           {Array(4)
             .fill(0)
@@ -91,6 +92,7 @@ const HomePage = () => {
         <HeadingH2Com className="text-tw-primary">
           Best Selling Course
         </HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
           {Array(4)
             .fill(0)
@@ -101,6 +103,7 @@ const HomePage = () => {
 
         {/* Free Course */}
         <HeadingH2Com className="text-tw-primary">Free Course</HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
           {Array(4)
             .fill(0)
