@@ -42,7 +42,6 @@ const HomeTopbarMod = () => {
     },
   ];
   
-  console.log("User: ", user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
