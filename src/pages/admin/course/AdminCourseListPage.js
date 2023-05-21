@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axiosInstance from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import { HeadingH1Com, HeadingH2Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
@@ -54,7 +54,7 @@ const AdminCourseListPage = () => {
 
   const getCustomers = async () => {
     try {
-      const res = await axios.get("https://dummyjson.com/users");
+      const res = await axiosInstance.get("https://dummyjson.com/users");
       setCustomers(res.data.users);
       setFilterCustomer(res.data.users);
       console.log(customers);
