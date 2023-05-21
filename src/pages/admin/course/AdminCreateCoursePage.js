@@ -25,6 +25,7 @@ import {
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import LayoutAdminCourse from "../../../layouts/admin/LayoutAdminCourse";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -255,8 +256,7 @@ const AdminCreateCoursePage = () => {
   );
 
   return (
-    <>
-      <HeadingH1Com>Create Courses</HeadingH1Com>
+    <LayoutAdminCourse title="Admin Create Course">
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
@@ -462,7 +462,7 @@ const AdminCreateCoursePage = () => {
           </div>
         </div>
       </div>
-    </>
+    </LayoutAdminCourse>
   );
 };
 

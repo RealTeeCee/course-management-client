@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
+import LayoutAdminCourse from "./layouts/admin/LayoutAdminCourse.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
@@ -22,9 +23,17 @@ const AdminCourseListPage = lazy(() =>
 const AdminCreateCoursePage = lazy(() =>
   import("./pages/admin/course/AdminCreateCoursePage.js")
 );
+const AdminSessionListPage = lazy(() =>
+  import("./pages/admin/session/AdminSessionListPage.js")
+);
 const AdminCreateSessionPage = lazy(() =>
   import("./pages/admin/session/AdminCreateSessionPage.js")
 );
+
+const AdminLessionListPage = lazy(() =>
+  import("./pages/admin/lession/AdminLessionListPage.js")
+);
+
 const AdminCreateLessionPage = lazy(() =>
   import("./pages/admin/lession/AdminCreateLessionPage.js")
 );
@@ -133,20 +142,33 @@ function App() {
             }
           >
             <Route index element={<AdminPage></AdminPage>}></Route>
+            {/* Admin Courses */}
             <Route
               path="courses"
               element={<AdminCourseListPage></AdminCourseListPage>}
             ></Route>
             <Route
-              path="create-course"
+              path="courses/create"
               element={<AdminCreateCoursePage></AdminCreateCoursePage>}
             ></Route>
+
+            {/* Admin Sessions */}
             <Route
-              path="create-session"
-              element={<AdminCreateSessionPage></AdminCreateSessionPage>}
+              path="sessions"
+              element={<AdminSessionListPage></AdminSessionListPage>}
             ></Route>
             <Route
-              path="create-lession"
+              path="sessions/create"
+              element={<AdminCreateSessionPage></AdminCreateSessionPage>}
+            ></Route>
+
+            {/* Admin Lessions */}
+            <Route
+              path="lessions"
+              element={<AdminLessionListPage></AdminLessionListPage>}
+            ></Route>
+            <Route
+              path="lessions/create"
               element={<AdminCreateLessionPage></AdminCreateLessionPage>}
             ></Route>
           </Route>

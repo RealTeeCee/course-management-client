@@ -6,7 +6,7 @@ import { MESSAGE_FORBIDDEN, MESSAGE_UNAUTHORIZE } from "../../constants/config";
 import { USER_ROLE } from "../../constants/permissions";
 import ErrorPage from "../errors/ErrorPage";
 
-const CheckAuthPage = ({ allowPermissions = [], children }) => {
+const CheckAuthPage = ({ allowPermissions = [] }) => {
   const { user } = useSelector((state) => state.auth);
   const userRole = user?.role || USER_ROLE;
   const location = useLocation();

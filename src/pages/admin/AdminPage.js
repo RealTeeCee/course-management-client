@@ -6,14 +6,14 @@ import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
+import LayoutAdminCourse from "../../layouts/admin/LayoutAdminCourse";
 
 const AdminPage = () => {
   // const { user } = useSelector((state) => state.auth);
   // const navigate = useNavigate();
 
   return (
-    <>
-      <HeadingH1Com>Dashboard</HeadingH1Com>
+    <LayoutAdminCourse title="Admin Dashboard">
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
@@ -22,14 +22,14 @@ const AdminPage = () => {
                 Management Area
               </HeadingH2Com>
             </div>
-            <div className="card-body flex gap-x-4 h-[100vh]">
+            <div className="card-body flex gap-x-4 h-[30vh]">
               <NavLink to="/admin/courses">
                 <ButtonCom backgroundColor="gradient">Course</ButtonCom>
               </NavLink>
-              <NavLink to="/admin/create-session">
+              <NavLink to="/admin/sessions">
                 <ButtonCom backgroundColor="gradient">Session</ButtonCom>
               </NavLink>
-              <NavLink to="/admin/create-lession">
+              <NavLink to="/admin/lessions">
                 <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
               </NavLink>
             </div>
@@ -38,17 +38,17 @@ const AdminPage = () => {
       </div>
 
       {/* <div className="flex gap-x-4">
-        <NavLink to="/admin/create-course">
+        <NavLink to="/admin/courses">
           <ButtonCom backgroundColor="gradient">Course</ButtonCom>
         </NavLink>
-        <NavLink to="/admin/create-session">
+        <NavLink to="/admin/sessions">
           <ButtonCom backgroundColor="gradient">Session</ButtonCom>
         </NavLink>
-        <NavLink to="/admin/create-lession">
+        <NavLink to="/admin/lessions">
           <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
         </NavLink>
       </div> */}
-    </>
+    </LayoutAdminCourse>
   );
 };
 

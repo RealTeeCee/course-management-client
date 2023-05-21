@@ -255,7 +255,7 @@ const AdminCreateLessionPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Create Lessions</HeadingH1Com>
+      <HeadingH1Com>Admin Create Lessions</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">

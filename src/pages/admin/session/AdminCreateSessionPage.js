@@ -255,7 +255,7 @@ const AdminCreateSessionPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Create Sessions</HeadingH1Com>
+      <HeadingH1Com>Admin Create Sessions</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">

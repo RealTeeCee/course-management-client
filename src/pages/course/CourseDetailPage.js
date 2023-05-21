@@ -179,10 +179,10 @@ const CourseDetailPage = () => {
                     Buy only <span className="text-tw-light-pink">$300</span>
                   </HeadingH2Com>
                 )}
+                <GapYCom></GapYCom>
                 <Link to={`/checkout/${slug}`}>
                   <ButtonCom
                     backgroundColor="gradient"
-                    className="rounded transition-all duration-300 hover:bg-gradient-to-l"
                   >
                     Enrolling Now
                   </ButtonCom>

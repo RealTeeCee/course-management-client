@@ -6,7 +6,7 @@ import { TableCom } from "../../../components/table";
 
 const columns = [
   {
-    name: "Course Name",
+    name: "Lession Name",
     selector: (row) => row.firstName,
     sortable: true,
   },
@@ -47,24 +47,23 @@ const columns = [
   },
 ];
 
-const AdminCourseListPage = () => {
+const AdminLessionListPage = () => {
   const [courses, setCourses] = useState([]);
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
 
-  const getCustomers = async () => {
+  const getCourses = async () => {
     try {
       const res = await axiosInstance.get("https://dummyjson.com/users");
       setCourses(res.data.users);
       setFilterCourse(res.data.users);
-      console.log(courses);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getCustomers();
+    getCourses();
   }, []);
 
   useEffect(() => {
@@ -75,7 +74,7 @@ const AdminCourseListPage = () => {
   }, [courses, search]);
   return (
     <>
-      <HeadingH1Com>Admin Courses</HeadingH1Com>
+      <HeadingH1Com>Admin Lessions</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
@@ -85,8 +84,8 @@ const AdminCourseListPage = () => {
               </HeadingH2Com> */}
               <span>
                 <TableCom
-                  urlCreate="/admin/courses/create"
-                  title="List Courses"
+                  urlCreate="/admin/lessions/create"
+                  title="List Lessions"
                   columns={columns}
                   items={filterCourse}
                   search={search}
@@ -102,4 +101,4 @@ const AdminCourseListPage = () => {
   );
 };
 
-export default AdminCourseListPage;
+export default AdminLessionListPage;

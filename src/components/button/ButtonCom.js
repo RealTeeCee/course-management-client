@@ -48,7 +48,7 @@ const ButtonCom = (props) => {
       break;
     case "gradient":
       defaultClassName +=
-        " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white";
+        " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white transition-all duration-300 hover:bg-gradient-to-l";
       break;
     default:
       // defaultClassName += ` ${backgroundColor}`;

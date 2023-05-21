@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
-import { HeadingH1Com, HeadingH2Com } from "../../../components/heading";
+import { HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 
 const columns = [
@@ -47,24 +47,23 @@ const columns = [
   },
 ];
 
-const AdminCourseListPage = () => {
+const AdminSessionListPage = () => {
   const [courses, setCourses] = useState([]);
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
 
-  const getCustomers = async () => {
+  const getCourses = async () => {
     try {
       const res = await axiosInstance.get("https://dummyjson.com/users");
       setCourses(res.data.users);
       setFilterCourse(res.data.users);
-      console.log(courses);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getCustomers();
+    getCourses();
   }, []);
 
   useEffect(() => {
@@ -75,18 +74,15 @@ const AdminCourseListPage = () => {
   }, [courses, search]);
   return (
     <>
-      <HeadingH1Com>Admin Courses</HeadingH1Com>
+      <HeadingH1Com>Admin Sessions</HeadingH1Com>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
             <div className="card-header py-3">
-              {/* <HeadingH2Com className="text-tw-light-pink">
-                List Courses
-              </HeadingH2Com> */}
               <span>
                 <TableCom
-                  urlCreate="/admin/courses/create"
-                  title="List Courses"
+                  urlCreate="/admin/sessions/create"
+                  title="List Sessions"
                   columns={columns}
                   items={filterCourse}
                   search={search}
@@ -102,4 +98,4 @@ const AdminCourseListPage = () => {
   );
 };
 
-export default AdminCourseListPage;
+export default AdminSessionListPage;
