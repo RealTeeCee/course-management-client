@@ -26,6 +26,7 @@ import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import LayoutAdminCourse from "../../../layouts/admin/LayoutAdminCourse";
+import ButtonBackCom from "../../../components/button/ButtonBackCom";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -147,15 +148,11 @@ const AdminCreateCoursePage = () => {
 
         fd.append("file", image[0]);
         console.log(fd);
-        const res = await axiosPrivate.post(
-          `/admin/course/create`,
-          fd,
-          {
-            headers: {
-              "Content-type": "multipart/form-data",
-            },
-          }
-        );
+        const res = await axiosPrivate.post(`/admin/course/create`, fd, {
+          headers: {
+            "Content-type": "multipart/form-data",
+          },
+        });
         toast.success(`${res.message}`);
         setIsLoading(false);
         reset();
@@ -256,7 +253,12 @@ const AdminCreateCoursePage = () => {
   );
 
   return (
-    <LayoutAdminCourse title="Admin Create Course">
+    <>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Admin Create Courses</HeadingH1Com>
+        <ButtonBackCom></ButtonBackCom>
+      </div>
+      <GapYCom></GapYCom>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
@@ -462,7 +464,7 @@ const AdminCreateCoursePage = () => {
           </div>
         </div>
       </div>
-    </LayoutAdminCourse>
+    </>
   );
 };
 

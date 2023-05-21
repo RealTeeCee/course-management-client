@@ -65,6 +65,7 @@ const CheckoutPage = () => {
   return (
     <>
       <HeadingH1Com>Payment Details</HeadingH1Com>
+      <GapYCom></GapYCom>
       <div className="card">
         <form
           className="theme-form"

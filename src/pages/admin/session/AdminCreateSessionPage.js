@@ -24,6 +24,7 @@ import {
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
+import ButtonBackCom from "../../../components/button/ButtonBackCom";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -255,7 +256,11 @@ const AdminCreateSessionPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Admin Create Sessions</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Admin Create Sessions</HeadingH1Com>
+        <ButtonBackCom></ButtonBackCom>
+      </div>
+      <GapYCom></GapYCom>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
+import ButtonBackCom from "../../../components/button/ButtonBackCom";
+import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 
@@ -74,7 +76,11 @@ const AdminSessionListPage = () => {
   }, [courses, search]);
   return (
     <>
-      <HeadingH1Com>Admin Sessions</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Admin Sessions</HeadingH1Com>
+        <ButtonBackCom></ButtonBackCom>
+      </div>
+      <GapYCom></GapYCom>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">

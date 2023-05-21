@@ -101,6 +101,7 @@ const CourseDetailPage = () => {
               <HeadingH1Com className="course-detail-title !mb-3">
                 Become Master PHP
               </HeadingH1Com>
+              <GapYCom></GapYCom>
               <div className="course-detail-description">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi
                 officia quos mollitia laboriosam molestiae commodi, quidem dicta
@@ -111,6 +112,7 @@ const CourseDetailPage = () => {
             <GapYCom></GapYCom>
             <div className="course-detail-body">
               <HeadingH2Com>What will you achieve?</HeadingH2Com>
+              <GapYCom></GapYCom>
               <div className="course-detail-archives row">
                 {Array(4)
                   .fill(0)
@@ -121,11 +123,12 @@ const CourseDetailPage = () => {
                     ></ArchiveItems>
                   ))}
               </div>
-
+              <GapYCom></GapYCom>
               <div className="course-detail-description">
                 <HeadingH2Com className="text-tw-primary">
                   Course Description
                 </HeadingH2Com>
+                <GapYCom></GapYCom>
                 <div className="flex justify-between items-center text-sm mb-2">
                   <div className="flex gap-x-3">
                     <span className="">
@@ -181,9 +184,7 @@ const CourseDetailPage = () => {
                 )}
                 <GapYCom></GapYCom>
                 <Link to={`/checkout/${slug}`}>
-                  <ButtonCom
-                    backgroundColor="gradient"
-                  >
+                  <ButtonCom backgroundColor="gradient">
                     Enrolling Now
                   </ButtonCom>
                 </Link>
@@ -235,6 +236,7 @@ const CourseDetailPage = () => {
         <HeadingH2Com className="text-tw-primary" number={23}>
           Related Course
         </HeadingH2Com>
+        <GapYCom></GapYCom>
         <CourseGridMod>
           {Array(23)
             .fill(0)

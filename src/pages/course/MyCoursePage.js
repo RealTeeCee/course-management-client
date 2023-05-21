@@ -1,6 +1,7 @@
 import { Pagination } from "antd";
 import React from "react";
 import { v4 } from "uuid";
+import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
 import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
@@ -14,6 +15,7 @@ const MyCoursePage = () => {
   return (
     <>
       <HeadingH1Com number={formatNumber(5)}>My Courses</HeadingH1Com>
+      <GapYCom></GapYCom>
       <CourseGridMod>
         {Array(5)
           .fill(0)
