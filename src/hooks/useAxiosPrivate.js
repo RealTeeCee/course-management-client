@@ -10,8 +10,7 @@ export default function useAxiosPrivate() {
   useEffect(() => {
     const reqInterceptor = axiosPrivate.interceptors.request.use(
       (config) => {
-        // Check headers if dont has Authorization
-        if (!config.headers["Authorization"]) {
+        if (!config.headers.Authorization) {
           // config.headers["Authorization"] = `Bearer ${auth.access_token}`;
           config.headers.Authorization = `Bearer ${auth.access_token}`;
         }
@@ -26,7 +25,7 @@ export default function useAxiosPrivate() {
       (res) => res,
       async (error) => {
         const prevReq = error.config;
-        if (error?.response?.status >= 400 && !prevReq.sent) {
+        if ((error?.response?.status === 401 || error?.response?.status === 403) && !prevReq.sent) {
           prevReq.sent = true;
 
           const newAccessToken = await refreshToken();
@@ -43,7 +42,7 @@ export default function useAxiosPrivate() {
 
     return () => {
       axiosPrivate.interceptors.request.eject(reqInterceptor);
-      axiosPrivate.interceptors.request.eject(resInterceptor);
+      axiosPrivate.interceptors.response.eject(resInterceptor);
     };
   }, [auth.access_token, refreshToken]);
 

@@ -24,6 +24,7 @@ import {
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -84,7 +85,7 @@ const AdminCreateCoursePage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-
+  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
@@ -145,12 +146,12 @@ const AdminCreateCoursePage = () => {
 
         fd.append("file", image[0]);
         console.log(fd);
-        const res = await axiosInstance.post(
-          `${BASE_API_URL}/admin/course/create`,
+        const res = await axiosPrivate.post(
+          `/admin/course/create`,
           fd,
           {
             headers: {
-              "content-type": "multipart/form-data",
+              "Content-type": "multipart/form-data",
             },
           }
         );
@@ -263,7 +264,6 @@ const AdminCreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
               id="form-create"
-              encType="multipart/form-data"
             >
               {/* <div className="card-header">
                 <h5>Form Create Course</h5>
