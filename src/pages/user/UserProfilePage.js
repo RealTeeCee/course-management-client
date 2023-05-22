@@ -11,8 +11,17 @@ import {
 import { Link } from "react-router-dom";
 import { v4 } from "uuid";
 import { FcLike, FcComments } from "react-icons/fc";
+import {
+  IconClockCom,
+  IconEmailCom,
+  IconPhoneCom,
+  IconUserCom,
+} from "../../components/icon";
+import { useSelector } from "react-redux";
 
 const UserProfilePage = () => {
+  const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const [coverImage, setCoverImage] = useState(Carousel_6);
 
   const handleCoverImageChange = (event) => {
@@ -92,19 +101,19 @@ const UserProfilePage = () => {
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
             <div className="text-xl font-bold text-fBlack">User Profile</div>
             <div className="mt-4 flex items-center">
-              <FaUser />
+              <IconUserCom></IconUserCom>
               <span className="ml-2">FPT Aptech </span>
             </div>
             <div className="mt-4 flex items-center">
-              <FaEnvelope />
-              <span className="ml-2">fpt.aptech@gmail.com</span>
+              <IconEmailCom></IconEmailCom>
+              <span className="ml-2">{user && user.email}</span>
             </div>
             <div className="mt-4 flex items-center">
-              <FaPhone />
+              <IconPhoneCom></IconPhoneCom>
               <span className="ml-2">091900909 </span>
             </div>
             <div className="mt-4 flex items-center">
-              <FaClock />
+              <IconClockCom></IconClockCom>
               <span className="ml-2">From 2019 To Present </span>
             </div>
           </div>
@@ -152,64 +161,26 @@ const UserProfilePage = () => {
                   Courses Enrolled
                 </div>
               </div>
-              <Link key={v4()} to={`/courses/learn-php-${1}`}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                  <div>
-                    <img src={Carousel_6} alt="" className="w-full" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <p className="font-bold">Build Website With Reactjs</p>
-                    <p className="mt-1">
-                      ReactJS is an open-source JavaScript library created by
-                      Facebook's Jordan Walke to make user interfaces for both
-                      web and mobile systems. React was first used in 2011 on
-                      Facebook's newsfeed.
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                <div>
-                  <img src={Carousel_6} alt="" className="w-full" />
-                </div>
-                <div className="md:col-span-2">
-                  <p className="font-bold">Build Website With Reactjs</p>
-                  <p className="mt-1">
-                    ReactJS is an open-source JavaScript library created by
-                    Facebook's Jordan Walke to make user interfaces for both web
-                    and mobile systems. React was first used in 2011 on
-                    Facebook's newsfeed.
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                <div>
-                  <img src={Carousel_6} alt="" className="w-full" />
-                </div>
-                <div className="md:col-span-2">
-                  <p className="font-bold">Build Website With Reactjs</p>
-                  <p className="mt-1">
-                    ReactJS is an open-source JavaScript library created by
-                    Facebook's Jordan Walke to make user interfaces for both web
-                    and mobile systems. React was first used in 2011 on
-                    Facebook's newsfeed.
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                <div>
-                  <img src={Carousel_6} alt="" className="w-full" />
-                </div>
-                <div className="md:col-span-2">
-                  <p className="font-bold">Build Website With Reactjs</p>
-                  <p className="mt-1">
-                    ReactJS is an open-source JavaScript library created by
-                    Facebook's Jordan Walke to make user interfaces for both web
-                    and mobile systems. React was first used in 2011 on
-                    Facebook's newsfeed.
-                  </p>
-                </div>
-              </div>
+              {Array(4)
+                .fill(0)
+                .map((item, index) => (
+                  <Link key={v4()} to={`/courses/learn-${++index}`}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
+                      <div>
+                        <img src={Carousel_6} alt="" className="w-full" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="font-bold">Build Website With Reactjs</p>
+                        <p className="mt-1">
+                          ReactJS is an open-source JavaScript library created
+                          by Facebook's Jordan Walke to make user interfaces for
+                          both web and mobile systems. React was first used in
+                          2011 on Facebook's newsfeed.
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               {/* End Courses attended */}
             </div>
           </div>

@@ -64,7 +64,7 @@ const CourseDetailPage = () => {
   // const [openKeys, setOpenKeys] = useState(["1"]);
   const [openKeys, setOpenKeys] = useState(String(sessionItems[0].id));
   const relatedCourseLimitPage = 4;
-  const { startOffSet, endOffSet, currentPage, handleChangePage } =
+  const { startIndex, endIndex, currentPage, handleChangePage } =
     usePagination(1, relatedCourseLimitPage);
 
   const handleChangeCollapse = (keys) => {
@@ -241,7 +241,7 @@ const CourseDetailPage = () => {
           {Array(23)
             .fill(0)
             .map((item, index) => {
-              if (index >= startOffSet && index < endOffSet) {
+              if (index >= startIndex && index < endIndex) {
                 return <CourseItemMod key={v4()}></CourseItemMod>;
               }
               return null;

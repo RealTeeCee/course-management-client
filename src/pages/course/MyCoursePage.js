@@ -9,7 +9,7 @@ import { CourseGridMod, CourseItemMod } from "../../modules/course";
 import { formatNumber } from "../../utils/helper";
 
 const MyCoursePage = () => {
-  const { startOffSet, endOffSet, currentPage, handleChangePage } =
+  const { startIndex, endIndex, currentPage, handleChangePage } =
     usePagination(1);
 
   return (
@@ -20,7 +20,7 @@ const MyCoursePage = () => {
         {Array(5)
           .fill(0)
           .map((item, index) => {
-            if (index >= startOffSet && index < endOffSet) {
+            if (index >= startIndex && index < endIndex) {
               return <CourseItemMod key={v4()} isPaid={true}></CourseItemMod>;
             }
             return null;

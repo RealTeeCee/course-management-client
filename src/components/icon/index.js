@@ -19,3 +19,5 @@ export const { default: IconUserCom } = require("./IconUserCom");
 export const { default: IconLoginCom } = require("./IconLoginCom");
 export const { default: IconLogoutCom } = require("./IconLogoutCom");
 export const { default: IconRegisterCom } = require("./IconRegisterCom");
+export const { default: IconEmailCom } = require("./IconEmailCom");
+export const { default: IconPhoneCom } = require("./IconPhoneCom");

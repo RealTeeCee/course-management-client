@@ -49,6 +49,4 @@ export const blog = [
     date: "November 17, 2022",
     author: "Beau Carnes",
   },
-
-
 ];

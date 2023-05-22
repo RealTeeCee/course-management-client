@@ -7,8 +7,8 @@ export default function usePagination(
 ) {
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  const startOffSet = (currentPage - 1) * parseInt(defaultPageSize);
-  const endOffSet = startOffSet + parseInt(defaultPageSize);
+  const startIndex = (currentPage - 1) * parseInt(defaultPageSize);
+  const endIndex = startIndex + parseInt(defaultPageSize);
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
@@ -16,7 +16,7 @@ export default function usePagination(
   return {
     currentPage,
     handleChangePage,
-    startOffSet,
-    endOffSet,
+    startIndex,
+    endIndex,
   };
 }
