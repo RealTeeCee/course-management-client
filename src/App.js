@@ -23,11 +23,11 @@ const AdminCourseListPage = lazy(() =>
 const AdminCreateCoursePage = lazy(() =>
   import("./pages/admin/course/AdminCreateCoursePage.js")
 );
-const AdminSessionListPage = lazy(() =>
-  import("./pages/admin/session/AdminSessionListPage.js")
+const AdminSectionListPage = lazy(() =>
+  import("./pages/admin/section/AdminSectionListPage.js")
 );
-const AdminCreateSessionPage = lazy(() =>
-  import("./pages/admin/session/AdminCreateSessionPage.js")
+const AdminCreateSectionPage = lazy(() =>
+  import("./pages/admin/section/AdminCreateSectionPage.js")
 );
 
 const AdminLessionListPage = lazy(() =>
@@ -152,14 +152,14 @@ function App() {
               element={<AdminCreateCoursePage></AdminCreateCoursePage>}
             ></Route>
 
-            {/* Admin Sessions */}
+            {/* Admin Sections */}
             <Route
-              path="sessions"
-              element={<AdminSessionListPage></AdminSessionListPage>}
+              path="sections"
+              element={<AdminSectionListPage></AdminSectionListPage>}
             ></Route>
             <Route
-              path="sessions/create"
-              element={<AdminCreateSessionPage></AdminCreateSessionPage>}
+              path="sections/create"
+              element={<AdminCreateSectionPage></AdminCreateSectionPage>}
             ></Route>
 
             {/* Admin Lessions */}

@@ -26,8 +26,8 @@ const AdminPage = () => {
               <NavLink to="/admin/courses">
                 <ButtonCom backgroundColor="gradient">Course</ButtonCom>
               </NavLink>
-              <NavLink to="/admin/sessions">
-                <ButtonCom backgroundColor="gradient">Session</ButtonCom>
+              <NavLink to="/admin/sections">
+                <ButtonCom backgroundColor="gradient">Section</ButtonCom>
               </NavLink>
               <NavLink to="/admin/lessions">
                 <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
@@ -41,8 +41,8 @@ const AdminPage = () => {
         <NavLink to="/admin/courses">
           <ButtonCom backgroundColor="gradient">Course</ButtonCom>
         </NavLink>
-        <NavLink to="/admin/sessions">
-          <ButtonCom backgroundColor="gradient">Session</ButtonCom>
+        <NavLink to="/admin/sections">
+          <ButtonCom backgroundColor="gradient">Section</ButtonCom>
         </NavLink>
         <NavLink to="/admin/lessions">
           <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
