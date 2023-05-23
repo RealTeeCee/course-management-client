@@ -44,9 +44,8 @@ const BlogSelectPage = () => {
             .map((item, index) => {
               if (index >= startIndex && index < endIndex) {
                 return (
-                  <Link key={blog.id} to={`/blogs/${2}`}>
+                  <Link key={`${blog.id} ${index}`} to={`/blogs/${2}`}>
                     <div
-                      key={index}
                       className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"
                     >
                       <div id="img">
