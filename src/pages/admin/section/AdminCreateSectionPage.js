@@ -25,6 +25,7 @@ import {
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -85,7 +86,7 @@ const AdminCreateSectionPage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-
+  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
@@ -127,7 +128,6 @@ const AdminCreateSectionPage = () => {
       toast.error(MESSAGE_GENERAL_FAILED);
       setError("sale_price", { message: "Sale Price cannot > Price" });
     } else {
-      resetValues();
       try {
         setIsLoading(!isLoading);
         let fd = new FormData();
@@ -143,23 +143,19 @@ const AdminCreateSectionPage = () => {
             description,
           })
         );
-
         fd.append("file", image[0]);
         console.log(fd);
-        const res = await axiosInstance.post(
-          `${BASE_API_URL}/admin/course/create`,
-          fd,
-          {
-            headers: {
-              "content-type": "multipart/form-data",
-            },
-          }
-        );
+        const res = await axiosPrivate.post(`/course`, fd, {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        });
         toast.success(`${res.message}`);
-        setIsLoading(false);
+        resetValues();
         reset();
       } catch (error) {
         toast.error(`${MESSAGE_GENERAL_FAILED} ${error.message}`);
+      } finally {
         setIsLoading(false);
       }
     }

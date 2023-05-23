@@ -7,22 +7,21 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import axiosInstance from "../api/axiosInstance";
 
 const HomePage = () => {
-  // const axiosPrivate = useAxiosPrivate();
-  // useEffect(() => {
-  //   const getCourses = async () => {
-  //     try {
-  //       const res = await axiosPrivate.get("/course");
-  //       console.log(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   getCourses();
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const axiosPrivate = useAxiosPrivate();
+  useEffect(() => {
+    const getCourses = async () => {
+      try {
+        const res = await axiosPrivate.get("/course");
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCourses();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div className="h-[200vh] relative">

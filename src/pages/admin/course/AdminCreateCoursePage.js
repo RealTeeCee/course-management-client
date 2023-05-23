@@ -103,7 +103,6 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    console.log(values);
     const {
       name,
       category_id,
@@ -129,7 +128,6 @@ const AdminCreateCoursePage = () => {
       toast.error(MESSAGE_GENERAL_FAILED);
       setError("sale_price", { message: "Sale Price cannot > Price" });
     } else {
-      resetValues();
       try {
         setIsLoading(!isLoading);
         let fd = new FormData();
@@ -145,19 +143,18 @@ const AdminCreateCoursePage = () => {
             description,
           })
         );
-
         fd.append("file", image[0]);
-        console.log(fd);
-        const res = await axiosPrivate.post(`/admin/course/create`, fd, {
+        const res = await axiosPrivate.post(`/course`, fd, {
           headers: {
             "Content-type": "multipart/form-data",
           },
         });
-        toast.success(`${res.message}`);
+        toast.success(`${res.data.message}`);
         setIsLoading(false);
+        resetValues();
         reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.message}`);
+        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.data.message}`);
         setIsLoading(false);
       }
     }
