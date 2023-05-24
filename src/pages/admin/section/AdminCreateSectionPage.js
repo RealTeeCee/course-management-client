@@ -14,7 +14,6 @@ import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
   BASE_API_URL,
-  IMG_BB_URL,
   MESSAGE_GENERAL_FAILED,
   MESSAGE_FIELD_INVALID,
   MESSAGE_UPLOAD_REQUIRED,
@@ -26,6 +25,7 @@ import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { IMG_BB_URL } from "../../../constants/endpoint";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -253,7 +253,7 @@ const AdminCreateSectionPage = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Create Sessions</HeadingH1Com>
+        <HeadingH1Com>Admin Create Section</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
       </div>
       <GapYCom></GapYCom>

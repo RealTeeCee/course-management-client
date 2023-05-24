@@ -5,6 +5,8 @@ import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
+import { API_COURSE_URL } from "../../../constants/endpoint";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 const columns = [
   {
@@ -50,9 +52,19 @@ const columns = [
 ];
 
 const AdminCourseListPage = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [courses, setCourses] = useState([]);
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
+  
+  const getCourses = async () => {
+    try {
+      const res = await axiosPrivate.get(API_COURSE_URL);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getCustomers = async () => {
     try {
@@ -67,6 +79,7 @@ const AdminCourseListPage = () => {
 
   useEffect(() => {
     getCustomers();
+    getCourses();
   }, []);
 
   useEffect(() => {

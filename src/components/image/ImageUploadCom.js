@@ -4,8 +4,9 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 import axios from "axios";
-import { IMG_BB_URL, MESSAGE_UPLOAD_IMAGE_FAILED } from "../../constants/config";
+import {  MESSAGE_UPLOAD_IMAGE_FAILED } from "../../constants/config";
 import { toast } from "react-toastify";
+import { IMG_BB_URL } from "../../constants/endpoint";
 
 const ImageUploadCom = (props) => {
   const {

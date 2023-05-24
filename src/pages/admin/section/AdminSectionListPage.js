@@ -77,7 +77,7 @@ const AdminSectionListPage = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Sessions</HeadingH1Com>
+        <HeadingH1Com>Admin Section</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
       </div>
       <GapYCom></GapYCom>
@@ -87,8 +87,8 @@ const AdminSectionListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
-                  urlCreate="/admin/sessions/create"
-                  title="List Sessions"
+                  urlCreate="/admin/sections/create"
+                  title="List Sections"
                   columns={columns}
                   items={filterCourse}
                   search={search}
