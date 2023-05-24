@@ -11,7 +11,6 @@ export default function useAxiosPrivate() {
     const reqInterceptor = axiosPrivate.interceptors.request.use(
       (config) => {
         if (!config.headers.Authorization) {
-          // config.headers["Authorization"] = `Bearer ${auth.access_token}`;
           config.headers.Authorization = `Bearer ${auth.access_token}`;
         }
         return config;

@@ -7,13 +7,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { API_COURSE_URL } from "../constants/endpoint";
 
 const HomePage = () => {
   const axiosPrivate = useAxiosPrivate();
   useEffect(() => {
     const getCourses = async () => {
       try {
-        const res = await axiosPrivate.get("/course");
+        const res = await axiosPrivate.get(API_COURSE_URL);
         console.log(res.data);
       } catch (error) {
         console.log(error);
