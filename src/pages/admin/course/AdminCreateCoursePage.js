@@ -43,6 +43,10 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
+  duration: yup
+    .number(MESSAGE_NUMBER_REQUIRED)
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(1, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -110,6 +114,7 @@ const AdminCreateCoursePage = () => {
       sale_price,
       image,
       tags,
+      duration,
       archivements,
       description,
     } = values;
@@ -139,6 +144,7 @@ const AdminCreateCoursePage = () => {
             price,
             sale_price,
             tags,
+            duration,
             archivements,
             description,
           })
@@ -305,7 +311,7 @@ const AdminCreateCoursePage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  <div className="col-sm-6">
+                  <div className="col-sm-4">
                     <LabelCom htmlFor="price">Price</LabelCom>
                     <InputCom
                       type="number"
@@ -316,7 +322,7 @@ const AdminCreateCoursePage = () => {
                       errorMsg={errors.price?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-6">
+                  <div className="col-sm-4">
                     <LabelCom htmlFor="sale_price">Sale Price</LabelCom>
                     <InputCom
                       type="number"
@@ -325,6 +331,19 @@ const AdminCreateCoursePage = () => {
                       register={register}
                       placeholder="Input Sale Price"
                       errorMsg={errors.sale_price?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-4">
+                    <LabelCom htmlFor="duration" subText="(Hour)">
+                      Estimate Duration
+                    </LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="duration"
+                      register={register}
+                      placeholder="Estimate Duration"
+                      errorMsg={errors.duration?.message}
                     ></InputCom>
                   </div>
                 </div>
