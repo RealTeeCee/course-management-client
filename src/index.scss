@@ -7,7 +7,6 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    max-width: 1440px;
   }
   h1 {
     @apply text-3xl md:text-4xl font-bold;
@@ -15,6 +14,9 @@
 }
 
 @layer components {
+  .layout-home {
+    @apply max-w-[1440px] mx-auto;
+  }
   // ******** GENERAL CUSTOM CSS *********
   .tw-transition-all {
     @apply transition-all duration-300;

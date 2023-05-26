@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
-import LayoutAdminCourse from "./layouts/admin/LayoutAdminCourse.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
+import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 
@@ -54,6 +54,8 @@ const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
+
+const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
 
 const customStyles = {
   content: {},
@@ -174,6 +176,16 @@ function App() {
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>
+
+        {/* ********* Learn ********* */}
+        <Route element={<LayoutLearning></LayoutLearning>}>
+          {/* course slug */}
+          <Route
+            path="/learn/:slug"
+            element={<LearnPage></LearnPage>}
+          ></Route>
+        </Route>
+        {/* ********* END Learn ********* */}
 
         {/* ********* Authentication ********* */}
         <Route element={<LayoutAuthentication></LayoutAuthentication>}>

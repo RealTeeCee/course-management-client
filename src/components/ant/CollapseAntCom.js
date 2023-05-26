@@ -1,7 +1,10 @@
 import { Collapse } from "antd";
+import { Link } from "react-router-dom";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
+  type = "default",
+  slug = "/",
   openKeys = ["1"],
   onChange = () => {},
   isOpen = false,
@@ -30,17 +33,32 @@ const CollapseAntCom = ({
                 // eslint-disable-next-line array-callback-return
                 childItems.map((child, i) => {
                   if (child.section_id === parent.id) {
-                    return (
-                      <div
-                        key={child.id}
-                        className="flex justify-between items-center"
-                      >
-                        <span>
-                          {lessionNo++}. {child.name}
-                        </span>
-                        <span>{child.duration}</span>
-                      </div>
-                    );
+                    if (type === "learn") {
+                      return (
+                        <Link
+                          to={`/learn/${slug}?id=${child.id}`}
+                          key={child.id}
+                          className="flex justify-between items-center"
+                        >
+                          <span>
+                            {lessionNo++}. {child.name}
+                          </span>
+                          <span>{child.duration}</span>
+                        </Link>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={child.id}
+                          className="flex justify-between items-center"
+                        >
+                          <span>
+                            {lessionNo++}. {child.name}
+                          </span>
+                          <span>{child.duration}</span>
+                        </div>
+                      );
+                    }
                   }
                 })}
             </Panel>

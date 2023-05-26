@@ -4,16 +4,18 @@ import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
+import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
-import LayoutAdminCourse from "../../layouts/admin/LayoutAdminCourse";
 
 const AdminPage = () => {
   // const { user } = useSelector((state) => state.auth);
   // const navigate = useNavigate();
 
   return (
-    <LayoutAdminCourse title="Admin Dashboard">
+    <>
+      <HeadingH1Com>Admin Dashboard</HeadingH1Com>
+      <GapYCom></GapYCom>
       <div className="row">
         <div className="col-sm-12">
           <div className="card">
@@ -36,19 +38,7 @@ const AdminPage = () => {
           </div>
         </div>
       </div>
-
-      {/* <div className="flex gap-x-4">
-        <NavLink to="/admin/courses">
-          <ButtonCom backgroundColor="gradient">Course</ButtonCom>
-        </NavLink>
-        <NavLink to="/admin/sections">
-          <ButtonCom backgroundColor="gradient">Section</ButtonCom>
-        </NavLink>
-        <NavLink to="/admin/lessions">
-          <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
-        </NavLink>
-      </div> */}
-    </LayoutAdminCourse>
+    </>
   );
 };
 

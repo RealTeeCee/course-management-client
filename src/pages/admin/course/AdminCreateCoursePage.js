@@ -25,7 +25,6 @@ import {
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import LayoutAdminCourse from "../../../layouts/admin/LayoutAdminCourse";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { IMG_BB_URL } from "../../../constants/endpoint";
 Quill.register("modules/imageUploader", ImageUploader);

@@ -17,7 +17,7 @@ import { ImageCom } from "../../components/image";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 
-const sessionItems = [
+const sectionItems = [
   {
     id: 1,
     name: "Introduce",
@@ -55,21 +55,23 @@ const lessionItems = [
   },
 ];
 
-const sessionIds = sessionItems.map((item) => String(item.id));
+const sessionIds = sectionItems.map((item) => String(item.id));
 const totalLession = 2;
 
 const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   // const [openKeys, setOpenKeys] = useState(["1"]);
-  const [openKeys, setOpenKeys] = useState(String(sessionItems[0].id));
+  const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
   const relatedCourseLimitPage = 4;
-  const { startIndex, endIndex, currentPage, handleChangePage } =
-    usePagination(1, relatedCourseLimitPage);
+  const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
+    1,
+    relatedCourseLimitPage
+  );
 
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
-    if (keys.length === sessionItems.length) {
+    if (keys.length === sectionItems.length) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
@@ -157,7 +159,7 @@ const CourseDetailPage = () => {
                   isOpen={isOpen}
                   onChange={handleChangeCollapse}
                   openKeys={openKeys}
-                  parentItems={sessionItems}
+                  parentItems={sectionItems}
                   childItems={lessionItems}
                 ></CollapseAntCom>
               </div>
