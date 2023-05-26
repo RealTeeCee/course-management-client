@@ -11,6 +11,7 @@ import Overlay from "../../../components/common/Overlay";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
   IconEditCom,
+  IconEyeCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
@@ -170,7 +171,7 @@ const AdminCourseListPage = () => {
       cell: (row) => (
         <>
           <ButtonCom
-            className="px-3 rounded-none mr-2"
+            className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
               // alert(`Update Course id: ${row.id}`);
@@ -178,16 +179,24 @@ const AdminCourseListPage = () => {
               setCourseId(row.id);
             }}
           >
-            <IconEditCom></IconEditCom>
+            <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
           <ButtonCom
-            className="px-3 rounded-none"
+            className="px-3 rounded-lg mr-2"
+            onClick={() => {
+              alert(`View Course id: ${row.id}`);
+            }}
+          >
+            <IconEyeCom className="w-5"></IconEyeCom>
+          </ButtonCom>
+          <ButtonCom
+            className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
               handleDeleteCourse(row);
             }}
           >
-            <IconTrashCom></IconTrashCom>
+            <IconTrashCom className="w-5"></IconTrashCom>
           </ButtonCom>
         </>
       ),

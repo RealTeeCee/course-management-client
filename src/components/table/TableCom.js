@@ -40,8 +40,8 @@ const TableCom = ({
             <DropdownAntCom items={dropdownItems}></DropdownAntCom>
             <Link to={urlCreate} key={urlCreate}>
               <ButtonCom
-                className="text-white text-center text-lg"
-                backgroundColor="pink"
+                className="text-white text-center px-3 text-sm"
+                backgroundColor="info"
               >
                 Create New
               </ButtonCom>

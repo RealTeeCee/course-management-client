@@ -13,7 +13,7 @@ const DropdownAntCom = ({ items = [], title = "More Actions" }) => {
           }}
           placement="bottom"
         >
-          <ButtonCom backgroundColor="success" className="text-sm">
+          <ButtonCom backgroundColor="success" className="px-3 text-sm">
             <div className="flex gap-x-1 items-center">
               <div className="flex-1">{title}</div>
               <IconArrowDownCom></IconArrowDownCom>
