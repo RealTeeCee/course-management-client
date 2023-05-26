@@ -39,3 +39,23 @@ export const MESSAGE_UNAUTHORIZE = "Please login first then access this page";
 export const MESSAGE_FORBIDDEN = "You dont have permission to access this page";
 export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
 export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
+
+// Data API
+export const categoryItems = [
+  {
+    value: 1,
+    label: "Programming",
+  },
+  {
+    value: 2,
+    label: "Graphic Design",
+  },
+  {
+    value: 3,
+    label: "Artificial Intelligence",
+  },
+  {
+    value: 4,
+    label: "Data Science",
+  },
+];

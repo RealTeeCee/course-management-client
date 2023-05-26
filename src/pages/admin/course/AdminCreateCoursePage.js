@@ -20,6 +20,7 @@ import {
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_FIELD_REQUIRED,
+  categoryItems,
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
@@ -50,20 +51,6 @@ const schemaValidation = yup.object().shape({
 });
 
 // Label is category name , value is category_id
-const categoryItems = [
-  {
-    value: 1,
-    label: "Programming",
-  },
-  {
-    value: 2,
-    label: "Marketing",
-  },
-  {
-    value: 3,
-    label: "Contructor",
-  },
-];
 
 const tagItems = [
   {

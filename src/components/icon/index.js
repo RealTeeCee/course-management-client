@@ -23,3 +23,4 @@ export const { default: IconEmailCom } = require("./IconEmailCom");
 export const { default: IconPhoneCom } = require("./IconPhoneCom");
 export const { default: IconTrashCom } = require("./IconTrashCom");
 export const { default: IconEditCom } = require("./IconEditCom");
+export const { default: IconArrowDownCom } = require("./IconArrowDownCom");

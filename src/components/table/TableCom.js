@@ -6,15 +6,66 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 import { toast } from "react-toastify";
+import { DownOutlined, SmileOutlined } from "@ant-design/icons";
+import { Dropdown, Space } from "antd";
+import DropdownAntCom from "../ant/DropdownAntCom";
 
 const TableCom = ({
   title = "",
   columns,
   items = [],
   urlCreate = "/",
+  onSelectedRowsChange = () => {},
   ...rest
 }) => {
   const { search, setSearch } = rest;
+  const menuItems = [
+    {
+      key: "1",
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.antgroup.com"
+        >
+          1st menu item
+        </a>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.aliyun.com"
+        >
+          2nd menu item (disabled)
+        </a>
+      ),
+      icon: <SmileOutlined />,
+      disabled: true,
+    },
+    {
+      key: "3",
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.luohanacademy.com"
+        >
+          3rd menu item (disabled)
+        </a>
+      ),
+      disabled: true,
+    },
+    {
+      key: "4",
+      danger: true,
+      label: "a danger item",
+    },
+  ];
+
   return (
     <div>
       <Table
@@ -26,10 +77,11 @@ const TableCom = ({
         fixedHeaderScrollHeight="500px"
         selectableRows
         selectableRowsHighlight
+        onSelectedRowsChange={onSelectedRowsChange}
         highlightOnHover
         actions={
-          <div key="table-actions" className="flex gap-x-2">
-            <ButtonCom
+          <div key="table-actions" className="">
+            {/* <ButtonCom
               className="px-3 text-white text-center text-lg"
               backgroundColor="success"
               onClick={() => {
@@ -45,7 +97,8 @@ const TableCom = ({
               >
                 Create New
               </ButtonCom>
-            </Link>
+            </Link> */}
+            <DropdownAntCom items={menuItems}></DropdownAntCom>
           </div>
         }
         subHeader

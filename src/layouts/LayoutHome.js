@@ -45,7 +45,7 @@ const LayoutHome = () => {
 
   return (
     <div className="px-10 py-6 bg-tw-light text-black min-h-screen">
-      <ReactModal
+      {/* <ReactModal
         isOpen={false}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className="modal-content scroll-hidden w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none"
@@ -101,7 +101,7 @@ const LayoutHome = () => {
           </form>
         </div>
       </ReactModal>
-      <Overlay></Overlay>
+      <Overlay></Overlay> */}
       <HomeTopbarMod></HomeTopbarMod>
       <div className="flex gap-x-10 items-start">
         <HomeSidebarMod></HomeSidebarMod>
