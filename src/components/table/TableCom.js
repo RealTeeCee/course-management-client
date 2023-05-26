@@ -15,60 +15,16 @@ const TableCom = ({
   columns,
   items = [],
   urlCreate = "/",
+  dropdownItems = [],
+  tableKey = 0,
   onSelectedRowsChange = () => {},
   ...rest
 }) => {
   const { search, setSearch } = rest;
-  const menuItems = [
-    {
-      key: "1",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com"
-        >
-          1st menu item
-        </a>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com"
-        >
-          2nd menu item (disabled)
-        </a>
-      ),
-      icon: <SmileOutlined />,
-      disabled: true,
-    },
-    {
-      key: "3",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.luohanacademy.com"
-        >
-          3rd menu item (disabled)
-        </a>
-      ),
-      disabled: true,
-    },
-    {
-      key: "4",
-      danger: true,
-      label: "a danger item",
-    },
-  ];
-
   return (
     <div>
       <Table
+        key={tableKey}
         title={title}
         columns={columns}
         data={items}
@@ -80,25 +36,16 @@ const TableCom = ({
         onSelectedRowsChange={onSelectedRowsChange}
         highlightOnHover
         actions={
-          <div key="table-actions" className="">
-            {/* <ButtonCom
-              className="px-3 text-white text-center text-lg"
-              backgroundColor="success"
-              onClick={() => {
-                toast.info("Developing...");
-              }}
-            >
-              Export
-            </ButtonCom>
+          <div key="table-actions" className="flex items-center gap-x-2 z-10">
+            <DropdownAntCom items={dropdownItems}></DropdownAntCom>
             <Link to={urlCreate} key={urlCreate}>
               <ButtonCom
-                className="px-3 text-white text-center text-lg"
+                className="text-white text-center text-lg"
                 backgroundColor="pink"
               >
                 Create New
               </ButtonCom>
-            </Link> */}
-            <DropdownAntCom items={menuItems}></DropdownAntCom>
+            </Link>
           </div>
         }
         subHeader
@@ -119,7 +66,9 @@ const TableCom = ({
 TableCom.propTypes = {
   title: PropTypes.string,
   urlCreate: PropTypes.string.isRequired,
+  tableKey: PropTypes.number,
   columns: PropTypes.array,
+  dropdownItems: PropTypes.array,
   items: PropTypes.array.isRequired,
   //   children: PropTypes.node,
 };

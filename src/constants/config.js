@@ -40,6 +40,8 @@ export const MESSAGE_FORBIDDEN = "You dont have permission to access this page";
 export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
 export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 
+export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
+
 // Data API
 export const categoryItems = [
   {

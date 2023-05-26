@@ -22,6 +22,7 @@ import {
   MESSAGE_FIELD_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_GENERAL_FAILED,
+  MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPLOAD_REQUIRED,
@@ -32,6 +33,8 @@ import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
 import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
+import { SmileOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -81,6 +84,33 @@ const tagItems = [
 ];
 
 const AdminCourseListPage = () => {
+  // More Action Menu
+  const dropdownItems = [
+    {
+      key: "1",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-success transition-all duration-300"
+          onClick={() => toast.info("Developing...")}
+        >
+          Export
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleDeleteMultipleRecords()}
+        >
+          Remove All
+        </div>
+      ),
+    },
+  ];
   const {
     control,
     register,
@@ -96,6 +126,8 @@ const AdminCourseListPage = () => {
   // Variable State
   const [courseId, setCourseId] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [tableKey, setTableKey] = useState(0);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
@@ -276,7 +308,7 @@ const AdminCourseListPage = () => {
       }
     }
   };
-
+  // Delete one
   const handleDeleteCourse = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
@@ -305,8 +337,48 @@ const AdminCourseListPage = () => {
 
   /********* Library Function Area ********* */
   const handleRowSelection = (currentRowsSelected) => {
-    console.log(currentRowsSelected);
     setSelectedRows(currentRowsSelected.selectedRows);
+  };
+
+  const clearSelectedRows = () => {
+    setSelectedRows([]);
+    setTableKey((prevKey) => prevKey + 1);
+  };
+  // Muti Delete
+  const handleDeleteMultipleRecords = () => {
+    if (selectedRows.length === 0) {
+      toast.warning(MESSAGE_NO_ITEM_SELECTED);
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete <span class="text-tw-danger">${
+        selectedRows.length
+      } selected ${selectedRows.length > 1 ? "courses" : "course"}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const deletePromises = selectedRows.map((row) =>
+            axiosPrivate.delete(`${API_COURSE_URL}?courseId=${row.id}`)
+          );
+          await Promise.all(deletePromises);
+          toast.success(`Delete ${selectedRows.length} courses success`);
+        } catch (error) {
+          toast.error(MESSAGE_GENERAL_FAILED);
+        } finally {
+          getCourses();
+          clearSelectedRows();
+        }
+      }
+    });
+
+    // Optionally, you can update the data source or refetch the data to reflect the changes
+    // Example: refetchData();
   };
 
   const handleChangeCategory = (value) => {
@@ -399,12 +471,14 @@ const AdminCourseListPage = () => {
               </HeadingH2Com> */}
               <span>
                 <TableCom
+                  tableKey={tableKey}
                   urlCreate="/admin/courses/create"
                   title="List Courses"
                   columns={columns}
                   items={filterCourse}
                   search={search}
                   setSearch={setSearch}
+                  dropdownItems={dropdownItems}
                   onSelectedRowsChange={handleRowSelection} // selected Mutilple
                 ></TableCom>
               </span>
