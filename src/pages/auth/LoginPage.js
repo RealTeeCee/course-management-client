@@ -108,7 +108,6 @@ const LoginPage = () => {
             name="password"
             register={register}
             placeholder="Input your password"
-            isTypePassword={true}
             errorMsg={errors.password?.message}
           ></InputCom>
         </FormGroupCom>

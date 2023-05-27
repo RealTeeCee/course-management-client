@@ -36,6 +36,7 @@ import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import { SmileOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
+import { convertIntToStrMoney } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -125,7 +126,7 @@ const AdminCourseListPage = () => {
   });
 
   // Variable State
-  const [courseId, setCourseId] = useState(null);
+  const [courseId, setCourseId] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
 
@@ -151,7 +152,7 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Category",
-      selector: (row) => row.category_id,
+      selector: (row) => row.category_name,
     },
     {
       name: "Image",
@@ -161,7 +162,10 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Price",
-      selector: (row) => (row.sale_price > 0 ? row.sale_price : row.price),
+      selector: (row) =>
+        row.sale_price > 0
+          ? `$${convertIntToStrMoney(row.sale_price)}`
+          : `$${convertIntToStrMoney(row.price)}`,
     },
     {
       name: "Duration",
@@ -185,7 +189,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              navigate(`/courses/${row.slug}`)
+              navigate(`/courses/${row.slug}`);
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -380,6 +384,7 @@ const AdminCourseListPage = () => {
         } catch (error) {
           toast.error(MESSAGE_GENERAL_FAILED);
         } finally {
+          console.log("final");
           getCourses();
           clearSelectedRows();
         }

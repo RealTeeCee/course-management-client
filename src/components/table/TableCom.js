@@ -8,7 +8,7 @@ import ErrorCom from "../common/ErrorCom";
 import { toast } from "react-toastify";
 import { DownOutlined, SmileOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import DropdownAntCom from "../ant/DropdownAntCom";
+import { DropdownAntCom } from "../ant";
 
 const TableCom = ({
   title = "",

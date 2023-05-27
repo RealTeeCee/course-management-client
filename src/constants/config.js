@@ -46,7 +46,7 @@ export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
 
-// Data API
+// Data Static List
 export const categoryItems = [
   {
     value: 1,
@@ -63,5 +63,27 @@ export const categoryItems = [
   {
     value: 4,
     label: "Data Science",
+  },
+];
+
+export const statusItems = [
+  {
+    value: 1,
+    label: "Active",
+  },
+  {
+    value: 0,
+    label: "InActive",
+  },
+];
+
+export const levelItems = [
+  {
+    value: 1,
+    label: "Advance",
+  },
+  {
+    value: 0,
+    label: "Basic",
   },
 ];

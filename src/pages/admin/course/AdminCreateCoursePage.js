@@ -6,7 +6,11 @@ import { LabelCom } from "../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../../components/button";
-import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
+import {
+  SelectDefaultAntCom,
+  SelectSearchAntCom,
+  SelectTagAntCom,
+} from "../../../components/ant";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
@@ -22,6 +26,8 @@ import {
   MAX_LENGTH_NAME,
   MIN_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
+  statusItems,
+  levelItems,
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
@@ -31,9 +37,13 @@ import { IMG_BB_URL } from "../../../constants/endpoint";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
+import useOnChange from "../../../hooks/useOnChange";
+import { convertStrMoneyToInt } from "../../../utils/helper";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
+  status: yup.number().default(1),
+  level: yup.number().default(0),
   name: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
@@ -42,12 +52,12 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
-    .number()
+    .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   sale_price: yup
-    .number()
+    .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
@@ -91,18 +101,24 @@ const AdminCreateCoursePage = () => {
   const [tagsSelected, setTagsSelected] = useState([]);
   const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
+  const [price, handleChangePrice, setPrice] = useOnChange(0);
+  const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
 
   const resetValues = () => {
     setCategorySelected(null);
     setTagsSelected([]);
     setArchivementSelected([]);
     setDescription("");
+    setPrice(0);
+    setSalePrice(0);
     reset();
   };
 
   const handleSubmitForm = async (values) => {
     const {
       name,
+      status,
+      level,
       category_id,
       price,
       sale_price,
@@ -119,7 +135,7 @@ const AdminCreateCoursePage = () => {
       toast.error(MESSAGE_GENERAL_FAILED);
       setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("image", null);
-    } else if (sale_price > price) {
+    } else if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
       const salePriceSelector = document.querySelector(
         'input[name="sale_price"]'
       );
@@ -134,9 +150,11 @@ const AdminCreateCoursePage = () => {
           "courseJson",
           JSON.stringify({
             name,
+            status,
+            level,
             category_id,
-            price,
-            sale_price,
+            price: convertStrMoneyToInt(price),
+            sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
             archivements,
@@ -150,11 +168,11 @@ const AdminCreateCoursePage = () => {
           },
         });
         toast.success(`${res.data.message}`);
-        setIsLoading(false);
         resetValues();
         reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.data.message}`);
+        toast.error(`${MESSAGE_GENERAL_FAILED}`);
+      } finally {
         setIsLoading(false);
       }
     }
@@ -213,6 +231,16 @@ const AdminCreateCoursePage = () => {
     setValue("archivements", itemsString);
     setError("archivements", { message: "" });
     setArchivementSelected(itemsArrs);
+  };
+
+  const handleChangeStatus = (value) => {
+    setValue("status", value);
+    setError("status", { message: "" });
+  };
+
+  const handleChangeLevel = (value) => {
+    setValue("level", value);
+    setError("level", { message: "" });
   };
 
   const modules = useMemo(
@@ -307,26 +335,77 @@ const AdminCreateCoursePage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
+                  <div className="col-sm-3">
+                    <LabelCom htmlFor="status">Status</LabelCom>
+                    <div>
+                      <SelectDefaultAntCom
+                        listItems={statusItems}
+                        onChange={handleChangeStatus}
+                        status={
+                          errors.status && errors.status.message && "error"
+                        }
+                        errorMsg={errors.status?.message}
+                        placeholder="Choose Status"
+                      ></SelectDefaultAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="status"
+                        register={register}
+                        defaultValue={1}
+                      ></InputCom>
+                    </div>
+                  </div>
+                  <div className="col-sm-3">
+                    <LabelCom htmlFor="level">Level</LabelCom>
+                    <div>
+                      <SelectDefaultAntCom
+                        listItems={levelItems}
+                        onChange={handleChangeLevel}
+                        defaultValue={0}
+                      ></SelectDefaultAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="level"
+                        register={register}
+                        defaultValue={0}
+                      ></InputCom>
+                    </div>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
                   <div className="col-sm-4">
-                    <LabelCom htmlFor="price">Price</LabelCom>
+                    <LabelCom htmlFor="price" subText="($)">
+                      Price
+                    </LabelCom>
                     <InputCom
-                      type="number"
+                      type="text"
                       control={control}
                       name="price"
                       register={register}
                       placeholder="Input Price"
                       errorMsg={errors.price?.message}
+                      onChange={handleChangePrice}
+                      defaultValue={price}
+                      value={price}
                     ></InputCom>
                   </div>
                   <div className="col-sm-4">
-                    <LabelCom htmlFor="sale_price">Sale Price</LabelCom>
+                    <LabelCom htmlFor="sale_price" subText="($)">
+                      Sale Price
+                    </LabelCom>
                     <InputCom
-                      type="number"
+                      type="text"
                       control={control}
                       name="sale_price"
                       register={register}
                       placeholder="Input Sale Price"
                       errorMsg={errors.sale_price?.message}
+                      onChange={handleChangeSalePrice}
+                      defaultValue={sale_price}
+                      value={sale_price}
                     ></InputCom>
                   </div>
                   <div className="col-sm-4">

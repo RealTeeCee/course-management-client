@@ -8,21 +8,21 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 const InputCom = (props) => {
   const {
     register = () => {},
-    onChange = () => {},
-    onSetValue = () => {},
+    // onChange,
+    // onSetValue = () => {},
     control,
     name,
     type = "text",
-    isTypePassword = false,
     errorMsg = "",
     children,
+    defaultValue = "",
     ...rest
   } = props;
 
   const { fields } = useController({
     control,
     name,
-    defaultValue: type === "number" ? 0 : "",
+    defaultValue,
   });
 
   const {
@@ -30,10 +30,10 @@ const InputCom = (props) => {
     handleToggleBoolean: handleClickToggleShowHide,
   } = useClickToggleBoolean();
 
-  const handleChangeImage = (value) => {
-    console.log(value);
-    onSetValue(name, value);
-  }
+  // const handleChangeImage = (value) => {
+  //   console.log(value);
+  //   onSetValue(name, value);
+  // }
 
   return (
     <>
@@ -48,12 +48,12 @@ const InputCom = (props) => {
           type={
             type === "password" ? (showPassword ? "text" : "password") : type
           }
-          onChange={onChange}
+          // onChange={onChange}
           {...register(name)}
           {...fields}
           {...rest}
         />
-        {isTypePassword && (
+        {type === "password" && (
           <div className="show-hide">
             <span
               className={`mr-2 px-1 bg-tw-light ${showPassword ? "" : "show"}`}
@@ -76,7 +76,6 @@ InputCom.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string,
   errorMsg: PropTypes.string,
-  isTypePassword: PropTypes.bool,
   children: PropTypes.node,
 };
 export default withErrorBoundary(InputCom, {
