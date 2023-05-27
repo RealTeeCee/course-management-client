@@ -1,5 +1,5 @@
 import { Collapse } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -11,6 +11,10 @@ const CollapseAntCom = ({
   parentItems = [],
   childItems = [],
 }) => {
+  const location = useLocation();
+  const reqParams = new URLSearchParams(location.search);
+  const lessionId = reqParams.get("id");
+
   const ids = parentItems.map((item) => String(item.id));
   return (
     <Collapse
@@ -38,7 +42,11 @@ const CollapseAntCom = ({
                         <Link
                           to={`/learn/${slug}?id=${child.id}`}
                           key={child.id}
-                          className="flex justify-between items-center"
+                          className={`flex justify-between items-center ${
+                            parseInt(lessionId) === child.id
+                              ? "text-tw-primary"
+                              : false
+                          }`}
                         >
                           <span>
                             {lessionNo++}. {child.name}

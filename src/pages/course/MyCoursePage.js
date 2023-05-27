@@ -21,7 +21,13 @@ const MyCoursePage = () => {
           .fill(0)
           .map((item, index) => {
             if (index >= startIndex && index < endIndex) {
-              return <CourseItemMod key={v4()} isPaid={true}></CourseItemMod>;
+              return (
+                <CourseItemMod
+                  key={v4()}
+                  isPaid={true}
+                  url="/learn/php-01?id=1"
+                ></CourseItemMod>
+              );
             }
             return null;
           })}
