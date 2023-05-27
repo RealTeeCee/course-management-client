@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 
-// const tagItems = [
+// const listItems = [
 //   {
 //     value: "Programming",
 //     label: "Programming",
@@ -20,7 +20,7 @@ const SelectTagAntCom = ({
   onChange = () => {},
   status = "",
   errorMsg = "",
-  placeholder = "Input your tags",
+  placeholder = "Please input...",
   selectedValue = [],
   className = "",
 }) => {

@@ -8,12 +8,16 @@ export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
 
+export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
 export const LIMIT_PAGE = 12;
 
 export const MESSAGE_GENERAL_FAILED = "Something was wrong!";
 export const MESSAGE_FIELD_REQUIRED = "This field is required";
+export const MESSAGE_FIELD_MIN_LENGTH_NAME = `This field at least ${MIN_LENGTH_NAME} characters`;
+export const MESSAGE_FIELD_MAX_LENGTH_NAME = `This field only accept ${MAX_LENGTH_NAME} characters`;
+export const MESSAGE_FIELD_MAX_LENGTH_VARCHAR = `This field only accept ${MAX_LENGTH_VARCHAR} characters`;
 export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";

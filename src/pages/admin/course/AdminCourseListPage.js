@@ -35,7 +35,7 @@ import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import { SmileOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -75,11 +75,11 @@ const categoryItems = [
 
 const tagItems = [
   {
-    value: "Programming",
+    value: "programming",
     label: "Programming",
   },
   {
-    value: "PHP",
+    value: "php",
     label: "PHP",
   },
 ];
@@ -140,6 +140,7 @@ const AdminCourseListPage = () => {
   const [tagsSelected, setTagsSelected] = useState([]);
   const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
+  const navigate = useNavigate();
 
   /********* Fetch data Area ********* */
   const columns = [
@@ -184,7 +185,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              alert(`View Course id: ${row.id}`);
+              navigate(`/courses/${row.slug}`)
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -324,8 +325,8 @@ const AdminCourseListPage = () => {
       html: `You will delete course: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -337,8 +338,7 @@ const AdminCourseListPage = () => {
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
-          console.log(error);
-          Swal.fire(MESSAGE_GENERAL_FAILED, "error");
+          toast.error(MESSAGE_GENERAL_FAILED);
         }
       }
     });
@@ -366,8 +366,8 @@ const AdminCourseListPage = () => {
       } selected ${selectedRows.length > 1 ? "courses" : "course"}</span>`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -412,11 +412,11 @@ const AdminCourseListPage = () => {
     const strReplace = itemsArrs.map((item) =>
       item.replace(/\s+/g, " ").replace(/-+/g, "-")
     );
-    const itemsString = strReplace.join(",");
+    const itemsString = strReplace.join(",").toLowerCase();
 
     setValue("tags", itemsString);
     setError("tags", { message: "" });
-    // setTagsSelected(itemsArrs);
+    setTagsSelected(itemsArrs);
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]

@@ -7,9 +7,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../../components/button";
 import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill, { Quill } from "react-quill";
-import ImageUploader from "quill-image-uploader";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
@@ -21,16 +18,27 @@ import {
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_FIELD_REQUIRED,
   categoryItems,
+  MESSAGE_FIELD_MAX_LENGTH_NAME,
+  MAX_LENGTH_NAME,
+  MIN_LENGTH_NAME,
+  MESSAGE_FIELD_MIN_LENGTH_NAME,
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { IMG_BB_URL } from "../../../constants/endpoint";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill, { Quill } from "react-quill";
+import ImageUploader from "quill-image-uploader";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
@@ -53,11 +61,11 @@ const schemaValidation = yup.object().shape({
 
 const tagItems = [
   {
-    value: "Programming",
+    value: "programming",
     label: "Programming",
   },
   {
-    value: "PHP",
+    value: "php",
     label: "PHP",
   },
 ];
@@ -187,9 +195,9 @@ const AdminCreateCoursePage = () => {
 
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) =>
-      item.replace(/\s+/g, " ").replace(/-+/g, "-")
+      item.replace(/\s+/g, " ").replace(/-+/g, "-").toLowerCase()
     );
-    const itemsString = strReplace.join(",");
+    const itemsString = strReplace.join(",").toLowerCase();
 
     setValue("tags", itemsString);
     setError("tags", { message: "" });
@@ -276,7 +284,9 @@ const AdminCreateCoursePage = () => {
                     ></InputCom>
                   </div>
                   <div className="col-sm-6">
-                    <LabelCom htmlFor="image">Image</LabelCom>
+                    <LabelCom htmlFor="image" isRequired>
+                      Image
+                    </LabelCom>
                     <InputCom
                       type="file"
                       control={control}
@@ -365,7 +375,7 @@ const AdminCreateCoursePage = () => {
                     <LabelCom
                       htmlFor="tags"
                       isRequired
-                      subText="Press 'enter' every tags"
+                      subText="'enter' every tags"
                       className="mb-1"
                     >
                       Tags
@@ -388,7 +398,7 @@ const AdminCreateCoursePage = () => {
                   <div className="col-sm-4">
                     <LabelCom
                       htmlFor="archivements"
-                      subText="Press 'enter' every archivement"
+                      subText="'enter' every archivement"
                       className="mb-1"
                     >
                       Archivement
@@ -455,11 +465,15 @@ const AdminCreateCoursePage = () => {
                 </div>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
-                <ButtonCom type="submit" isLoading={isLoading}>
-                  Create
+                <ButtonCom
+                  type="submit"
+                  isLoading={isLoading}
+                  backgroundColor="info"
+                >
+                  Save
                 </ButtonCom>
                 <ButtonCom backgroundColor="danger" type="reset">
-                  Cancel
+                  Reset
                 </ButtonCom>
               </div>
             </form>
