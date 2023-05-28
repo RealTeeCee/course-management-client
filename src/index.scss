@@ -11,6 +11,15 @@
   h1 {
     @apply text-3xl md:text-4xl font-bold;
   }
+
+  button,
+  [type="button"] {
+    -webkit-appearance: button;
+    // background-color: red;
+    background-image: none;
+    color: black;
+    border-color: #d9d9d9;
+  }
 }
 
 @layer components {
@@ -48,6 +57,11 @@
 
   .animate-slide-in {
     transform: translateY(10%);
+  }
+
+  .custom-upload .ant-upload .ant-upload-select {
+    display: block !important;
+    width: 100% !important;
   }
 
   // .animate-slide-back {

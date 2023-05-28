@@ -20,59 +20,69 @@ import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
+  categoryItems,
+  levelItems,
+  MAX_LENGTH_NAME,
   MESSAGE_FIELD_INVALID,
+  MESSAGE_FIELD_MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MIN_LENGTH_NAME,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_GENERAL_FAILED,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPLOAD_REQUIRED,
+  MIN_LENGTH_NAME,
+  statusItems,
 } from "../../../constants/config";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
-import { SelectSearchAntCom, SelectTagAntCom } from "../../../components/ant";
+import {
+  ImageCropUploadAntCom,
+  SelectDefaultAntCom,
+  SelectSearchAntCom,
+  SelectTagAntCom,
+} from "../../../components/ant";
 import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import { SmileOutlined } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
-import { convertIntToStrMoney, showMessageError } from "../../../utils/helper";
+import { Link } from "react-router-dom";
+import {
+  convertIntToStrMoney,
+  convertStrMoneyToInt,
+  showMessageError,
+} from "../../../utils/helper";
+import useOnChange from "../../../hooks/useOnChange";
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  status: yup.number().default(1),
+  level: yup.number().default(0),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
-    .number()
+    .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   sale_price: yup
-    .number()
+    .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   duration: yup
-    .number(MESSAGE_NUMBER_REQUIRED)
+    .string(MESSAGE_NUMBER_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(1, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
-const categoryItems = [
-  {
-    value: 1,
-    label: "Programming",
-  },
-  {
-    value: 2,
-    label: "Marketing",
-  },
-  {
-    value: 3,
-    label: "Contructor",
-  },
-];
 
 const tagItems = [
   {
@@ -141,7 +151,10 @@ const AdminCourseListPage = () => {
   const [tagsSelected, setTagsSelected] = useState([]);
   const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
-  const navigate = useNavigate();
+
+  // Edit State
+  const [price, handleChangePrice, setPrice] = useOnChange(0);
+  const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
 
   /********* Fetch data Area ********* */
   const columns = [
@@ -189,7 +202,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              navigate(`/courses/${row.slug}`);
+              window.open(`/courses/${row.slug}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -264,6 +277,8 @@ const AdminCourseListPage = () => {
   const handleSubmitForm = async (values) => {
     const {
       name,
+      status,
+      level,
       category_id,
       price,
       sale_price,
@@ -274,13 +289,14 @@ const AdminCourseListPage = () => {
       description,
     } = values;
 
-    if (image === "" || image[0] === undefined) {
-      const imageSelector = document.querySelector('input[name="image"]');
-      if (imageSelector) imageSelector.focus();
-      toast.error(MESSAGE_GENERAL_FAILED);
-      setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
-      setValue("image", null);
-    } else if (sale_price > price) {
+    // if (image === "" || image[0] === undefined) {
+    //   const imageSelector = document.querySelector('input[name="image"]');
+    //   if (imageSelector) imageSelector.focus();
+    //   toast.error(MESSAGE_GENERAL_FAILED);
+    //   setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
+    //   setValue("image", null);
+    // } else if
+    if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
       const salePriceSelector = document.querySelector(
         'input[name="sale_price"]'
       );
@@ -295,27 +311,26 @@ const AdminCourseListPage = () => {
           "courseJson",
           JSON.stringify({
             name,
+            status,
+            level,
+            image,
             category_id,
-            price,
-            sale_price,
+            price: convertStrMoneyToInt(price),
+            sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
             archivements,
             description,
           })
         );
-        fd.append("file", image[0]);
-        const res = await axiosPrivate.post(`/course`, fd, {
-          headers: {
-            "Content-type": "multipart/form-data",
-          },
-        });
+        // fd.append("file", image[0]);
+        const res = await axiosPrivate.post(`/course`, fd);
         toast.success(`${res.data.message}`);
-        setIsLoading(false);
         // resetValues();
         // reset();
       } catch (error) {
         showMessageError(error);
+      }finally {
         setIsLoading(false);
       }
     }
@@ -344,6 +359,17 @@ const AdminCourseListPage = () => {
         }
       }
     });
+  };
+
+  ///********* Update Area *********
+  const handleChangeStatus = (value) => {
+    setValue("status", value);
+    setError("status", { message: "" });
+  };
+
+  const handleChangeLevel = (value) => {
+    setValue("level", value);
+    setError("level", { message: "" });
   };
 
   /********* Library Function Area ********* */
@@ -530,7 +556,7 @@ const AdminCourseListPage = () => {
               </div> */}
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-4">
                   <LabelCom htmlFor="name" isRequired>
                     Course Name
                   </LabelCom>
@@ -543,61 +569,114 @@ const AdminCourseListPage = () => {
                     errorMsg={errors.name?.message}
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="image">Image</LabelCom>
-                  <InputCom
-                    type="file"
-                    control={control}
-                    name="image"
-                    register={register}
-                    placeholder="Upload image"
-                    errorMsg={errors.image?.message}
-                  ></InputCom>
-                  {/* <ImageUploadCom
-                      // control={control}
-                      // register={register}
+                <div className="col-sm-3">
+                  <LabelCom htmlFor="status">Status</LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      listItems={statusItems}
+                      onChange={handleChangeStatus}
+                      status={errors.status && errors.status.message && "error"}
+                      errorMsg={errors.status?.message}
+                      placeholder="Choose Status"
+                    ></SelectDefaultAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="status"
+                      register={register}
+                      defaultValue={1}
+                    ></InputCom>
+                  </div>
+                </div>
+                <div className="col-sm-3">
+                  <LabelCom htmlFor="level">Level</LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      listItems={levelItems}
+                      onChange={handleChangeLevel}
+                      defaultValue={0}
+                    ></SelectDefaultAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="level"
+                      register={register}
+                      defaultValue={0}
+                    ></InputCom>
+                  </div>
+                </div>
+                <div className="col-sm-2 relative">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  {/* <InputCom
+                      type="file"
+                      control={control}
                       name="image"
-                      placeholder="Upload Image"
+                      register={register}
+                      placeholder="Upload image"
                       errorMsg={errors.image?.message}
+                    ></InputCom> */}
+                  <div className="absolute w-full">
+                    <ImageCropUploadAntCom
+                      name="image"
                       onSetValue={setValue}
-                    ></ImageUploadCom> */}
+                      errorMsg={errors.image?.message}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
                 <div className="col-sm-4">
-                  <LabelCom htmlFor="price">Price</LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="price"
-                    register={register}
-                    placeholder="Input Price"
-                    errorMsg={errors.price?.message}
-                  ></InputCom>
-                </div>
-                <div className="col-sm-4">
-                  <LabelCom htmlFor="sale_price">Sale Price</LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="sale_price"
-                    register={register}
-                    placeholder="Input Sale Price"
-                    errorMsg={errors.sale_price?.message}
-                  ></InputCom>
-                </div>
-                <div className="col-sm-4">
                   <LabelCom htmlFor="duration" subText="(Hour)">
                     Estimate Duration
                   </LabelCom>
                   <InputCom
-                    type="number"
+                    type="text"
                     control={control}
                     name="duration"
                     register={register}
                     placeholder="Estimate Duration"
                     errorMsg={errors.duration?.message}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-3">
+                  <LabelCom htmlFor="price" subText="($)">
+                    Price
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="price"
+                    register={register}
+                    placeholder="Input Price"
+                    errorMsg={errors.price?.message}
+                    onChange={handleChangePrice}
+                    defaultValue={price}
+                    value={price}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-3">
+                  <LabelCom htmlFor="sale_price" subText="($)">
+                    Sale Price
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="sale_price"
+                    register={register}
+                    placeholder="Input Sale Price"
+                    errorMsg={errors.sale_price?.message}
+                    onChange={handleChangeSalePrice}
+                    defaultValue={sale_price}
+                    value={sale_price}
                   ></InputCom>
                 </div>
               </div>
@@ -703,16 +782,16 @@ const AdminCourseListPage = () => {
                     placeholder="Describe your course ..."
                   ></TextAreaCom>
                   {/* <ReactQuill
-                    modules={modules}
-                    theme="snow"
-                    value={description}
-                    onChange={(description) => {
-                      setValue("description", description);
-                      setDescription(description);
-                    }}
-                    placeholder="Describe your course ..."
-                    className="h-36"
-                  ></ReactQuill> */}
+                      modules={modules}
+                      theme="snow"
+                      value={description}
+                      onChange={(description) => {
+                        setValue("description", description);
+                        setDescription(description);
+                      }}
+                      placeholder="Describe your course ..."
+                      className="h-36"
+                    ></ReactQuill> */}
                 </div>
               </div>
             </div>

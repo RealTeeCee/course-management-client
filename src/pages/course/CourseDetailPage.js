@@ -1,7 +1,8 @@
 import { Pagination } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { v4 } from "uuid";
+import { axiosPrivate } from "../../api/axiosInstance";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
@@ -14,6 +15,7 @@ import {
   IconLearnCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
+import { API_COURSE_URL } from "../../constants/endpoint";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 
@@ -68,6 +70,18 @@ const CourseDetailPage = () => {
     1,
     relatedCourseLimitPage
   );
+
+  // Fetch data
+  useEffect(() => {
+    const getCourseBySlug = async () => {
+      try {
+        // const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCourseBySlug();
+  }, []);
 
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);

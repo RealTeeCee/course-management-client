@@ -25,7 +25,7 @@ const props = {
 };
 
 // Drag and Drop
-const UploadAntCom = () => {
+const ImageUploadAntCom = () => {
   return (
     <Dragger {...props}>
       <p className="ant-upload-drag-icon">
@@ -40,4 +40,4 @@ const UploadAntCom = () => {
   );
 };
 
-export default UploadAntCom;
+export default ImageUploadAntCom;

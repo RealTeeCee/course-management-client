@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../../components/button";
 import {
+  ImageCropUploadAntCom,
   SelectDefaultAntCom,
   SelectSearchAntCom,
   SelectTagAntCom,
@@ -42,13 +43,14 @@ import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  status: yup.number().default(1),
-  level: yup.number().default(0),
   name: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  status: yup.number().default(1),
+  level: yup.number().default(0),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
@@ -62,7 +64,7 @@ const schemaValidation = yup.object().shape({
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   duration: yup
-    .number(MESSAGE_NUMBER_REQUIRED)
+    .string(MESSAGE_NUMBER_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(1, MESSAGE_NUMBER_POSITIVE),
 });
@@ -129,13 +131,14 @@ const AdminCreateCoursePage = () => {
       description,
     } = values;
 
-    if (image === "" || image[0] === undefined) {
-      const imageSelector = document.querySelector('input[name="image"]');
-      if (imageSelector) imageSelector.focus();
-      toast.error(MESSAGE_GENERAL_FAILED);
-      setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
-      setValue("image", null);
-    } else if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
+    // if (image === "" || image[0] === undefined) {
+    //   const imageSelector = document.querySelector('input[name="image"]');
+    //   if (imageSelector) imageSelector.focus();
+    //   toast.error(MESSAGE_GENERAL_FAILED);
+    //   setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
+    //   setValue("image", null);
+    // } else if
+    if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
       const salePriceSelector = document.querySelector(
         'input[name="sale_price"]'
       );
@@ -150,8 +153,9 @@ const AdminCreateCoursePage = () => {
           "courseJson",
           JSON.stringify({
             name,
-            // status,
-            // level,
+            status,
+            level,
+            image,
             category_id,
             price: convertStrMoneyToInt(price),
             sale_price: convertStrMoneyToInt(sale_price),
@@ -161,12 +165,13 @@ const AdminCreateCoursePage = () => {
             description,
           })
         );
-        fd.append("file", image[0]);
-        const res = await axiosPrivate.post(`/course`, fd, {
-          headers: {
-            "Content-type": "multipart/form-data",
-          },
-        });
+        // fd.append("file", image[0]);
+        // const res = await axiosPrivate.post(`/course`, fd, {
+        //   headers: {
+        //     "Content-type": "multipart/form-data",
+        //   },
+        // });
+        const res = await axiosPrivate.post(`/course`, fd);
         toast.success(`${res.data.message}`);
         resetValues();
         reset();
@@ -298,7 +303,7 @@ const AdminCreateCoursePage = () => {
               </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-6">
+                  <div className="col-sm-4">
                     <LabelCom htmlFor="name" isRequired>
                       Course Name
                     </LabelCom>
@@ -311,30 +316,6 @@ const AdminCreateCoursePage = () => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="image" isRequired>
-                      Image
-                    </LabelCom>
-                    <InputCom
-                      type="file"
-                      control={control}
-                      name="image"
-                      register={register}
-                      placeholder="Upload image"
-                      errorMsg={errors.image?.message}
-                    ></InputCom>
-                    {/* <ImageUploadCom
-                      // control={control}
-                      // register={register}
-                      name="image"
-                      placeholder="Upload Image"
-                      errorMsg={errors.image?.message}
-                      onSetValue={setValue}
-                    ></ImageUploadCom> */}
-                  </div>
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
                   <div className="col-sm-3">
                     <LabelCom htmlFor="status">Status</LabelCom>
                     <div>
@@ -373,10 +354,49 @@ const AdminCreateCoursePage = () => {
                       ></InputCom>
                     </div>
                   </div>
+                  <div className="col-sm-2 relative">
+                    <LabelCom htmlFor="image" isRequired>
+                      Image
+                    </LabelCom>
+                    {/* <InputCom
+                      type="file"
+                      control={control}
+                      name="image"
+                      register={register}
+                      placeholder="Upload image"
+                      errorMsg={errors.image?.message}
+                    ></InputCom> */}
+                    <div className="absolute w-full">
+                      <ImageCropUploadAntCom
+                        name="image"
+                        onSetValue={setValue}
+                        errorMsg={errors.image?.message}
+                      ></ImageCropUploadAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="image"
+                        register={register}
+                      ></InputCom>
+                    </div>
+                  </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
                   <div className="col-sm-4">
+                    <LabelCom htmlFor="duration" subText="(Hour)">
+                      Estimate Duration
+                    </LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="duration"
+                      register={register}
+                      placeholder="Estimate Duration"
+                      errorMsg={errors.duration?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-3">
                     <LabelCom htmlFor="price" subText="($)">
                       Price
                     </LabelCom>
@@ -392,7 +412,7 @@ const AdminCreateCoursePage = () => {
                       value={price}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-4">
+                  <div className="col-sm-3">
                     <LabelCom htmlFor="sale_price" subText="($)">
                       Sale Price
                     </LabelCom>
@@ -406,19 +426,6 @@ const AdminCreateCoursePage = () => {
                       onChange={handleChangeSalePrice}
                       defaultValue={sale_price}
                       value={sale_price}
-                    ></InputCom>
-                  </div>
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="duration" subText="(Hour)">
-                      Estimate Duration
-                    </LabelCom>
-                    <InputCom
-                      type="number"
-                      control={control}
-                      name="duration"
-                      register={register}
-                      placeholder="Estimate Duration"
-                      errorMsg={errors.duration?.message}
                     ></InputCom>
                   </div>
                 </div>
@@ -538,12 +545,8 @@ const AdminCreateCoursePage = () => {
                 </div>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
-                <ButtonCom
-                  type="submit"
-                  isLoading={isLoading}
-                  backgroundColor="info"
-                >
-                  Save
+                <ButtonCom type="submit" isLoading={isLoading}>
+                  Create
                 </ButtonCom>
                 <ButtonCom backgroundColor="danger" type="reset">
                   Reset
