@@ -180,10 +180,7 @@ function App() {
         {/* ********* Learn ********* */}
         <Route element={<LayoutLearning></LayoutLearning>}>
           {/* course slug */}
-          <Route
-            path="/learn/:slug"
-            element={<LearnPage></LearnPage>}
-          ></Route>
+          <Route path="/learn/:slug" element={<LearnPage></LearnPage>}></Route>
         </Route>
         {/* ********* END Learn ********* */}
 

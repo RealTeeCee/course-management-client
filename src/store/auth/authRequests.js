@@ -20,10 +20,10 @@ export const requestGetUser = (token) => {
   });
 };
 
-export const requestRefreshToken = (token) => {
+export const requestRefreshToken = (refresh_token) => {
   // return axiosInstance.post(`/auth/refresh-token`,{
   //   "Content-type": "application/json",
   //   refresh_token: token,
   // });
-  return axiosInstance.get(`/auth/refresh-token/${token}`);
+  return axiosInstance.get(`/auth/refresh-token/${refresh_token}`);
 };
