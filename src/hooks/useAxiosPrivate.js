@@ -16,7 +16,7 @@ export default function useAxiosPrivate() {
         return config;
       },
       (error) => {
-        Promise.reject(error);
+        return Promise.reject(error);
       }
     );
 
@@ -24,7 +24,11 @@ export default function useAxiosPrivate() {
       (res) => res,
       async (error) => {
         const prevReq = error.config;
-        if ((error?.response?.status === 401 || error?.response?.status === 403) && !prevReq.sent) {
+        if (
+          (error?.response?.status === 401 ||
+            error?.response?.status === 403) &&
+          !prevReq.sent
+        ) {
           prevReq.sent = true;
 
           const newAccessToken = await refreshToken();
@@ -32,10 +36,7 @@ export default function useAxiosPrivate() {
 
           return axiosPrivate(prevReq); // newConfig
         }
-
-        return Promise.reject((error) => {
-          return error;
-        });
+        return Promise.reject(error);
       }
     );
 

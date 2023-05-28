@@ -38,7 +38,7 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import useOnChange from "../../../hooks/useOnChange";
-import { convertStrMoneyToInt } from "../../../utils/helper";
+import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
@@ -150,8 +150,8 @@ const AdminCreateCoursePage = () => {
           "courseJson",
           JSON.stringify({
             name,
-            status,
-            level,
+            // status,
+            // level,
             category_id,
             price: convertStrMoneyToInt(price),
             sale_price: convertStrMoneyToInt(sale_price),
@@ -171,7 +171,7 @@ const AdminCreateCoursePage = () => {
         resetValues();
         reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL_FAILED}`);
+        showMessageError(error);
       } finally {
         setIsLoading(false);
       }
@@ -534,12 +534,6 @@ const AdminCreateCoursePage = () => {
                       placeholder="Describe your course ..."
                       className="h-36"
                     ></ReactQuill>
-                    {/* <TextAreaCom
-                      control={control}
-                      name="description"
-                      register={register}
-                      // className="hidden"
-                    ></TextAreaCom> */}
                   </div>
                 </div>
               </div>

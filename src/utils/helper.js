@@ -1,3 +1,6 @@
+import { toast } from "react-toastify";
+import { MESSAGE_GENERAL_FAILED } from "../constants/config";
+
 // Input: 123456 - Output: 123.456 using For Count items
 export function formatNumber(number) {
   if (number === null || isNaN(number)) number = 0;
@@ -25,4 +28,13 @@ export function convertIntToStrMoney(number) {
   const numberWithoutCommas = numberString.replace(/,/g, "");
   const formatter = new Intl.NumberFormat("en-US");
   return formatter.format(numberWithoutCommas);
+}
+
+// Using in Catch message, Input an error is required
+export function showMessageError(error) {
+  if (error.response && error.response.data) {
+    toast.error(error.response.data.message);
+  } else {
+    toast.error(MESSAGE_GENERAL_FAILED);
+  }
 }

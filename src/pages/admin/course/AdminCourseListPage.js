@@ -36,7 +36,7 @@ import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import { SmileOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { convertIntToStrMoney } from "../../../utils/helper";
+import { convertIntToStrMoney, showMessageError } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -211,7 +211,6 @@ const AdminCourseListPage = () => {
   const getCourses = async () => {
     try {
       const res = await axiosPrivate.get(API_COURSE_URL);
-      console.log(res.data);
       setCourses(res.data);
       setFilterCourse(res.data);
     } catch (error) {
@@ -228,7 +227,6 @@ const AdminCourseListPage = () => {
     const getCourseById = async () => {
       try {
         const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
-        console.log(res.data);
         reset(res.data);
       } catch (error) {
         console.log(error);
@@ -317,7 +315,7 @@ const AdminCourseListPage = () => {
         // resetValues();
         // reset();
       } catch (error) {
-        toast.error(`${MESSAGE_GENERAL_FAILED} ${error.data.message}`);
+        showMessageError(error);
         setIsLoading(false);
       }
     }
@@ -342,7 +340,7 @@ const AdminCourseListPage = () => {
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
-          toast.error(MESSAGE_GENERAL_FAILED);
+          showMessageError(error);
         }
       }
     });
@@ -382,7 +380,7 @@ const AdminCourseListPage = () => {
           await Promise.all(deletePromises);
           toast.success(`Delete ${selectedRows.length} courses success`);
         } catch (error) {
-          toast.error(MESSAGE_GENERAL_FAILED);
+          showMessageError(error);
         } finally {
           console.log("final");
           getCourses();
