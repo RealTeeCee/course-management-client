@@ -4,9 +4,6 @@ export const BASE_DOMAIN_URL =
 export const BASE_API_URL =
   process.env.REACT_APP_API_URL ?? "http://localhost:8080";
 
-export const GOOGLE_CLIENT_ID = "148329605834-v5ktoid4liss2s1rjothc78d9pph8gbi.apps.googleusercontent.com";
-export const GOOGLE_CLIENT_SECRET = "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";
-
 export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;

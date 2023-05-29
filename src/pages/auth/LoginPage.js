@@ -1,25 +1,16 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  GoogleLogin,
-  useGoogleLogin,
-  useGoogleOneTapLogin,
-} from "@react-oauth/google";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-//*** Nguyễn Code***
-// import { useDispatch, useSelector } from "react-redux";
-//***END Nguyễn Code***
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
-import { ButtonCom, ButtonSocialCom } from "../../components/button";
+import { ButtonCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingFormH1Com } from "../../components/heading";
-import { IconGmailCom } from "../../components/icon";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
@@ -30,6 +21,7 @@ import {
 } from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
+import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -46,7 +38,6 @@ const LoginPage = () => {
     control,
     register,
     handleSubmit,
-    setValue,
     getValues,
     formState: { errors },
   } = useForm({
@@ -77,10 +68,6 @@ const LoginPage = () => {
       navigate("/");
     }
   }, [isLoginSuccess, navigate, isRemember, getValues]);
-
-  const handleLoginGoogle = useGoogleOneTapLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-  });
 
   return (
     <>
@@ -138,21 +125,7 @@ const LoginPage = () => {
         </FormGroupCom>
         <h6 className="text-muted or">Or login with</h6>
         <GapYCom></GapYCom>
-        {/* <ButtonSocialCom onClick={() => handleLoginGoogle()}>
-          <div className="flex justify-center items-center">
-            <IconGmailCom></IconGmailCom>
-            <span className="ml-2">Gmail</span>
-          </div>
-        </ButtonSocialCom> */}
-        <GoogleLogin
-          onSuccess={(credentialResponse) => {
-            console.log(credentialResponse);
-          }}
-          onError={() => {
-            console.log("Login Failed");
-          }}
-        />
-        {/* <OAuth2Page /> */}
+        <OAuth2Page></OAuth2Page>
         <p className="mt-4 mb-0">
           Don't have an account?
           <Link

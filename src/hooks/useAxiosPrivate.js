@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { axiosPrivate } from "../api/axiosInstance";
-import { getToken } from "../utils/auth";
 import useRefreshToken from "./useRefreshToken";
 
 export default function useAxiosPrivate() {

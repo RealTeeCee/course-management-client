@@ -24,8 +24,6 @@ import "./assets/css/responsive.css";
 import "./index.scss";
 import "swiper/css";
 import { ToastContainer } from "react-toastify";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { GOOGLE_CLIENT_ID } from "./constants/config";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -33,10 +31,8 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <App />
-        <ToastContainer bodyClassName="font-tw-primary" />
-      </GoogleOAuthProvider>
+      <App />
+      <ToastContainer bodyClassName="font-tw-primary" />
     </BrowserRouter>
   </Provider>
 );

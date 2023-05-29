@@ -330,7 +330,7 @@ const AdminCourseListPage = () => {
         // reset();
       } catch (error) {
         showMessageError(error);
-      }finally {
+      } finally {
         setIsLoading(false);
       }
     }
