@@ -408,7 +408,6 @@ const AdminCourseListPage = () => {
         } catch (error) {
           showMessageError(error);
         } finally {
-          console.log("final");
           getCourses();
           clearSelectedRows();
         }
