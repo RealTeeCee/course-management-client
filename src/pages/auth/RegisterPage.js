@@ -22,6 +22,8 @@ import {
 import { useDispatch } from "react-redux";
 import { onRegister } from "../../store/auth/authSlice";
 import { toast } from "react-toastify";
+import GapYCom from "../../components/common/GapYCom";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -76,6 +78,10 @@ const RegisterPage = () => {
       navigate("/login");
     }, 3000);
   };
+
+  const handleLoginGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+  });
 
   return (
     <>
@@ -147,12 +153,20 @@ const RegisterPage = () => {
               Privacy Policy
             </Link>
           </CheckBoxCom>
+          <GapYCom></GapYCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Create Account
           </ButtonCom>
         </FormGroupCom>
         <h6 className="text-muted mt-4 or">Or register with</h6>
-        <OAuth2Page />
+        <GapYCom></GapYCom>
+        {/* <OAuth2Page /> */}
+        <ButtonSocialCom onClick={() => handleLoginGoogle()}>
+          <div className="flex justify-center items-center">
+            <IconGmailCom></IconGmailCom>
+            <span className="ml-2">Gmail</span>
+          </div>
+        </ButtonSocialCom>
         <p className="mt-4 mb-0">
           Already have an account?
           <Link

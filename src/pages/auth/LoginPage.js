@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useGoogleLogin } from "@react-oauth/google";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,10 +10,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
-import { ButtonCom } from "../../components/button";
+import { ButtonCom, ButtonSocialCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
+import GapYCom from "../../components/common/GapYCom";
 import { HeadingFormH1Com } from "../../components/heading";
+import { IconGmailCom } from "../../components/icon";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
@@ -23,10 +26,6 @@ import {
 } from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
-//*** Nguyễn Code***
-// import { selectLoginIsSuccess } from "../../store/login/selector";
-//*** END Nguyễn Code***
-import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -68,13 +67,16 @@ const LoginPage = () => {
   useEffect(() => {
     if (isLoginSuccess) {
       if (isRemember) {
-        const values = getValues();
-        Cookies.set(`${APP_KEY_NAME}_email`, values.email);
-        Cookies.set(`${APP_KEY_NAME}_password`, values.password);
+        const { email, password } = getValues();
+        Cookies.set(`${APP_KEY_NAME}__${email}`, password);
       }
       navigate("/");
     }
   }, [isLoginSuccess, navigate, isRemember, getValues]);
+
+  const handleLoginGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+  });
 
   return (
     <>
@@ -124,12 +126,21 @@ const LoginPage = () => {
               Forgot password?
             </a>
           </div>
+          <GapYCom></GapYCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
           </ButtonCom>
+          <GapYCom></GapYCom>
         </FormGroupCom>
-        <h6 className="text-muted mt-4 or">Or login with</h6>
-        <OAuth2Page />
+        <h6 className="text-muted or">Or login with</h6>
+        <GapYCom></GapYCom>
+        <ButtonSocialCom onClick={() => handleLoginGoogle()}>
+          <div className="flex justify-center items-center">
+            <IconGmailCom></IconGmailCom>
+            <span className="ml-2">Gmail</span>
+          </div>
+        </ButtonSocialCom>
+        {/* <OAuth2Page /> */}
         <p className="mt-4 mb-0">
           Don't have an account?
           <Link
