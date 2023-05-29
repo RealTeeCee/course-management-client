@@ -1,5 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useGoogleLogin } from "@react-oauth/google";
+import {
+  GoogleLogin,
+  useGoogleLogin,
+  useGoogleOneTapLogin,
+} from "@react-oauth/google";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -74,7 +78,7 @@ const LoginPage = () => {
     }
   }, [isLoginSuccess, navigate, isRemember, getValues]);
 
-  const handleLoginGoogle = useGoogleLogin({
+  const handleLoginGoogle = useGoogleOneTapLogin({
     onSuccess: (tokenResponse) => console.log(tokenResponse),
   });
 
@@ -134,12 +138,20 @@ const LoginPage = () => {
         </FormGroupCom>
         <h6 className="text-muted or">Or login with</h6>
         <GapYCom></GapYCom>
-        <ButtonSocialCom onClick={() => handleLoginGoogle()}>
+        {/* <ButtonSocialCom onClick={() => handleLoginGoogle()}>
           <div className="flex justify-center items-center">
             <IconGmailCom></IconGmailCom>
             <span className="ml-2">Gmail</span>
           </div>
-        </ButtonSocialCom>
+        </ButtonSocialCom> */}
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);
+          }}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+        />
         {/* <OAuth2Page /> */}
         <p className="mt-4 mb-0">
           Don't have an account?
