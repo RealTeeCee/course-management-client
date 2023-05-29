@@ -81,7 +81,6 @@ function App() {
       if (refresh_token) {
         dispatch(onRefreshToken(refresh_token));
       } else {
-        console.log("HKJHSKFJHKJFHDSKJFHDSKJfhkjsdhfkjshfkjdhk");
         dispatch(onUpdateUserToken({}));
         removeToken();
       }
