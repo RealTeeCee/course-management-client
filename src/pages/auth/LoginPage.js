@@ -69,9 +69,11 @@ const LoginPage = () => {
         Cookies.set(`${APP_KEY_NAME}__${email}`, password);
       }
       navigate("/");
+    } else {
+      if (errorMessage) toast.error(errorMessage);
     }
-  }, [isLoginSuccess, navigate, isRemember, getValues]);
-  if (errorMessage) toast.error(errorMessage);
+  }, [isLoginSuccess, navigate, isRemember, getValues, errorMessage]);
+
   return (
     <>
       {!isVerify ? null : isVerify === "success" ? (

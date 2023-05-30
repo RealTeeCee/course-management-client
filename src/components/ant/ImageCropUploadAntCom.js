@@ -42,7 +42,6 @@ const ImageCropUploadAntCom = ({
         },
       });
       const imgUrl = res.data.data.url;
-      console.log("imgUrl: ", imgUrl);
       if (!imgUrl) {
         onError(MESSAGE_UPLOAD_IMAGE_FAILED);
         return;

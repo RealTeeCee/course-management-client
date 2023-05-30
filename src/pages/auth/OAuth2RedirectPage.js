@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setToken } from "../../utils/auth";
 import {
+  onGetUser,
   onLoginOAuthFailed,
   onLoginOAuthSuccess,
 } from "../../store/auth/authSlice";
@@ -24,6 +25,7 @@ function OAuth2RedirectPage() {
       // localStorage.setItem("refreshToken", refreshToken);
       setToken(accessToken, refreshToken);
       dispatch(onLoginOAuthSuccess());
+      dispatch(onGetUser(accessToken));
       navigate("/", { userInfo });
     } else {
       const error = searchParams.get("error");

@@ -37,7 +37,7 @@ function* handleOnLogin(action) {
       yield put(onLoginSuccess(true));
       if (res.data.access_token && res.data.refresh_token) {
         setToken(res.data.access_token, res.data.refresh_token);
-        yield call(handleOnGetUser, { access_token: res.data.access_token });
+        yield call(handleOnGetUser, { payload: res.data.access_token });
       }
       toast.success(res.data.message);
     } else {
@@ -50,7 +50,7 @@ function* handleOnLogin(action) {
   }
 }
 
-function* handleOnGetUser({ access_token }) {
+function* handleOnGetUser({ payload: access_token }) {
   try {
     const res = yield call(requestGetUser, access_token);
     if (res.data.type === "success") {
@@ -73,7 +73,7 @@ function* handleOnRefreshToken(action) {
     const res = yield call(requestRefreshToken, action.payload);
     if (res.data.type === "success") {
       setToken(res.data.access_token, res.data.refresh_token);
-      yield call(handleOnGetUser, { access_token: res.data.access_token });
+      yield call(handleOnGetUser, { payload: res.data.access_token });
     } else {
       yield call(handleOnRemoveToken());
     }
