@@ -11,7 +11,6 @@ const authSlice = createSlice({
     isLoading: false,
     isLoginSuccess: false,
     errorMessage: undefined,
-    data: undefined,
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -20,30 +19,28 @@ const authSlice = createSlice({
     }),
     onLoginSuccess: (state, action) => ({
       ...state,
-      isLoginSuccess: action.payload, //Ko copy state cũ sẽ gây ra lỗi selector ko đc
+      isLoginSuccess: action.payload,
     }),
     onLogin: (state, action) => ({
-      ...state, //Copy lại state hiện tại
-      ...action.payload, // Chỗ này add thêm các props mới vào state hiện tại (ko cập nhật từ state cũ),
-      //sửa lại phải xác định payload là gì để cập nhật lại state
-      //data: action.payload -> cập nhật lại state cũ và chỉ thay đổi data
+      ...state,
+      ...action.payload,
     }),
     onRegister: (state, action) => ({
       ...state,
-      ...action.payload, //tương tự
+      ...action.payload,
     }),
     onUpdateUserToken: (state, action) => ({
       ...state,
       user: action.payload.user,
-      access_token: action.payload.access_token, //Chỗ này chỉ lưu accessToken. ko lưu refreshToken tại sao?
+      access_token: action.payload.access_token,
     }),
     onGetUser: (state, action) => ({
       ...state,
-      ...action.payload, //tương tự
+      ...action.payload,
     }),
     onRefreshToken: (state, action) => ({
       ...state,
-      ...action.payload, //tương tự
+      ...action.payload,
     }),
     onRemoveToken: (state, action) => ({}),
     onLoginOAuthStart: (state, action) => ({

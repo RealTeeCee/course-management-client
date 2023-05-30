@@ -21,10 +21,6 @@ export const store = configureStore({
       serializableCheck: false,
     }).concat(logger, sagaMiddleware),
 });
-// export const store = configureStore({
-//   reducer: rootReducer,
-//   middleware: (gDM) => gDM().concat(logger, sagaMiddleware),
-// });
 
 sagaMiddleware.run(rootSaga);
 export const persistor = persistStore(store);
