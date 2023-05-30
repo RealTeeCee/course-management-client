@@ -10,6 +10,7 @@ const authSlice = createSlice({
     access_token: null,
     isLoading: false,
     isLoginSuccess: false,
+    errorMessage: undefined,
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -17,6 +18,7 @@ const authSlice = createSlice({
       isLoading: action.payload,
     }),
     onLoginSuccess: (state, action) => ({
+      ...state,
       isLoginSuccess: action.payload,
     }),
     onLogin: (state, action) => ({
@@ -28,6 +30,7 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onUpdateUserToken: (state, action) => ({
+      ...state,
       user: action.payload.user,
       access_token: action.payload.access_token,
     }),
@@ -40,6 +43,23 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRemoveToken: (state, action) => ({}),
+    onLoginOAuthStart: (state, action) => ({
+      ...state,
+      isLoading: true,
+      errorMessage: undefined,
+    }),
+    onLoginOAuthSuccess: (state, action) => ({
+      ...state,
+      isLoginSuccess: true,
+      isLoading: false,
+      errorMessage: undefined,
+    }),
+    onLoginOAuthFailed: (state, action) => ({
+      ...state,
+      isLoginSuccess: false,
+      isLoading: false,
+      errorMessage: action.payload,
+    }),
   },
 });
 
@@ -52,6 +72,9 @@ export const {
   onGetUser,
   onRefreshToken,
   onRemoveToken,
+  onLoginOAuthStart,
+  onLoginOAuthSuccess,
+  onLoginOAuthFailed,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;

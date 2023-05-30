@@ -22,6 +22,7 @@ import {
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
+import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -44,8 +45,10 @@ const LoginPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const { isLoading, isLoginSuccess } = useSelector((state) => state.auth);
-
+  const { isLoading, isLoginSuccess, errorMessage } = useSelector(
+    (state) => state.auth
+  );
+  console.log(errorMessage);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -68,7 +71,7 @@ const LoginPage = () => {
       navigate("/");
     }
   }, [isLoginSuccess, navigate, isRemember, getValues]);
-
+  if (errorMessage) toast.error(errorMessage);
   return (
     <>
       {!isVerify ? null : isVerify === "success" ? (
@@ -76,6 +79,7 @@ const LoginPage = () => {
       ) : (
         <AlertAntCom type="success" msg="Email have already actived" />
       )}
+
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
