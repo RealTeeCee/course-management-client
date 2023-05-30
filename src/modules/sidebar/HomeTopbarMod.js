@@ -18,7 +18,7 @@ import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
-  const userName = user?.email.split('@')[0];
+  const userName = user?.email.split("@")[0];
   const userItems = [
     {
       icon: <IconUserCom />,
@@ -41,7 +41,7 @@ const HomeTopbarMod = () => {
       url: "/logout",
     },
   ];
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -102,7 +102,7 @@ const HomeTopbarMod = () => {
                 // If user is not login, exclude "/logout" URL
                 if (
                   !user &&
-                  (item.url === "/logout" || item.url.includes('/profile'))
+                  (item.url === "/logout" || item.url.includes("/profile"))
                 ) {
                   return null;
                 }
@@ -112,6 +112,7 @@ const HomeTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
+                          removeToken();
                         },
                       }
                     : {};

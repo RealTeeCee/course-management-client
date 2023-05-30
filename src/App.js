@@ -66,26 +66,7 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const { access_token, refresh_token } = getToken();
-    if (user && user.email) {
-      dispatch(
-        onUpdateUserToken({
-          user,
-          access_token,
-        })
-      );
-    } else {
-      if (refresh_token) {
-        dispatch(onRefreshToken(refresh_token));
-      } else {
-        dispatch(onUpdateUserToken({}));
-        removeToken();
-      }
-    }
-  }, [dispatch, user, user?.email]);
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>

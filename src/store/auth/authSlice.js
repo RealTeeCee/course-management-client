@@ -3,15 +3,16 @@ const { createSlice } = require("@reduxjs/toolkit");
 /**
  * *Slice*
  */
+const initialState = {
+  user: null,
+  access_token: null,
+  isLoading: false,
+  isLoginSuccess: false,
+  errorMessage: null,
+};
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: undefined,
-    access_token: null,
-    isLoading: false,
-    isLoginSuccess: false,
-    errorMessage: undefined,
-  },
+  initialState: { ...initialState },
   reducers: {
     onLoading: (state, action) => ({
       ...state,
@@ -26,7 +27,7 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRegister: (state, action) => ({
-      ...state,
+      ...initialState,
       ...action.payload,
     }),
     onUpdateUserToken: (state, action) => ({
@@ -36,13 +37,15 @@ const authSlice = createSlice({
     }),
     onGetUser: (state, action) => ({
       ...state,
-      ...action.payload,
+      access_token: action.payload,
     }),
     onRefreshToken: (state, action) => ({
       ...state,
-      ...action.payload,
+      access_token: action.payload,
     }),
-    onRemoveToken: (state, action) => ({}),
+    onRemoveToken: (state, action) => ({
+      ...initialState,
+    }),
     onLoginOAuthStart: (state, action) => ({
       ...state,
       isLoading: true,
