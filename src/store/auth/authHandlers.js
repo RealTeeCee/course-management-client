@@ -52,7 +52,6 @@ function* handleOnLogin(action) {
 
 function* handleOnGetUser({ payload: access_token }) {
   try {
-    console.log("handleOnGetUser: ", access_token);
     const res = yield call(requestGetUser, access_token);
     if (res.data.type === "success") {
       yield put(
