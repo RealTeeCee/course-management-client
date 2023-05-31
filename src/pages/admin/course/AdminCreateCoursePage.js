@@ -72,16 +72,16 @@ const schemaValidation = yup.object().shape({
 
 // Label is category name , value is category_id
 
-const tagItems = [
-  {
-    value: "programming",
-    label: "Programming",
-  },
-  {
-    value: "php",
-    label: "PHP",
-  },
-];
+// const tagItems = [
+//   {
+//     value: "programming",
+//     label: "Programming",
+//   },
+//   {
+//     value: "php",
+//     label: "PHP",
+//   },
+// ];
 
 const AdminCreateCoursePage = () => {
   const {
