@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,7 +12,6 @@ import {
 } from "../../components/icon";
 import { MESSAGE_LOGOUT_SUCCESS } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { removeToken } from "../../utils/auth";
 import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
