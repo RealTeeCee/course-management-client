@@ -8,6 +8,7 @@ import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { API_COURSE_URL } from "../constants/endpoint";
+import { categoryItems } from "../constants/config";
 
 const HomePage = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -21,7 +22,7 @@ const HomePage = () => {
       }
     };
     getCourses();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -77,20 +78,18 @@ const HomePage = () => {
       <div className="relative z-10 -mt-[160vh] pt-3 min-h-screen bg-tw-light">
         {/* Category  */}
         <HeadingH2Com className="text-tw-primary" number={4}>
-          Category
+          Categories
         </HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
         <CategoryGridMod>
-          {Array(4)
-            .fill(0)
-            .map((item) => (
-              <CategoryItemMod key={v4()}></CategoryItemMod>
-            ))}
+          {categoryItems.map((item) => (
+            <CategoryItemMod key={item.value} item={item}></CategoryItemMod>
+          ))}
         </CategoryGridMod>
 
         {/* Selling Course */}
         <HeadingH2Com className="text-tw-primary">
-          Best Selling Course
+          Best Selling Courses
         </HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
@@ -102,7 +101,7 @@ const HomePage = () => {
         </CourseGridMod>
 
         {/* Free Course */}
-        <HeadingH2Com className="text-tw-primary">Free Course</HeadingH2Com>
+        <HeadingH2Com className="text-tw-primary">Free Courses</HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
           {Array(4)

@@ -39,6 +39,11 @@ const HomePage = lazy(() => import("./pages/HomePage.js"));
 
 const ErrorPage = lazy(() => import("./pages/errors/ErrorPage.js"));
 
+const CategoryPage = lazy(() => import("./pages/category/CategoryPage.js"));
+const CategoryDetailPage = lazy(() =>
+  import("./pages/category/CategoryDetailPage.js")
+);
+
 const CoursePage = lazy(() => import("./pages/course/CoursePage.js"));
 const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
 const CourseDetailPage = lazy(() =>
@@ -62,7 +67,6 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
-  // .
   const { user } = useSelector((state) => state.auth);
 
   return (
@@ -84,6 +88,15 @@ function App() {
             element={<ErrorPage status={403}></ErrorPage>}
           ></Route>
           {/* ********* END Error ********* */}
+          <Route
+            path="/categories"
+            element={<CategoryPage></CategoryPage>}
+          ></Route>
+          <Route
+            path="/categories/:slug"
+            element={<CategoryDetailPage></CategoryDetailPage>}
+          ></Route>
+
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"

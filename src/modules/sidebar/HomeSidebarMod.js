@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   IconAdminCom,
   IconBlogCom,
+  IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
   IconMapCom,
@@ -25,6 +26,11 @@ const sidebarItems = [
     url: "/routes",
   },
   {
+    icon: <IconCategoryCom className="mx-auto" />,
+    title: "Cate",
+    url: "/categories",
+  },
+  {
     icon: <IconLearnCom className="mx-auto" />,
     title: "Course",
     url: "/courses",
@@ -39,12 +45,12 @@ const sidebarItems = [
     title: "Admin",
     url: "/admin",
   },
-  {
-    icon: <IconMoonCom className="mx-auto" />,
-    title: "Mode",
-    url: "/mode",
-    onClick: () => {},
-  },
+  // {
+  //   icon: <IconMoonCom className="mx-auto" />,
+  //   title: "Mode",
+  //   url: "/mode",
+  //   onClick: () => {},
+  // },
 ];
 
 const HomeSidebarMod = () => {
