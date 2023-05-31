@@ -35,13 +35,10 @@ const authSlice = createSlice({
       user: action.payload.user,
       access_token: action.payload.access_token,
     }),
-    onGetUser: (state, action) => {
-      console.log("onGetUser: action: ", action);
-      return ({
-        ...state,
-        access_token: action.payload,
-      })
-    },
+    onGetUser: (state, action) => ({
+      ...state,
+      access_token: action.payload,
+    }),
     onRefreshToken: (state, action) => ({
       ...state,
       access_token: action.payload,

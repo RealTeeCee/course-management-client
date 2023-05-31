@@ -34,39 +34,40 @@ import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import { IMG_BB_URL } from "../../../constants/endpoint";
+import { API_TAG_URL, IMG_BB_URL } from "../../../constants/endpoint";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
+import { useNavigate } from "react-router-dom";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  name: yup
-    .string()
-    .required(MESSAGE_FIELD_REQUIRED)
-    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
-    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  status: yup.number().default(1),
-  level: yup.number().default(0),
-  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
-  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  price: yup
-    .string()
-    .nullable()
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
-  sale_price: yup
-    .string()
-    .nullable()
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
-  duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
+  // name: yup
+  //   .string()
+  //   .required(MESSAGE_FIELD_REQUIRED)
+  //   .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+  //   .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  // status: yup.number().default(1),
+  // level: yup.number().default(0),
+  // image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
+  // category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  // tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  // price: yup
+  //   .string()
+  //   .nullable()
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
+  // sale_price: yup
+  //   .string()
+  //   .nullable()
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
+  // duration: yup
+  //   .string(MESSAGE_NUMBER_REQUIRED)
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(1, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -88,6 +89,7 @@ const AdminCreateCoursePage = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     setError,
     reset,
     formState: { errors },
@@ -95,9 +97,10 @@ const AdminCreateCoursePage = () => {
     resolver: yupResolver(schemaValidation),
   });
   /********* API Area ********* */
-  // const [tagItems, setTagItems] = useState([]);
+  const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
   const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
@@ -113,7 +116,14 @@ const AdminCreateCoursePage = () => {
     setDescription("");
     setPrice(0);
     setSalePrice(0);
+    setValue("image", "");
+    setValue("level", 0);
     reset();
+    getTags();
+  };
+
+  const clearImage = () => {
+    setValue("image", "");
   };
 
   const handleSubmitForm = async (values) => {
@@ -174,7 +184,7 @@ const AdminCreateCoursePage = () => {
         const res = await axiosPrivate.post(`/course`, fd);
         toast.success(`${res.data.message}`);
         resetValues();
-        reset();
+        navigate("/admin/courses");
       } catch (error) {
         showMessageError(error);
       } finally {
@@ -183,17 +193,30 @@ const AdminCreateCoursePage = () => {
     }
   };
 
+  const getTags = async () => {
+    try {
+      const res = await axiosPrivate.get(`${API_TAG_URL}`);
+      const newRes = res.data.map((item) => {
+        const tagNames = item.name.split(" ");
+        // ['Spring', 'Boot']
+        const capitalLabelArr = tagNames.map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+        ); // slice 1 ký tự đầu);
+        return {
+          value: item.name.toLowerCase(),
+          label: capitalLabelArr.join(" "),
+        };
+      });
+      setTagItems(newRes);
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
+
   /********* Fetch API Area ********* */
   useEffect(() => {
-    // const getTags = async () => {
-    //   try {
-    //     const res = await axios.get(``);
-    //     setTagItems(res.data);
-    //   } catch (error) {
-    //     toast.error(error.message);
-    //   }
-    // };
-    // getTags();
+    getTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /********* END Fetch API Area ********* */
 
