@@ -44,30 +44,30 @@ import { useNavigate } from "react-router-dom";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const schemaValidation = yup.object().shape({
-  // name: yup
-  //   .string()
-  //   .required(MESSAGE_FIELD_REQUIRED)
-  //   .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
-  //   .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  // status: yup.number().default(1),
-  // level: yup.number().default(0),
-  // image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
-  // category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  // tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  // price: yup
-  //   .string()
-  //   .nullable()
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(0, MESSAGE_NUMBER_POSITIVE),
-  // sale_price: yup
-  //   .string()
-  //   .nullable()
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(0, MESSAGE_NUMBER_POSITIVE),
-  // duration: yup
-  //   .string(MESSAGE_NUMBER_REQUIRED)
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(1, MESSAGE_NUMBER_POSITIVE),
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  status: yup.number().default(1),
+  level: yup.number().default(0),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
+  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  price: yup
+    .string()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
+  sale_price: yup
+    .string()
+    .nullable()
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
+  duration: yup
+    .string(MESSAGE_NUMBER_REQUIRED)
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(1, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -89,7 +89,6 @@ const AdminCreateCoursePage = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
     setError,
     reset,
     formState: { errors },
@@ -116,8 +115,8 @@ const AdminCreateCoursePage = () => {
     setDescription("");
     setPrice(0);
     setSalePrice(0);
-    setValue("image", "");
-    setValue("level", 0);
+    // setValue("image", "");
+    // setValue("level", 0);
     reset();
     getTags();
   };
