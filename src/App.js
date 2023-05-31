@@ -62,6 +62,7 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
+  // .
   const { user } = useSelector((state) => state.auth);
 
   return (
