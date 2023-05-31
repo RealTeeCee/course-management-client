@@ -29,6 +29,7 @@ import {
   MESSAGE_FIELD_MIN_LENGTH_NAME,
   statusItems,
   levelItems,
+  MESSAGE_SALE_PRICE_HIGHER_PRICE,
 } from "../../../constants/config";
 import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
@@ -95,9 +96,9 @@ const AdminCreateCoursePage = () => {
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  /********* API Area ********* */
+  /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
-  /********* END API Area ********* */
+  /********* END API State ********* */
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -115,14 +116,8 @@ const AdminCreateCoursePage = () => {
     setDescription("");
     setPrice(0);
     setSalePrice(0);
-    // setValue("image", "");
-    // setValue("level", 0);
     reset();
     getTags();
-  };
-
-  const clearImage = () => {
-    setValue("image", "");
   };
 
   const handleSubmitForm = async (values) => {
@@ -153,7 +148,7 @@ const AdminCreateCoursePage = () => {
       );
       if (salePriceSelector) salePriceSelector.focus();
       toast.error(MESSAGE_GENERAL_FAILED);
-      setError("sale_price", { message: "Sale Price cannot > Price" });
+      setError("sale_price", { message: MESSAGE_SALE_PRICE_HIGHER_PRICE });
     } else {
       try {
         setIsLoading(!isLoading);
@@ -393,6 +388,7 @@ const AdminCreateCoursePage = () => {
                         name="image"
                         onSetValue={setValue}
                         errorMsg={errors.image?.message}
+                        editImage={[]}
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"

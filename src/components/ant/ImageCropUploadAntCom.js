@@ -6,6 +6,9 @@ import { toast } from "react-toastify";
 import { MESSAGE_UPLOAD_IMAGE_FAILED } from "../../constants/config";
 import { IMG_BB_URL } from "../../constants/endpoint";
 import { showMessageError } from "../../utils/helper";
+import PropTypes from "prop-types";
+import { withErrorBoundary } from "react-error-boundary";
+import ErrorCom from "../common/ErrorCom";
 
 // Crop image before uploading
 const ImageCropUploadAntCom = ({
@@ -13,17 +16,22 @@ const ImageCropUploadAntCom = ({
   name,
   errorMsg = "",
   children,
+  editImage = [],
   ...rest
 }) => {
-  //   const [fileList, setFileList] = useState([
-  //     {
-  //       uid: "-1",
-  //       name: "image.png",
-  //       status: "done",
-  //       url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //     },
-  //   ]);
+  // const [fileList, setFileList] = useState([
+  //   {
+  //     uid: "-1",
+  //     name: "image.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  // ]);
   const [fileList, setFileList] = useState([]);
+  // show Image when Edit
+  useEffect(() => {
+    setFileList(editImage);
+  }, [editImage]);
 
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -97,4 +105,16 @@ const ImageCropUploadAntCom = ({
   );
 };
 
-export default ImageCropUploadAntCom;
+ImageCropUploadAntCom.propTypes = {
+  control: PropTypes.any.isRequired,
+  register: PropTypes.func.isRequired,
+  editImage: PropTypes.array.isRequired, // editImage = []
+  onSetValue: PropTypes.func,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  errorMsg: PropTypes.string,
+  children: PropTypes.node,
+};
+export default withErrorBoundary(ImageCropUploadAntCom, {
+  FallbackComponent: ErrorCom,
+});

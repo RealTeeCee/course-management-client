@@ -7,7 +7,6 @@ import axiosInstance from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
-import Overlay from "../../../components/common/Overlay";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
   IconEditCom,
@@ -16,7 +15,11 @@ import {
   IconTrashCom,
 } from "../../../components/icon";
 import { TableCom } from "../../../components/table";
-import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import {
+  API_COURSE_URL,
+  API_TAG_URL,
+  IMG_BB_URL,
+} from "../../../constants/endpoint";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
@@ -46,14 +49,13 @@ import {
 import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
-import { SmileOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 import {
   convertIntToStrMoney,
   convertStrMoneyToInt,
   showMessageError,
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
+import { v4 } from "uuid";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -84,16 +86,16 @@ const schemaValidation = yup.object().shape({
 
 // Label is category name , value is category_id
 
-const tagItems = [
-  {
-    value: "programming",
-    label: "Programming",
-  },
-  {
-    value: "php",
-    label: "PHP",
-  },
-];
+// const tagItems = [
+//   {
+//     value: "programming",
+//     label: "Programming",
+//   },
+//   {
+//     value: "php",
+//     label: "PHP",
+//   },
+// ];
 
 const AdminCourseListPage = () => {
   // More Action Menu
@@ -135,8 +137,16 @@ const AdminCourseListPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  // Variable State
-  const [courseId, setCourseId] = useState(1);
+  /********* API State ********* */
+  const [tagItems, setTagItems] = useState([]);
+  const [image, setImage] = useState([]);
+
+  const [categorySelected, setCategorySelected] = useState(null);
+  const [tagsSelected, setTagsSelected] = useState([]);
+  const [archivementSelected, setArchivementSelected] = useState([]);
+  /********* END API State ********* */
+
+  // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
 
@@ -147,16 +157,13 @@ const AdminCourseListPage = () => {
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
 
-  const [categorySelected, setCategorySelected] = useState(1);
-  const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
 
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
   const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
 
-  /********* Fetch data Area ********* */
+  /********* Fetch API Area ********* */
   const columns = [
     {
       name: "Course Name",
@@ -194,7 +201,7 @@ const AdminCourseListPage = () => {
             onClick={() => {
               // alert(`Update Course id: ${row.id}`);
               setIsOpen(true);
-              setCourseId(row.id);
+              getCourseById(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -231,22 +238,62 @@ const AdminCourseListPage = () => {
     }
   };
 
+  const getTags = async () => {
+    try {
+      const res = await axiosPrivate.get(`${API_TAG_URL}`);
+      const newRes = res.data.map((item) => {
+        const tagNames = item.name.split(" ");
+        // ['Spring', 'Boot']
+        const capitalLabelArr = tagNames.map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+        ); // slice 1 ký tự đầu);
+        return {
+          value: item.name.toLowerCase(),
+          label: capitalLabelArr.join(" "),
+        };
+      });
+      setTagItems(newRes);
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
+
+  // /********* Fetch API Area ********* */
+  // useEffect(() => {
+  //   getTags();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   useEffect(() => {
     getCourses();
+    getTags();
+    console.log(tagItems);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const getCourseById = async () => {
-      try {
-        const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
-        reset(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getCourseById();
-  }, [axiosPrivate, courseId, reset]);
+  const getCourseById = async (courseId) => {
+    try {
+      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      reset(res.data);
+      setCategorySelected(res.data.category_id);
+      setTagsSelected(res.data.tags.split(","));
+      setArchivementSelected(res.data.archivements.split(","));
+
+      const resImage = res.data.image;
+      const imgObj = [
+        {
+          uid: v4(),
+          name: resImage.substring(resImage.lastIndexOf("/") + 1),
+          status: "done",
+          url: resImage,
+        },
+      ];
+
+      setImage(imgObj);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Search in Table
   useEffect(() => {
@@ -621,6 +668,7 @@ const AdminCourseListPage = () => {
                       name="image"
                       onSetValue={setValue}
                       errorMsg={errors.image?.message}
+                      editImage={image}
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"
