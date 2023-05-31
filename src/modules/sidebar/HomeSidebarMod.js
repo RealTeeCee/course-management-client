@@ -12,7 +12,6 @@ import {
   IconMoonCom,
   IconSunCom,
 } from "../../components/icon";
-import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const sidebarItems = [
   {
