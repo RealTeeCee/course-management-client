@@ -15,6 +15,7 @@ import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
   APP_KEY_NAME,
+  MESSAGE_EMAIL_ACTIVED,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_VERIFY_SUCCESS,
@@ -48,7 +49,7 @@ const LoginPage = () => {
   const { isLoading, isLoginSuccess, errorMessage } = useSelector(
     (state) => state.auth
   );
-  console.log(errorMessage);
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -79,7 +80,7 @@ const LoginPage = () => {
       {!isVerify ? null : isVerify === "success" ? (
         <AlertAntCom type="success" msg={MESSAGE_VERIFY_SUCCESS} />
       ) : (
-        <AlertAntCom type="success" msg="Email have already actived" />
+        <AlertAntCom type="success" msg={MESSAGE_EMAIL_ACTIVED} />
       )}
 
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>

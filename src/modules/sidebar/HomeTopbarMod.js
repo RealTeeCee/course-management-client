@@ -112,7 +112,6 @@ const HomeTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
-                          removeToken();
                         },
                       }
                     : {};

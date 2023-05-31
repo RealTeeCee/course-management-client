@@ -39,6 +39,8 @@ export const MESSAGE_LOGOUT_SUCCESS = "You have logged out successfully !";
 export const MESSAGE_VERIFY_SUCCESS =
   "Your email has been verified! You can login now";
 
+export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";
+
 export const MESSAGE_UNAUTHORIZE = "Please login first then access this page";
 export const MESSAGE_FORBIDDEN = "You dont have permission to access this page";
 export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
@@ -51,18 +53,38 @@ export const categoryItems = [
   {
     value: 1,
     label: "Programming",
+    slug: "programming",
+    image:
+      "https://www.theschoolrun.com/sites/theschoolrun.com/files/article_images/what_is_a_programming_language.jpg",
+    description:
+      "Explore the world of programming and learn how to create software, websites, and applications. Gain hands-on experience with popular programming languages and tools, and build a foundation for a successful career in technology.",
   },
   {
     value: 2,
     label: "Graphic Design",
+    slug: "graphic-design",
+    image:
+      "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8R3JhcGhpYyUyMERlc2lnbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    description:
+      "Unleash your creativity with graphic design. Learn how to create visually appealing designs, manipulate images, and develop skills using popular design software. Discover the art of communication through visual elements.",
   },
   {
     value: 3,
     label: "Artificial Intelligence",
+    slug: "artificial-intelligence",
+    image:
+      "https://media.istockphoto.com/id/1440356809/photo/artificial-intelligence-technology-robot-futuristic-data-science-data-analytics-quantum.webp?b=1&s=170667a&w=0&k=20&c=wXYn8o0Y5OYTZbRFTeXvyQ2V4dt8HMHPLgFSJxjqWcg=",
+    description:
+      "Dive into the fascinating field of Artificial Intelligence (AI). Learn about machine learning, neural networks, and data analysis algorithms. Explore how AI is transforming various industries and gain insights into the future of intelligent systems.",
   },
   {
     value: 4,
     label: "Data Science",
+    slug: "data-science",
+    image:
+      "https://media.istockphoto.com/id/1405263192/vi/anh/kh%C3%A1i-ni%E1%BB%87m-khoa-h%E1%BB%8Dc-d%E1%BB%AF-li%E1%BB%87u.jpg?s=2048x2048&w=is&k=20&c=U5JcK90r1rbbLMuQm9G8e3BvFerS4fSLbS4BRyQYZd4=",
+    description:
+      "Unlock the power of data through data science. Discover techniques for analyzing and interpreting data, and gain insights to drive informed decision-making. Learn how to extract meaningful information from complex datasets and solve real-world problems.",
   },
 ];
 
