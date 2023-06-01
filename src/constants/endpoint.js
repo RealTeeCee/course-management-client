@@ -1,7 +1,7 @@
 import { BASE_API_URL, BASE_DOMAIN_URL } from "./config";
 
 export const IMG_BB_URL =
-  "https://api.imgbb.com/1/upload?key=a3677081e3e3345b34519f94cd1017e1";
+  "https://api.imgbb.com/1/upload?key=460ff2aea92fbc932901efd11f0637fb";
 
 // ******************* Authentication ENDPOINT *********************
 export const API_REGISTER_URL = "/auth/register";
@@ -18,6 +18,8 @@ export const LINKEDIN_AUTH_URL = `${BASE_API_URL}/oauth2/authorize/linkedin?redi
 
 // ******************* API ENDPOINT *********************
 export const API_COURSE_URL = "/course";
-export const API_SECTION_URL = "/course/1/section";
+export const API_SECTION_URL = "/course/{id}/section";
 export const API_LESSON_URL = "/section/1/lesson";
 export const API_IMG_URL = "/course/download"; // Example: "/course/download?courseId=";
+
+export const API_TAG_URL = "/tag";

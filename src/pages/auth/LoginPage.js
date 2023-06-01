@@ -1,32 +1,29 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-//*** Nguyễn Code***
-// import { useDispatch, useSelector } from "react-redux";
-//***END Nguyễn Code***
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { AlertAntCom } from "../../components/ant/index";
 import { ButtonCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
+import GapYCom from "../../components/common/GapYCom";
 import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
   APP_KEY_NAME,
+  MESSAGE_EMAIL_ACTIVED,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_VERIFY_SUCCESS,
 } from "../../constants/config";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
-//*** Nguyễn Code***
-// import { selectLoginIsSuccess } from "../../store/login/selector";
-//*** END Nguyễn Code***
 import OAuth2Page from "./OAuth2Page";
+import { toast } from "react-toastify";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -43,14 +40,15 @@ const LoginPage = () => {
     control,
     register,
     handleSubmit,
-    setValue,
     getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  const { isLoading, isLoginSuccess } = useSelector((state) => state.auth);
+  const { isLoading, isLoginSuccess, errorMessage } = useSelector(
+    (state) => state.auth
+  );
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,21 +66,23 @@ const LoginPage = () => {
   useEffect(() => {
     if (isLoginSuccess) {
       if (isRemember) {
-        const values = getValues();
-        Cookies.set(`${APP_KEY_NAME}_email`, values.email);
-        Cookies.set(`${APP_KEY_NAME}_password`, values.password);
+        const { email, password } = getValues();
+        Cookies.set(`${APP_KEY_NAME}__${email}`, password);
       }
       navigate("/");
+    } else {
+      if (errorMessage) toast.error(errorMessage);
     }
-  }, [isLoginSuccess, navigate, isRemember, getValues]);
+  }, [isLoginSuccess, navigate, isRemember, getValues, errorMessage]);
 
   return (
     <>
       {!isVerify ? null : isVerify === "success" ? (
         <AlertAntCom type="success" msg={MESSAGE_VERIFY_SUCCESS} />
       ) : (
-        <AlertAntCom type="success" msg="Email have already actived" />
+        <AlertAntCom type="success" msg={MESSAGE_EMAIL_ACTIVED} />
       )}
+
       <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
@@ -108,7 +108,6 @@ const LoginPage = () => {
             name="password"
             register={register}
             placeholder="Input your password"
-            isTypePassword={true}
             errorMsg={errors.password?.message}
           ></InputCom>
         </FormGroupCom>
@@ -125,12 +124,15 @@ const LoginPage = () => {
               Forgot password?
             </a>
           </div>
+          <GapYCom></GapYCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Login
           </ButtonCom>
+          <GapYCom></GapYCom>
         </FormGroupCom>
-        <h6 className="text-muted mt-4 or">Or login with</h6>
-        <OAuth2Page />
+        <h6 className="text-muted or">Or login with</h6>
+        <GapYCom></GapYCom>
+        <OAuth2Page></OAuth2Page>
         <p className="mt-4 mb-0">
           Don't have an account?
           <Link

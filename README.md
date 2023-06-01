@@ -1,28 +1,38 @@
-# Getting Started with Project Development using GIT CLI
-- Open new tab of Terminal and run command 
+## Getting Started with Project Development using GIT CLI
+- Step 1: Open new tab of Terminal and clone src
 
-```git clone git@github.com:ricpham/course-management-client.git```
+```bash
+git clone git@github.com:ricpham/course-management-client.git
+```
  
-- Step 2: run command 
+- Step 2: cd to Project
 
-```cd course-management-client```
+```bash
+cd course-management-client
+```
 
-- Step 3: run command 
+- Step 3: checkout to dev
 
-```git checkout dev```
+```bash
+git checkout dev
+```
 
 # Config .env
 - Copy file `.env.dist` then please change the name of new File to `.env`
 
-# Getting Started with Create React App and Redux
+## Getting Started with Create React App and Redux
 
-- `yarn install`
-- `yarn start`
-- Open new tab of Terminal and run command `cd server`
-- Run command `yarn start` to start Server
+```bash
+yarn install
+```
+
+```bash
+yarn start
+```
 
 # *** Other ***
-- Lib Material UI Docs version 5.12.3: `https://mui.com/material-ui/react-rating/`
-- Lib Ant Design UI Docs version 5.4.6: `https://ant.design/components/overview`
+- Node module version: **16.16.0**
+- Lib Material UI Docs version: **5.12.3**: `https://mui.com/material-ui/react-rating/`
+- Lib Ant Design UI Docs version: **5.4.6**: `https://ant.design/components/overview`
 
 - Font: change link css in `public/index.html`

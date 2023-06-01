@@ -3,20 +3,23 @@ const { createSlice } = require("@reduxjs/toolkit");
 /**
  * *Slice*
  */
+const initialState = {
+  user: null,
+  access_token: null,
+  isLoading: false,
+  isLoginSuccess: false,
+  errorMessage: null,
+};
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: undefined,
-    access_token: null,
-    isLoading: false,
-    isLoginSuccess: false,
-  },
+  initialState: { ...initialState },
   reducers: {
     onLoading: (state, action) => ({
       ...state,
       isLoading: action.payload,
     }),
     onLoginSuccess: (state, action) => ({
+      ...state,
       isLoginSuccess: action.payload,
     }),
     onLogin: (state, action) => ({
@@ -24,7 +27,7 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRegister: (state, action) => ({
-      ...state,
+      ...initialState,
       ...action.payload,
     }),
     onUpdateUserToken: (state, action) => ({
@@ -34,13 +37,32 @@ const authSlice = createSlice({
     }),
     onGetUser: (state, action) => ({
       ...state,
-      ...action.payload,
+      access_token: action.payload,
     }),
     onRefreshToken: (state, action) => ({
       ...state,
-      ...action.payload,
+      access_token: action.payload,
     }),
-    onRemoveToken: (state, action) => ({}),
+    onRemoveToken: (state, action) => ({
+      ...initialState,
+    }),
+    onLoginOAuthStart: (state, action) => ({
+      ...state,
+      isLoading: true,
+      errorMessage: undefined,
+    }),
+    onLoginOAuthSuccess: (state, action) => ({
+      ...state,
+      isLoginSuccess: true,
+      isLoading: false,
+      errorMessage: undefined,
+    }),
+    onLoginOAuthFailed: (state, action) => ({
+      ...state,
+      isLoginSuccess: false,
+      isLoading: false,
+      errorMessage: action.payload,
+    }),
   },
 });
 
@@ -53,6 +75,9 @@ export const {
   onGetUser,
   onRefreshToken,
   onRemoveToken,
+  onLoginOAuthStart,
+  onLoginOAuthSuccess,
+  onLoginOAuthFailed,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;

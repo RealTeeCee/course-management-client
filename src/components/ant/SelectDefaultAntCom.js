@@ -1,43 +1,45 @@
-import React from "react";
 import { Select } from "antd";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 
-// const listItems = [
+// const handleChange = (value) => {
+//   console.log(`selected ${value}`);
+// };
+
+// const $listItems = [
 //   {
-//     value: "Programming",
-//     label: "Programming",
+//     value: 1,
+//     label: "Active",
 //   },
 //   {
-//     value: "PHP",
-//     label: "PHP",
+//     value: 0,
+//     label: "InActive",
 //   },
 // ];
-// Automatic tokenization
-const SelectTagAntCom = ({
+
+// Basic Usage
+const SelectDefaultAntCom = ({
   listItems = [],
   onChange = () => {},
+  defaultValue = 1,
   status = "",
   errorMsg = "",
-  placeholder = "Please input...",
-  selectedValue = [],
   className = "",
+  selectedValue = null,
+  ...rest
 }) => {
   return (
     <>
       <Select
-        value={selectedValue}
-        status={status}
         size="large"
-        mode="tags"
-        style={{
-          width: "100%",
-        }}
-        placeholder={placeholder}
+        defaultValue={defaultValue}
         onChange={onChange}
         options={listItems}
+        className={`${className} w-full`}
+        {...rest}
       />
+
       {errorMsg && errorMsg.length > 0 && (
         <span className="text-tw-danger text-sm">{errorMsg}</span>
       )}
@@ -45,19 +47,19 @@ const SelectTagAntCom = ({
   );
 };
 
-SelectTagAntCom.propTypes = {
+SelectDefaultAntCom.propTypes = {
   listItems: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
+  defaultValue: PropTypes.number,
   status: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,
-  placeholder: PropTypes.string,
   errorMsg: PropTypes.string,
 };
-export default withErrorBoundary(SelectTagAntCom, {
+export default withErrorBoundary(SelectDefaultAntCom, {
   FallbackComponent: ErrorCom,
 });

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
-import { store } from "./store/configureStore";
+import { store, persistor } from "./store/configureStore";
 import { BrowserRouter } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,7 +20,7 @@ import "./assets/css/vendors/bootstrap.css";
 import "./assets/css/style.css";
 import "./assets/css/color-1.css";
 import "./assets/css/responsive.css";
-
+import { PersistGate } from "redux-persist/integration/react";
 import "./index.scss";
 import "swiper/css";
 import { ToastContainer } from "react-toastify";
@@ -31,8 +31,10 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
-      <ToastContainer bodyClassName="font-tw-primary" />
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+        <ToastContainer bodyClassName="font-tw-primary" />
+      </PersistGate>
     </BrowserRouter>
   </Provider>
 );

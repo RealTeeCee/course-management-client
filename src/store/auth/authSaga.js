@@ -4,8 +4,15 @@ import {
   handleOnRegister,
   handleOnRefreshToken,
   handleOnRemoveToken,
+  handleOnGetUser,
 } from "./authHandlers";
-import { onLogin, onRefreshToken, onRegister, onRemoveToken } from "./authSlice";
+import {
+  onLogin,
+  onRefreshToken,
+  onRegister,
+  onRemoveToken,
+  onGetUser,
+} from "./authSlice";
 
 /**
  * *** Saga ***
@@ -16,6 +23,5 @@ export default function* authSaga() {
   yield takeLatest(onLogin.type, handleOnLogin);
   yield takeLatest(onRefreshToken.type, handleOnRefreshToken);
   yield takeLatest(onRemoveToken.type, handleOnRemoveToken);
-
-  
+  yield takeLatest(onGetUser.type, handleOnGetUser);
 }

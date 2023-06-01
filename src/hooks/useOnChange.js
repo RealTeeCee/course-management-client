@@ -1,12 +1,12 @@
-import { debounce } from "lodash";
 import { useState } from "react";
+import { convertIntToStrMoney } from "../utils/helper";
 
 // After time will OnChange value
-export default function useOnChange(time = 0) {
-  const [value, setValue] = useState(null);
-  const handleOnChange = debounce((e) => {
-    setValue(e.target.value);
-  }, time);
+export default function useOnChange(initialValue = null) {
+  const [value, setValue] = useState(initialValue);
+  const handleOnChange = (e) => {
+    setValue(convertIntToStrMoney(e.target.value));
+  };
 
-  return [value, handleOnChange];
+  return [value, handleOnChange, setValue];
 }

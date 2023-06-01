@@ -5,13 +5,13 @@ import { toast } from "react-toastify";
 import {
   IconAdminCom,
   IconBlogCom,
+  IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
   IconMapCom,
   IconMoonCom,
   IconSunCom,
 } from "../../components/icon";
-import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const sidebarItems = [
   {
@@ -23,6 +23,11 @@ const sidebarItems = [
     icon: <IconMapCom className="mx-auto" />,
     title: "Route",
     url: "/routes",
+  },
+  {
+    icon: <IconCategoryCom className="mx-auto" />,
+    title: "Cate",
+    url: "/categories",
   },
   {
     icon: <IconLearnCom className="mx-auto" />,
@@ -39,12 +44,12 @@ const sidebarItems = [
     title: "Admin",
     url: "/admin",
   },
-  {
-    icon: <IconMoonCom className="mx-auto" />,
-    title: "Mode",
-    url: "/mode",
-    onClick: () => {},
-  },
+  // {
+  //   icon: <IconMoonCom className="mx-auto" />,
+  //   title: "Mode",
+  //   url: "/mode",
+  //   onClick: () => {},
+  // },
 ];
 
 const HomeSidebarMod = () => {

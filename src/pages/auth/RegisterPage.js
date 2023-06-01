@@ -22,6 +22,7 @@ import {
 import { useDispatch } from "react-redux";
 import { onRegister } from "../../store/auth/authSlice";
 import { toast } from "react-toastify";
+import GapYCom from "../../components/common/GapYCom";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -129,7 +130,6 @@ const RegisterPage = () => {
             name="password"
             register={register}
             placeholder="Input your password"
-            isTypePassword={true}
             errorMsg={errors.password?.message}
           ></InputCom>
         </FormGroupCom>
@@ -148,12 +148,14 @@ const RegisterPage = () => {
               Privacy Policy
             </Link>
           </CheckBoxCom>
+          <GapYCom></GapYCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
             Create Account
           </ButtonCom>
         </FormGroupCom>
         <h6 className="text-muted mt-4 or">Or register with</h6>
-        <OAuth2Page />
+        <GapYCom></GapYCom>
+        <OAuth2Page></OAuth2Page>
         <p className="mt-4 mb-0">
           Already have an account?
           <Link

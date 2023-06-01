@@ -1,6 +1,6 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import Modal from "react-modal";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
@@ -9,10 +9,6 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-
-import { onRefreshToken, onUpdateUserToken } from "./store/auth/authSlice.js";
-import { getToken, removeToken } from "./utils/auth.js";
-import LearnPage from "./pages/learn/LearnPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -43,6 +39,11 @@ const HomePage = lazy(() => import("./pages/HomePage.js"));
 
 const ErrorPage = lazy(() => import("./pages/errors/ErrorPage.js"));
 
+const CategoryPage = lazy(() => import("./pages/category/CategoryPage.js"));
+const CategoryDetailPage = lazy(() =>
+  import("./pages/category/CategoryDetailPage.js")
+);
+
 const CoursePage = lazy(() => import("./pages/course/CoursePage.js"));
 const MyCoursePage = lazy(() => import("./pages/course/MyCoursePage.js"));
 const CourseDetailPage = lazy(() =>
@@ -55,7 +56,8 @@ const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
-// const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
+
+const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
 
 const customStyles = {
   content: {},
@@ -66,26 +68,7 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const { access_token, refresh_token } = getToken();
-    if (user && user.email) {
-      dispatch(
-        onUpdateUserToken({
-          user,
-          access_token,
-        })
-      );
-    } else {
-      if (refresh_token) {
-        dispatch(onRefreshToken(refresh_token));
-      } else {
-        dispatch(onUpdateUserToken({}));
-        removeToken();
-      }
-    }
-  }, [dispatch, user, user?.email]);
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
       <Routes>
@@ -105,6 +88,15 @@ function App() {
             element={<ErrorPage status={403}></ErrorPage>}
           ></Route>
           {/* ********* END Error ********* */}
+          <Route
+            path="/categories"
+            element={<CategoryPage></CategoryPage>}
+          ></Route>
+          <Route
+            path="/categories/:slug"
+            element={<CategoryDetailPage></CategoryDetailPage>}
+          ></Route>
+
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -156,7 +148,8 @@ function App() {
 
             {/* Admin Sections */}
             <Route
-              path="sections"
+              // path="sections"
+              path="courses/:id/sections"
               element={<AdminSectionListPage></AdminSectionListPage>}
             ></Route>
             <Route
@@ -166,7 +159,7 @@ function App() {
 
             {/* Admin Lessions */}
             <Route
-              path="lessions"
+              path="courses/:id/sections/:sectionId/lesson"
               element={<AdminLessionListPage></AdminLessionListPage>}
             ></Route>
             <Route
@@ -180,10 +173,7 @@ function App() {
         {/* ********* Learn ********* */}
         <Route element={<LayoutLearning></LayoutLearning>}>
           {/* course slug */}
-          <Route
-            path="/learn/:slug"
-            element={<LearnPage></LearnPage>}
-          ></Route>
+          <Route path="/learn/:slug" element={<LearnPage></LearnPage>}></Route>
         </Route>
         {/* ********* END Learn ********* */}
 
@@ -212,13 +202,6 @@ function App() {
           ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
-
-        {/* <Route element={<LayoutHome></LayoutHome>}>
-          <Route
-            path="/user"
-            element={<UserProfilePage></UserProfilePage>}
-          ></Route>
-        </Route> */}
       </Routes>
     </Suspense>
   );

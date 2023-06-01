@@ -3,14 +3,15 @@ import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
-import { HeadingH1Com } from "../../../components/heading";
+import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 import {
   IconEditCom,
   IconEyeCom,
+  IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import {API_SECTION_URL } from "../../../constants/endpoint";
+// import {API_SECTION_URL } from "../../../constants/endpoint";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
@@ -24,6 +25,11 @@ import { result } from "lodash";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams } from "react-router-dom";
+import ReactModal from "react-modal";
+import { LabelCom } from "../../../components/label";
+import { InputCom } from "../../../components/input";
+import { showMessageError } from "../../../utils/helper";
+
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -42,11 +48,13 @@ const AdminSectionListPage = () => {
   const [tableKey, setTableKey] = useState(0);
   const [selectedRows, setSelectedRows] = useState([]);
   const [sectionId, setSectionId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+ 
 
-  const { control, register, handleSubmit, reset } = useForm({
+  const { control, register, handleSubmit, reset, formState: { errors }, } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  // const { id } = useParams(); // Lấy id từ route
+  const { id } = useParams(); // Lấy id từ route
   // const sectionUrl = API_SECTION_URL.replace("{id}", id);
 
   /********* Fetch data Area ********* */
@@ -161,7 +169,8 @@ const AdminSectionListPage = () => {
       if (result.isConfirmed) {
         try {
           const deletePromises = selectedRows.map((row) =>
-            axiosPrivate.delete(`${API_SECTION_URL}?sectionId=${row.id}`)
+            // axiosPrivate.delete(`${API_SECTION_URL}?sectionId=${row.id}`)
+            axiosPrivate.delete(`courses/:{id}/sections?sectionId=${row.id}`)
           );
           await Promise.all(deletePromises);
           toast.success(`Delete ${selectedRows.length} sections success`);
@@ -188,8 +197,10 @@ const AdminSectionListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPrivate.delete(
-            `${API_SECTION_URL}?sectionId=${id}`
+          // const res = await axiosPrivate.delete(
+          //   `${API_SECTION_URL}?sectionId=${id}`
+            const res = await axiosPrivate.delete(
+              `courses/:{id}/sections?sectionId=${id}`
           );
           toast.success(res.data.message);
           getSections(); // Lấy danh sách section mới
@@ -206,8 +217,10 @@ const AdminSectionListPage = () => {
 
   /********* API List Section ********* */
   const getSections = async () => {
+
     try {
-      const res = await axiosPrivate.get(API_SECTION_URL);
+      const res = await axiosPrivate.get(`courses/${id}/sections`);
+      // const res = await axiosPrivate.get(API_SECTION_URL);
       console.log(res.data);
       setSections(res.data);
       setfilterSection(res.data);
@@ -223,7 +236,7 @@ const AdminSectionListPage = () => {
   useEffect(() => {
     const getSections = async () => {
       try {
-        const res = await axiosPrivate.get(API_SECTION_URL);
+        const res = await axiosPrivate.get(`courses/${id}/sections`);
         setSections(res.data);
       } catch (error) {
         console.log(error);
@@ -263,7 +276,8 @@ const AdminSectionListPage = () => {
   useEffect(() => {
     const getSectionById = async () => {
       try {
-        const res = await axiosPrivate.get(`${API_SECTION_URL}/${sectionId}`);
+        // const res = await axiosPrivate.get(`${API_SECTION_URL}/${sectionId}`);
+        const res = await axiosPrivate.get(`courses/:{id}/sections/${sectionId}`);
         console.log(res.data);
         reset(res.data);
       } catch (error) {
@@ -274,7 +288,28 @@ const AdminSectionListPage = () => {
   }, [axiosPrivate, sectionId, reset]);
 
   /********* Edit ********* */
-  //update late
+  const handleSubmitForm = async (values) => {
+    const {
+      name,
+    } = values;try {
+      setIsLoading(!isLoading);
+      let fd = new FormData();
+      fd.append(
+        "courseJson",
+        JSON.stringify({
+          name,
+        })
+      );
+      // fd.append("file", image[0]);
+      const res = await axiosPrivate.post(`/courses/:{id}/sections`, fd);
+      toast.success(`${res.data.message}`);
+      // resetValues();
+      // reset();
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+    }}
 
   return (
     <>
@@ -295,6 +330,7 @@ const AdminSectionListPage = () => {
                   columns={columns}
                   items={filterSection}
                   search={search}
+                  dropdownItems={dropdownItems}
                   setSearch={setSearch}
                 ></TableCom>
               </span>
@@ -303,6 +339,59 @@ const AdminSectionListPage = () => {
           </div>
         </div>
       </div>
+       {/* Modal Edit */}
+       <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Section</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitForm)}
+            id="form-create"
+          >
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-4">
+                  <LabelCom htmlFor="name" isRequired>
+                    Course Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="name"
+                    register={register}
+                    placeholder="Input Session Name"
+                    errorMsg={errors.name?.message}
+                  ></InputCom>
+                </div>
+            
+              </div>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+              <ButtonCom backgroundColor="danger" type="reset">
+                Cancel
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </>
   );
 };

@@ -6,7 +6,6 @@ import { LabelCom } from "../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../../../components/button";
-import { SelectSearchAntCom } from "../../../components/ant";
 import "react-quill/dist/quill.snow.css";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
@@ -19,7 +18,9 @@ import {
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { IMG_BB_URL } from "../../../constants/endpoint";
+import { useParams } from "react-router-dom";
+
+
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -66,12 +67,13 @@ const AdminCreateSectionPage = () => {
 
   const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
-  const [courseSelected, setcourseSelected] = useState(null);
+  const [courseSelected, setcourseSelected] = useState("");
   const [courseItems, setCourseItems] = useState([]); // Danh sách khóa học
+  const { id } = useParams();
 
   
   const resetValues = () => {
-    setcourseSelected(null);
+    // setcourseSelected(null);
     reset();
   };
 
@@ -90,13 +92,12 @@ const AdminCreateSectionPage = () => {
     getCourses();
   }, [courseItems]);// Chỉ lắng nghe sự thay đổi của courseItems
 
-  const handleSubmitForm = async (values) => {
-    console.log(values.course_id);
+  const handleSubmitForm = async (data) => {
     try {
       const response = await axiosPrivate.post(
-        `/course/${values.course_id}/section`,
-        {
-          name: values.name,
+        `/course/${id}/section`,{
+          name: data.name,
+      course_id: parseInt(data.course_id),
         }
       );
       toast.success("Section created successfully");
@@ -181,11 +182,12 @@ const AdminCreateSectionPage = () => {
                       Choose Course
                     </LabelCom>
                     <div>
-                      <select {...register("course_id")} value={courseSelected}>
+                    <select {...register("course_id")} value={courseSelected || ""} onChange={(e) => handleChangeCourse(e.target.value)}>
+
                         <option value="">Select a course</option>
                         {courseItems.map((course) => (
                           <option key={course.id} value={course.id}>
-                            {course.name}
+                            {course.id}
                           </option>
                         ))}
                       </select>
