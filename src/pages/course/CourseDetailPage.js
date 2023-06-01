@@ -17,7 +17,7 @@ import { ImageCom } from "../../components/image";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 
-const sessionItems = [
+const sectionItems = [
   {
     id: 1,
     name: "Introduce",
@@ -54,22 +54,24 @@ const lessionItems = [
     section_id: 2,
   },
 ];
- 
-const sessionIds = sessionItems.map((item) => String(item.id));
+
+const sessionIds = sectionItems.map((item) => String(item.id));
 const totalLession = 2;
 
 const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   // const [openKeys, setOpenKeys] = useState(["1"]);
-  const [openKeys, setOpenKeys] = useState(String(sessionItems[0].id));
+  const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
   const relatedCourseLimitPage = 4;
-  const { startOffSet, endOffSet, currentPage, handleChangePage } =
-    usePagination(1, relatedCourseLimitPage);
+  const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
+    1,
+    relatedCourseLimitPage
+  );
 
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
-    if (keys.length === sessionItems.length) {
+    if (keys.length === sectionItems.length) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
@@ -101,6 +103,7 @@ const CourseDetailPage = () => {
               <HeadingH1Com className="course-detail-title !mb-3">
                 Become Master PHP
               </HeadingH1Com>
+              <GapYCom></GapYCom>
               <div className="course-detail-description">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi
                 officia quos mollitia laboriosam molestiae commodi, quidem dicta
@@ -111,6 +114,7 @@ const CourseDetailPage = () => {
             <GapYCom></GapYCom>
             <div className="course-detail-body">
               <HeadingH2Com>What will you achieve?</HeadingH2Com>
+              <GapYCom></GapYCom>
               <div className="course-detail-archives row">
                 {Array(4)
                   .fill(0)
@@ -121,11 +125,12 @@ const CourseDetailPage = () => {
                     ></ArchiveItems>
                   ))}
               </div>
-
+              <GapYCom></GapYCom>
               <div className="course-detail-description">
                 <HeadingH2Com className="text-tw-primary">
                   Course Description
                 </HeadingH2Com>
+                <GapYCom></GapYCom>
                 <div className="flex justify-between items-center text-sm mb-2">
                   <div className="flex gap-x-3">
                     <span className="">
@@ -154,7 +159,7 @@ const CourseDetailPage = () => {
                   isOpen={isOpen}
                   onChange={handleChangeCollapse}
                   openKeys={openKeys}
-                  parentItems={sessionItems}
+                  parentItems={sectionItems}
                   childItems={lessionItems}
                 ></CollapseAntCom>
               </div>
@@ -179,11 +184,9 @@ const CourseDetailPage = () => {
                     Buy only <span className="text-tw-light-pink">$300</span>
                   </HeadingH2Com>
                 )}
+                <GapYCom></GapYCom>
                 <Link to={`/checkout/${slug}`}>
-                  <ButtonCom
-                    backgroundColor="gradient"
-                    className="rounded transition-all duration-300 hover:bg-gradient-to-l"
-                  >
+                  <ButtonCom backgroundColor="gradient">
                     Enrolling Now
                   </ButtonCom>
                 </Link>
@@ -235,11 +238,12 @@ const CourseDetailPage = () => {
         <HeadingH2Com className="text-tw-primary" number={23}>
           Related Course
         </HeadingH2Com>
+        <GapYCom></GapYCom>
         <CourseGridMod>
           {Array(23)
             .fill(0)
             .map((item, index) => {
-              if (index >= startOffSet && index < endOffSet) {
+              if (index >= startIndex && index < endIndex) {
                 return <CourseItemMod key={v4()}></CourseItemMod>;
               }
               return null;

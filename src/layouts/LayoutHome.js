@@ -12,10 +12,12 @@ import { LabelCom } from "../components/label";
 import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
 import * as yup from "yup";
 import { InputCom } from "../components/input";
-import { MESSAGE_REQUIRED } from "../constants/config";
+import { MESSAGE_FIELD_REQUIRED } from "../constants/config";
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_REQUIRED ?? "This fields is required"),
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required"),
 });
 
 const LayoutHome = () => {
@@ -44,8 +46,8 @@ const LayoutHome = () => {
   };
 
   return (
-    <div className="px-10 py-6 bg-tw-light text-black min-h-screen">
-      <ReactModal
+    <div className="layout-home px-10 py-6 bg-tw-light text-black min-h-screen">
+      {/* <ReactModal
         isOpen={false}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className="modal-content scroll-hidden w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none"
@@ -101,7 +103,7 @@ const LayoutHome = () => {
           </form>
         </div>
       </ReactModal>
-      <Overlay></Overlay>
+      <Overlay></Overlay> */}
       <HomeTopbarMod></HomeTopbarMod>
       <div className="flex gap-x-10 items-start">
         <HomeSidebarMod></HomeSidebarMod>
@@ -110,9 +112,15 @@ const LayoutHome = () => {
         </div>
       </div>
       <GapYCom></GapYCom>
-      <div className="bg-black text-white flex justify-center items-center text-4xl h-[30vh] z-10 relative">
-        Footer
-      </div>
+      <footer className="footer bg-tw-light text-black flex justify-center items-center text-4xl z-10 relative mx-auto">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-12 footer-copyright text-center">
+              <p className="mb-0">Copyright 2023 © Course Management</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { v4 } from "uuid";
 import { HeadingH2Com } from "../components/heading";
 import { CategoryGridMod, CategoryItemMod } from "../modules/category";
@@ -6,8 +6,23 @@ import { CourseGridMod, CourseItemMod } from "../modules/course";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { API_COURSE_URL } from "../constants/endpoint";
 
 const HomePage = () => {
+  const axiosPrivate = useAxiosPrivate();
+  useEffect(() => {
+    const getCourses = async () => {
+      try {
+        const res = await axiosPrivate.get(API_COURSE_URL);
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCourses();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div className="h-[200vh] relative">
@@ -64,6 +79,7 @@ const HomePage = () => {
         <HeadingH2Com className="text-tw-primary" number={4}>
           Category
         </HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CategoryGridMod>
           {Array(4)
             .fill(0)
@@ -76,6 +92,7 @@ const HomePage = () => {
         <HeadingH2Com className="text-tw-primary">
           Best Selling Course
         </HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
           {Array(4)
             .fill(0)
@@ -86,6 +103,7 @@ const HomePage = () => {
 
         {/* Free Course */}
         <HeadingH2Com className="text-tw-primary">Free Course</HeadingH2Com>
+        <GapYCom className="mb-3"></GapYCom>
         <CourseGridMod>
           {Array(4)
             .fill(0)

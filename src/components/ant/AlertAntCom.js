@@ -1,11 +1,12 @@
-import { message, notification} from "antd";
 import { useEffect } from "react";
-import React from 'react';
+import { notification } from "antd";
+import React from "react";
+
 const AlertAntCom = ({ type = "success", message = "Successfully" }) => {
   const Context = React.createContext({
     name: "Nofitication Context",
   });
-  const [api,contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
     if (type === "success") {
@@ -26,6 +27,6 @@ const AlertAntCom = ({ type = "success", message = "Successfully" }) => {
     }
   }, [type, message, api]);
 
-  return  <Context.Provider>{contextHolder}</Context.Provider>
+  return <Context.Provider>{contextHolder}</Context.Provider>;
 };
 export default AlertAntCom;

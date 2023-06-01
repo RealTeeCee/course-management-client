@@ -5,13 +5,14 @@ const CheckBoxCom = (props) => {
     checked = false,
     name = "",
     onClick = () => {},
+    onChange = () => {},
     labelClassName = "",
     children,
   } = props;
 
   return (
     <div className="checkbox p-0">
-      <input type="checkbox" id={name} name={name} onChange={() => {}} />
+      <input type="checkbox" id={name} name={name} onChange={onChange} />
       {children && (
         <label
           className={`text-muted ${labelClassName}`}

@@ -34,18 +34,22 @@ const ButtonCom = (props) => {
     case "primary":
       defaultClassName += " bg-tw-primary text-white";
       break;
+    case "success":
+      defaultClassName += " bg-tw-success text-white";
+      break;
     case "info":
       defaultClassName += " bg-tw-info text-white";
       break;
     case "danger":
       defaultClassName += " bg-tw-danger text-white";
       break;
-    case "light-pink":
+    case "pink":
       defaultClassName += " bg-tw-light-pink text-white";
       break;
     case "gradient":
       defaultClassName +=
-        " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white";
+        " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white transition-all duration-300 hover:bg-gradient-to-l";
+      break;
     default:
       // defaultClassName += ` ${backgroundColor}`;
       break;
@@ -81,9 +85,10 @@ ButtonCom.propTypes = {
   rest: PropTypes.any,
   backgroundColor: PropTypes.oneOf([
     "primary",
+    "success",
     "info",
     "danger",
-    "light-pink",
+    "pink",
     "gradient",
   ]),
   children: PropTypes.node,

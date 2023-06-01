@@ -1,17 +1,45 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { HeadingH1Com } from '../../components/heading';
+import React, { useState } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ButtonCom } from "../../components/button";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
+import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const AdminPage = () => {
-    return (
-        <>
-            <HeadingH1Com>Admin Page</HeadingH1Com>
+  // const { user } = useSelector((state) => state.auth);
+  // const navigate = useNavigate();
 
-            <NavLink to="/admin/create-course">
-                Create Course
-            </NavLink>
-        </>
-    );
+  return (
+    <>
+      <HeadingH1Com>Admin Dashboard</HeadingH1Com>
+      <GapYCom></GapYCom>
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="card">
+            <div className="card-header py-3">
+              <HeadingH2Com className="text-tw-light-pink">
+                Management Area
+              </HeadingH2Com>
+            </div>
+            <div className="card-body flex gap-x-4 h-[30vh]">
+              <NavLink to="/admin/courses">
+                <ButtonCom backgroundColor="gradient">Course</ButtonCom>
+              </NavLink>
+              <NavLink to="/admin/sections">
+                <ButtonCom backgroundColor="gradient">Section</ButtonCom>
+              </NavLink>
+              <NavLink to="/admin/lessions">
+                <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
+              </NavLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default AdminPage;
