@@ -148,7 +148,7 @@ function App() {
 
             {/* Admin Sections */}
             <Route
-              path="sections"
+              path="courses/:id/sections"
               element={<AdminSectionListPage></AdminSectionListPage>}
             ></Route>
             <Route

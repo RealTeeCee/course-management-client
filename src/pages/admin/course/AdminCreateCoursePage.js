@@ -388,7 +388,6 @@ const AdminCreateCoursePage = () => {
                         name="image"
                         onSetValue={setValue}
                         errorMsg={errors.image?.message}
-                        editImage={[]}
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
