@@ -1,5 +1,12 @@
 import { Collapse } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import {
+  onGetTrackingLesson,
+  onSaveTrackingLesson,
+  onSelectedLesson,
+} from "../../store/course/courseSlice";
+import { useEffect } from "react";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -14,13 +21,64 @@ const CollapseAntCom = ({
   const location = useLocation();
   const reqParams = new URLSearchParams(location.search);
   const lessionId = reqParams.get("id");
-
+  const dispatch = useDispatch();
+  const { video, enrollId, selectedCourse, sectionId } = useSelector(
+    (state) => state.course
+  );
   const ids = parentItems.map((item) => String(item.id));
-  return (
+  console.log("videoId: ", video.id);
+  const handleClick = (child) => {
+    console.log(child);
+    dispatch(
+      onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
+    );
+  };
+
+  useEffect(() => {
+    if (selectedCourse) {
+      dispatch(
+        onGetTrackingLesson({
+          enrollmentId: enrollId,
+          courseId: selectedCourse.id,
+        })
+      );
+    }
+  }, [dispatch, enrollId, selectedCourse]);
+
+  useEffect(() => {
+    if (video && selectedCourse && video.lessonId && video.id) {
+      console.log({
+        lessonId: video.lessonId,
+        sectionId: sectionId,
+        videoId: video.id,
+        courseId: selectedCourse.id,
+        enrollmentId: enrollId,
+      });
+      let timer = setTimeout(
+        () =>
+          dispatch(
+            onSaveTrackingLesson({
+              lessonId: video.lessonId,
+              sectionId: sectionId,
+              videoId: video.id,
+              courseId: selectedCourse.id,
+              enrollmentId: enrollId,
+            })
+          ),
+        5000 // run after 5s when user select lesson
+      );
+      // clean up previous timer if user select lesson in interval (< 5s)
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [dispatch, enrollId, sectionId, selectedCourse, video]);
+
+  return parentItems.length === 0 ? null : (
     <Collapse
       // defaultActiveKey={["1"]}
       // activeKey={isOpen ? ["1", "2", "3"] : openKeys}
-      defaultActiveKey={String(parentItems[0].id)}
+      defaultActiveKey={String(parentItems[0]?.id)}
       activeKey={isOpen ? ids : openKeys}
       // activeKey={openKeys}
       onChange={onChange}
@@ -36,10 +94,11 @@ const CollapseAntCom = ({
                 childItems.length > 0 &&
                 // eslint-disable-next-line array-callback-return
                 childItems.map((child, i) => {
-                  if (child.section_id === parent.id) {
+                  if (child.sectionId === parent.id) {
                     if (type === "learn") {
                       return (
                         <Link
+                          onClick={() => handleClick(child)}
                           to={`/learn/${slug}?id=${child.id}`}
                           key={child.id}
                           className={`flex justify-between items-center ${

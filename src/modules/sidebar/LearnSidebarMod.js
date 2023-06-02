@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CollapseAntCom } from "../../components/ant";
+import { useDispatch, useSelector } from "react-redux";
+import { onGetLearning } from "../../store/course/courseSlice";
+import { useParams } from "react-router-dom";
 
 const sectionItems = [
   {
@@ -43,8 +46,18 @@ const sessionIds = sectionItems.map((item) => String(item.id));
 const totalLession = 2;
 
 const LearnSidebarMod = () => {
+  const { slug } = useParams();
+  const dispatch = useDispatch();
+  const { selectedCourse, learning } = useSelector((state) => state.course);
   const [isOpen, setIsOpen] = useState(false);
-  const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
+  const [openKeys, setOpenKeys] = useState(
+    String(learning.sectionDto.length > 0 ? learning.sectionDto[0].id : 0)
+  );
+
+  useEffect(() => {
+    if (selectedCourse) dispatch(onGetLearning(selectedCourse.id));
+  }, [dispatch, selectedCourse]);
+
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
     if (keys.length === sectionItems.length) {
@@ -68,9 +81,9 @@ const LearnSidebarMod = () => {
         isOpen={isOpen}
         onChange={handleChangeCollapse}
         openKeys={openKeys}
-        parentItems={sectionItems}
-        childItems={lessionItems}
-        slug="php-basic"
+        parentItems={learning.sectionDto}
+        childItems={learning.lessonDto}
+        slug={slug}
       ></CollapseAntCom>
     </div>
   );

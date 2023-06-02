@@ -9,21 +9,29 @@ import GapYCom from "../components/common/GapYCom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { API_COURSE_URL } from "../constants/endpoint";
 import { categoryItems } from "../constants/config";
+import { useDispatch, useSelector } from "react-redux";
+import { onCourseLoading } from "../store/course/courseSlice";
 
 const HomePage = () => {
-  const axiosPrivate = useAxiosPrivate();
+  // const axiosPrivate = useAxiosPrivate();
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.course);
+
   useEffect(() => {
-    const getCourses = async () => {
-      try {
-        const res = await axiosPrivate.get(API_COURSE_URL);
-        console.log(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getCourses();
+    // const getCourses = async () => {
+    //   try {
+    //     const res = await axiosPrivate.get(API_COURSE_URL);
+    //     console.log(res.data);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+    // getCourses();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch(onCourseLoading());
+  }, [dispatch]);
+
   return (
     <>
       <div className="h-[200vh] relative">
@@ -92,23 +100,21 @@ const HomePage = () => {
           Best Selling Courses
         </HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
+
         <CourseGridMod>
-          {Array(4)
-            .fill(0)
-            .map((item) => (
-              <CourseItemMod key={v4()}></CourseItemMod>
-            ))}
+          {data.map((course) => (
+            <CourseItemMod key={v4()} course={course}></CourseItemMod>
+          ))}
         </CourseGridMod>
 
         {/* Free Course */}
         <HeadingH2Com className="text-tw-primary">Free Courses</HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
+
         <CourseGridMod>
-          {Array(4)
-            .fill(0)
-            .map((item) => (
-              <CourseItemMod key={v4()}></CourseItemMod>
-            ))}
+          {data.map((course) => (
+            <CourseItemMod key={v4()} course={course}></CourseItemMod>
+          ))}
         </CourseGridMod>
       </div>
     </>
