@@ -48,19 +48,34 @@ const totalLession = 2;
 const LearnSidebarMod = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
-  const { selectedCourse, learning } = useSelector((state) => state.course);
+  const { selectedCourse, learning, tracking } = useSelector(
+    (state) => state.course
+  );
   const [isOpen, setIsOpen] = useState(false);
+
   const [openKeys, setOpenKeys] = useState(
     String(learning.sectionDto.length > 0 ? learning.sectionDto[0].id : 0)
   );
+
+  useEffect(() => {
+    console.log("tracking: ", tracking);
+    if (tracking) {
+      const trackedSection = learning.sectionDto.filter(
+        (section) => section.id === tracking.sectionId
+      );
+
+      setOpenKeys(trackedSection[0]?.id);
+    }
+  }, [learning.sectionDto, tracking]);
 
   useEffect(() => {
     if (selectedCourse) dispatch(onGetLearning(selectedCourse.id));
   }, [dispatch, selectedCourse]);
 
   const handleChangeCollapse = (keys) => {
+    console.log(keys);
     setOpenKeys(keys);
-    if (keys.length === sectionItems.length) {
+    if (keys.length === learning.sectionDto.length) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
@@ -84,6 +99,7 @@ const LearnSidebarMod = () => {
         parentItems={learning.sectionDto}
         childItems={learning.lessonDto}
         slug={slug}
+        isLearning={true}
       ></CollapseAntCom>
     </div>
   );

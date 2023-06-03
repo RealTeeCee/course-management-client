@@ -6,7 +6,7 @@ import {
   onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -17,25 +17,34 @@ const CollapseAntCom = ({
   isOpen = false,
   parentItems = [],
   childItems = [],
+  isLearning = false,
 }) => {
   const location = useLocation();
   const reqParams = new URLSearchParams(location.search);
-  const lessionId = reqParams.get("id");
-  const dispatch = useDispatch();
-  const { video, enrollId, selectedCourse, sectionId } = useSelector(
+  const { tracking, video, enrollId, selectedCourse, sectionId } = useSelector(
     (state) => state.course
   );
+  const [lessionId, setLessionId] = useState(0);
+  //  const lessionId = reqParams.get("id");
+  const dispatch = useDispatch();
+
   const ids = parentItems.map((item) => String(item.id));
-  console.log("videoId: ", video.id);
+
   const handleClick = (child) => {
-    console.log(child);
+    setLessionId(reqParams.get("id"));
     dispatch(
       onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
     );
   };
 
   useEffect(() => {
-    if (selectedCourse) {
+    if (isLearning && tracking?.lessonId > 0) {
+      setLessionId(tracking.lessionId);
+    }
+  }, [isLearning, tracking]);
+
+  useEffect(() => {
+    if (selectedCourse && enrollId > 0) {
       dispatch(
         onGetTrackingLesson({
           enrollmentId: enrollId,
@@ -65,7 +74,7 @@ const CollapseAntCom = ({
               enrollmentId: enrollId,
             })
           ),
-        5000 // run after 5s when user select lesson
+        1500 // run after 5s when user select lesson
       );
       // clean up previous timer if user select lesson in interval (< 5s)
       return () => {

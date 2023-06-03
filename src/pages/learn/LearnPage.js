@@ -22,7 +22,6 @@ const LearnPage = () => {
     video: { captionData },
   } = useSelector((state) => state.course);
 
-  console.log(slug);
   const dispatch = useDispatch();
 
   useEffect(() => {

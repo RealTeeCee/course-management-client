@@ -41,7 +41,6 @@ function* handleOnMyCourseLoading(action) {
 function* handleOnCourseLoading() {
   try {
     const res = yield call(requestCourse);
-    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onCourseSuccess(res.data));
@@ -54,9 +53,7 @@ function* handleOnCourseLoading() {
 }
 function* handleOnGetEnrollId({ payload }) {
   try {
-    console.log(payload);
     const res = yield call(requestEnrollId, payload);
-    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onGetEnrollIdSuccess(res.data));
@@ -67,9 +64,7 @@ function* handleOnGetEnrollId({ payload }) {
 }
 function* handleOnGetLearning({ payload }) {
   try {
-    console.log(payload);
     const res = yield call(requestLearning, payload);
-    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onGetLearningSuccess(res.data));
@@ -80,9 +75,7 @@ function* handleOnGetLearning({ payload }) {
 }
 function* handleOnGetTrackingLesson({ payload }) {
   try {
-    console.log(payload);
     const res = yield call(requestLoadTracking, payload);
-    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onGetTrackingLessonSuccess(res.data));
@@ -93,9 +86,8 @@ function* handleOnGetTrackingLesson({ payload }) {
 }
 function* handleOnSaveTrackingLesson({ payload }) {
   try {
-    console.log(payload);
     const res = yield call(requestSaveTracking, payload);
-    console.log(res.data);
+
     if (res.status === 200) {
       yield put(onSaveTrackingLessonSuccess(res.data));
     }
