@@ -163,7 +163,7 @@ const AdminCreateCoursePage = () => {
             image,
             category_id,
             price: convertStrMoneyToInt(price),
-            sale_price: convertStrMoneyToInt(sale_price),
+            net_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
             achivements,

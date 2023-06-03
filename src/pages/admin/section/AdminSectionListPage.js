@@ -11,17 +11,11 @@ import {
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-// import {API_SECTION_URL } from "../../../constants/endpoint";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
-import {
-  MESSAGE_FIELD_REQUIRED,
-  MESSAGE_GENERAL_FAILED,
-  MESSAGE_NO_ITEM_SELECTED,
-} from "../../../constants/config";
+import { MESSAGE_FIELD_REQUIRED } from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { result } from "lodash";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams } from "react-router-dom";
@@ -29,13 +23,12 @@ import ReactModal from "react-modal";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
-import { useNavigate } from "react-router-dom/dist";
+import { API_COURSE_URL } from "../../../constants/endpoint";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
 });
 
 /********* Variable State ********* */
@@ -46,11 +39,13 @@ const AdminSectionListPage = () => {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [sectionId, setSectionId] = useState();
+
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const [selectedRowId, setSelectedRowId] = useState(null);
+
+  const resetValues = () => {
+    reset();
+  };
 
   const {
     control,
@@ -161,7 +156,7 @@ const AdminSectionListPage = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosPrivate.delete(
-            `/course/${id}/section?sectionId=${sectionId}`
+            `${API_COURSE_URL}/${id}/section?sectionId=${sectionId}`
           );
 
           getSections();
@@ -172,30 +167,24 @@ const AdminSectionListPage = () => {
         }
       }
     });
-    console.log("id", id);
-    console.log("sectionId", sectionId);
-    console.log("name", name);
   };
 
   /********* API List Section ********* */
   const getSections = async () => {
     try {
-      const res = await axiosPrivate.get(`/course/${id}/section`);
-
+      const res = await axiosPrivate.get(`${API_COURSE_URL}/${id}/section`);
       console.log(res.data);
+
       setSections(res.data);
       setFilterSection(res.data);
-      console.log(res.data);
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 
-  // useEffect(() => {
-  //   getSections();
-  // }, []);
   useEffect(() => {
     getSections();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /********* API Search Section ********* */
@@ -226,29 +215,22 @@ const AdminSectionListPage = () => {
 
   /********* Edit ********* */
   const handleSubmitForm = async (values) => {
-    const { name} = values;
+    const { name } = values;
     try {
       setIsLoading(!isLoading);
-    //     const data = {
-    //   name: name,
-    //   courseId: id,
-    // };
-    // console.log("name", name);
-    // console.log("couseId", id);
-    // const res = await axiosPrivate.post(`/course/${id}/section`, data);
-      
-    //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+
+      //  Đặt isLoading thành true để hiển thị trạng thái đang tải
       const data = {
         name: name,
         courseId: id,
         id: selectedRowId,
       };
-      console.log("name", name);
-      console.log("courseId", id);
-      console.log("sectionId",selectedRowId);
-      const res = await axiosPrivate.put(`/course/${data.courseId}/section`, data);
+
+      const res = await axiosPrivate.put(
+        `${API_COURSE_URL}/${data.courseId}/section`,
+        data
+      );
       toast.success(`${res.data.message}`);
-      
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -256,17 +238,17 @@ const AdminSectionListPage = () => {
       setIsOpen(false); // Đóng modal
     }
   };
-  
+
   /********* Get SectionId from row ********* */
   const getSectionById = async (sectionId) => {
     try {
-      const res = await axiosPrivate.get(`/course/${id}/section/${sectionId}`);
+      const res = await axiosPrivate.get(
+        `${API_COURSE_URL}/${id}/section/${sectionId}`
+      );
       reset(res.data);
     } catch (error) {
       console.log(error);
     }
-    console.log("id", id);
-    console.log("sectionId", sectionId);
   };
 
   return (
@@ -343,8 +325,8 @@ const AdminSectionListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" type="reset">
-                Cancel
+              <ButtonCom backgroundColor="danger" onClick={resetValues}>
+                Reset
               </ButtonCom>
             </div>
           </form>
