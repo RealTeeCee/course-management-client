@@ -153,17 +153,17 @@ function App() {
               element={<AdminSectionListPage></AdminSectionListPage>}
             ></Route>
             <Route
-              path="sections/create"
+              path="courses/:id/sections/create"
               element={<AdminCreateSectionPage></AdminCreateSectionPage>}
             ></Route>
 
             {/* Admin Lessions */}
             <Route
-              path="courses/:id/sections/:sectionId/lesson"
+              path="courses/:id/sections/:sectionId/lessons"
               element={<AdminLessionListPage></AdminLessionListPage>}
             ></Route>
             <Route
-              path="lessions/create"
+              path="courses/:id/sections/:sectionId/lessons/create"
               element={<AdminCreateLessionPage></AdminCreateLessionPage>}
             ></Route>
           </Route>

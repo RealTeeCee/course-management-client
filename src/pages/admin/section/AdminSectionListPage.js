@@ -29,7 +29,7 @@ import ReactModal from "react-modal";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
-
+import { useNavigate } from "react-router-dom/dist";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -40,22 +40,29 @@ const schemaValidation = yup.object().shape({
 
 /********* Variable State ********* */
 const AdminSectionListPage = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [sections, setSections] = useState([]);
-  const [filterSection, setfilterSection] = useState([]);
+  const [filterSection, setFilterSection] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
   const [tableKey, setTableKey] = useState(0);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [sectionId, setSectionId] = useState(null);
+  const [sectionId, setSectionId] = useState();
   const [isLoading, setIsLoading] = useState(false);
- 
+  const navigate = useNavigate();
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
-  const { control, register, handleSubmit, reset, formState: { errors }, } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  const { id } = useParams(); // Lấy id từ route
-  // const sectionUrl = API_SECTION_URL.replace("{id}", id);
+  const { id } = useParams();
 
   /********* Fetch data Area ********* */
   const columns = [
@@ -85,7 +92,8 @@ const AdminSectionListPage = () => {
             onClick={() => {
               // alert(`Update Course id: ${row.id}`);
               setIsOpen(true);
-              setSectionId(row.id);
+              getSectionById(row.id);
+              setSelectedRowId(row.id); // Lưu trữ row.id vào state selectedRowId
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -102,7 +110,7 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection(row);
+              handleDeleteSection({ sectionId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -125,108 +133,61 @@ const AdminSectionListPage = () => {
         </div>
       ),
     },
-    {
-      key: "2",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
-        >
-          Remove all
-        </div>
-      ),
-    },
+    // {
+    //   key: "2",
+    //   label: (
+    //     <div
+    //       rel="noopener noreferrer"
+    //       className="hover:text-tw-danger transition-all duration-300"
+    //       onClick={() => handleDeleteMultipleRecords()}
+    //     >
+    //       Remove all
+    //     </div>
+    //   ),
+    // },
   ];
 
-  /********* Multiple Delete ********* */
-  //handleRowSelection: user selects one or more rows in table
-  const handleRowSelection = (currentRowsSelected) => {
-    setSelectedRows(currentRowsSelected.selectedRows);
-  };
-  //the selected rows in the table will be deleted and the table will be refreshed to show the new content again.
-  const clearSelectedRows = () => {
-    setSelectedRows([]);
-    setTableKey((prevKey) => prevKey + 1);
-  };
-
-  const handleDeleteMultipleRecords = () => {
-    if (selectedRows.length === 0) {
-      toast.warning(MESSAGE_NO_ITEM_SELECTED);
-      return;
-    }
-    Swal.fire({
-      title: "Are you sure?",
-      html: `You will delete <span class="text-tw-danger">${
-        selectedRows.length
-      } selected ${selectedRows.length > 1 ? "sections" : "section"}</span>`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const deletePromises = selectedRows.map((row) =>
-            // axiosPrivate.delete(`${API_SECTION_URL}?sectionId=${row.id}`)
-            axiosPrivate.delete(`courses/:{id}/sections?sectionId=${row.id}`)
-          );
-          await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} sections success`);
-        } catch (error) {
-          toast.error(MESSAGE_GENERAL_FAILED);
-        } finally {
-          getSections();
-          clearSelectedRows();
-        }
-      }
-    });
-  };
-
   /********* Multiple One ********* */
-  const handleDeleteSection = ({ id, name }) => {
+  const handleDeleteSection = ({ sectionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // const res = await axiosPrivate.delete(
-          //   `${API_SECTION_URL}?sectionId=${id}`
-            const res = await axiosPrivate.delete(
-              `courses/:{id}/sections?sectionId=${id}`
+          const res = await axiosPrivate.delete(
+            `/course/${id}/section?sectionId=${sectionId}`
           );
+
+          getSections();
+          reset(res.data);
           toast.success(res.data.message);
-          getSections(); // Lấy danh sách section mới
-          // getSections();
-          // reset(res.data);
-          // toast.success(res.data.message);
         } catch (error) {
-          console.log(error);
-          Swal.fire(MESSAGE_GENERAL_FAILED, "error");
+          showMessageError(error);
         }
       }
     });
+    console.log("id", id);
+    console.log("sectionId", sectionId);
+    console.log("name", name);
   };
 
   /********* API List Section ********* */
   const getSections = async () => {
-
     try {
-      const res = await axiosPrivate.get(`courses/${id}/sections`);
-      // const res = await axiosPrivate.get(API_SECTION_URL);
+      const res = await axiosPrivate.get(`/course/${id}/section`);
+
       console.log(res.data);
       setSections(res.data);
-      setfilterSection(res.data);
+      setFilterSection(res.data);
       console.log(res.data);
     } catch (error) {
-      console.log(error);
+      console.log("Error: ", error);
     }
   };
 
@@ -234,15 +195,6 @@ const AdminSectionListPage = () => {
   //   getSections();
   // }, []);
   useEffect(() => {
-    const getSections = async () => {
-      try {
-        const res = await axiosPrivate.get(`courses/${id}/sections`);
-        setSections(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getSections();
   }, []);
 
@@ -269,47 +221,53 @@ const AdminSectionListPage = () => {
       return false;
     });
 
-    setfilterSection(result);
+    setFilterSection(result);
   }, [sections, search]);
-
-  /********* Reset data ********* */
-  useEffect(() => {
-    const getSectionById = async () => {
-      try {
-        // const res = await axiosPrivate.get(`${API_SECTION_URL}/${sectionId}`);
-        const res = await axiosPrivate.get(`courses/:{id}/sections/${sectionId}`);
-        console.log(res.data);
-        reset(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getSectionById();
-  }, [axiosPrivate, sectionId, reset]);
 
   /********* Edit ********* */
   const handleSubmitForm = async (values) => {
-    const {
-      name,
-    } = values;try {
+    const { name} = values;
+    try {
       setIsLoading(!isLoading);
-      let fd = new FormData();
-      fd.append(
-        "courseJson",
-        JSON.stringify({
-          name,
-        })
-      );
-      // fd.append("file", image[0]);
-      const res = await axiosPrivate.post(`/courses/:{id}/sections`, fd);
+    //     const data = {
+    //   name: name,
+    //   courseId: id,
+    // };
+    // console.log("name", name);
+    // console.log("couseId", id);
+    // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+      
+    //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+      const data = {
+        name: name,
+        courseId: id,
+        id: selectedRowId,
+      };
+      console.log("name", name);
+      console.log("courseId", id);
+      console.log("sectionId",selectedRowId);
+      const res = await axiosPrivate.put(`/course/${data.courseId}/section`, data);
       toast.success(`${res.data.message}`);
-      // resetValues();
-      // reset();
+      
     } catch (error) {
       showMessageError(error);
     } finally {
-      setIsLoading(false);
-    }}
+      setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
+      setIsOpen(false); // Đóng modal
+    }
+  };
+  
+  /********* Get SectionId from row ********* */
+  const getSectionById = async (sectionId) => {
+    try {
+      const res = await axiosPrivate.get(`/course/${id}/section/${sectionId}`);
+      reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("id", id);
+    console.log("sectionId", sectionId);
+  };
 
   return (
     <>
@@ -325,7 +283,7 @@ const AdminSectionListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate="/admin/sections/create"
+                  urlCreate={`/admin/courses/${id}/sections/create`}
                   title="List Sections"
                   columns={columns}
                   items={filterSection}
@@ -339,8 +297,8 @@ const AdminSectionListPage = () => {
           </div>
         </div>
       </div>
-       {/* Modal Edit */}
-       <ReactModal
+      {/* Modal Edit */}
+      <ReactModal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
@@ -367,7 +325,7 @@ const AdminSectionListPage = () => {
               <div className="row">
                 <div className="col-sm-4">
                   <LabelCom htmlFor="name" isRequired>
-                    Course Name
+                    Section Name
                   </LabelCom>
                   <InputCom
                     type="text"
@@ -376,9 +334,9 @@ const AdminSectionListPage = () => {
                     register={register}
                     placeholder="Input Session Name"
                     errorMsg={errors.name?.message}
+                    defaultValue={watch("name")}
                   ></InputCom>
                 </div>
-            
               </div>
             </div>
             <div className="card-footer flex justify-end gap-x-5">

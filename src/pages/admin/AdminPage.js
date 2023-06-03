@@ -28,10 +28,10 @@ const AdminPage = () => {
               <NavLink to="/admin/courses">
                 <ButtonCom backgroundColor="gradient">Course</ButtonCom>
               </NavLink>
-              <NavLink to="courses/:{id}/sections">
+              <NavLink to="/admin/courses/1/sections"> 
                 <ButtonCom backgroundColor="gradient">Section</ButtonCom>
               </NavLink>
-              <NavLink to="courses/:{id}/sections/:{sectionId}/lesson">
+              <NavLink to="/admin/courses/1/sections/3/lessons">
                 <ButtonCom backgroundColor="gradient">Lession</ButtonCom>
               </NavLink>
             </div>

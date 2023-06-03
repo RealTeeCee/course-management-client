@@ -1,53 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
-import { HeadingH1Com } from "../../../components/heading";
+import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 import {
   IconEditCom,
   IconEyeCom,
+  IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import {API_LESSON_URL, API_SECTION_URL } from "../../../constants/endpoint";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
-  MESSAGE_FIELD_REQUIRED,
-  MESSAGE_GENERAL_FAILED,
-  MESSAGE_NO_ITEM_SELECTED,
+  MESSAGE_FIELD_REQUIRED, MESSAGE_NUMBER_POSITIVE, MESSAGE_NUMBER_REQUIRED,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { result } from "lodash";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams } from "react-router-dom";
+import ReactModal from "react-modal";
+import { LabelCom } from "../../../components/label";
+import { InputCom } from "../../../components/input";
+import { showMessageError } from "../../../utils/helper";
+import { useNavigate } from "react-router-dom/dist";
+import { IMG_BB_URL } from "../../../constants/endpoint";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  duration: yup
+    .string(MESSAGE_NUMBER_REQUIRED)
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(1, MESSAGE_NUMBER_POSITIVE),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  status: yup.number().default(1),
   // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
 });
 
 /********* Variable State ********* */
-const AdminSectionListPage = () => {
-  const [lessons, setlessons] = useState([]);
-  const [filterLesson, setfilterLesson] = useState([]);
+const AdminLessionListPage = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const [lessons, setLessons] = useState([]);
+  const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
   const [tableKey, setTableKey] = useState(0);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [lessionId, setlessionId] = useState(null);
+  // const [selectedRows, setSelectedRows] = useState([]);
+  const [lessonId, setLessonId] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
-  const { control, register, handleSubmit, reset } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  // const { id } = useParams(); // Lấy id từ route
-  // const sectionUrl = API_SECTION_URL.replace("{id}", id);
+  const { id,sectionId } = useParams();
 
   /********* Fetch data Area ********* */
   const columns = [
@@ -60,6 +78,18 @@ const AdminSectionListPage = () => {
       name: "Lesson Name",
       selector: (row) => row.name,
       sortable: true,
+    },
+    {
+      name: "Duration",
+      selector: (row) => row.duration,
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
     },
     // {
     //   name: "Date Created",
@@ -75,9 +105,9 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              // alert(`Update Course id: ${row.id}`);
               setIsOpen(true);
-              setlessionId(row.id);
+              getSectionById(row.id);
+              setSelectedRowId(row.id); // save row.id to state selectedRowId
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -94,7 +124,7 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection(row);
+              handleDeleteSection({ lessonId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -117,103 +147,97 @@ const AdminSectionListPage = () => {
         </div>
       ),
     },
-    {
-      key: "2",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
-        >
-          Remove all
-        </div>
-      ),
-    },
+    // {
+    //   key: "2",
+    //   label: (
+    //     <div
+    //       rel="noopener noreferrer"
+    //       className="hover:text-tw-danger transition-all duration-300"
+    //       onClick={() => handleDeleteMultipleRecords()}
+    //     >
+    //       Remove all
+    //     </div>
+    //   ),
+    // },
   ];
 
-  /********* Multiple Delete ********* */
-  //handleRowSelection: user selects one or more rows in table
-  const handleRowSelection = (currentRowsSelected) => {
-    setSelectedRows(currentRowsSelected.selectedRows);
-  };
-  //the selected rows in the table will be deleted and the table will be refreshed to show the new content again.
-  const clearSelectedRows = () => {
-    setSelectedRows([]);
-    setTableKey((prevKey) => prevKey + 1);
-  };
-
-  const handleDeleteMultipleRecords = () => {
-    if (selectedRows.length === 0) {
-      toast.warning(MESSAGE_NO_ITEM_SELECTED);
-      return;
-    }
-    Swal.fire({
-      title: "Are you sure?",
-      html: `You will delete <span class="text-tw-danger">${
-        selectedRows.length
-      } selected ${selectedRows.length > 1 ? "lessons" : "section"}</span>`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+//Description
+const modules = useMemo(
+  () => ({
+    toolbar: [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote"],
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["link", "image"],
+    ],
+    imageUploader: {
+      upload: async (file) => {
+        const fd = new FormData();
+        fd.append("image", file);
         try {
-          const deletePromises = selectedRows.map((row) =>
-            axiosPrivate.delete(`${API_LESSON_URL}?lessionId=${row.id}`)
-          );
-          await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} lessons success`);
+          const res = await axiosInstance({
+            method: "POST",
+            url: IMG_BB_URL,
+            data: fd,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          return res.data.data.url;
         } catch (error) {
-          toast.error(MESSAGE_GENERAL_FAILED);
-        } finally {
-          getlessons();
-          clearSelectedRows();
+          toast.error(error.message);
+          return;
         }
-      }
-    });
-  };
+      },
+    },
+  }),
+  []
+);
+
 
   /********* Multiple One ********* */
-  const handleDeleteSection = ({ id, name }) => {
+  const handleDeleteSection = ({ lessonId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const res = await axiosPrivate.delete(
-            `${API_LESSON_URL}?lessionId=${id}`
+            `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
+
+          getlessons();
+          reset(res.data);
           toast.success(res.data.message);
-          getlessons(); // Lấy danh sách section mới
-          // getlessons();
-          // reset(res.data);
-          // toast.success(res.data.message);
         } catch (error) {
-          console.log(error);
-          Swal.fire(MESSAGE_GENERAL_FAILED, "error");
+          showMessageError(error);
         }
       }
     });
+    console.log("id", id);
+    console.log("lessonId", lessonId);
+    console.log("name", name);
   };
 
   /********* API List Section ********* */
   const getlessons = async () => {
     try {
-      const res = await axiosPrivate.get(API_LESSON_URL);
+      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+
       console.log(res.data);
-      setlessons(res.data);
-      setfilterLesson(res.data);
+      setLessons(res.data);
+      setFilterLesson(res.data);
       console.log(res.data);
     } catch (error) {
-      console.log(error);
+      console.log("Error: ", error);
     }
   };
 
@@ -221,25 +245,16 @@ const AdminSectionListPage = () => {
   //   getlessons();
   // }, []);
   useEffect(() => {
-    const getlessons = async () => {
-      try {
-        const res = await axiosPrivate.get(API_LESSON_URL);
-        setlessons(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    console.log(lessons);
     getlessons();
-  }, []);
+  }, [sectionId]);
 
   /********* API Search Section ********* */
   useEffect(() => {
-    const result = lessons.filter((section) => {
-      const keys = Object.keys(section);
+    const result = lessons.filter((lesson) => {
+      const keys = Object.keys(lesson);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        const value = section[key];
+        const value = lesson[key];
         if (
           typeof value === "string" &&
           value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
@@ -256,25 +271,54 @@ const AdminSectionListPage = () => {
       return false;
     });
 
-    setfilterLesson(result);
+    setFilterLesson(result);
   }, [lessons, search]);
 
-  /********* Reset data ********* */
-  useEffect(() => {
-    const getSectionById = async () => {
-      try {
-        const res = await axiosPrivate.get(`${API_SECTION_URL}/${lessionId}`);
-        console.log(res.data);
-        reset(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getSectionById();
-  }, [axiosPrivate, lessionId, reset]);
-
   /********* Edit ********* */
-  //update late
+  const handleSubmitForm = async (values) => {
+    const { name} = values;
+    try {
+      setIsLoading(!isLoading);
+    //     const data = {
+    //   name: name,
+    //   courseId: id,
+    // };
+    // console.log("name", name);
+    // console.log("couseId", id);
+    // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+      
+    //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+      const data = {
+        name: name,
+        sectionId: sectionId,
+        id: selectedRowId,
+      };
+      console.log("name", name);
+      console.log("courseId", id);
+      console.log("lessonId",selectedRowId);
+      const res = await axiosPrivate.put(`/section/${data.sectionId}/lesson`, data);
+      toast.success(`${res.data.message}`);
+      reset();
+      getlessons(); 
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
+      setIsOpen(false); // Đóng modal
+    }
+  };
+  
+  /********* Get lessonId from row ********* */
+  const getSectionById = async (lessonId) => {
+    try {
+      const res = await axiosPrivate.get(`/section/${sectionId}/lesson/${lessonId}`);
+      reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("sectionId", sectionId);
+    console.log("lessonId", lessonId);
+  };
 
   return (
     <>
@@ -290,11 +334,12 @@ const AdminSectionListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate="/admin/lessons/create"
+                  urlCreate={`/admin/courses/${id}/sections/${sectionId}/lessons/create`}
                   title="List lessons"
                   columns={columns}
                   items={filterLesson}
                   search={search}
+                  dropdownItems={dropdownItems}
                   setSearch={setSearch}
                 ></TableCom>
               </span>
@@ -303,8 +348,61 @@ const AdminSectionListPage = () => {
           </div>
         </div>
       </div>
+      {/* Modal Edit */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Section</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitForm)}
+            id="form-create"
+          >
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-4">
+                  <LabelCom htmlFor="name" isRequired>
+                    Section Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="name"
+                    register={register}
+                    placeholder="Input Session Name"
+                    errorMsg={errors.name?.message}
+                    defaultValue={watch("name")}
+                  ></InputCom>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+              <ButtonCom backgroundColor="danger" type="reset">
+                Cancel
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </>
   );
 };
 
-export default AdminSectionListPage;
+export default AdminLessionListPage;

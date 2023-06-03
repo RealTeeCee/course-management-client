@@ -19,13 +19,14 @@ import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
-
-
+import { API_COURSE_URL } from "../../../constants/endpoint";
+import { useNavigate } from "react-router-dom/dist";
+import { showMessageError } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  course_id: yup.number().required(MESSAGE_FIELD_REQUIRED),
+  // course_id: yup.number().required(MESSAGE_FIELD_REQUIRED),
 });
 
 /********* Fetch data ********* */
@@ -70,8 +71,8 @@ const AdminCreateSectionPage = () => {
   const [courseSelected, setcourseSelected] = useState("");
   const [courseItems, setCourseItems] = useState([]); // Danh sách khóa học
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  
   const resetValues = () => {
     // setcourseSelected(null);
     reset();
@@ -79,35 +80,86 @@ const AdminCreateSectionPage = () => {
 
   /********* Get Course ID from API  ********* */
   // Lắng nghe sự thay đổi của courseItems
-  useEffect(() => {
-    // Lấy danh sách khóa học từ API
-    const getCourses = async () => {
-      try {
-        const response = await axiosPrivate.get("/course");
-        setCourseItems(response.data);
-      } catch (error) {
-        toast.error("Failed to fetch courses");
-      }
-    };
-    getCourses();
-  }, [courseItems]);// Chỉ lắng nghe sự thay đổi của courseItems
+  // Lấy danh sách khóa học từ API
+  // const getCourses = async () => {
+  //   try {
+  //     console.log('ok');
+  //     const response = await axiosPrivate.get(API_COURSE_URL);
+  //     console.log(response);
+  //     setCourseItems(response.data);
+  //   } catch (error) {
+  //     toast.error("Failed to fetch courses");
+  //   }
+  // };
 
-  const handleSubmitForm = async (data) => {
-    try {
-      const response = await axiosPrivate.post(
-        `/course/${id}/section`,{
-          name: data.name,
-      course_id: parseInt(data.course_id),
-        }
-      );
-      toast.success("Section created successfully");
-      reset();
-       // Cập nhật lại courseItems bằng cách gán một giá trị mới cho nó
-      setCourseItems([...courseItems]);
-    } catch (error) {
-      toast.error("Failed to create section");
-    }
-  };
+  // useEffect(() => {
+  //   getCourses();
+  // }, []); // Chỉ lắng nghe sự thay đổi của courseItems
+
+
+
+//   const handleSubmitForm = async (data) => {
+// //new
+//     // const data = {
+//     //   name: name,
+//     //   courseId: id,
+//     //   id: selectedRowId,
+//     // };
+//     // console.log("name", name);
+//     // console.log("couseId", id);
+//     // console.log("id", selectedRowId);
+//     // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+//     // toast.success("Section created successfully");
+//     //   reset();
+//     //   navigate("/admin/courses/1/sections");
+    
+//     //old
+//     try {
+//       const response = await axiosPrivate.post(`/course/${data.course_id}/section`, {
+//         name: data.name,
+//         courseId: parseInt(data.course_id),
+//       });
+//       toast.success("Section created successfully");
+//       reset();
+//       // Cập nhật lại courseItems bằng cách gán một giá trị mới cho nó
+//       setCourseItems([...courseItems]);
+//       navigate("/admin/courses/1/sections");
+//     } catch (error) {
+//       toast.error("Failed to create section");
+//     }
+//   };
+
+const handleSubmitForm = async (values) => {
+  const { name} = values;
+  try {
+    setIsLoading(!isLoading);
+  //     const data = {
+  //   name: name,
+  //   courseId: id,
+  // };
+  // console.log("name", name);
+  // console.log("couseId", id);
+  // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+    
+  //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+    const data = {
+      name: name,
+      courseId: id,
+      
+    };
+    console.log("name", name);
+    console.log("courseId", id);
+   
+    const res = await axiosPrivate.post(`/course/${data.courseId}/section`, data);
+    toast.success(`${res.data.message}`);
+    navigate("/admin/courses/1/sections");
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
+   
+  }
+};
 
   /********* Library Function Area ********* */
   const handleChangeCourse = (value) => {
@@ -116,31 +168,7 @@ const AdminCreateSectionPage = () => {
     setcourseSelected(value);
   };
 
-  /********* Token ********* */
-  const handleTokenError = (error) => {
-    if (error.response && error.response.status === 401) {
-      // Token hết hạn hoặc không hợp lệ
-      // Xử lý tại đây, ví dụ: chuyển hướng đến trang đăng nhập
-      // history.push("/login");
-      console.log("Token expired or invalid");
-    } else {
-      // Lỗi khác
-      throw error;
-    }
-  };
-
-  // Intercept response to handle token errors
-  useEffect(() => {
-    const interceptor = axiosInstance.interceptors.response.use(
-      (response) => response,
-      (error) => handleTokenError(error)
-    );
-
-    return () => {
-      // Cleanup interceptor when component unmounts
-      axiosInstance.interceptors.response.eject(interceptor);
-    };
-  }, []);
+ 
 
   return (
     <>
@@ -170,20 +198,23 @@ const AdminCreateSectionPage = () => {
                     </LabelCom>
                     <InputCom
                       type="text"
-                      control={control}
+                      control={control}  
                       name="name"
                       register={register}
-                      placeholder="Input Course Name"
+                      placeholder="Input Section Name"
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-6">
+                  {/* <div className="col-sm-6">
                     <LabelCom htmlFor="course_id" isRequired>
                       Choose Course
                     </LabelCom>
                     <div>
-                    <select {...register("course_id")} value={courseSelected || ""} onChange={(e) => handleChangeCourse(e.target.value)}>
-
+                      <select
+                        {...register("course_id")}
+                        value={courseSelected || ""}
+                        onChange={(e) => handleChangeCourse(e.target.value)}
+                      >
                         <option value="">Select a course</option>
                         {courseItems.map((course) => (
                           <option key={course.id} value={course.id}>
@@ -192,27 +223,9 @@ const AdminCreateSectionPage = () => {
                         ))}
                       </select>
                       {errors.course_id && <p>{errors.course_id.message}</p>}
-                      {/* <SelectSearchAntCom
-                        selectedValue={courseSelected}
-                        listItems={courseItems}
-                        onChange={handleChangeCourse}
-                        className="w-full py-1"
-                        status={
-                          errors.course_id &&
-                          errors.course_id.message &&
-                          "error"
-                        }
-                        errorMsg={errors.course_id?.message}
-                        placeholder="Input course to search"
-                      ></SelectSearchAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="course_id"
-                        register={register}
-                      ></InputCom> */}
+                   
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
               </div>
