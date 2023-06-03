@@ -18,6 +18,8 @@ export const LINKEDIN_AUTH_URL = `${BASE_API_URL}/oauth2/authorize/linkedin?redi
 
 // ******************* API ENDPOINT *********************
 export const API_COURSE_URL = "/course";
+export const API_SECTION_URL = "/course/{id}/section";
+export const API_LESSON_URL = "/section/1/lesson";
 export const API_IMG_URL = "/course/download"; // Example: "/course/download?courseId=";
 
 export const API_TAG_URL = "/tag";
