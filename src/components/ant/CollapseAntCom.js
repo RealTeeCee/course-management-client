@@ -1,6 +1,6 @@
 import { Collapse } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   onGetTrackingLesson,
   onSaveTrackingLesson,
@@ -19,8 +19,9 @@ const CollapseAntCom = ({
   childItems = [],
   isLearning = false,
 }) => {
-  const location = useLocation();
-  const reqParams = new URLSearchParams(location.search);
+  // const location = useLocation();
+  const navigate = useNavigate();
+  // const reqParams = new URLSearchParams(location.search);
   const { tracking, video, enrollId, selectedCourse, sectionId } = useSelector(
     (state) => state.course
   );
@@ -31,7 +32,7 @@ const CollapseAntCom = ({
   const ids = parentItems.map((item) => String(item.id));
 
   const handleClick = (child) => {
-    setLessionId(reqParams.get("id"));
+    setLessionId(child.id);
     dispatch(
       onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
     );
@@ -39,9 +40,10 @@ const CollapseAntCom = ({
 
   useEffect(() => {
     if (isLearning && tracking?.lessonId > 0) {
-      setLessionId(tracking.lessionId);
+      setLessionId(tracking.lessonId);
+      navigate(`/learn/${slug}?id=${tracking.lessonId}`);
     }
-  }, [isLearning, tracking]);
+  }, [isLearning, navigate, slug, tracking]);
 
   useEffect(() => {
     if (selectedCourse && enrollId > 0) {
