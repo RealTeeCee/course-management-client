@@ -35,7 +35,7 @@ import {
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_SALE_PRICE_HIGHER_PRICE,
+  MESSAGE_NET_PRICE_HIGHER_PRICE,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   statusItems,
@@ -76,7 +76,7 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  sale_price: yup
+  net_price: yup
     .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -141,6 +141,10 @@ const AdminCourseListPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const resetValues = () => {
+    reset();
+  };
+
   /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
   const [image, setImage] = useState([]);
@@ -165,7 +169,7 @@ const AdminCourseListPage = () => {
 
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
-  const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
+  const [net_price, handleChangeNetPrice, setNetPrice] = useOnChange(0);
 
   /********* Fetch API Area ********* */
   const columns = [
@@ -187,9 +191,9 @@ const AdminCourseListPage = () => {
     {
       name: "Price",
       cell: (row) =>
-        row.sale_price > 0 ? (
+        row.net_price > 0 ? (
           <span className="text-tw-danger">
-            ${convertIntToStrMoney(row.sale_price)}
+            ${convertIntToStrMoney(row.net_price)}
           </span>
         ) : (
           `$${convertIntToStrMoney(row.price)}`
@@ -297,10 +301,10 @@ const AdminCourseListPage = () => {
       const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
       reset(res.data);
       setValue("price", convertIntToStrMoney(res.data.price));
-      setValue("sale_price", convertIntToStrMoney(res.data.sale_price));
+      setValue("net_price", convertIntToStrMoney(res.data.net_price));
 
       setPrice(convertIntToStrMoney(res.data.price));
-      setSalePrice(convertIntToStrMoney(res.data.sale_price));
+      setNetPrice(convertIntToStrMoney(res.data.net_price));
       setCategorySelected(res.data.category_id);
       setTagsSelected(res.data.tags.split(","));
       setAchievementSelected(res.data.achievements.split(","));
@@ -355,7 +359,7 @@ const AdminCourseListPage = () => {
       level,
       category_id,
       price,
-      sale_price,
+      net_price,
       image,
       tags,
       duration,
@@ -370,13 +374,13 @@ const AdminCourseListPage = () => {
     //   setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
     //   setValue("image", null);
     // } else if
-    if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
-      const salePriceSelector = document.querySelector(
-        'input[name="sale_price"]'
+    if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
+      const netPriceSelector = document.querySelector(
+        'input[name="net_price"]'
       );
-      if (salePriceSelector) salePriceSelector.focus();
+      if (netPriceSelector) netPriceSelector.focus();
       toast.error(MESSAGE_GENERAL_FAILED);
-      setError("sale_price", { message: MESSAGE_SALE_PRICE_HIGHER_PRICE });
+      setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
     } else {
       try {
         setIsLoading(!isLoading);
@@ -391,7 +395,7 @@ const AdminCourseListPage = () => {
             image,
             category_id,
             price: convertStrMoneyToInt(price),
-            sale_price: convertStrMoneyToInt(sale_price),
+            net_price: convertStrMoneyToInt(net_price),
             tags,
             duration,
             achievements,
@@ -400,7 +404,7 @@ const AdminCourseListPage = () => {
         );
 
         const res = await axiosPrivate.put(`/course`, fd);
-        // getCourses();
+        getCourses();
         toast.success(`${res.data.message}`);
         setIsOpen(false);
         // resetValues();
@@ -749,19 +753,19 @@ const AdminCourseListPage = () => {
                   ></InputCom>
                 </div>
                 <div className="col-sm-3">
-                  <LabelCom htmlFor="sale_price" subText="($)">
-                    Sale Price
+                  <LabelCom htmlFor="net_price" subText="($)">
+                    Net Price
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
-                    name="sale_price"
+                    name="net_price"
                     register={register}
-                    placeholder="Input Sale Price"
-                    errorMsg={errors.sale_price?.message}
-                    onChange={handleChangeSalePrice}
-                    defaultValue={sale_price}
-                    value={sale_price}
+                    placeholder="Input Net Price"
+                    errorMsg={errors.net_price?.message}
+                    onChange={handleChangeNetPrice}
+                    defaultValue={net_price}
+                    value={net_price}
                   ></InputCom>
                 </div>
               </div>
@@ -884,8 +888,8 @@ const AdminCourseListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" type="reset">
-                Cancel
+              <ButtonCom backgroundColor="danger" onClick={resetValues}>
+                Reset
               </ButtonCom>
             </div>
           </form>
