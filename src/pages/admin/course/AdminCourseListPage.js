@@ -147,7 +147,7 @@ const AdminCourseListPage = () => {
 
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [achivementSelected, setAchivementSelected] = useState([]);
+  const [achievementSelected, setAchievementSelected] = useState([]);
   /********* END API State ********* */
 
   // Local State
@@ -303,7 +303,7 @@ const AdminCourseListPage = () => {
       setSalePrice(convertIntToStrMoney(res.data.sale_price));
       setCategorySelected(res.data.category_id);
       setTagsSelected(res.data.tags.split(","));
-      setAchivementSelected(res.data.achivements.split(","));
+      setAchievementSelected(res.data.achievements.split(","));
 
       const resImage = res.data.image;
       const imgObj = [
@@ -359,7 +359,7 @@ const AdminCourseListPage = () => {
       image,
       tags,
       duration,
-      achivements,
+      achievements,
       description,
     } = values;
 
@@ -394,7 +394,7 @@ const AdminCourseListPage = () => {
             sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
-            achivements,
+            achievements,
             description,
           })
         );
@@ -525,14 +525,14 @@ const AdminCourseListPage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeAchivements = (itemsArrs) => {
+  const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("achivements", itemsString);
-    setError("achivements", { message: "" });
-    setAchivementSelected(itemsArrs);
+    setValue("achievements", itemsString);
+    setError("achievements", { message: "" });
+    setAchievementSelected(itemsArrs);
   };
 
   const modules = useMemo(
@@ -819,28 +819,28 @@ const AdminCourseListPage = () => {
                 </div>
                 <div className="col-sm-4">
                   <LabelCom
-                    htmlFor="achivements"
-                    subText="'enter' every achivement"
+                    htmlFor="achievements"
+                    subText="'enter' every achievement"
                     className="mb-1"
                   >
-                    Achivement
+                    Achievement
                   </LabelCom>
                   <SelectTagAntCom
                     listItems={[]}
-                    selectedValue={achivementSelected}
-                    onChange={handleChangeAchivements}
-                    placeholder="Input the achivement..."
+                    selectedValue={achievementSelected}
+                    onChange={handleChangeAchievements}
+                    placeholder="Input the achievement..."
                     status={
-                      errors.achivements &&
-                      errors.achivements.message &&
+                      errors.achievements &&
+                      errors.achievements.message &&
                       "error"
                     }
-                    errorMsg={errors.achivements?.message}
+                    errorMsg={errors.achievements?.message}
                   ></SelectTagAntCom>
                   <InputCom
                     type="hidden"
                     control={control}
-                    name="achivements"
+                    name="achievements"
                     register={register}
                   ></InputCom>
                 </div>
