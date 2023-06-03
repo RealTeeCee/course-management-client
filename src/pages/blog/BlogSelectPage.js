@@ -6,16 +6,16 @@ import { blog } from "../../assets/blog_data/data";
 import { Link } from "react-router-dom";
 import { Pagination } from "antd";
 import Carousel_3 from "../../assets/blog_image/Carousel_3.jpg";
-import usePaginationBlog from "../../hooks/usePagination";
 import { LIMIT_PAGE } from "../../constants/config";
+import usePagination from "../../hooks/usePagination";
 
 const BlogSelectPage = () => {
-  const { startOffSet, endOffSet, currentPage, handleChangePage, limit } =
-  usePaginationBlog(1);
+  const { startIndex, endIndex, currentPage, handleChangePage } =
+    usePagination(1);
   return (
     <>
       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">
-        <HeadingFormH1Com>MY BLOG </HeadingFormH1Com>
+        <HeadingFormH1Com>MY BLOG</HeadingFormH1Com>
         <h2 className="py-4">
           <div>
             We’ve got everything you need to deliver flexible and effective
@@ -84,7 +84,7 @@ const BlogSelectPage = () => {
           {Array(20)
             .fill(0)
             .map((item, index) => {
-              if (index >= startOffSet && index < endOffSet) {
+              if (index >= startIndex && index < endIndex) {
                 return (
                   <Link key={blog.id} to={`/blogs/${2}`}>
                     <div

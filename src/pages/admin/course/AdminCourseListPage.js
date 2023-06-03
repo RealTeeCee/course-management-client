@@ -180,7 +180,7 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Category",
-      selector: (row) => row.category_name,
+      selector: (row) => row.categoryName,
     },
     {
       name: "Image",
