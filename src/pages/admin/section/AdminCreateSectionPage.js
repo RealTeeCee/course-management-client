@@ -38,7 +38,7 @@ const AdminCreateSectionPage = () => {
   /********* END API Area ********* */
   const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
-  const { id } = useParams();
+  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const resetValues = () => {
@@ -51,12 +51,15 @@ const AdminCreateSectionPage = () => {
     try {
       setIsLoading(!isLoading);
 
-      const res = await axiosPrivate.post(`${API_COURSE_URL}/${id}/section`, {
-        name: name,
-        courseId: id,
-      });
+      const res = await axiosPrivate.post(
+        `${API_COURSE_URL}/${courseId}/section`,
+        {
+          name,
+          courseId,
+        }
+      );
       toast.success(`${res.data.message}`);
-      navigate("/admin/courses/1/sections");
+      navigate(`/admin/courses/${courseId}/sections`);
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -79,8 +82,6 @@ const AdminCreateSectionPage = () => {
             <form
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
-              id="form-create"
-              encType="multipart/form-data"
             >
               {/* <div className="card-header">
                 <h5>Form Create Course</h5>
@@ -88,7 +89,7 @@ const AdminCreateSectionPage = () => {
               </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-6">
+                  <div className="col-sm-6 offset-sm-2">
                     <LabelCom htmlFor="name" isRequired>
                       Section Name
                     </LabelCom>

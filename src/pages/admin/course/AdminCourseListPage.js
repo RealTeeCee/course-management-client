@@ -627,7 +627,6 @@ const AdminCourseListPage = () => {
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
-            id="form-create"
           >
             <InputCom
               type="hidden"

@@ -28,3 +28,4 @@ export const { default: IconEyeCom } = require("./IconEyeCom");
 export const { default: IconCategoryCom } = require("./IconCategoryCom");
 export const { default: IconVideoCom } = require("./IconVideoCom");
 export const { default: IconBookCom } = require("./IconBookCom");
+export const { default: IconDocumentCom } = require("./IconDocumentCom");

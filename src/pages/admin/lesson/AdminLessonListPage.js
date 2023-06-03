@@ -42,7 +42,7 @@ const schemaValidation = yup.object().shape({
 });
 
 /********* Variable State ********* */
-const AdminLessionListPage = () => {
+const AdminLessonListPage = () => {
   const axiosPrivate = useAxiosPrivate();
   const [lessons, setLessons] = useState([]);
   const [filterLesson, setFilterLesson] = useState([]);
@@ -405,4 +405,4 @@ const modules = useMemo(
   );
 };
 
-export default AdminLessionListPage;
+export default AdminLessonListPage;
