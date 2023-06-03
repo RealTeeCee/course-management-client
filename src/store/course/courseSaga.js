@@ -6,14 +6,20 @@ import {
   handleOnGetLearning,
   handleOnSaveTrackingLesson,
   handleOnGetTrackingLesson,
+  handleOnSaveTrackingVideo,
+  handleOnUpdateCompletedVideo,
+  handleLoadProgress,
 } from "./courseHandlers";
 import {
   onCourseLoading,
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
+  onLoadProgress,
   onMyCourseLoading,
   onSaveTrackingLesson,
+  onSaveTrackingVideo,
+  onUpdateCompletedVideo,
 } from "./courseSlice";
 
 /**
@@ -28,5 +34,8 @@ export default function* courseSaga() {
     takeLatest(onGetLearning.type, handleOnGetLearning),
     takeLatest(onGetTrackingLesson.type, handleOnGetTrackingLesson),
     takeLatest(onSaveTrackingLesson.type, handleOnSaveTrackingLesson),
+    takeLatest(onSaveTrackingVideo.type, handleOnSaveTrackingVideo),
+    takeLatest(onUpdateCompletedVideo.type, handleOnUpdateCompletedVideo),
+    takeLatest(onLoadProgress.type, handleLoadProgress),
   ]);
 }

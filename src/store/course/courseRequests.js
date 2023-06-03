@@ -21,3 +21,9 @@ export const requestLoadTracking = (data) => {
 export const requestSaveTracking = (data) => {
   return axiosBearer.post(`/track/save`, data);
 };
+export const requestUpdateCompleted = (data) => {
+  return axiosBearer.post(`/track/complete`, data);
+};
+export const requestLoadProgress = (data) => {
+  return axiosBearer.post(`/track/load-progress`, data);
+};

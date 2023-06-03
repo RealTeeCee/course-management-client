@@ -5,9 +5,12 @@ import {
   requestCourse,
   requestEnrollId,
   requestLearning,
+  requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
   requestSaveTracking,
+  requestUpdateCompleted,
+  requestUpdateProgress,
 } from "./courseRequests";
 import {
   onCourseFailed,
@@ -16,9 +19,12 @@ import {
   onGetLearningSuccess,
   onGetTrackingLesson,
   onGetTrackingLessonSuccess,
+  onLoadProgressSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
   onSaveTrackingLessonSuccess,
+  onSaveTrackingVideoSuccess,
+  onUpdateCompletedVideoSuccess,
 } from "./courseSlice";
 
 /**
@@ -89,7 +95,41 @@ function* handleOnSaveTrackingLesson({ payload }) {
     const res = yield call(requestSaveTracking, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingLessonSuccess(res.data));
+      yield put(onSaveTrackingLessonSuccess());
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnSaveTrackingVideo({ payload }) {
+  try {
+    const res = yield call(requestSaveTracking, payload);
+
+    if (res.status === 200) {
+      yield put(onSaveTrackingVideoSuccess());
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnUpdateCompletedVideo({ payload }) {
+  try {
+    const res = yield call(requestUpdateCompleted, payload);
+    console.log(res);
+    if (res.status === 200) {
+      yield put(onUpdateCompletedVideoSuccess(res.data));
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+
+function* handleLoadProgress({ payload }) {
+  try {
+    const res = yield call(requestLoadProgress, payload);
+    console.log(res);
+    if (res.status === 200) {
+      yield put(onLoadProgressSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);
@@ -103,4 +143,7 @@ export {
   handleOnGetLearning,
   handleOnGetTrackingLesson,
   handleOnSaveTrackingLesson,
+  handleOnSaveTrackingVideo,
+  handleOnUpdateCompletedVideo,
+  handleLoadProgress,
 };

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   onGetTrackingLesson,
+  onLoadProgress,
   onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
@@ -39,6 +40,7 @@ const CollapseAntCom = ({
   };
 
   useEffect(() => {
+    console.log(tracking, isLearning);
     if (isLearning && tracking?.lessonId > 0) {
       setLessionId(tracking.lessonId);
       navigate(`/learn/${slug}?id=${tracking.lessonId}`);
@@ -84,6 +86,16 @@ const CollapseAntCom = ({
       };
     }
   }, [dispatch, enrollId, sectionId, selectedCourse, video]);
+
+  useEffect(() => {
+    console.log("Dispatch OnLoadProgress....");
+    dispatch(
+      onLoadProgress({
+        enrollmentId: enrollId,
+        courseId: selectedCourse.id,
+      })
+    );
+  }, [dispatch, enrollId, selectedCourse]);
 
   return parentItems.length === 0 ? null : (
     <Collapse

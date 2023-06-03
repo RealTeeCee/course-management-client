@@ -18,6 +18,7 @@ const initialState = {
     videoDto: [],
   },
   tracking: null,
+  progress: 0,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -137,6 +138,38 @@ const courseSlice = createSlice({
       ...state,
       isSuccess: true,
     }),
+    onSaveTrackingVideo: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onSaveTrackingVideoSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+    }),
+    onUpdateCompletedVideo: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onUpdateCompletedVideoSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+      progress: action.payload,
+    }),
+    onLoadProgress: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onLoadProgressSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+      progress: action.payload,
+    }),
   },
 });
 
@@ -157,6 +190,12 @@ export const {
   onSaveTrackingLesson,
   onGetTrackingLessonSuccess,
   onSaveTrackingLessonSuccess,
+  onSaveTrackingVideo,
+  onSaveTrackingVideoSuccess,
+  onUpdateCompletedVideo,
+  onUpdateCompletedVideoSuccess,
+  onLoadProgress,
+  onLoadProgressSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

@@ -15,6 +15,7 @@ import { onRemoveToken } from "../../store/auth/authSlice";
 
 const LearnTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
+  const { progress } = useSelector((state) => state.course);
   const userName = user?.email.split("@")[0];
   const userItems = [
     {
@@ -53,6 +54,7 @@ const LearnTopbarMod = () => {
         </Link>
       </div>
       <div className="flex items-center justify-between gap-x-5">
+        {progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>}
         <ButtonCom to="/my-courses" className="flex items-center">
           <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>

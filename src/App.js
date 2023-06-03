@@ -1,7 +1,7 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useSelector } from "react-redux";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -170,9 +170,21 @@ function App() {
         </Route>
 
         {/* ********* Learn ********* */}
-        <Route element={<LayoutLearning></LayoutLearning>}>
+        <Route
+          element={
+            !user && !user?.email ? (
+              <Navigate to="/login"></Navigate>
+            ) : (
+              <LayoutLearning></LayoutLearning>
+            )
+          }
+        >
           {/* course slug */}
-          <Route path="/learn/:slug" element={<LearnPage></LearnPage>}></Route>
+          <Route
+            path="/learn/:slug"
+            render
+            element={<LearnPage></LearnPage>}
+          ></Route>
         </Route>
         {/* ********* END Learn ********* */}
 
