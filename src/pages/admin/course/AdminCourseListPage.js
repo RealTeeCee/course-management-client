@@ -9,6 +9,7 @@ import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
+  IconBookCom,
   IconEditCom,
   IconEyeCom,
   IconRemoveCom,
@@ -34,6 +35,7 @@ import {
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_SALE_PRICE_HIGHER_PRICE,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   statusItems,
@@ -56,8 +58,7 @@ import {
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
-import { useNavigate  } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -132,6 +133,7 @@ const AdminCourseListPage = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     setError,
     reset,
     formState: { errors },
@@ -145,9 +147,7 @@ const AdminCourseListPage = () => {
 
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
-
-  const navigate = useNavigate();
+  const [achivementSelected, setAchivementSelected] = useState([]);
   /********* END API State ********* */
 
   // Local State
@@ -186,14 +186,36 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Price",
-      selector: (row) =>
-        row.sale_price > 0
-          ? `$${convertIntToStrMoney(row.sale_price)}`
-          : `$${convertIntToStrMoney(row.price)}`,
+      cell: (row) =>
+        row.sale_price > 0 ? (
+          <span className="text-tw-danger">
+            ${convertIntToStrMoney(row.sale_price)}
+          </span>
+        ) : (
+          `$${convertIntToStrMoney(row.price)}`
+        ),
     },
     {
       name: "Duration",
       selector: (row) => row.duration,
+    },
+    {
+      name: "Section",
+      cell: (row) => (
+        <>
+          <Link to={`/admin/courses/${row.id}/sections`}>
+            <ButtonCom
+              className="px-3 rounded-lg mr-2"
+              backgroundColor="gray"
+              onClick={() => {
+                // alert(`Update Course id: ${row.id}`);
+              }}
+            >
+              <IconBookCom className="w-5 text-black"></IconBookCom>
+            </ButtonCom>
+          </Link>
+        </>
+      ),
     },
     {
       name: "Action",
@@ -213,9 +235,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              // window.open(`/courses/${row.slug}`, "_blank");
-              getCourseById(row.id);
-              navigate(`/admin/courses/${row.id}/sections`);
+              window.open(`/courses/${row.slug}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -237,6 +257,7 @@ const AdminCourseListPage = () => {
   const getCourses = async () => {
     try {
       const res = await axiosPrivate.get(API_COURSE_URL);
+      console.log(res.data);
       setCourses(res.data);
       setFilterCourse(res.data);
     } catch (error) {
@@ -265,15 +286,9 @@ const AdminCourseListPage = () => {
   };
 
   // /********* Fetch API Area ********* */
-  // useEffect(() => {
-  //   getTags();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   useEffect(() => {
     getCourses();
     getTags();
-    console.log(tagItems);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -281,9 +296,14 @@ const AdminCourseListPage = () => {
     try {
       const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
       reset(res.data);
+      setValue("price", convertIntToStrMoney(res.data.price));
+      setValue("sale_price", convertIntToStrMoney(res.data.sale_price));
+
+      setPrice(convertIntToStrMoney(res.data.price));
+      setSalePrice(convertIntToStrMoney(res.data.sale_price));
       setCategorySelected(res.data.category_id);
       setTagsSelected(res.data.tags.split(","));
-      setArchivementSelected(res.data.archivements.split(","));
+      setAchivementSelected(res.data.achivements.split(","));
 
       const resImage = res.data.image;
       const imgObj = [
@@ -329,6 +349,7 @@ const AdminCourseListPage = () => {
   /********* Action Area ********* */
   const handleSubmitForm = async (values) => {
     const {
+      id,
       name,
       status,
       level,
@@ -338,7 +359,7 @@ const AdminCourseListPage = () => {
       image,
       tags,
       duration,
-      archivements,
+      achivements,
       description,
     } = values;
 
@@ -355,7 +376,7 @@ const AdminCourseListPage = () => {
       );
       if (salePriceSelector) salePriceSelector.focus();
       toast.error(MESSAGE_GENERAL_FAILED);
-      setError("sale_price", { message: "Sale Price cannot > Price" });
+      setError("sale_price", { message: MESSAGE_SALE_PRICE_HIGHER_PRICE });
     } else {
       try {
         setIsLoading(!isLoading);
@@ -363,6 +384,7 @@ const AdminCourseListPage = () => {
         fd.append(
           "courseJson",
           JSON.stringify({
+            id,
             name,
             status,
             level,
@@ -372,15 +394,17 @@ const AdminCourseListPage = () => {
             sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
-            archivements,
+            achivements,
             description,
           })
         );
-        // fd.append("file", image[0]);
-        const res = await axiosPrivate.post(`/course`, fd);
+
+        const res = await axiosPrivate.put(`/course`, fd);
+        // getCourses();
         toast.success(`${res.data.message}`);
+        setIsOpen(false);
         // resetValues();
-        // reset();
+        // navigate("/admin/courses");
       } catch (error) {
         showMessageError(error);
       } finally {
@@ -501,14 +525,14 @@ const AdminCourseListPage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeArchivements = (itemsArrs) => {
+  const handleChangeAchivements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("archivements", itemsString);
-    setError("archivements", { message: "" });
-    // setArchivementSelected(itemsArrs);
+    setValue("achivements", itemsString);
+    setError("achivements", { message: "" });
+    setAchivementSelected(itemsArrs);
   };
 
   const modules = useMemo(
@@ -546,7 +570,6 @@ const AdminCourseListPage = () => {
   );
   return (
     <>
-      {/* <Overlay onClick={() => console.log("clicked")}></Overlay> */}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Courses</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -602,6 +625,14 @@ const AdminCourseListPage = () => {
             onSubmit={handleSubmit(handleSubmitForm)}
             id="form-create"
           >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Course hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
             {/* <div className="card-header">
                 <h5>Form Create Course</h5>
                 <span>Lorem ipsum dolor sit amet consectetur</span>
@@ -630,13 +661,14 @@ const AdminCourseListPage = () => {
                       status={errors.status && errors.status.message && "error"}
                       errorMsg={errors.status?.message}
                       placeholder="Choose Status"
+                      defaultValue={getValues("status")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="status"
                       register={register}
-                      defaultValue={1}
+                      defaultValue={getValues("status")}
                     ></InputCom>
                   </div>
                 </div>
@@ -646,14 +678,14 @@ const AdminCourseListPage = () => {
                     <SelectDefaultAntCom
                       listItems={levelItems}
                       onChange={handleChangeLevel}
-                      defaultValue={0}
+                      defaultValue={getValues("level")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="level"
                       register={register}
-                      defaultValue={0}
+                      defaultValue={getValues("level")}
                     ></InputCom>
                   </div>
                 </div>
@@ -787,28 +819,28 @@ const AdminCourseListPage = () => {
                 </div>
                 <div className="col-sm-4">
                   <LabelCom
-                    htmlFor="archivements"
-                    subText="'enter' every archivement"
+                    htmlFor="achivements"
+                    subText="'enter' every achivement"
                     className="mb-1"
                   >
-                    Archivement
+                    Achivement
                   </LabelCom>
                   <SelectTagAntCom
                     listItems={[]}
-                    selectedValue={archivementSelected}
-                    onChange={handleChangeArchivements}
-                    placeholder="Input the archivement..."
+                    selectedValue={achivementSelected}
+                    onChange={handleChangeAchivements}
+                    placeholder="Input the achivement..."
                     status={
-                      errors.archivements &&
-                      errors.archivements.message &&
+                      errors.achivements &&
+                      errors.achivements.message &&
                       "error"
                     }
-                    errorMsg={errors.archivements?.message}
+                    errorMsg={errors.achivements?.message}
                   ></SelectTagAntCom>
                   <InputCom
                     type="hidden"
                     control={control}
-                    name="archivements"
+                    name="achivements"
                     register={register}
                   ></InputCom>
                 </div>
