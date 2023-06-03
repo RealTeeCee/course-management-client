@@ -104,7 +104,7 @@ const AdminCreateCoursePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
+  const [achivementSelected, setAchivementSelected] = useState([]);
   const [description, setDescription] = useState("");
   const [price, handleChangePrice, setPrice] = useOnChange(0);
   const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
@@ -112,7 +112,7 @@ const AdminCreateCoursePage = () => {
   const resetValues = () => {
     setCategorySelected(null);
     setTagsSelected([]);
-    setArchivementSelected([]);
+    setAchivementSelected([]);
     setDescription("");
     setPrice(0);
     setSalePrice(0);
@@ -121,6 +121,7 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
+    console.log(values);
     const {
       name,
       status,
@@ -131,7 +132,7 @@ const AdminCreateCoursePage = () => {
       image,
       tags,
       duration,
-      archivements,
+      achivements,
       description,
     } = values;
 
@@ -165,7 +166,7 @@ const AdminCreateCoursePage = () => {
             sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
-            archivements,
+            achivements,
             description,
           })
         );
@@ -245,14 +246,14 @@ const AdminCreateCoursePage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeArchivements = (itemsArrs) => {
+  const handleChangeAchivements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("archivements", itemsString);
-    setError("archivements", { message: "" });
-    setArchivementSelected(itemsArrs);
+    setValue("achivements", itemsString);
+    setError("achivements", { message: "" });
+    setAchivementSelected(itemsArrs);
   };
 
   const handleChangeStatus = (value) => {
@@ -500,28 +501,28 @@ const AdminCreateCoursePage = () => {
                   </div>
                   <div className="col-sm-4">
                     <LabelCom
-                      htmlFor="archivements"
+                      htmlFor="achivements"
                       subText="'enter' every archivement"
                       className="mb-1"
                     >
-                      Archivement
+                      Achivement
                     </LabelCom>
                     <SelectTagAntCom
                       listItems={[]}
-                      selectedValue={archivementSelected}
-                      onChange={handleChangeArchivements}
+                      selectedValue={achivementSelected}
+                      onChange={handleChangeAchivements}
                       placeholder="Input the archivement..."
                       status={
-                        errors.archivements &&
-                        errors.archivements.message &&
+                        errors.achivements &&
+                        errors.achivements.message &&
                         "error"
                       }
-                      errorMsg={errors.archivements?.message}
+                      errorMsg={errors.achivements?.message}
                     ></SelectTagAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
-                      name="archivements"
+                      name="achivements"
                       register={register}
                     ></InputCom>
                   </div>
@@ -565,9 +566,12 @@ const AdminCreateCoursePage = () => {
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
                 </ButtonCom>
-                <ButtonCom backgroundColor="danger" type="reset">
+                {/* <ButtonCom backgroundColor="danger" type="button" onClick={() => {
+                  reset();
+                  resetValues();
+                }}>
                   Reset
-                </ButtonCom>
+                </ButtonCom> */}
               </div>
             </form>
           </div>

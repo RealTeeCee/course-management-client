@@ -147,7 +147,7 @@ const AdminCourseListPage = () => {
 
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
+  const [achivementSelected, setAchivementSelected] = useState([]);
   /********* END API State ********* */
 
   // Local State
@@ -257,6 +257,7 @@ const AdminCourseListPage = () => {
   const getCourses = async () => {
     try {
       const res = await axiosPrivate.get(API_COURSE_URL);
+      console.log(res.data);
       setCourses(res.data);
       setFilterCourse(res.data);
     } catch (error) {
@@ -289,7 +290,7 @@ const AdminCourseListPage = () => {
     getCourses();
     getTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courses]);
+  }, []);
 
   const getCourseById = async (courseId) => {
     try {
@@ -302,7 +303,7 @@ const AdminCourseListPage = () => {
       setSalePrice(convertIntToStrMoney(res.data.sale_price));
       setCategorySelected(res.data.category_id);
       setTagsSelected(res.data.tags.split(","));
-      setArchivementSelected(res.data.archivements.split(","));
+      setAchivementSelected(res.data.achivements.split(","));
 
       const resImage = res.data.image;
       const imgObj = [
@@ -358,7 +359,7 @@ const AdminCourseListPage = () => {
       image,
       tags,
       duration,
-      archivements,
+      achivements,
       description,
     } = values;
 
@@ -393,7 +394,7 @@ const AdminCourseListPage = () => {
             sale_price: convertStrMoneyToInt(sale_price),
             tags,
             duration,
-            archivements,
+            achivements,
             description,
           })
         );
@@ -524,14 +525,14 @@ const AdminCourseListPage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeArchivements = (itemsArrs) => {
+  const handleChangeAchivements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("archivements", itemsString);
-    setError("archivements", { message: "" });
-    setArchivementSelected(itemsArrs);
+    setValue("achivements", itemsString);
+    setError("achivements", { message: "" });
+    setAchivementSelected(itemsArrs);
   };
 
   const modules = useMemo(
@@ -569,7 +570,6 @@ const AdminCourseListPage = () => {
   );
   return (
     <>
-      {/* <Overlay onClick={() => console.log("clicked")}></Overlay> */}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Courses</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -819,28 +819,28 @@ const AdminCourseListPage = () => {
                 </div>
                 <div className="col-sm-4">
                   <LabelCom
-                    htmlFor="archivements"
-                    subText="'enter' every archivement"
+                    htmlFor="achivements"
+                    subText="'enter' every achivement"
                     className="mb-1"
                   >
-                    Archivement
+                    Achivement
                   </LabelCom>
                   <SelectTagAntCom
                     listItems={[]}
-                    selectedValue={archivementSelected}
-                    onChange={handleChangeArchivements}
-                    placeholder="Input the archivement..."
+                    selectedValue={achivementSelected}
+                    onChange={handleChangeAchivements}
+                    placeholder="Input the achivement..."
                     status={
-                      errors.archivements &&
-                      errors.archivements.message &&
+                      errors.achivements &&
+                      errors.achivements.message &&
                       "error"
                     }
-                    errorMsg={errors.archivements?.message}
+                    errorMsg={errors.achivements?.message}
                   ></SelectTagAntCom>
                   <InputCom
                     type="hidden"
                     control={control}
-                    name="archivements"
+                    name="achivements"
                     register={register}
                   ></InputCom>
                 </div>
