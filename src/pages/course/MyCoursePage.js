@@ -22,7 +22,9 @@ const MyCoursePage = () => {
   }, [dispatch, user.id]);
   return (
     <>
-      <HeadingH1Com number={formatNumber(5)}>My Courses</HeadingH1Com>
+      <HeadingH1Com number={formatNumber(data?.length)}>
+        My Courses
+      </HeadingH1Com>
       <GapYCom></GapYCom>
       <CourseGridMod>
         {data
@@ -58,7 +60,7 @@ const MyCoursePage = () => {
       <Pagination
         current={currentPage}
         defaultPageSize={LIMIT_PAGE}
-        total={5}
+        total={data?.length}
         onChange={handleChangePage}
         className="mt-[1rem] text-center"
       />

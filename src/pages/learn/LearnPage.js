@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useParams } from "react-router-dom";
 import GapYCom from "../../components/common/GapYCom";
@@ -15,7 +15,7 @@ import {
 import { func } from "prop-types";
 
 const LearnPage = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
@@ -28,11 +28,13 @@ const LearnPage = () => {
     selectedCourse,
     video,
     enrollId,
+    tracking,
     sectionId,
     video: { captionData },
   } = useSelector((state) => state.course);
 
   const dispatch = useDispatch();
+  const player = useRef();
 
   useEffect(() => {
     if (data?.length === 0) {
@@ -134,6 +136,12 @@ const LearnPage = () => {
     );
   };
 
+  useEffect(() => {
+    console.log("Seek video ....: ", tracking?.resumePoint);
+    player.current.seekTo(tracking?.resumePoint);
+    // setIsPlaying(true);
+  }, [tracking?.resumePoint]);
+
   return (
     <>
       <HeadingH1Com>Learn Page</HeadingH1Com>
@@ -141,6 +149,7 @@ const LearnPage = () => {
       <div className="video-container">
         <div className="video-item">
           <ReactPlayer
+            ref={player}
             width="100%"
             height="500px"
             url={video.url}
@@ -167,6 +176,9 @@ const LearnPage = () => {
             controls
             muted
             autoPlay
+            onSeek={() => {
+              setIsPlaying(false);
+            }}
             onProgress={handleGetProgress}
             onPause={handlePauseVideo}
             onEnded={handleEnded}
