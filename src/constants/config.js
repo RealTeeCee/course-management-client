@@ -47,7 +47,7 @@ export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
 export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
-export const MESSAGE_SALE_PRICE_HIGHER_PRICE =
+export const MESSAGE_NET_PRICE_HIGHER_PRICE =
   "The sale price is not allowed to be higher than the original price";
 
 // Data Static List

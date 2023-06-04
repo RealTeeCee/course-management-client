@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
@@ -6,7 +6,6 @@ import GapYCom from "../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 import {
-  IconDocumentCom,
   IconEditCom,
   IconEyeCom,
   IconRemoveCom,
@@ -14,108 +13,90 @@ import {
 } from "../../../components/icon";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
-import { MESSAGE_FIELD_REQUIRED, statusItems } from "../../../constants/config";
+import {
+  MESSAGE_FIELD_REQUIRED, MESSAGE_NUMBER_POSITIVE, MESSAGE_NUMBER_REQUIRED,
+} from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ReactModal from "react-modal";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
-import { API_COURSE_URL } from "../../../constants/endpoint";
-import SelectDefaultAntCom from "../../../components/ant/SelectDefaultAntCom";
+import { useNavigate } from "react-router-dom/dist";
+import { IMG_BB_URL } from "../../../constants/endpoint";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
+  id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  duration: yup
+    .string(MESSAGE_NUMBER_REQUIRED)
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(1, MESSAGE_NUMBER_POSITIVE),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  status: yup.number().default(1),
+  // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
 });
 
-const AdminSectionListPage = () => {
-  /********* API State ********* */
-  const [sections, setSections] = useState([]);
-  const [course, setCourse] = useState({});
-  /********* END API State ********* */
-
-  /********* State ********* */
+/********* Variable State ********* */
+const AdminLessonListPage = () => {
   const axiosPrivate = useAxiosPrivate();
-  const [filterSection, setFilterSection] = useState([]);
+  const [lessons, setLessons] = useState([]);
+  const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
-
+  // const [selectedRows, setSelectedRows] = useState([]);
+  const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
-  const resetValues = () => {
-    reset();
-  };
+  const navigate = useNavigate();
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
   const {
     control,
     register,
     handleSubmit,
-    setValue,
-    setError,
     reset,
     watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  const { courseId } = useParams();
+  const { id,sectionId } = useParams();
 
+  /********* Fetch data Area ********* */
   const columns = [
-    // {
-    //   name: "Section Id",
-    //   selector: (row) => row.id,
-    //   sortable: true,
-    // },
     {
-      name: "Section Name",
+      name: "Lesson Id",
+      selector: (row) => row.id,
+      sortable: true,
+    },
+    {
+      name: "Lesson Name",
       selector: (row) => row.name,
       sortable: true,
     },
     {
-      name: "Status",
-      cell: (row) => (
-        <>
-          {row.status === 1 ? (
-            <ButtonCom onClick={() => {}} backgroundColor="success">
-              Active
-            </ButtonCom>
-          ) : (
-            <ButtonCom onClick={() => {}} backgroundColor="danger">
-              InActive
-            </ButtonCom>
-          )}
-        </>
-      ),
-      sortable: true,
+      name: "Duration",
+      selector: (row) => row.duration,
     },
     {
-      name: "Lessons",
-      cell: (row) => (
-        <>
-          <Link to={`/admin/courses/${row.id}/sections`}>
-            <ButtonCom
-              className="px-3 rounded-lg mr-2"
-              backgroundColor="gray"
-              onClick={() => {
-                // alert(`Update Course id: ${row.id}`);
-              }}
-            >
-              <IconDocumentCom className="w-5 text-black"></IconDocumentCom>
-            </ButtonCom>
-          </Link>
-        </>
-      ),
+      name: "Status",
+      selector: (row) => row.status,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
     },
     // {
     //   name: "Date Created",
     //   selector: (row) => new Date(row.created_at).toLocaleDateString(),
 
     // },
+
     {
       name: "Actions",
       cell: (row) => (
@@ -126,6 +107,7 @@ const AdminSectionListPage = () => {
             onClick={() => {
               setIsOpen(true);
               getSectionById(row.id);
+              setSelectedRowId(row.id); // save row.id to state selectedRowId
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -142,7 +124,7 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection({ sectionId: row.id, name: row.name });
+              handleDeleteSection({ lessonId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -179,8 +161,44 @@ const AdminSectionListPage = () => {
     // },
   ];
 
+//Description
+const modules = useMemo(
+  () => ({
+    toolbar: [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote"],
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["link", "image"],
+    ],
+    imageUploader: {
+      upload: async (file) => {
+        const fd = new FormData();
+        fd.append("image", file);
+        try {
+          const res = await axiosInstance({
+            method: "POST",
+            url: IMG_BB_URL,
+            data: fd,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          return res.data.data.url;
+        } catch (error) {
+          toast.error(error.message);
+          return;
+        }
+      },
+    },
+  }),
+  []
+);
+
+
   /********* Multiple One ********* */
-  const handleDeleteSection = ({ sectionId, name }) => {
+  const handleDeleteSection = ({ lessonId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
@@ -193,10 +211,10 @@ const AdminSectionListPage = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosPrivate.delete(
-            `${API_COURSE_URL}/${courseId}/section?sectionId=${sectionId}`
+            `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
-          getSectionsByCourseId();
+          getlessons();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -204,58 +222,39 @@ const AdminSectionListPage = () => {
         }
       }
     });
+    console.log("id", id);
+    console.log("lessonId", lessonId);
+    console.log("name", name);
   };
 
-  /********** Fetch data Area ************ */
   /********* API List Section ********* */
-  const getSectionsByCourseId = async () => {
+  const getlessons = async () => {
     try {
-      const res = await axiosPrivate.get(
-        `${API_COURSE_URL}/${courseId}/section`
-      );
+      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
 
-      setSections(res.data);
-      setFilterSection(res.data);
+      console.log(res.data);
+      setLessons(res.data);
+      setFilterLesson(res.data);
+      console.log(res.data);
     } catch (error) {
-      console.log(error);
+      console.log("Error: ", error);
     }
   };
 
-  /********* Get SectionId from row ********* */
-  const getSectionById = async (sectionId) => {
-    try {
-      const res = await axiosPrivate.get(
-        `${API_COURSE_URL}/${courseId}/section/${sectionId}`
-      );
-      reset(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getCourseById = async () => {
-    try {
-      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
-      setCourse(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  // useEffect(() => {
+  //   getlessons();
+  // }, []);
   useEffect(() => {
-    getSectionsByCourseId();
-    getCourseById();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  /********** END Fetch data Area ************ */
+    getlessons();
+  }, [sectionId]);
 
   /********* API Search Section ********* */
   useEffect(() => {
-    const result = sections.filter((section) => {
-      const keys = Object.keys(section);
+    const result = lessons.filter((lesson) => {
+      const keys = Object.keys(lesson);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        const value = section[key];
+        const value = lesson[key];
         if (
           typeof value === "string" &&
           value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
@@ -272,39 +271,53 @@ const AdminSectionListPage = () => {
       return false;
     });
 
-    setFilterSection(result);
-  }, [sections, search]);
+    setFilterLesson(result);
+  }, [lessons, search]);
 
   /********* Edit ********* */
-
-  ///********* Update Area *********
-  const handleChangeStatus = (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-  };
   const handleSubmitForm = async (values) => {
-    console.log(values);
-    // const { id, name, status } = values;
+    const { name} = values;
     try {
       setIsLoading(!isLoading);
-      // const data = {
-      //   id,
-      //   name,
-      //   courseId,
-      //   status,
-      // };
-
-      const res = await axiosPrivate.put(
-        `${API_COURSE_URL}/${courseId}/section`,
-        values
-      );
+    //     const data = {
+    //   name: name,
+    //   courseId: id,
+    // };
+    // console.log("name", name);
+    // console.log("couseId", id);
+    // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+      
+    //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+      const data = {
+        name: name,
+        sectionId: sectionId,
+        id: selectedRowId,
+      };
+      console.log("name", name);
+      console.log("courseId", id);
+      console.log("lessonId",selectedRowId);
+      const res = await axiosPrivate.put(`/section/${data.sectionId}/lesson`, data);
       toast.success(`${res.data.message}`);
+      reset();
+      getlessons(); 
     } catch (error) {
       showMessageError(error);
     } finally {
-      setIsLoading(false);
-      setIsOpen(false);
+      setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
+      setIsOpen(false); // Đóng modal
     }
+  };
+  
+  /********* Get lessonId from row ********* */
+  const getSectionById = async (lessonId) => {
+    try {
+      const res = await axiosPrivate.get(`/section/${sectionId}/lesson/${lessonId}`);
+      reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("sectionId", sectionId);
+    console.log("lessonId", lessonId);
   };
 
   return (
@@ -321,10 +334,10 @@ const AdminSectionListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate={`/admin/courses/${courseId}/sections/create`}
-                  title={`Course: ${course.name}`}
+                  urlCreate={`/admin/courses/${id}/sections/${sectionId}/lessons/create`}
+                  title="List lessons"
                   columns={columns}
-                  items={filterSection}
+                  items={filterLesson}
                   search={search}
                   dropdownItems={dropdownItems}
                   setSearch={setSearch}
@@ -357,18 +370,11 @@ const AdminSectionListPage = () => {
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
+            id="form-create"
           >
-            <InputCom
-              type="hidden"
-              control={control}
-              name="id"
-              register={register}
-              placeholder="Section hidden id"
-              // errorMsg={errors.id?.message}
-            ></InputCom>
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-4">
                   <LabelCom htmlFor="name" isRequired>
                     Section Name
                   </LabelCom>
@@ -382,34 +388,14 @@ const AdminSectionListPage = () => {
                     defaultValue={watch("name")}
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
-                </div>
               </div>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
+              <ButtonCom backgroundColor="danger" type="reset">
+                Cancel
               </ButtonCom>
             </div>
           </form>
@@ -419,4 +405,4 @@ const AdminSectionListPage = () => {
   );
 };
 
-export default AdminSectionListPage;
+export default AdminLessonListPage;

@@ -15,7 +15,6 @@ import {
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
-  BASE_API_URL,
   MESSAGE_GENERAL_FAILED,
   MESSAGE_FIELD_INVALID,
   MESSAGE_UPLOAD_REQUIRED,
@@ -29,9 +28,8 @@ import {
   MESSAGE_FIELD_MIN_LENGTH_NAME,
   statusItems,
   levelItems,
-  MESSAGE_SALE_PRICE_HIGHER_PRICE,
+  MESSAGE_NET_PRICE_HIGHER_PRICE,
 } from "../../../constants/config";
-import ImageUploadCom from "../../../components/image/ImageUploadCom";
 import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
@@ -60,7 +58,7 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  sale_price: yup
+  net_price: yup
     .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -104,34 +102,35 @@ const AdminCreateCoursePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
+  const [achievementSelected, setAchievementSelected] = useState([]);
   const [description, setDescription] = useState("");
   const [price, handleChangePrice, setPrice] = useOnChange(0);
-  const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
+  const [net_price, handleChangeNetPrice, setNetPrice] = useOnChange(0);
 
   const resetValues = () => {
     setCategorySelected(null);
     setTagsSelected([]);
-    setArchivementSelected([]);
+    setAchievementSelected([]);
     setDescription("");
     setPrice(0);
-    setSalePrice(0);
+    setNetPrice(0);
     reset();
     getTags();
   };
 
   const handleSubmitForm = async (values) => {
+    console.log(values);
     const {
       name,
       status,
       level,
       category_id,
       price,
-      sale_price,
+      net_price,
       image,
       tags,
       duration,
-      archivements,
+      achievements,
       description,
     } = values;
 
@@ -142,13 +141,13 @@ const AdminCreateCoursePage = () => {
     //   setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
     //   setValue("image", null);
     // } else if
-    if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
-      const salePriceSelector = document.querySelector(
-        'input[name="sale_price"]'
+    if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
+      const netPriceSelector = document.querySelector(
+        'input[name="net_price"]'
       );
-      if (salePriceSelector) salePriceSelector.focus();
+      if (netPriceSelector) netPriceSelector.focus();
       toast.error(MESSAGE_GENERAL_FAILED);
-      setError("sale_price", { message: MESSAGE_SALE_PRICE_HIGHER_PRICE });
+      setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
     } else {
       try {
         setIsLoading(!isLoading);
@@ -162,10 +161,10 @@ const AdminCreateCoursePage = () => {
             image,
             category_id,
             price: convertStrMoneyToInt(price),
-            sale_price: convertStrMoneyToInt(sale_price),
+            net_price: convertStrMoneyToInt(net_price),
             tags,
             duration,
-            archivements,
+            achievements,
             description,
           })
         );
@@ -245,14 +244,14 @@ const AdminCreateCoursePage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeArchivements = (itemsArrs) => {
+  const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("archivements", itemsString);
-    setError("archivements", { message: "" });
-    setArchivementSelected(itemsArrs);
+    setValue("achievements", itemsString);
+    setError("achievements", { message: "" });
+    setAchievementSelected(itemsArrs);
   };
 
   const handleChangeStatus = (value) => {
@@ -388,7 +387,6 @@ const AdminCreateCoursePage = () => {
                         name="image"
                         onSetValue={setValue}
                         errorMsg={errors.image?.message}
-                        editImage={[]}
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
@@ -431,19 +429,19 @@ const AdminCreateCoursePage = () => {
                     ></InputCom>
                   </div>
                   <div className="col-sm-3">
-                    <LabelCom htmlFor="sale_price" subText="($)">
-                      Sale Price
+                    <LabelCom htmlFor="net_price" subText="($)">
+                      Net Price
                     </LabelCom>
                     <InputCom
                       type="text"
                       control={control}
-                      name="sale_price"
+                      name="net_price"
                       register={register}
-                      placeholder="Input Sale Price"
-                      errorMsg={errors.sale_price?.message}
-                      onChange={handleChangeSalePrice}
-                      defaultValue={sale_price}
-                      value={sale_price}
+                      placeholder="Input Net Price"
+                      errorMsg={errors.net_price?.message}
+                      onChange={handleChangeNetPrice}
+                      defaultValue={net_price}
+                      value={net_price}
                     ></InputCom>
                   </div>
                 </div>
@@ -501,28 +499,28 @@ const AdminCreateCoursePage = () => {
                   </div>
                   <div className="col-sm-4">
                     <LabelCom
-                      htmlFor="archivements"
-                      subText="'enter' every archivement"
+                      htmlFor="achievements"
+                      subText="'enter' every achievement"
                       className="mb-1"
                     >
-                      Archivement
+                      Achievement
                     </LabelCom>
                     <SelectTagAntCom
                       listItems={[]}
-                      selectedValue={archivementSelected}
-                      onChange={handleChangeArchivements}
-                      placeholder="Input the archivement..."
+                      selectedValue={achievementSelected}
+                      onChange={handleChangeAchievements}
+                      placeholder="Input the achievement..."
                       status={
-                        errors.archivements &&
-                        errors.archivements.message &&
+                        errors.achievements &&
+                        errors.achievements.message &&
                         "error"
                       }
-                      errorMsg={errors.archivements?.message}
+                      errorMsg={errors.achievements?.message}
                     ></SelectTagAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
-                      name="archivements"
+                      name="achievements"
                       register={register}
                     ></InputCom>
                   </div>
@@ -566,9 +564,12 @@ const AdminCreateCoursePage = () => {
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
                 </ButtonCom>
-                <ButtonCom backgroundColor="danger" type="reset">
+                {/* <ButtonCom backgroundColor="danger" type="button" onClick={() => {
+                  reset();
+                  resetValues();
+                }}>
                   Reset
-                </ButtonCom>
+                </ButtonCom> */}
               </div>
             </form>
           </div>

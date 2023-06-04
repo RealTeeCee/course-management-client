@@ -9,6 +9,7 @@ import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
+  IconBookCom,
   IconEditCom,
   IconEyeCom,
   IconRemoveCom,
@@ -34,6 +35,7 @@ import {
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_NET_PRICE_HIGHER_PRICE,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   statusItems,
@@ -56,6 +58,7 @@ import {
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
+import { Link } from "react-router-dom";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -73,7 +76,7 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  sale_price: yup
+  net_price: yup
     .string()
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -130,6 +133,7 @@ const AdminCourseListPage = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     setError,
     reset,
     formState: { errors },
@@ -137,13 +141,17 @@ const AdminCourseListPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const resetValues = () => {
+    reset();
+  };
+
   /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
   const [image, setImage] = useState([]);
 
   const [categorySelected, setCategorySelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
-  const [archivementSelected, setArchivementSelected] = useState([]);
+  const [achievementSelected, setAchievementSelected] = useState([]);
   /********* END API State ********* */
 
   // Local State
@@ -161,7 +169,7 @@ const AdminCourseListPage = () => {
 
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
-  const [sale_price, handleChangeSalePrice, setSalePrice] = useOnChange(0);
+  const [net_price, handleChangeNetPrice, setNetPrice] = useOnChange(0);
 
   /********* Fetch API Area ********* */
   const columns = [
@@ -172,7 +180,7 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Category",
-      selector: (row) => row.category_name,
+      selector: (row) => row.categoryName,
     },
     {
       name: "Image",
@@ -182,14 +190,36 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Price",
-      selector: (row) =>
-        row.sale_price > 0
-          ? `$${convertIntToStrMoney(row.sale_price)}`
-          : `$${convertIntToStrMoney(row.price)}`,
+      cell: (row) =>
+        row.net_price > 0 ? (
+          <span className="text-tw-danger">
+            ${convertIntToStrMoney(row.net_price)}
+          </span>
+        ) : (
+          `$${convertIntToStrMoney(row.price)}`
+        ),
     },
     {
       name: "Duration",
       selector: (row) => row.duration,
+    },
+    {
+      name: "Section",
+      cell: (row) => (
+        <>
+          <Link to={`/admin/courses/${row.id}/sections`}>
+            <ButtonCom
+              className="px-3 rounded-lg mr-2"
+              backgroundColor="gray"
+              onClick={() => {
+                // alert(`Update Course id: ${row.id}`);
+              }}
+            >
+              <IconBookCom className="w-5 text-black"></IconBookCom>
+            </ButtonCom>
+          </Link>
+        </>
+      ),
     },
     {
       name: "Action",
@@ -231,6 +261,7 @@ const AdminCourseListPage = () => {
   const getCourses = async () => {
     try {
       const res = await axiosPrivate.get(API_COURSE_URL);
+      console.log(res.data);
       setCourses(res.data);
       setFilterCourse(res.data);
     } catch (error) {
@@ -259,15 +290,9 @@ const AdminCourseListPage = () => {
   };
 
   // /********* Fetch API Area ********* */
-  // useEffect(() => {
-  //   getTags();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   useEffect(() => {
     getCourses();
     getTags();
-    console.log(tagItems);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -275,9 +300,14 @@ const AdminCourseListPage = () => {
     try {
       const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
       reset(res.data);
+      setValue("price", convertIntToStrMoney(res.data.price));
+      setValue("net_price", convertIntToStrMoney(res.data.net_price));
+
+      setPrice(convertIntToStrMoney(res.data.price));
+      setNetPrice(convertIntToStrMoney(res.data.net_price));
       setCategorySelected(res.data.category_id);
       setTagsSelected(res.data.tags.split(","));
-      setArchivementSelected(res.data.archivements.split(","));
+      setAchievementSelected(res.data.achievements.split(","));
 
       const resImage = res.data.image;
       const imgObj = [
@@ -323,16 +353,17 @@ const AdminCourseListPage = () => {
   /********* Action Area ********* */
   const handleSubmitForm = async (values) => {
     const {
+      id,
       name,
       status,
       level,
       category_id,
       price,
-      sale_price,
+      net_price,
       image,
       tags,
       duration,
-      archivements,
+      achievements,
       description,
     } = values;
 
@@ -343,13 +374,13 @@ const AdminCourseListPage = () => {
     //   setError("image", { message: MESSAGE_UPLOAD_REQUIRED });
     //   setValue("image", null);
     // } else if
-    if (convertStrMoneyToInt(sale_price) > convertStrMoneyToInt(price)) {
-      const salePriceSelector = document.querySelector(
-        'input[name="sale_price"]'
+    if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
+      const netPriceSelector = document.querySelector(
+        'input[name="net_price"]'
       );
-      if (salePriceSelector) salePriceSelector.focus();
+      if (netPriceSelector) netPriceSelector.focus();
       toast.error(MESSAGE_GENERAL_FAILED);
-      setError("sale_price", { message: "Sale Price cannot > Price" });
+      setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
     } else {
       try {
         setIsLoading(!isLoading);
@@ -357,24 +388,27 @@ const AdminCourseListPage = () => {
         fd.append(
           "courseJson",
           JSON.stringify({
+            id,
             name,
             status,
             level,
             image,
             category_id,
             price: convertStrMoneyToInt(price),
-            sale_price: convertStrMoneyToInt(sale_price),
+            net_price: convertStrMoneyToInt(net_price),
             tags,
             duration,
-            archivements,
+            achievements,
             description,
           })
         );
-        // fd.append("file", image[0]);
-        const res = await axiosPrivate.post(`/course`, fd);
+
+        const res = await axiosPrivate.put(`/course`, fd);
+        getCourses();
         toast.success(`${res.data.message}`);
+        setIsOpen(false);
         // resetValues();
-        // reset();
+        // navigate("/admin/courses");
       } catch (error) {
         showMessageError(error);
       } finally {
@@ -495,14 +529,14 @@ const AdminCourseListPage = () => {
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
-  const handleChangeArchivements = (itemsArrs) => {
+  const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
-    setValue("archivements", itemsString);
-    setError("archivements", { message: "" });
-    // setArchivementSelected(itemsArrs);
+    setValue("achievements", itemsString);
+    setError("achievements", { message: "" });
+    setAchievementSelected(itemsArrs);
   };
 
   const modules = useMemo(
@@ -540,7 +574,6 @@ const AdminCourseListPage = () => {
   );
   return (
     <>
-      {/* <Overlay onClick={() => console.log("clicked")}></Overlay> */}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Courses</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -594,8 +627,15 @@ const AdminCourseListPage = () => {
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
-            id="form-create"
           >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Course hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
             {/* <div className="card-header">
                 <h5>Form Create Course</h5>
                 <span>Lorem ipsum dolor sit amet consectetur</span>
@@ -624,13 +664,14 @@ const AdminCourseListPage = () => {
                       status={errors.status && errors.status.message && "error"}
                       errorMsg={errors.status?.message}
                       placeholder="Choose Status"
+                      defaultValue={getValues("status")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="status"
                       register={register}
-                      defaultValue={1}
+                      defaultValue={getValues("status")}
                     ></InputCom>
                   </div>
                 </div>
@@ -640,14 +681,14 @@ const AdminCourseListPage = () => {
                     <SelectDefaultAntCom
                       listItems={levelItems}
                       onChange={handleChangeLevel}
-                      defaultValue={0}
+                      defaultValue={getValues("level")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="level"
                       register={register}
-                      defaultValue={0}
+                      defaultValue={getValues("level")}
                     ></InputCom>
                   </div>
                 </div>
@@ -711,19 +752,19 @@ const AdminCourseListPage = () => {
                   ></InputCom>
                 </div>
                 <div className="col-sm-3">
-                  <LabelCom htmlFor="sale_price" subText="($)">
-                    Sale Price
+                  <LabelCom htmlFor="net_price" subText="($)">
+                    Net Price
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
-                    name="sale_price"
+                    name="net_price"
                     register={register}
-                    placeholder="Input Sale Price"
-                    errorMsg={errors.sale_price?.message}
-                    onChange={handleChangeSalePrice}
-                    defaultValue={sale_price}
-                    value={sale_price}
+                    placeholder="Input Net Price"
+                    errorMsg={errors.net_price?.message}
+                    onChange={handleChangeNetPrice}
+                    defaultValue={net_price}
+                    value={net_price}
                   ></InputCom>
                 </div>
               </div>
@@ -781,28 +822,28 @@ const AdminCourseListPage = () => {
                 </div>
                 <div className="col-sm-4">
                   <LabelCom
-                    htmlFor="archivements"
-                    subText="'enter' every archivement"
+                    htmlFor="achievements"
+                    subText="'enter' every achievement"
                     className="mb-1"
                   >
-                    Archivement
+                    Achievement
                   </LabelCom>
                   <SelectTagAntCom
                     listItems={[]}
-                    selectedValue={archivementSelected}
-                    onChange={handleChangeArchivements}
-                    placeholder="Input the archivement..."
+                    selectedValue={achievementSelected}
+                    onChange={handleChangeAchievements}
+                    placeholder="Input the achievement..."
                     status={
-                      errors.archivements &&
-                      errors.archivements.message &&
+                      errors.achievements &&
+                      errors.achievements.message &&
                       "error"
                     }
-                    errorMsg={errors.archivements?.message}
+                    errorMsg={errors.achievements?.message}
                   ></SelectTagAntCom>
                   <InputCom
                     type="hidden"
                     control={control}
-                    name="archivements"
+                    name="achievements"
                     register={register}
                   ></InputCom>
                 </div>
@@ -846,8 +887,8 @@ const AdminCourseListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" type="reset">
-                Cancel
+              <ButtonCom backgroundColor="danger" onClick={resetValues}>
+                Reset
               </ButtonCom>
             </div>
           </form>

@@ -16,7 +16,7 @@ const ImageCropUploadAntCom = ({
   name,
   errorMsg = "",
   children,
-  editImage = [],
+  editImage,
   ...rest
 }) => {
   // const [fileList, setFileList] = useState([
@@ -30,7 +30,7 @@ const ImageCropUploadAntCom = ({
   const [fileList, setFileList] = useState([]);
   // show Image when Edit
   useEffect(() => {
-    setFileList(editImage);
+    if (editImage) setFileList(editImage);
   }, [editImage]);
 
   const onChange = ({ fileList: newFileList }) => {
@@ -106,9 +106,7 @@ const ImageCropUploadAntCom = ({
 };
 
 ImageCropUploadAntCom.propTypes = {
-  control: PropTypes.any.isRequired,
-  register: PropTypes.func.isRequired,
-  editImage: PropTypes.array.isRequired, // editImage = []
+  editImage: PropTypes.array, // editImage = []
   onSetValue: PropTypes.func,
   name: PropTypes.string,
   type: PropTypes.string,

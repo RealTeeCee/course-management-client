@@ -40,7 +40,7 @@ const ErrorPage = ({
         <div className="container">
           <img
             className="img-100 mx-auto"
-            src="../assets/images/other-images/sad.png"
+            srcSet="/assets/images/other-images/sad.png"
             alt="Error Page Thumb"
           />
           <div className="error-heading">

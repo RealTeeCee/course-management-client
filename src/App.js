@@ -27,12 +27,12 @@ const AdminCreateSectionPage = lazy(() =>
   import("./pages/admin/section/AdminCreateSectionPage.js")
 );
 
-const AdminLessionListPage = lazy(() =>
-  import("./pages/admin/lession/AdminLessionListPage.js")
+const AdminLessonListPage = lazy(() =>
+  import("./pages/admin/lesson/AdminLessonListPage.js")
 );
 
-const AdminCreateLessionPage = lazy(() =>
-  import("./pages/admin/lession/AdminCreateLessionPage.js")
+const AdminCreateLessonPage = lazy(() =>
+  import("./pages/admin/lesson/AdminCreateLessonPage.js")
 );
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
@@ -148,22 +148,23 @@ function App() {
 
             {/* Admin Sections */}
             <Route
-              path="sections"
+              // path="sections"
+              path="courses/:courseId/sections"
               element={<AdminSectionListPage></AdminSectionListPage>}
             ></Route>
             <Route
-              path="sections/create"
+              path="courses/:courseId/sections/create"
               element={<AdminCreateSectionPage></AdminCreateSectionPage>}
             ></Route>
 
-            {/* Admin Lessions */}
+            {/* Admin Lessons */}
             <Route
-              path="lessions"
-              element={<AdminLessionListPage></AdminLessionListPage>}
+              path="courses/:courseId/sections/:sectionId/lessons"
+              element={<AdminLessonListPage></AdminLessonListPage>}
             ></Route>
             <Route
-              path="lessions/create"
-              element={<AdminCreateLessionPage></AdminCreateLessionPage>}
+              path="courses/:courseId/sections/:sectionId/lessons/create"
+              element={<AdminCreateLessonPage></AdminCreateLessonPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

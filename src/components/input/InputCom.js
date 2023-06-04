@@ -9,7 +9,6 @@ const InputCom = (props) => {
   const {
     register = () => {},
     // onChange,
-    // onSetValue = () => {},
     control,
     name,
     type = "text",
@@ -29,11 +28,6 @@ const InputCom = (props) => {
     value: showPassword,
     handleToggleBoolean: handleClickToggleShowHide,
   } = useClickToggleBoolean();
-
-  // const handleChangeImage = (value) => {
-  //   console.log(value);
-  //   onSetValue(name, value);
-  // }
 
   return (
     <>
