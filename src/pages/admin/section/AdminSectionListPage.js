@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
@@ -14,7 +13,13 @@ import {
 } from "../../../components/icon";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
-import { MESSAGE_FIELD_REQUIRED, statusItems } from "../../../constants/config";
+import {
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_UPDATE_STATUS_SUCCESS,
+  statusItems,
+} from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
@@ -26,10 +31,15 @@ import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
 import { API_COURSE_URL } from "../../../constants/endpoint";
 import SelectDefaultAntCom from "../../../components/ant/SelectDefaultAntCom";
+import { SwitchAntCom } from "../../../components/ant";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  ordered: yup
+    .number(MESSAGE_FIELD_REQUIRED)
+    .typeError(MESSAGE_NUMBER_REQUIRED)
+    .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 const AdminSectionListPage = () => {
@@ -66,30 +76,44 @@ const AdminSectionListPage = () => {
   const { courseId } = useParams();
 
   const columns = [
-    // {
-    //   name: "Section Id",
-    //   selector: (row) => row.id,
-    //   sortable: true,
-    // },
+    {
+      name: "No",
+      selector: (row, i) => ++i,
+      sortable: true,
+      width: "70px",
+    },
     {
       name: "Section Name",
       selector: (row) => row.name,
       sortable: true,
     },
+    // {
+    //   name: "Status",
+    //   cell: (row) => (
+    //     <>
+    //       {row.status === 1 ? (
+    //         <ButtonCom onClick={() => {}} backgroundColor="success">
+    //           Active
+    //         </ButtonCom>
+    //       ) : (
+    //         <ButtonCom onClick={() => {}} backgroundColor="danger">
+    //           InActive
+    //         </ButtonCom>
+    //       )}
+    //     </>
+    //   ),
+    //   sortable: true,
+    // },
     {
       name: "Status",
       cell: (row) => (
-        <>
-          {row.status === 1 ? (
-            <ButtonCom onClick={() => {}} backgroundColor="success">
-              Active
-            </ButtonCom>
-          ) : (
-            <ButtonCom onClick={() => {}} backgroundColor="danger">
-              InActive
-            </ButtonCom>
-          )}
-        </>
+        <SwitchAntCom
+          defaultChecked={row.status === 1 ? true : false}
+          className={`${
+            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
+          }`}
+          onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
+        />
       ),
       sortable: true,
     },
@@ -97,7 +121,7 @@ const AdminSectionListPage = () => {
       name: "Lessons",
       cell: (row) => (
         <>
-          <Link to={`/admin/courses/${row.id}/sections`}>
+          <Link to={`/admin/courses/${courseId}/sections/${row.id}/lessons`}>
             <ButtonCom
               className="px-3 rounded-lg mr-2"
               backgroundColor="gray"
@@ -213,7 +237,6 @@ const AdminSectionListPage = () => {
       const res = await axiosPrivate.get(
         `${API_COURSE_URL}/${courseId}/section`
       );
-
       setSections(res.data);
       setFilterSection(res.data);
     } catch (error) {
@@ -282,6 +305,30 @@ const AdminSectionListPage = () => {
     setValue("status", value);
     setError("status", { message: "" });
   };
+
+  const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
+    try {
+      const newSections = sections.map((section) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              status: isChecked ? 1 : 0,
+            }
+          : section
+      );
+
+      const dataBody = newSections.find((section) => section.id === sectionId);
+      await axiosPrivate.put(
+        `${API_COURSE_URL}/${courseId}/section`,
+        JSON.stringify(dataBody)
+      );
+      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+      getSectionsByCourseId();
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
+
   const handleSubmitForm = async (values) => {
     console.log(values);
     // const { id, name, status } = values;
@@ -368,8 +415,12 @@ const AdminSectionListPage = () => {
             ></InputCom>
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="name" isRequired>
+                <div className="col-sm-12">
+                  <LabelCom
+                    htmlFor="name"
+                    className="text-center block"
+                    isRequired
+                  >
                     Section Name
                   </LabelCom>
                   <InputCom
@@ -377,11 +428,14 @@ const AdminSectionListPage = () => {
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Session Name"
+                    placeholder="Input session name"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
                 </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
                 <div className="col-sm-6">
                   <LabelCom htmlFor="status">Status</LabelCom>
                   <div>
@@ -390,7 +444,7 @@ const AdminSectionListPage = () => {
                       onChange={handleChangeStatus}
                       status={errors.status && errors.status.message && "error"}
                       errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
+                      placeholder="Choose status"
                       defaultValue={watch("status")}
                     ></SelectDefaultAntCom>
                     <InputCom
@@ -401,6 +455,19 @@ const AdminSectionListPage = () => {
                       defaultValue={watch("status")}
                     ></InputCom>
                   </div>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="ordered" isRequired>
+                    Ordered
+                  </LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="ordered"
+                    register={register}
+                    placeholder="Input section ordered"
+                    errorMsg={errors.ordered?.message}
+                  ></InputCom>
                 </div>
               </div>
             </div>

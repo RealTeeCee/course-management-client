@@ -64,9 +64,9 @@ const schemaValidation = yup.object().shape({
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
+    .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
+    .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -234,7 +234,7 @@ const AdminCreateCoursePage = () => {
 
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) =>
-      item.replace(/\s+/g, " ").replace(/-+/g, "-").toLowerCase()
+      item.replace(/\s+/g, " ").replace(/-+/g, "-").trim().toLowerCase()
     );
     const itemsString = strReplace.join(",").toLowerCase();
 

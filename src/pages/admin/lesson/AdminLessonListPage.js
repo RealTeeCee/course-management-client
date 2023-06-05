@@ -14,7 +14,10 @@ import {
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
-  MESSAGE_FIELD_REQUIRED, MESSAGE_NUMBER_POSITIVE, MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -26,7 +29,8 @@ import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
-import { IMG_BB_URL } from "../../../constants/endpoint";
+import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import { SwitchAntCom } from "../../../components/ant";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -41,14 +45,20 @@ const schemaValidation = yup.object().shape({
   // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
 });
 
-/********* Variable State ********* */
 const AdminLessonListPage = () => {
+  /********* API State ********* */
+  const [section, setSection] = useState({});
+  const [course, setCourse] = useState({});
+  /********* END API State ********* */
+
+  /********* Variable State ********* */
   const axiosPrivate = useAxiosPrivate();
   const [lessons, setLessons] = useState([]);
   const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
+
   // const [selectedRows, setSelectedRows] = useState([]);
   const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -65,14 +75,15 @@ const AdminLessonListPage = () => {
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-  const { id,sectionId } = useParams();
+  const { courseId, sectionId } = useParams();
 
   /********* Fetch data Area ********* */
   const columns = [
     {
-      name: "Lesson Id",
-      selector: (row) => row.id,
+      name: "No",
+      selector: (row, i) => ++i,
       sortable: true,
+      width: "70px",
     },
     {
       name: "Lesson Name",
@@ -85,18 +96,16 @@ const AdminLessonListPage = () => {
     },
     {
       name: "Status",
-      selector: (row) => row.status,
+      selector: (row) => (
+        <SwitchAntCom
+          defaultChecked={row.status === 1 ? true : false}
+          className={`${
+            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
+          }`}
+          onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
+        />
+      ),
     },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-    },
-    // {
-    //   name: "Date Created",
-    //   selector: (row) => new Date(row.created_at).toLocaleDateString(),
-
-    // },
-
     {
       name: "Actions",
       cell: (row) => (
@@ -106,7 +115,7 @@ const AdminLessonListPage = () => {
             backgroundColor="info"
             onClick={() => {
               setIsOpen(true);
-              getSectionById(row.id);
+              getLessonById(row.id);
               setSelectedRowId(row.id); // save row.id to state selectedRowId
             }}
           >
@@ -124,7 +133,7 @@ const AdminLessonListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection({ lessonId: row.id, name: row.name });
+              handleDeleteLesson({ lessonId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -161,47 +170,46 @@ const AdminLessonListPage = () => {
     // },
   ];
 
-//Description
-const modules = useMemo(
-  () => ({
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      ["blockquote"],
-      [{ header: 1 }, { header: 2 }], // custom button values
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      ["link", "image"],
-    ],
-    imageUploader: {
-      upload: async (file) => {
-        const fd = new FormData();
-        fd.append("image", file);
-        try {
-          const res = await axiosInstance({
-            method: "POST",
-            url: IMG_BB_URL,
-            data: fd,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          return res.data.data.url;
-        } catch (error) {
-          toast.error(error.message);
-          return;
-        }
+  //Description
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: async (file) => {
+          const fd = new FormData();
+          fd.append("image", file);
+          try {
+            const res = await axiosInstance({
+              method: "POST",
+              url: IMG_BB_URL,
+              data: fd,
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+            return res.data.data.url;
+          } catch (error) {
+            toast.error(error.message);
+            return;
+          }
+        },
       },
-    },
-  }),
-  []
-);
-
+    }),
+    []
+  );
 
   /********* Multiple One ********* */
-  const handleDeleteSection = ({ lessonId, name }) => {
+  const handleDeleteLesson = ({ lessonId, name }) => {
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete lesson: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -214,7 +222,7 @@ const modules = useMemo(
             `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
-          getlessons();
+          getLessons();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -222,31 +230,62 @@ const modules = useMemo(
         }
       }
     });
-    console.log("id", id);
-    console.log("lessonId", lessonId);
-    console.log("name", name);
   };
 
+  /********** Fetch data Area ************ */
   /********* API List Section ********* */
-  const getlessons = async () => {
+  const getLessons = async () => {
     try {
       const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
-
       console.log(res.data);
+
       setLessons(res.data);
       setFilterLesson(res.data);
-      console.log(res.data);
     } catch (error) {
       console.log("Error: ", error);
     }
   };
 
-  // useEffect(() => {
-  //   getlessons();
-  // }, []);
+  const getCourseById = async () => {
+    try {
+      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      setCourse(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSectionById = async () => {
+    try {
+      const res = await axiosPrivate.get(
+        `${API_COURSE_URL}/${courseId}/section/${sectionId}`
+      );
+      console.log(res.data);
+      setSection(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /********* Get getLessonById from row ********* */
+  const getLessonById = async (lessonId) => {
+    try {
+      const res = await axiosPrivate.get(
+        `/section/${sectionId}/lesson/${lessonId}`
+      );
+      reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    getlessons();
-  }, [sectionId]);
+    getLessons();
+    getCourseById();
+    getSectionById();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  /********** END Fetch data Area ************ */
 
   /********* API Search Section ********* */
   useEffect(() => {
@@ -274,32 +313,35 @@ const modules = useMemo(
     setFilterLesson(result);
   }, [lessons, search]);
 
-  /********* Edit ********* */
+  /********* Update ********* */
   const handleSubmitForm = async (values) => {
-    const { name} = values;
+    const { name } = values;
     try {
       setIsLoading(!isLoading);
-    //     const data = {
-    //   name: name,
-    //   courseId: id,
-    // };
-    // console.log("name", name);
-    // console.log("couseId", id);
-    // const res = await axiosPrivate.post(`/course/${id}/section`, data);
-      
-    //  Đặt isLoading thành true để hiển thị trạng thái đang tải
+      //     const data = {
+      //   name: name,
+      //   courseId: id,
+      // };
+      // console.log("name", name);
+      // console.log("couseId", id);
+      // const res = await axiosPrivate.post(`/course/${id}/section`, data);
+
+      //  Đặt isLoading thành true để hiển thị trạng thái đang tải
       const data = {
         name: name,
         sectionId: sectionId,
         id: selectedRowId,
       };
       console.log("name", name);
-      console.log("courseId", id);
-      console.log("lessonId",selectedRowId);
-      const res = await axiosPrivate.put(`/section/${data.sectionId}/lesson`, data);
+      console.log("courseId", courseId);
+      console.log("lessonId", selectedRowId);
+      const res = await axiosPrivate.put(
+        `/section/${data.sectionId}/lesson`,
+        data
+      );
       toast.success(`${res.data.message}`);
       reset();
-      getlessons(); 
+      getLessons();
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -307,17 +349,27 @@ const modules = useMemo(
       setIsOpen(false); // Đóng modal
     }
   };
-  
-  /********* Get lessonId from row ********* */
-  const getSectionById = async (lessonId) => {
-    try {
-      const res = await axiosPrivate.get(`/section/${sectionId}/lesson/${lessonId}`);
-      reset(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-    console.log("sectionId", sectionId);
-    console.log("lessonId", lessonId);
+
+  const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
+    // try {
+    //   const newSections = sections.map((section) =>
+    //     section.id === sectionId
+    //       ? {
+    //           ...section,
+    //           status: isChecked ? 1 : 0,
+    //         }
+    //       : section
+    //   );
+    //   const dataBody = newSections.find((section) => section.id === sectionId);
+    //   await axiosPrivate.put(
+    //     `${API_COURSE_URL}/${courseId}/section`,
+    //     JSON.stringify(dataBody)
+    //   );
+    //   toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+    //   getSectionsByCourseId();
+    // } catch (error) {
+    //   showMessageError(error);
+    // }
   };
 
   return (
@@ -334,8 +386,8 @@ const modules = useMemo(
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate={`/admin/courses/${id}/sections/${sectionId}/lessons/create`}
-                  title="List lessons"
+                  urlCreate={`/admin/courses/${courseId}/sections/${sectionId}/lessons/create`}
+                  title={`Course: ${course.name}, Section: ${section.name}`}
                   columns={columns}
                   items={filterLesson}
                   search={search}

@@ -38,6 +38,7 @@ export const MESSAGE_LOGIN_SUCCESS = "You have logged successfully !";
 export const MESSAGE_LOGOUT_SUCCESS = "You have logged out successfully !";
 export const MESSAGE_VERIFY_SUCCESS =
   "Your email has been verified! You can login now";
+export const MESSAGE_UPDATE_STATUS_SUCCESS = "Update status success !";
 
 export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";
 

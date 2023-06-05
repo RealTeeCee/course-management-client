@@ -47,7 +47,8 @@ const AdminCreateSectionPage = () => {
 
   /********* Get Course ID from API  ********* */
   const handleSubmitForm = async (values) => {
-    const { name } = values;
+    // console.log(values);
+    const { name, ordered } = values;
     try {
       setIsLoading(!isLoading);
 
@@ -55,6 +56,7 @@ const AdminCreateSectionPage = () => {
         `${API_COURSE_URL}/${courseId}/section`,
         {
           name,
+          ordered: parseInt(ordered),
           courseId,
         }
       );
@@ -89,7 +91,7 @@ const AdminCreateSectionPage = () => {
               </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-6 offset-sm-2">
+                  <div className="col-sm-6">
                     <LabelCom htmlFor="name" isRequired>
                       Section Name
                     </LabelCom>
@@ -98,8 +100,21 @@ const AdminCreateSectionPage = () => {
                       control={control}
                       name="name"
                       register={register}
-                      placeholder="Input Section Name"
+                      placeholder="Input section name"
                       errorMsg={errors.name?.message}
+                    ></InputCom>
+                  </div>
+
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="ordered">Ordered</LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="ordered"
+                      register={register}
+                      placeholder="Input section ordered"
+                      errorMsg={errors.ordered?.message}
+                      defaultValue={0}
                     ></InputCom>
                   </div>
                 </div>

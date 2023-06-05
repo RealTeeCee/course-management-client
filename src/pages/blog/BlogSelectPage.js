@@ -8,6 +8,7 @@ import { Pagination } from "antd";
 import Carousel_3 from "../../assets/blog_image/Carousel_3.jpg";
 import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
+import { v4 } from "uuid";
 
 const BlogSelectPage = () => {
   const { startIndex, endIndex, currentPage, handleChangePage } =
@@ -86,7 +87,7 @@ const BlogSelectPage = () => {
             .map((item, index) => {
               if (index >= startIndex && index < endIndex) {
                 return (
-                  <Link key={blog.id} to={`/blogs/${2}`}>
+                  <Link key={v4()} to={`/blogs/${2}`}>
                     <div
                       key={index}
                       className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"

@@ -4,5 +4,10 @@ export const { default: SelectTagAntCom } = require("./SelectTagAntCom");
 export const { default: CollapseAntCom } = require("./CollapseAntCom");
 export const { default: ImageUploadAntCom } = require("./ImageUploadAntCom");
 export const { default: DropdownAntCom } = require("./DropdownAntCom");
-export const { default: SelectDefaultAntCom } = require("./SelectDefaultAntCom");
-export const { default: ImageCropUploadAntCom } = require("./ImageCropUploadAntCom");
+export const {
+  default: SelectDefaultAntCom,
+} = require("./SelectDefaultAntCom");
+export const {
+  default: ImageCropUploadAntCom,
+} = require("./ImageCropUploadAntCom");
+export const { default: SwitchAntCom } = require("./SwitchAntCom");

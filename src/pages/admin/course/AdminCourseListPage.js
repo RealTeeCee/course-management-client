@@ -39,6 +39,7 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   statusItems,
+  MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../../constants/config";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
@@ -47,6 +48,7 @@ import {
   SelectDefaultAntCom,
   SelectSearchAntCom,
   SelectTagAntCom,
+  SwitchAntCom,
 } from "../../../components/ant";
 import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
@@ -82,9 +84,9 @@ const schemaValidation = yup.object().shape({
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
   duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
+    .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
+    .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -174,13 +176,21 @@ const AdminCourseListPage = () => {
   /********* Fetch API Area ********* */
   const columns = [
     {
+      name: "No",
+      selector: (row, i) => ++i,
+      sortable: true,
+      width: "70px",
+    },
+    {
       name: "Course Name",
       selector: (row) => row.name,
       sortable: true,
+      // width: "250px",
     },
     {
       name: "Category",
-      selector: (row) => row.categoryName,
+      selector: (row) => row.category_name,
+      sortable: true,
     },
     {
       name: "Image",
@@ -189,19 +199,16 @@ const AdminCourseListPage = () => {
       ),
     },
     {
-      name: "Price",
-      cell: (row) =>
-        row.net_price > 0 ? (
-          <span className="text-tw-danger">
-            ${convertIntToStrMoney(row.net_price)}
-          </span>
-        ) : (
-          `$${convertIntToStrMoney(row.price)}`
-        ),
-    },
-    {
-      name: "Duration",
-      selector: (row) => row.duration,
+      name: "Status",
+      selector: (row) => (
+        <SwitchAntCom
+          defaultChecked={row.status === 1 ? true : false}
+          className={`${
+            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
+          }`}
+          onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
+        />
+      ),
     },
     {
       name: "Section",
@@ -220,6 +227,19 @@ const AdminCourseListPage = () => {
           </Link>
         </>
       ),
+    },
+    {
+      name: "Price",
+      selector: (row) =>
+        row.net_price > 0
+          ? `$${convertIntToStrMoney(row.net_price)}`
+          : `$${convertIntToStrMoney(row.price)}`,
+      sortable: true,
+    },
+    {
+      name: "Duration",
+      selector: (row) => row.duration,
+      sortable: true,
     },
     {
       name: "Action",
@@ -462,6 +482,67 @@ const AdminCourseListPage = () => {
     setSelectedRows([]);
     setTableKey((prevKey) => prevKey + 1);
   };
+
+  const handleChangeSwitch = async (courseId, isChecked) => {
+    try {
+      const newCourses = courses.map((course) =>
+        course.id === courseId
+          ? {
+              ...course,
+              status: isChecked ? 1 : 0,
+            }
+          : course
+      );
+
+      const dataBody = newCourses.find((course) => course.id === courseId);
+
+      const {
+        id,
+        name,
+        status,
+        level,
+        image,
+        category_id,
+        price,
+        net_price,
+        tags,
+        duration,
+        achievements,
+        description,
+      } = dataBody;
+
+      const fd = new FormData();
+      fd.append(
+        "courseJson",
+        JSON.stringify({
+          id,
+          name,
+          status,
+          level,
+          image,
+          category_id,
+          price,
+          net_price,
+          tags: tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .join(","),
+          duration,
+          achievements: achievements
+            .split(",")
+            .map((achievement) => achievement.trim())
+            .join(","),
+          description,
+        })
+      );
+
+      await axiosPrivate.put(`/course`, fd);
+      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+      getCourses();
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
   // Muti Delete
   const handleDeleteMultipleRecords = () => {
     if (selectedRows.length === 0) {
@@ -519,7 +600,7 @@ const AdminCourseListPage = () => {
 
     // Cut the space and - if more than one
     const strReplace = itemsArrs.map((item) =>
-      item.replace(/\s+/g, " ").replace(/-+/g, "-")
+      item.replace(/\s+/g, " ").replace(/-+/g, "-").trim().toLowerCase()
     );
     const itemsString = strReplace.join(",").toLowerCase();
 
