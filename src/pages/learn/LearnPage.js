@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
 import { useEffect } from "react";
@@ -13,15 +13,19 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { func } from "prop-types";
+import { selectUserId } from "../../store/auth/authSelector";
+import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 
 const LearnPage = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
   const [isEnded, setIsEnded] = useState(false);
   const [playedSeconds, setPlayedSeconds] = useState(0);
 
   const { slug } = useParams();
+
   const { user } = useSelector((state) => state.auth);
   const {
     data,
@@ -33,8 +37,12 @@ const LearnPage = () => {
     video: { captionData },
   } = useSelector((state) => state.course);
 
+  const userId = useSelector(selectUserId);
+  const { courseId } = useSelector(selectEnrollIdAndCourseId);
+
   const dispatch = useDispatch();
   const player = useRef();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (data?.length === 0) {
@@ -46,13 +54,10 @@ const LearnPage = () => {
   }, [data?.length, dispatch, slug, user]);
 
   useEffect(() => {
-    if (selectedCourse) {
-      console.log("selectedCourse:", selectedCourse);
-      dispatch(
-        onGetEnrollId({ course_id: selectedCourse.id, user_id: user?.id })
-      );
+    if (courseId) {
+      dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
     }
-  }, [dispatch, selectedCourse, user]);
+  }, [dispatch, courseId, userId]);
 
   useEffect(() => {
     // if(playedSeconds > 0) {
@@ -68,12 +73,12 @@ const LearnPage = () => {
           resumePoint: playedSeconds,
         })
       );
-      setIsPaused(false);
-      setIsEnded(false);
+
       //,1000);return () => clearTimeout(timer);
     }
   }, [
     dispatch,
+
     enrollId,
     isEnded,
     isPaused,
@@ -106,9 +111,8 @@ const LearnPage = () => {
     setIsPlaying(!isPlaying);
   };
 
-  console.log(playedSeconds);
-
   const handleGetProgress = ({ playedSeconds, played }) => {
+    console.log("handleGetProgress");
     setPlayedSeconds(playedSeconds);
     if (played > 0.9) {
       setIsCompleted(true);
@@ -121,6 +125,10 @@ const LearnPage = () => {
 
   const handlePauseVideo = () => {
     setIsPaused(true);
+  };
+
+  const handleSeekVideo = () => {
+    setIsPlaying(false);
   };
 
   window.onbeforeunload = function (e) {
@@ -176,9 +184,7 @@ const LearnPage = () => {
             controls
             muted
             autoPlay
-            onSeek={() => {
-              setIsPlaying(false);
-            }}
+            onSeek={handleSeekVideo}
             onProgress={handleGetProgress}
             onPause={handlePauseVideo}
             onEnded={handleEnded}

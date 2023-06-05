@@ -18,8 +18,10 @@ const MyCoursePage = () => {
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(onMyCourseLoading(user.id));
-  }, [dispatch, user.id]);
+    if (user) {
+      dispatch(onMyCourseLoading(user.id));
+    }
+  }, [dispatch, user]);
   return (
     <>
       <HeadingH1Com number={formatNumber(data?.length)}>

@@ -3,6 +3,7 @@ import { CollapseAntCom } from "../../components/ant";
 import { useDispatch, useSelector } from "react-redux";
 import { onGetLearning } from "../../store/course/courseSlice";
 import { useParams } from "react-router-dom";
+import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 
 // const sectionItems = [
 //   {
@@ -51,6 +52,9 @@ const LearnSidebarMod = () => {
   const { selectedCourse, learning, tracking } = useSelector(
     (state) => state.course
   );
+
+  const { courseId } = useSelector(selectEnrollIdAndCourseId);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [openKeys, setOpenKeys] = useState(
@@ -69,8 +73,8 @@ const LearnSidebarMod = () => {
   }, [learning.sectionDto, tracking]);
 
   useEffect(() => {
-    if (selectedCourse) dispatch(onGetLearning(selectedCourse.id));
-  }, [dispatch, selectedCourse]);
+    if (courseId) dispatch(onGetLearning(courseId));
+  }, [dispatch, courseId]);
 
   const handleChangeCollapse = (keys) => {
     console.log(keys);

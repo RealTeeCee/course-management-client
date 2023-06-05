@@ -8,6 +8,7 @@ import {
   onSelectedLesson,
 } from "../../store/course/courseSlice";
 import { useEffect, useState } from "react";
+import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -23,9 +24,13 @@ const CollapseAntCom = ({
   // const location = useLocation();
   const navigate = useNavigate();
   // const reqParams = new URLSearchParams(location.search);
-  const { tracking, video, enrollId, selectedCourse, sectionId } = useSelector(
+  // Load video when select lesson.
+  const { tracking, video, selectedCourse, sectionId } = useSelector(
     (state) => state.course
   );
+
+  const { enrollId, courseId } = useSelector(selectEnrollIdAndCourseId);
+
   const [lessionId, setLessionId] = useState(0);
   //  const lessionId = reqParams.get("id");
   const dispatch = useDispatch();
@@ -47,26 +52,9 @@ const CollapseAntCom = ({
     }
   }, [isLearning, navigate, slug, tracking]);
 
-  useEffect(() => {
-    if (selectedCourse && enrollId > 0) {
-      dispatch(
-        onGetTrackingLesson({
-          enrollmentId: enrollId,
-          courseId: selectedCourse.id,
-        })
-      );
-    }
-  }, [dispatch, enrollId, selectedCourse]);
-
+  //Save Tracking Lesson
   useEffect(() => {
     if (video && selectedCourse && video.lessonId && video.id) {
-      console.log({
-        lessonId: video.lessonId,
-        sectionId: sectionId,
-        videoId: video.id,
-        courseId: selectedCourse.id,
-        enrollmentId: enrollId,
-      });
       let timer = setTimeout(
         () =>
           dispatch(
@@ -87,15 +75,15 @@ const CollapseAntCom = ({
     }
   }, [dispatch, enrollId, sectionId, selectedCourse, video]);
 
+  //Load progress
   useEffect(() => {
-    console.log("Dispatch OnLoadProgress....");
     dispatch(
       onLoadProgress({
         enrollmentId: enrollId,
-        courseId: selectedCourse.id,
+        courseId: courseId,
       })
     );
-  }, [dispatch, enrollId, selectedCourse]);
+  }, [courseId, dispatch, enrollId]);
 
   return parentItems.length === 0 ? null : (
     <Collapse

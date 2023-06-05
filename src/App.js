@@ -104,7 +104,13 @@ function App() {
           ></Route>
           <Route
             path="/my-courses"
-            element={<MyCoursePage></MyCoursePage>}
+            element={
+              !user && !user?.email ? (
+                <Navigate to="/login"></Navigate>
+              ) : (
+                <MyCoursePage></MyCoursePage>
+              )
+            }
           ></Route>
           <Route
             path="/checkout/:slug"

@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
@@ -10,14 +9,12 @@ import {
   requestMyCourse,
   requestSaveTracking,
   requestUpdateCompleted,
-  requestUpdateProgress,
 } from "./courseRequests";
 import {
   onCourseFailed,
   onCourseSuccess,
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
-  onGetTrackingLesson,
   onGetTrackingLessonSuccess,
   onLoadProgressSuccess,
   onMyCourseFailed,
@@ -91,11 +88,15 @@ function* handleOnGetTrackingLesson({ payload }) {
   }
 }
 function* handleOnSaveTrackingLesson({ payload }) {
+  const { enrollmentId, courseId } = payload;
   try {
     const res = yield call(requestSaveTracking, payload);
 
     if (res.status === 200) {
       yield put(onSaveTrackingLessonSuccess());
+      yield call(handleOnGetTrackingLesson, {
+        payload: { enrollmentId, courseId },
+      });
     }
   } catch (error) {
     showMessageError(error);
@@ -115,7 +116,6 @@ function* handleOnSaveTrackingVideo({ payload }) {
 function* handleOnUpdateCompletedVideo({ payload }) {
   try {
     const res = yield call(requestUpdateCompleted, payload);
-    console.log(res);
     if (res.status === 200) {
       yield put(onUpdateCompletedVideoSuccess(res.data));
     }
@@ -127,7 +127,6 @@ function* handleOnUpdateCompletedVideo({ payload }) {
 function* handleLoadProgress({ payload }) {
   try {
     const res = yield call(requestLoadProgress, payload);
-    console.log(res);
     if (res.status === 200) {
       yield put(onLoadProgressSuccess(res.data));
     }
