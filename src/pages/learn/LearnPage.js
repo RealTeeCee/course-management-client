@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { selectUserId } from "../../store/auth/authSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onGetEnrollId,
   onMyCourseLoading,
@@ -12,9 +13,6 @@ import {
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
-import { func } from "prop-types";
-import { selectUserId } from "../../store/auth/authSelector";
-import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 
 const LearnPage = () => {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -26,19 +24,26 @@ const LearnPage = () => {
 
   const { slug } = useParams();
 
-  const { user } = useSelector((state) => state.auth);
-  const {
-    data,
-    selectedCourse,
-    video,
-    enrollId,
-    tracking,
-    sectionId,
-    video: { captionData },
-  } = useSelector((state) => state.course);
+  // const { user } = useSelector((state) => state.auth);
+  // const {
+  //   data,
+  //   selectedCourse,
+  //   video,
+  //   enrollId,
+  //   tracking,
+  //   video: { captionData },
+  // } = useSelector((state) => state.course);
 
   const userId = useSelector(selectUserId);
-  const { courseId } = useSelector(selectEnrollIdAndCourseId);
+  const {
+    data,
+    courseId,
+    enrollId,
+    video,
+    video: { captionData },
+    sectionId,
+    tracking,
+  } = useSelector(selectAllCourseState);
 
   const dispatch = useDispatch();
   const player = useRef();
@@ -46,12 +51,12 @@ const LearnPage = () => {
 
   useEffect(() => {
     if (data?.length === 0) {
-      dispatch(onMyCourseLoading(user.id));
+      dispatch(onMyCourseLoading(userId));
     }
     if (data?.length > 0) {
       dispatch(onSelectedCourse(slug));
     }
-  }, [data?.length, dispatch, slug, user]);
+  }, [data?.length, dispatch, slug, userId]);
 
   useEffect(() => {
     if (courseId) {
@@ -66,7 +71,7 @@ const LearnPage = () => {
       dispatch(
         onSaveTrackingVideo({
           enrollmentId: enrollId,
-          courseId: selectedCourse.id,
+          courseId: courseId,
           sectionId: sectionId,
           lessonId: video.lessonId,
           videoId: video.id,
@@ -78,13 +83,12 @@ const LearnPage = () => {
     }
   }, [
     dispatch,
-
     enrollId,
     isEnded,
     isPaused,
     playedSeconds,
     sectionId,
-    selectedCourse,
+    courseId,
     video.id,
     video.lessonId,
   ]);
@@ -96,7 +100,7 @@ const LearnPage = () => {
       dispatch(
         onUpdateCompletedVideo({
           enrollmentId: enrollId,
-          courseId: selectedCourse.id,
+          courseId: courseId,
           sectionId: sectionId,
           lessonId: video.lessonId,
           videoId: video.id,
@@ -135,7 +139,7 @@ const LearnPage = () => {
     dispatch(
       onSaveTrackingVideo({
         enrollmentId: enrollId,
-        courseId: selectedCourse.id,
+        courseId: courseId,
         sectionId: sectionId,
         lessonId: video.lessonId,
         videoId: video.id,

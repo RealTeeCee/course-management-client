@@ -2,6 +2,20 @@ import { createSelector } from "@reduxjs/toolkit";
 
 const selectCourseReducer = (state) => state.course; //store in rootReducer
 
+export const selectAllCourseState = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => ({
+    data: courseSlice.data,
+    courseId: courseSlice.selectedCourse.id,
+    enrollId: courseSlice.enrollId,
+    learning: courseSlice.learning,
+    video: courseSlice.video,
+    sectionId: courseSlice.sectionId,
+    tracking: courseSlice.tracking,
+    progress: courseSlice.progress, // vậy đc ko a, dc
+  })
+);
+
 export const selectEnrollIdAndCourseId = createSelector(
   [selectCourseReducer],
   (courseSlice) => ({
@@ -10,10 +24,38 @@ export const selectEnrollIdAndCourseId = createSelector(
   })
 );
 
-// export const selectCourseIsSuccess = createSelector(
-//   [selectCourseReducer],
-//   (courseSlice) => courseSlice.isSuccess
-// );
+export const selectVideo = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.video
+);
+
+export const selectSectionId = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.sectionId
+);
+
+export const selectLearningAndTracking = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => ({
+    learning: courseSlice.learning,
+    tracking: courseSlice.tracking,
+  })
+);
+
+export const selectLearning = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.learning
+);
+
+export const selectTracking = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.tracking
+);
+
+export const selectProgress = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.progress
+);
 
 // export const selectCourseFailed = createSelector(
 //   [selectCourseReducer],

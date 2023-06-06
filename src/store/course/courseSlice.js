@@ -6,19 +6,22 @@ const { createSlice } = require("@reduxjs/toolkit");
 const initialState = {
   isLoading: false,
   isSuccess: false,
-  data: [],
+  data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   errorMessage: null,
-  selectedCourse: null,
-  video: {},
-  enrollId: 0,
-  sectionId: 0,
+  selectedCourse: null, //onSelectedCourse(slug) - LearnPage.js -> filter data => data.slug === slug
+  enrollId: 0, //onGetEnrollId(courseId, userId) - LearnPage.js
+
+  //onGetLearning(courseId) - LearnSidebarMod.js
   learning: {
-    sectionDto: [],
-    lessonDto: [],
-    videoDto: [],
+    sectionDto: [], //All section of giving course
+    lessonDto: [], //All lesson of giving course
+    videoDto: [], //All video of giving course
   },
-  tracking: null,
-  progress: 0,
+
+  video: {}, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> filter learning.videoDto => videoDto.lessonId === lessonId
+  sectionId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> sectionId: action.payload.sectionId,
+  tracking: null, // onGetTrackingLesson(enrollId, courseId) - courseHandlers.js -> select where tracked = TRUE
+  progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
 };
 const courseSlice = createSlice({
   name: "course",

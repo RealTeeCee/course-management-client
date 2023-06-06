@@ -1,14 +1,13 @@
 import { Collapse } from "antd";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
-  onGetTrackingLesson,
   onLoadProgress,
   onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
-import { useEffect, useState } from "react";
-import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -25,11 +24,9 @@ const CollapseAntCom = ({
   const navigate = useNavigate();
   // const reqParams = new URLSearchParams(location.search);
   // Load video when select lesson.
-  const { tracking, video, selectedCourse, sectionId } = useSelector(
-    (state) => state.course
-  );
 
-  const { enrollId, courseId } = useSelector(selectEnrollIdAndCourseId);
+  const { enrollId, courseId, tracking, video, sectionId } =
+    useSelector(selectAllCourseState);
 
   const [lessionId, setLessionId] = useState(0);
   //  const lessionId = reqParams.get("id");
@@ -54,7 +51,7 @@ const CollapseAntCom = ({
 
   //Save Tracking Lesson
   useEffect(() => {
-    if (video && selectedCourse && video.lessonId && video.id) {
+    if (video && courseId && video.lessonId && video.id) {
       let timer = setTimeout(
         () =>
           dispatch(
@@ -62,7 +59,7 @@ const CollapseAntCom = ({
               lessonId: video.lessonId,
               sectionId: sectionId,
               videoId: video.id,
-              courseId: selectedCourse.id,
+              courseId: courseId,
               enrollmentId: enrollId,
             })
           ),
@@ -73,7 +70,7 @@ const CollapseAntCom = ({
         clearTimeout(timer);
       };
     }
-  }, [dispatch, enrollId, sectionId, selectedCourse, video]);
+  }, [dispatch, enrollId, sectionId, courseId, video]);
 
   //Load progress
   useEffect(() => {

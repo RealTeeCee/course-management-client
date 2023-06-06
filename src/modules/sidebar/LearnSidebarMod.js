@@ -3,7 +3,11 @@ import { CollapseAntCom } from "../../components/ant";
 import { useDispatch, useSelector } from "react-redux";
 import { onGetLearning } from "../../store/course/courseSlice";
 import { useParams } from "react-router-dom";
-import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
+import {
+  selectAllCourseState,
+  selectEnrollIdAndCourseId,
+  selectLearningAndTracking,
+} from "../../store/course/courseSelector";
 
 // const sectionItems = [
 //   {
@@ -49,11 +53,12 @@ import { selectEnrollIdAndCourseId } from "../../store/course/courseSelector";
 const LearnSidebarMod = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
-  const { selectedCourse, learning, tracking } = useSelector(
-    (state) => state.course
-  );
+  // const { selectedCourse, learning, tracking } = useSelector(
+  //   (state) => state.course
+  // );
 
-  const { courseId } = useSelector(selectEnrollIdAndCourseId);
+  const { courseId, learning, tracking } = useSelector(selectAllCourseState);
+  // const { courseId } = useSelector(selectEnrollIdAndCourseId);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -62,7 +67,6 @@ const LearnSidebarMod = () => {
   );
 
   useEffect(() => {
-    console.log("tracking: ", tracking);
     if (tracking) {
       const trackedSection = learning.sectionDto.filter(
         (section) => section.id === tracking.sectionId
