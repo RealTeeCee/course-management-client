@@ -8,6 +8,7 @@ import { selectUserId } from "../../store/auth/authSelector";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onGetEnrollId,
+  onGetTrackingLesson,
   onMyCourseLoading,
   onSaveTrackingVideo,
   onSelectedCourse,
@@ -16,6 +17,7 @@ import {
 
 const LearnPage = () => {
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isSeek, setIsSeek] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -39,15 +41,17 @@ const LearnPage = () => {
     data,
     courseId,
     enrollId,
+    lessonId,
     video,
     video: { captionData },
     sectionId,
     tracking,
+    //nguyen add
+    isSaved,
   } = useSelector(selectAllCourseState);
 
   const dispatch = useDispatch();
   const player = useRef();
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (data?.length === 0) {
@@ -65,36 +69,50 @@ const LearnPage = () => {
   }, [dispatch, courseId, userId]);
 
   useEffect(() => {
-    // if(playedSeconds > 0) {
-    if (isPaused || isEnded) {
-      // const timer = setTimeout(() =>
+    console.log(
+      "run useEffect onGetTrackingLesson lessonId: ",
+      lessonId,
+      "courseId: ",
+      courseId,
+      "enrollId: ",
+      enrollId,
+      "isSaved: ",
+      isSaved
+    );
+    if (
+      courseId > 0 &&
+      enrollId > 0 &&
+      lessonId > 0 &&
+      //nguyen add
+      isSaved
+    ) {
       dispatch(
-        onSaveTrackingVideo({
-          enrollmentId: enrollId,
-          courseId: courseId,
-          sectionId: sectionId,
-          lessonId: video.lessonId,
-          videoId: video.id,
-          resumePoint: playedSeconds,
-        })
+        onGetTrackingLesson({ enrollmentId: enrollId, courseId, lessonId })
       );
-
-      //,1000);return () => clearTimeout(timer);
     }
-  }, [
-    dispatch,
-    enrollId,
-    isEnded,
-    isPaused,
-    playedSeconds,
-    sectionId,
-    courseId,
-    video.id,
-    video.lessonId,
-  ]);
+  }, [dispatch, lessonId, courseId, enrollId, isSaved]);
+
+  // useEffect(() => {
+  //   // if(playedSeconds > 0) {
+  //   if ((isPaused && !isSeek) || isEnded) {
+  //     // const timer = setTimeout(() =>
+  //     dispatch(
+  //       onSaveTrackingVideo({
+  //         enrollmentId: enrollId,
+  //         courseId: courseId,
+  //         sectionId: sectionId,
+  //         lessonId: lessonId,
+  //         videoId: video.id,
+  //         resumePoint: playedSeconds,
+  //       })
+  //     );
+
+  //     //,1000);return () => clearTimeout(timer);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isEnded, isPaused]);
 
   useEffect(() => {
-    console.log("useEffect_isCompleted run: ", isCompleted);
     if (isCompleted) {
       setIsCompleted(false);
       dispatch(
@@ -102,9 +120,9 @@ const LearnPage = () => {
           enrollmentId: enrollId,
           courseId: courseId,
           sectionId: sectionId,
-          lessonId: video.lessonId,
+          lessonId: lessonId,
           videoId: video.id,
-          resumePoint: playedSeconds,
+          resumePoint: player.current.getCurrentTime(),
         })
       );
     }
@@ -116,43 +134,70 @@ const LearnPage = () => {
   };
 
   const handleGetProgress = ({ playedSeconds, played }) => {
-    console.log("handleGetProgress");
-    setPlayedSeconds(playedSeconds);
     if (played > 0.9) {
       setIsCompleted(true);
     }
   };
 
   const handleEnded = () => {
-    setIsEnded(true);
-  };
-
-  const handlePauseVideo = () => {
-    setIsPaused(true);
-  };
-
-  const handleSeekVideo = () => {
-    setIsPlaying(false);
-  };
-
-  window.onbeforeunload = function (e) {
     dispatch(
       onSaveTrackingVideo({
         enrollmentId: enrollId,
         courseId: courseId,
         sectionId: sectionId,
-        lessonId: video.lessonId,
+        lessonId: lessonId,
         videoId: video.id,
-        resumePoint: playedSeconds,
+        resumePoint: player.current.getCurrentTime(),
       })
     );
   };
 
+  const handlePauseVideo = () => {
+    console.log("handlePauseVideo: ", isSeek, lessonId);
+    if (lessonId > 0 && video.id > 0) {
+      dispatch(
+        onSaveTrackingVideo({
+          enrollmentId: enrollId,
+          courseId: courseId,
+          sectionId: sectionId,
+          lessonId: lessonId,
+          videoId: video.id,
+          resumePoint: player.current.getCurrentTime(),
+        })
+      );
+    }
+  };
+
+  const handleSeekVideo = () => {
+    setIsPlaying(false);
+    setIsSeek(true);
+  };
+
+  window.onbeforeunload = function (e) {
+    if (lessonId > 0 && video.id > 0) {
+      dispatch(
+        onSaveTrackingVideo({
+          enrollmentId: enrollId,
+          courseId: courseId,
+          sectionId: sectionId,
+          lessonId: lessonId,
+          videoId: video.id,
+          resumePoint: playedSeconds,
+        })
+      );
+    }
+  };
+
   useEffect(() => {
-    console.log("Seek video ....: ", tracking?.resumePoint);
-    player.current.seekTo(tracking?.resumePoint);
+    console.log(
+      "lessonId: " + lessonId + "  tracking.lessonId: " + tracking?.lessonId
+    );
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    if (lessonId === tracking?.lessonId)
+      player.current.seekTo(tracking.resumePoint);
     // setIsPlaying(true);
-  }, [tracking?.resumePoint]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tracking?.lessonId]);
 
   return (
     <>
@@ -192,6 +237,7 @@ const LearnPage = () => {
             onProgress={handleGetProgress}
             onPause={handlePauseVideo}
             onEnded={handleEnded}
+            onPlay={() => setIsPaused(false)}
             onClick={handleTogglePlay}
           />
         </div>

@@ -6,13 +6,16 @@ export const selectAllCourseState = createSelector(
   [selectCourseReducer],
   (courseSlice) => ({
     data: courseSlice.data,
-    courseId: courseSlice.selectedCourse.id,
+    courseId: courseSlice.selectedCourse?.id,
+    lessonId: courseSlice.lessonId,
     enrollId: courseSlice.enrollId,
     learning: courseSlice.learning,
     video: courseSlice.video,
     sectionId: courseSlice.sectionId,
     tracking: courseSlice.tracking,
-    progress: courseSlice.progress, // vậy đc ko a, dc
+    progress: courseSlice.progress,
+    //nguyen add
+    isSaved: courseSlice.isSaved,
   })
 );
 

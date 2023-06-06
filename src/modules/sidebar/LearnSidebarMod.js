@@ -57,7 +57,7 @@ const LearnSidebarMod = () => {
   //   (state) => state.course
   // );
 
-  const { courseId, learning, tracking } = useSelector(selectAllCourseState);
+  const { courseId, learning, sectionId } = useSelector(selectAllCourseState);
   // const { courseId } = useSelector(selectEnrollIdAndCourseId);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -67,14 +67,10 @@ const LearnSidebarMod = () => {
   );
 
   useEffect(() => {
-    if (tracking) {
-      const trackedSection = learning.sectionDto.filter(
-        (section) => section.id === tracking.sectionId
-      );
-
-      setOpenKeys(trackedSection[0]?.id);
+    if (sectionId) {
+      setOpenKeys(sectionId);
     }
-  }, [learning.sectionDto, tracking]);
+  }, [sectionId]);
 
   useEffect(() => {
     if (courseId) dispatch(onGetLearning(courseId));

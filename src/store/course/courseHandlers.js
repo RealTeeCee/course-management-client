@@ -79,7 +79,7 @@ function* handleOnGetLearning({ payload }) {
 function* handleOnGetTrackingLesson({ payload }) {
   try {
     const res = yield call(requestLoadTracking, payload);
-
+    console.log(res.data);
     if (res.status === 200) {
       yield put(onGetTrackingLessonSuccess(res.data));
     }
@@ -88,15 +88,11 @@ function* handleOnGetTrackingLesson({ payload }) {
   }
 }
 function* handleOnSaveTrackingLesson({ payload }) {
-  const { enrollmentId, courseId } = payload;
   try {
     const res = yield call(requestSaveTracking, payload);
 
     if (res.status === 200) {
       yield put(onSaveTrackingLessonSuccess());
-      yield call(handleOnGetTrackingLesson, {
-        payload: { enrollmentId, courseId },
-      });
     }
   } catch (error) {
     showMessageError(error);

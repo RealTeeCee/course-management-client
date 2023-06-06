@@ -25,7 +25,7 @@ const CollapseAntCom = ({
   // const reqParams = new URLSearchParams(location.search);
   // Load video when select lesson.
 
-  const { enrollId, courseId, tracking, video, sectionId } =
+  const { enrollId, courseId, video, sectionId, lessonId, tracking } =
     useSelector(selectAllCourseState);
 
   const [lessionId, setLessionId] = useState(0);
@@ -36,50 +36,67 @@ const CollapseAntCom = ({
 
   const handleClick = (child) => {
     setLessionId(child.id);
+    // navigate(`/learn/${slug}?id=${child.id}`);
     dispatch(
       onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
     );
   };
 
   useEffect(() => {
-    console.log(tracking, isLearning);
-    if (isLearning && tracking?.lessonId > 0) {
+    if (isLearning && tracking?.lessonId > 0 && lessonId === 0) {
       setLessionId(tracking.lessonId);
       navigate(`/learn/${slug}?id=${tracking.lessonId}`);
+      dispatch(
+        onSelectedLesson({
+          sectionId: tracking.sectionId,
+          lessonId: tracking.lessonId,
+        })
+      );
     }
-  }, [isLearning, navigate, slug, tracking]);
+  }, [isLearning, navigate, slug, tracking, lessonId, dispatch]);
 
   //Save Tracking Lesson
   useEffect(() => {
-    if (video && courseId && video.lessonId && video.id) {
+    console.log("Save Tracking sectionId: ", sectionId);
+
+    if (
+      video &&
+      courseId &&
+      lessonId > 0 &&
+      video.id > 0 &&
+      //nguyen add
+      sectionId > 0
+    ) {
       let timer = setTimeout(
         () =>
           dispatch(
             onSaveTrackingLesson({
-              lessonId: video.lessonId,
+              lessonId: lessonId,
               sectionId: sectionId,
               videoId: video.id,
               courseId: courseId,
               enrollmentId: enrollId,
             })
           ),
-        1500 // run after 5s when user select lesson
+        500 // run after 5s when user select lesson
       );
-      // clean up previous timer if user select lesson in interval (< 5s)
+      // clean up previous timer if user select lesson in interval (< 1.5s)
       return () => {
         clearTimeout(timer);
       };
     }
-  }, [dispatch, enrollId, sectionId, courseId, video]);
+  }, [dispatch, enrollId, sectionId, courseId, video, lessonId]);
 
   //Load progress
   useEffect(() => {
-    dispatch(
-      onLoadProgress({
-        enrollmentId: enrollId,
-        courseId: courseId,
-      })
-    );
+    if (enrollId > 0 && courseId > 0) {
+      dispatch(
+        onLoadProgress({
+          enrollmentId: enrollId,
+          courseId: courseId,
+        })
+      );
+    }
   }, [courseId, dispatch, enrollId]);
 
   return parentItems.length === 0 ? null : (

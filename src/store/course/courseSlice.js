@@ -20,13 +20,20 @@ const initialState = {
 
   video: {}, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> filter learning.videoDto => videoDto.lessonId === lessonId
   sectionId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> sectionId: action.payload.sectionId,
+  lessonId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> lessionId: action.payload.lessonId,
   tracking: null, // onGetTrackingLesson(enrollId, courseId) - courseHandlers.js -> select where tracked = TRUE
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
+
+  //nguyen add
+  isSaved: false,
 };
 const courseSlice = createSlice({
   name: "course",
   initialState: { ...initialState },
   reducers: {
+    onInitalState: (state, action) => ({
+      ...initialState,
+    }),
     onMyCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
@@ -91,17 +98,21 @@ const courseSlice = createSlice({
           ...state,
           sectionId: action.payload.sectionId,
           video: filteredVideo[0],
+          lessonId: action.payload.lessonId,
         };
       }
       return {
         ...state,
         sectionId: action.payload.sectionId,
+        lessonId: action.payload.lessonId,
       };
     },
     onGetEnrollId: (state, action) => ({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
     }),
     onGetEnrollIdSuccess: (state, action) => ({
@@ -113,6 +124,8 @@ const courseSlice = createSlice({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
     }),
     onGetLearningSuccess: (state, action) => ({
@@ -124,28 +137,39 @@ const courseSlice = createSlice({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
+      lessonId: action.payload.lessonId,
     }),
     onGetTrackingLessonSuccess: (state, action) => ({
       ...state,
       tracking: action.payload,
+      sectionId: action.payload.sectionId,
       isSuccess: true,
     }),
     onSaveTrackingLesson: (state, action) => ({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
+      lessonId: action.payload.lessonId,
     }),
     onSaveTrackingLessonSuccess: (state, action) => ({
       ...state,
       isSuccess: true,
+      isSaved: true,
     }),
     onSaveTrackingVideo: (state, action) => ({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
+      lessonId: action.payload.lessonId,
     }),
     onSaveTrackingVideoSuccess: (state, action) => ({
       ...state,
@@ -155,6 +179,8 @@ const courseSlice = createSlice({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
     }),
     onUpdateCompletedVideoSuccess: (state, action) => ({
@@ -166,6 +192,8 @@ const courseSlice = createSlice({
       ...state,
       isLoading: true,
       isSuccess: false,
+      //nguyen add
+      isSaved: false,
       errorMessage: null,
     }),
     onLoadProgressSuccess: (state, action) => ({
@@ -177,6 +205,7 @@ const courseSlice = createSlice({
 });
 
 export const {
+  onInitalState,
   onMyCourseLoading,
   onMyCourseSuccess,
   onMyCourseFailed,
