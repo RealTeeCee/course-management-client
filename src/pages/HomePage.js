@@ -10,26 +10,28 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { API_COURSE_URL } from "../constants/endpoint";
 import { categoryItems } from "../constants/config";
 import { useDispatch, useSelector } from "react-redux";
-import { onCourseLoading } from "../store/course/courseSlice";
+import {
+  onBestSellerCourseLoading,
+  onCourseLoading,
+  onFreeCourseLoading,
+  onRelatedCourseLoading,
+} from "../store/course/courseSlice";
+import usePagination from "../hooks/usePagination";
 
 const HomePage = () => {
   // const axiosPrivate = useAxiosPrivate();
   const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.course);
+  const { startIndex, endIndex, currentPage, handleChangePage } =
+    usePagination(1);
+  const { data, freeCourse, bestSellerCourse, relatedCourse } = useSelector(
+    (state) => state.course
+  );
 
   useEffect(() => {
-    // const getCourses = async () => {
-    //   try {
-    //     const res = await axiosPrivate.get(API_COURSE_URL);
-    //     console.log(res.data);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-    // getCourses();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     dispatch(onCourseLoading());
+    dispatch(onFreeCourseLoading());
+    dispatch(onBestSellerCourseLoading());
+    dispatch(onRelatedCourseLoading({ categoryId: 1, tagId: 1 }));
   }, [dispatch]);
 
   return (
@@ -102,9 +104,12 @@ const HomePage = () => {
         <GapYCom className="mb-3"></GapYCom>
 
         <CourseGridMod>
-          {data.map((course) => (
-            <CourseItemMod key={v4()} course={course}></CourseItemMod>
-          ))}
+          {bestSellerCourse.map((course, index) => {
+            if (index >= startIndex && index < endIndex) {
+              return <CourseItemMod key={v4()} course={course}></CourseItemMod>;
+            }
+            return null;
+          })}
         </CourseGridMod>
 
         {/* Free Course */}
@@ -112,9 +117,12 @@ const HomePage = () => {
         <GapYCom className="mb-3"></GapYCom>
 
         <CourseGridMod>
-          {data.map((course) => (
-            <CourseItemMod key={v4()} course={course}></CourseItemMod>
-          ))}
+          {freeCourse.map((course, index) => {
+            if (index >= startIndex && index < endIndex) {
+              return <CourseItemMod key={v4()} course={course}></CourseItemMod>;
+            }
+            return null;
+          })}
         </CourseGridMod>
       </div>
     </>

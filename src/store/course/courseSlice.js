@@ -7,6 +7,9 @@ const initialState = {
   isLoading: false,
   isSuccess: false,
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
+  freeCourse: [],
+  bestSellerCourse: [],
+  relatedCourse: [],
   errorMessage: null,
   selectedCourse: null, //onSelectedCourse(slug) - LearnPage.js -> filter data => data.slug === slug
   enrollId: 0, //onGetEnrollId(courseId, userId) - LearnPage.js
@@ -65,13 +68,51 @@ const courseSlice = createSlice({
       isLoading: false,
       data: action.payload,
     }),
-
     onCourseFailed: (state, action) => ({
       ...state,
       isSuccess: false,
       isLoading: false,
       errorMessage: action.payload,
     }),
+    onFreeCourseLoading: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onFreeCourseSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+      isLoading: false,
+      freeCourse: action.payload,
+    }),
+
+    onBestSellerCourseLoading: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onBestSellerCourseSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+      isLoading: false,
+      bestSellerCourse: action.payload,
+    }),
+
+    onRelatedCourseLoading: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isSuccess: false,
+      errorMessage: null,
+    }),
+    onRelatedCourseSuccess: (state, action) => ({
+      ...state,
+      isSuccess: true,
+      isLoading: false,
+      relatedCourse: action.payload,
+    }),
+
     onSelectedCourse: (state, action) => {
       const filteredCourse = state.data.filter(
         (course) => course.slug === action.payload
@@ -212,6 +253,12 @@ export const {
   onCourseLoading,
   onCourseSuccess,
   onCourseFailed,
+  onFreeCourseLoading,
+  onFreeCourseSuccess,
+  onBestSellerCourseLoading,
+  onBestSellerCourseSuccess,
+  onRelatedCourseLoading,
+  onRelatedCourseSuccess,
   onSelectedCourse,
   onSelectedLesson,
   onGetEnrollId,

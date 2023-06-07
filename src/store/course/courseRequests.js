@@ -9,6 +9,15 @@ export const requestMyCourse = (userId) => {
 export const requestCourse = () => {
   return axiosBearer.get(`/course`);
 };
+export const requestFreeCourse = () => {
+  return axiosBearer.get(`/course/free-course`);
+};
+export const requestBestSellerCourse = () => {
+  return axiosBearer.get(`/course/best-course`);
+};
+export const requestRelatedCourse = (data) => {
+  return axiosBearer.post(`/course/related-course`, data);
+};
 export const requestEnrollId = (data) => {
   return axiosBearer.post(`/enrollment/getEnrollId`, data);
 };

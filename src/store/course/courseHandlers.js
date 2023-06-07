@@ -1,24 +1,30 @@
 import { call, put } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
+  requestBestSellerCourse,
   requestCourse,
   requestEnrollId,
+  requestFreeCourse,
   requestLearning,
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
+  requestRelatedCourse,
   requestSaveTracking,
   requestUpdateCompleted,
 } from "./courseRequests";
 import {
+  onBestSellerCourseSuccess,
   onCourseFailed,
   onCourseSuccess,
+  onFreeCourseSuccess,
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
   onLoadProgressSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
+  onRelatedCourseSuccess,
   onSaveTrackingLessonSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
@@ -54,6 +60,40 @@ function* handleOnCourseLoading() {
     showMessageError(error);
   }
 }
+function* handleOnFreeCourseLoading() {
+  try {
+    const res = yield call(requestFreeCourse);
+
+    if (res.status === 200) {
+      yield put(onFreeCourseSuccess(res.data));
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnBestSellerCourseLoading() {
+  try {
+    const res = yield call(requestBestSellerCourse);
+
+    if (res.status === 200) {
+      yield put(onBestSellerCourseSuccess(res.data));
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnRelatedCourseLoading({ payload }) {
+  try {
+    const res = yield call(requestRelatedCourse, payload);
+
+    if (res.status === 200) {
+      yield put(onRelatedCourseSuccess(res.data));
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+
 function* handleOnGetEnrollId({ payload }) {
   try {
     const res = yield call(requestEnrollId, payload);
@@ -134,6 +174,9 @@ function* handleLoadProgress({ payload }) {
 export {
   handleOnMyCourseLoading,
   handleOnCourseLoading,
+  handleOnFreeCourseLoading,
+  handleOnBestSellerCourseLoading,
+  handleOnRelatedCourseLoading,
   handleOnGetEnrollId,
   handleOnGetLearning,
   handleOnGetTrackingLesson,
