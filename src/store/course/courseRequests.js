@@ -1,0 +1,38 @@
+const { axiosBearer } = require("../../api/axiosInstance");
+
+/**
+ * **Request**
+ */
+export const requestMyCourse = (userId) => {
+  return axiosBearer.get(`/course/my-course/${userId}`);
+};
+export const requestCourse = () => {
+  return axiosBearer.get(`/course`);
+};
+export const requestFreeCourse = () => {
+  return axiosBearer.get(`/course/free-course`);
+};
+export const requestBestSellerCourse = () => {
+  return axiosBearer.get(`/course/best-course`);
+};
+export const requestRelatedCourse = (data) => {
+  return axiosBearer.post(`/course/related-course`, data);
+};
+export const requestEnrollId = (data) => {
+  return axiosBearer.post(`/enrollment/getEnrollId`, data);
+};
+export const requestLearning = (courseId) => {
+  return axiosBearer.get(`/track/learning/${courseId}`);
+};
+export const requestLoadTracking = (data) => {
+  return axiosBearer.post(`/track/load`, data);
+};
+export const requestSaveTracking = (data) => {
+  return axiosBearer.post(`/track/save`, data);
+};
+export const requestUpdateCompleted = (data) => {
+  return axiosBearer.post(`/track/complete`, data);
+};
+export const requestLoadProgress = (data) => {
+  return axiosBearer.post(`/track/load-progress`, data);
+};

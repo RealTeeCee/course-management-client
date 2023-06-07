@@ -1,7 +1,7 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
-import { useSelector } from "react-redux";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -9,6 +9,7 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import { onInitalState } from "./store/course/courseSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -68,6 +69,11 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(onInitalState());
+  }, [dispatch]);
 
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
@@ -104,7 +110,13 @@ function App() {
           ></Route>
           <Route
             path="/my-courses"
-            element={<MyCoursePage></MyCoursePage>}
+            element={
+              !user && !user?.email ? (
+                <Navigate to="/login"></Navigate>
+              ) : (
+                <MyCoursePage></MyCoursePage>
+              )
+            }
           ></Route>
           <Route
             path="/checkout/:slug"
@@ -171,9 +183,21 @@ function App() {
         </Route>
 
         {/* ********* Learn ********* */}
-        <Route element={<LayoutLearning></LayoutLearning>}>
+        <Route
+          element={
+            !user && !user?.email ? (
+              <Navigate to="/login"></Navigate>
+            ) : (
+              <LayoutLearning></LayoutLearning>
+            )
+          }
+        >
           {/* course slug */}
-          <Route path="/learn/:slug" element={<LearnPage></LearnPage>}></Route>
+          <Route
+            path="/learn/:slug"
+            render
+            element={<LearnPage></LearnPage>}
+          ></Route>
         </Route>
         {/* ********* END Learn ********* */}
 
