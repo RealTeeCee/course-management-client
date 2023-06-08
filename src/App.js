@@ -9,6 +9,7 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+
 import { onInitalState } from "./store/course/courseSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
@@ -59,6 +60,12 @@ const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 
 const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
+const PaymentSuccessPage = lazy(() =>
+  import("./pages/payment/PaymentSuccessPage.js")
+);
+const PaymentErrorPage = lazy(() =>
+  import("./pages/payment/PaymentErrorPage.js")
+);
 
 const customStyles = {
   content: {},
@@ -102,7 +109,6 @@ function App() {
             path="/categories/:slug"
             element={<CategoryDetailPage></CategoryDetailPage>}
           ></Route>
-
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -122,17 +128,23 @@ function App() {
             path="/checkout/:slug"
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
-
           <Route
             path="/profile/:slug"
             element={<UserProfilePage></UserProfilePage>}
           ></Route>
-
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
+          <Route
+            path="/payment/success"
+            element={<PaymentSuccessPage></PaymentSuccessPage>}
+          ></Route>
+          <Route
+            path="/payment/error"
+            element={<PaymentErrorPage></PaymentErrorPage>}
+          ></Route>
 
           <Route
             path="/oauth2/redirect"

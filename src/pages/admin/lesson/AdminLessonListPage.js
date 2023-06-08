@@ -29,7 +29,11 @@ import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
-import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import {
+  API_COURSE_URL,
+  API_LESSON_URL,
+  IMG_BB_URL,
+} from "../../../constants/endpoint";
 import { SwitchAntCom } from "../../../components/ant";
 
 /********* Validation for Section function ********* */
@@ -37,23 +41,22 @@ const schemaValidation = yup.object().shape({
   id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
   duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
+    .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
+    .min(0, MESSAGE_NUMBER_POSITIVE),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(1),
-  // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const AdminLessonListPage = () => {
   /********* API State ********* */
+  const [lessons, setLessons] = useState([]);
   const [section, setSection] = useState({});
   const [course, setCourse] = useState({});
   /********* END API State ********* */
 
   /********* Variable State ********* */
   const axiosPrivate = useAxiosPrivate();
-  const [lessons, setLessons] = useState([]);
   const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +66,6 @@ const AdminLessonListPage = () => {
   const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [selectedRowId, setSelectedRowId] = useState(null);
 
   const {
     control,
@@ -116,7 +118,7 @@ const AdminLessonListPage = () => {
             onClick={() => {
               setIsOpen(true);
               getLessonById(row.id);
-              setSelectedRowId(row.id); // save row.id to state selectedRowId
+              getVideoByLessonId(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -222,7 +224,7 @@ const AdminLessonListPage = () => {
             `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
-          getLessons();
+          getLessonsBySectionId();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -234,7 +236,7 @@ const AdminLessonListPage = () => {
 
   /********** Fetch data Area ************ */
   /********* API List Section ********* */
-  const getLessons = async () => {
+  const getLessonsBySectionId = async () => {
     try {
       const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
       console.log(res.data);
@@ -260,7 +262,6 @@ const AdminLessonListPage = () => {
       const res = await axiosPrivate.get(
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
-      console.log(res.data);
       setSection(res.data);
     } catch (error) {
       console.log(error);
@@ -279,8 +280,19 @@ const AdminLessonListPage = () => {
     }
   };
 
+  const getVideoByLessonId = async (lessonId) => {
+    console.log(lessonId);
+    try {
+      const res = await axiosPrivate.get(`${API_LESSON_URL}/${lessonId}/video`);
+      console.log(res.data);
+      // reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    getLessons();
+    getLessonsBySectionId();
     getCourseById();
     getSectionById();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -315,38 +327,22 @@ const AdminLessonListPage = () => {
 
   /********* Update ********* */
   const handleSubmitForm = async (values) => {
-    const { name } = values;
+    const { id, name } = values;
     try {
       setIsLoading(!isLoading);
-      //     const data = {
-      //   name: name,
-      //   courseId: id,
-      // };
-      // console.log("name", name);
-      // console.log("couseId", id);
-      // const res = await axiosPrivate.post(`/course/${id}/section`, data);
-
-      //  Đặt isLoading thành true để hiển thị trạng thái đang tải
-      const data = {
-        name: name,
-        sectionId: sectionId,
-        id: selectedRowId,
-      };
-      console.log("name", name);
-      console.log("courseId", courseId);
-      console.log("lessonId", selectedRowId);
-      const res = await axiosPrivate.put(
-        `/section/${data.sectionId}/lesson`,
-        data
-      );
+      const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
+        name,
+        sectionId,
+        id,
+      });
       toast.success(`${res.data.message}`);
       reset();
-      getLessons();
+      getLessonsBySectionId();
     } catch (error) {
       showMessageError(error);
     } finally {
-      setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
-      setIsOpen(false); // Đóng modal
+      setIsLoading(false);
+      setIsOpen(false);
     }
   };
 
@@ -424,8 +420,16 @@ const AdminLessonListPage = () => {
             onSubmit={handleSubmit(handleSubmitForm)}
             id="form-create"
           >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Lesson hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
             <div className="card-body">
-              <div className="row">
+              {/* <div className="row">
                 <div className="col-sm-4">
                   <LabelCom htmlFor="name" isRequired>
                     Section Name
@@ -439,6 +443,85 @@ const AdminLessonListPage = () => {
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
+                </div>
+              </div> */}
+
+              <div className="row">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="name" isRequired>
+                    Lesson Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="name"
+                    register={register}
+                    placeholder="Input Lesson Name"
+                    errorMsg={errors.name?.message}
+                    defaultValue={watch("name")}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration">Duration</LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="duration"
+                    register={register}
+                    placeholder="Input Duration"
+                    errorMsg={errors.duration?.message}
+                    defaultValue={watch("duration")}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration" isRequired>
+                    Video
+                  </LabelCom>
+                  <InputCom
+                    type="file"
+                    control={control}
+                    name="videoFile"
+                    register={register}
+                    placeholder="Upload video"
+                    errorMsg={errors.videoFile?.message}
+                    // defaultValue={watch("videoFile")}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration" isRequired>
+                    Caption Files
+                  </LabelCom>
+                  <InputCom
+                    type="file"
+                    control={control}
+                    name="captionFiles"
+                    register={register}
+                    placeholder="Upload caption files"
+                    multiple
+                    errorMsg={errors.captionFiles?.message}
+                    // defaultValue={watch("captionFiles")}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="description">Description</LabelCom>
+
+                  {/* <ReactQuill
+                    modules={modules}
+                    theme="snow"
+                    value={description}
+                    onChange={(description) => {
+                      setValue("description", description);
+                      setDescription(description);
+                    }}
+                    placeholder="Describe your lesson ..."
+                    className="h-36"
+                  ></ReactQuill> */}
                 </div>
               </div>
             </div>
