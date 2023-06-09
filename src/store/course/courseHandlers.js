@@ -37,6 +37,8 @@ function* handleOnMyCourseLoading(action) {
   try {
     const res = yield call(requestMyCourse, action.payload);
 
+    console.log(res.data);
+
     if (res.status === 200) {
       yield put(onMyCourseSuccess(res.data));
     } else {

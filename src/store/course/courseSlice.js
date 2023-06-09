@@ -34,7 +34,7 @@ const courseSlice = createSlice({
   name: "course",
   initialState: { ...initialState },
   reducers: {
-    onInitalState: (state, action) => ({
+    onCourseInitalState: (state, action) => ({
       ...initialState,
     }),
     onMyCourseLoading: (state, action) => ({
@@ -246,7 +246,7 @@ const courseSlice = createSlice({
 });
 
 export const {
-  onInitalState,
+  onCourseInitalState,
   onMyCourseLoading,
   onMyCourseSuccess,
   onMyCourseFailed,

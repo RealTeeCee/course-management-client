@@ -9,7 +9,8 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { onInitalState } from "./store/course/courseSlice.js";
+import { onCourseInitalState } from "./store/course/courseSlice.js";
+import { onAuthInitalState } from "./store/auth/authSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -72,7 +73,8 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(onInitalState());
+    dispatch(onCourseInitalState());
+    // dispatch(onAuthInitalState());
   }, [dispatch]);
 
   return (
