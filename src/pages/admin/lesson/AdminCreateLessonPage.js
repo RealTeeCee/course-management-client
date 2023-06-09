@@ -13,13 +13,17 @@ import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_VIDEO_FILE_INVALID,
+  MESSAGE_CAPTION_FILE_INVALID,
+  VIDEO_EXT_VALID,
+  CAPTION_EXT_REGEX,
 } from "../../../constants/config";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
 import {
-  API_COURSE_URL,
   API_LESSON_URL,
   API_SECTION_URL,
   IMG_BB_URL,
@@ -29,7 +33,6 @@ import { showMessageError } from "../../../utils/helper";
 import ImageUploader from "quill-image-uploader";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
-import { useEffect } from "react";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
@@ -41,6 +44,30 @@ const schemaValidation = yup.object().shape({
     .min(0, MESSAGE_NUMBER_POSITIVE),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(1),
+  videoFile: yup
+    .mixed()
+    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+      if (value) return true;
+    })
+    .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
+      if (!value) return true;
+      const extValidArr = VIDEO_EXT_VALID.split(", ");
+      const videoFileExt = value[0].name.split(".").pop().toLowerCase();
+      return extValidArr.includes(videoFileExt);
+    }),
+  captionFiles: yup
+    .mixed()
+    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+      if (value) return true;
+    })
+    .test("fileFormat", MESSAGE_CAPTION_FILE_INVALID, function (value) {
+      if (!value) return true;
+      for (let i = 0; i < value.length; i++) {
+        const captionFile = value[i].name.toLowerCase();
+        if (!CAPTION_EXT_REGEX.test(captionFile)) return false;
+      }
+      return true;
+    }),
 });
 
 const AdminCreateLessonPage = () => {
