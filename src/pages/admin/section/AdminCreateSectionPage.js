@@ -47,16 +47,12 @@ const AdminCreateSectionPage = () => {
 
   /********* Get Course ID from API  ********* */
   const handleSubmitForm = async (values) => {
-    // console.log(values);
-    const { name, ordered } = values;
     try {
       setIsLoading(!isLoading);
-
       const res = await axiosPrivate.post(
         `${API_COURSE_URL}/${courseId}/section`,
         {
-          name,
-          ordered: parseInt(ordered),
+          ...values,
           courseId,
         }
       );

@@ -69,19 +69,6 @@ const schemaValidation = yup.object().shape({
     .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
-// Label is category name , value is category_id
-
-// const tagItems = [
-//   {
-//     value: "programming",
-//     label: "Programming",
-//   },
-//   {
-//     value: "php",
-//     label: "PHP",
-//   },
-// ];
-
 const AdminCreateCoursePage = () => {
   const {
     control,
@@ -119,20 +106,19 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    console.log(values);
-    const {
-      name,
-      status,
-      level,
-      category_id,
-      price,
-      net_price,
-      image,
-      tags,
-      duration,
-      achievements,
-      description,
-    } = values;
+    // const {
+    //   name,
+    //   status,
+    //   level,
+    //   category_id,
+    //   price,
+    //   net_price,
+    //   image,
+    //   tags,
+    //   duration,
+    //   achievements,
+    //   description,
+    // } = values;
 
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
@@ -151,21 +137,13 @@ const AdminCreateCoursePage = () => {
     } else {
       try {
         setIsLoading(!isLoading);
-        let fd = new FormData();
+        const fd = new FormData();
         fd.append(
           "courseJson",
           JSON.stringify({
-            name,
-            status,
-            level,
-            image,
-            category_id,
+            ...values,
             price: convertStrMoneyToInt(price),
             net_price: convertStrMoneyToInt(net_price),
-            tags,
-            duration,
-            achievements,
-            description,
           })
         );
         // fd.append("file", image[0]);

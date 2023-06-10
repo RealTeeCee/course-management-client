@@ -33,7 +33,11 @@ root.render(
     <BrowserRouter>
       <PersistGate loading={null} persistor={persistor}>
         <App />
-        <ToastContainer bodyClassName="font-tw-primary" />
+        <ToastContainer
+          bodyClassName="font-tw-primary"
+          position="top-center"
+          autoClose={2000}
+        />
       </PersistGate>
     </BrowserRouter>
   </Provider>

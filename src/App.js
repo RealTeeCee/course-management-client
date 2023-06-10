@@ -1,7 +1,13 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  redirect,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -11,6 +17,7 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { onAuthInitalState } from "./store/auth/authSlice.js";
+import { axiosBearer } from "./api/axiosInstance.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -60,6 +67,12 @@ const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 
 const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
+const PaymentSuccessPage = lazy(() =>
+  import("./pages/payment/PaymentSuccessPage.js")
+);
+const PaymentErrorPage = lazy(() =>
+  import("./pages/payment/PaymentErrorPage.js")
+);
 
 const customStyles = {
   content: {},
@@ -76,6 +89,34 @@ function App() {
     dispatch(onCourseInitalState());
     // dispatch(onAuthInitalState());
   }, [dispatch]);
+
+  // useEffect(() => {
+  //   axiosBearer
+  //     .post("http://localhost:8080/momo", {
+  //       userId: 1,
+  //       courseId: 1,
+  //       lang: "en",
+  //       requestType: "payWithATM",
+  //     })
+  //     .then((res) => {
+  //       console.log(res);
+  //       window.location.replace(res.data.payUrl);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
+
+  // useEffect(() => {
+  //   axiosBearer
+  //     .post("http://localhost:8080/paypal/pay", {
+  //       userId: 1,
+  //       courseId: 1,
+  //     })
+  //     .then((res) => {
+  //       console.log(res);
+  //       window.location.replace(res.data.payUrl);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
@@ -104,7 +145,6 @@ function App() {
             path="/categories/:slug"
             element={<CategoryDetailPage></CategoryDetailPage>}
           ></Route>
-
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -124,17 +164,23 @@ function App() {
             path="/checkout/:slug"
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
-
           <Route
             path="/profile/:slug"
             element={<UserProfilePage></UserProfilePage>}
           ></Route>
-
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
+          <Route
+            path="/payment/success"
+            element={<PaymentSuccessPage></PaymentSuccessPage>}
+          ></Route>
+          <Route
+            path="/payment/cancel"
+            element={<PaymentErrorPage></PaymentErrorPage>}
+          ></Route>
 
           <Route
             path="/oauth2/redirect"

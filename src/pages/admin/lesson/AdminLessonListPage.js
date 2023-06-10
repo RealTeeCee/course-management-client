@@ -14,10 +14,16 @@ import {
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
+  CAPTION_EXT_REGEX,
+  MESSAGE_CAPTION_FILE_INVALID,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_GENERAL_FAILED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
+  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_VIDEO_FILE_INVALID,
+  VIDEO_EXT_VALID,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -29,46 +35,82 @@ import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
-import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import {
+  API_COURSE_URL,
+  API_LESSON_URL,
+  IMG_BB_URL,
+} from "../../../constants/endpoint";
 import { SwitchAntCom } from "../../../components/ant";
+import ReactPlayer from "react-player";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
   duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
+    .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
-  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+    .min(0, MESSAGE_NUMBER_POSITIVE),
+  // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(1),
-  // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
+  videoFile: yup
+    .mixed()
+    .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
+      if (!value) return true;
+      const extValidArr = VIDEO_EXT_VALID.split(", ");
+      const videoFileExt = value[0]?.name.split(".").pop().toLowerCase();
+      return extValidArr.includes(videoFileExt);
+    }),
+  captionFiles: yup
+    .mixed()
+    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+      // Check if existed upload videoFile
+      if (
+        this.parent.videoFile !== "" &&
+        typeof this.parent.videoFile === "object"
+      ) {
+        if (!value) return false;
+      }
+      return true;
+    })
+    .test("fileFormat", MESSAGE_CAPTION_FILE_INVALID, function (value) {
+      if (!value) return true;
+      for (let i = 0; i < value.length; i++) {
+        const captionFile = value[i]?.name.toLowerCase();
+        if (!CAPTION_EXT_REGEX.test(captionFile)) return false;
+      }
+      return true;
+    }),
 });
 
 const AdminLessonListPage = () => {
   /********* API State ********* */
+  const [lessons, setLessons] = useState([]);
   const [section, setSection] = useState({});
   const [course, setCourse] = useState({});
+  const [video, setVideo] = useState({});
   /********* END API State ********* */
 
   /********* Variable State ********* */
   const axiosPrivate = useAxiosPrivate();
-  const [lessons, setLessons] = useState([]);
   const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
+  const [showUpload, setShowUpload] = useState(false);
+  const [showVideo, setShowVideo] = useState(true);
 
   // const [selectedRows, setSelectedRows] = useState([]);
   const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [selectedRowId, setSelectedRowId] = useState(null);
 
   const {
     control,
     register,
     handleSubmit,
+    setValue,
+    setError,
     reset,
     watch,
     formState: { errors },
@@ -116,7 +158,8 @@ const AdminLessonListPage = () => {
             onClick={() => {
               setIsOpen(true);
               getLessonById(row.id);
-              setSelectedRowId(row.id); // save row.id to state selectedRowId
+              getVideoByLessonId(row.id);
+              resetState();
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -222,7 +265,7 @@ const AdminLessonListPage = () => {
             `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
-          getLessons();
+          getLessonsBySectionId();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -234,7 +277,7 @@ const AdminLessonListPage = () => {
 
   /********** Fetch data Area ************ */
   /********* API List Section ********* */
-  const getLessons = async () => {
+  const getLessonsBySectionId = async () => {
     try {
       const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
       console.log(res.data);
@@ -260,7 +303,6 @@ const AdminLessonListPage = () => {
       const res = await axiosPrivate.get(
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
-      console.log(res.data);
       setSection(res.data);
     } catch (error) {
       console.log(error);
@@ -279,8 +321,19 @@ const AdminLessonListPage = () => {
     }
   };
 
+  const getVideoByLessonId = async (lessonId) => {
+    try {
+      const res = await axiosPrivate.get(`${API_LESSON_URL}/${lessonId}/video`);
+      setVideo(res.data);
+      console.log(video);
+      // reset(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    getLessons();
+    getLessonsBySectionId();
     getCourseById();
     getSectionById();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -314,40 +367,35 @@ const AdminLessonListPage = () => {
   }, [lessons, search]);
 
   /********* Update ********* */
-  const handleSubmitForm = async (values) => {
-    const { name } = values;
-    try {
-      setIsLoading(!isLoading);
-      //     const data = {
-      //   name: name,
-      //   courseId: id,
-      // };
-      // console.log("name", name);
-      // console.log("couseId", id);
-      // const res = await axiosPrivate.post(`/course/${id}/section`, data);
-
-      //  Đặt isLoading thành true để hiển thị trạng thái đang tải
-      const data = {
-        name: name,
-        sectionId: sectionId,
-        id: selectedRowId,
-      };
-      console.log("name", name);
-      console.log("courseId", courseId);
-      console.log("lessonId", selectedRowId);
-      const res = await axiosPrivate.put(
-        `/section/${data.sectionId}/lesson`,
-        data
+  const handleSubmitForm = (values) => {
+    const { id, name, videoFile, captionFiles } = values;
+    // Case Click choose Caption then click again and choose cancel then submit
+    if (captionFiles !== "" && captionFiles.length === 0) {
+      const captionSelector = document.querySelector(
+        'input[name="captionFiles"]'
       );
-      toast.success(`${res.data.message}`);
-      reset();
-      getLessons();
-    } catch (error) {
-      showMessageError(error);
-    } finally {
-      setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
-      setIsOpen(false); // Đóng modal
+      if (captionSelector) captionSelector.focus();
+      toast.error(MESSAGE_GENERAL_FAILED);
+      setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
+      setValue("captionFiles", "");
     }
+    console.log(values);
+    // try {
+    //   setIsLoading(!isLoading);
+    //   const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
+    //     name,
+    //     sectionId,
+    //     id,
+    //   });
+    //   toast.success(`${res.data.message}`);
+    //   reset();
+    //   getLessonsBySectionId();
+    // } catch (error) {
+    //   showMessageError(error);
+    // } finally {
+    //   setIsLoading(false);
+    //   setIsOpen(false);
+    // }
   };
 
   const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
@@ -370,6 +418,22 @@ const AdminLessonListPage = () => {
     // } catch (error) {
     //   showMessageError(error);
     // }
+  };
+
+  const resetState = () => {
+    setShowUpload(false);
+    setShowVideo(true);
+    setValue("videoFile", "");
+    setValue("captionFiles", "");
+  };
+
+  const handleToggleVideo = () => {
+    setShowUpload(!showUpload);
+    setShowVideo(!showVideo);
+    if (!showVideo) {
+      setValue("videoFile", "");
+      setValue("captionFiles", "");
+    }
   };
 
   return (
@@ -422,23 +486,129 @@ const AdminLessonListPage = () => {
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
-            id="form-create"
           >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Lesson hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-4">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="name" isRequired>
-                    Section Name
+                    Lesson Name
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Session Name"
+                    placeholder="Input Lesson Name"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration">Duration</LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="duration"
+                    register={register}
+                    placeholder="Input Duration"
+                    errorMsg={errors.duration?.message}
+                    defaultValue={watch("duration")}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className={`row upload-new ${showUpload ? "" : "hidden"}`}>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration">Video</LabelCom>
+                  <InputCom
+                    type="file"
+                    control={control}
+                    name="videoFile"
+                    register={register}
+                    placeholder="Upload video"
+                    errorMsg={errors.videoFile?.message}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="duration">Caption Files</LabelCom>
+                  <InputCom
+                    type="file"
+                    control={control}
+                    name="captionFiles"
+                    register={register}
+                    placeholder="Upload caption files"
+                    multiple
+                    errorMsg={errors.captionFiles?.message}
+                  ></InputCom>
+                </div>
+              </div>
+              <div className={`row current-video ${showVideo ? "" : "hidden"}`}>
+                <div className="col-sm-12 text-center">
+                  <ReactPlayer
+                    url={video?.url}
+                    config={{
+                      youtube: {
+                        playerVars: { showinfo: 1, controls: 1 },
+                      },
+                      file: {
+                        tracks:
+                          video?.captionData &&
+                          Object.entries(video?.captionData)?.map(
+                            ([lang, src]) => ({
+                              kind: "subtitles",
+                              src: src,
+                              srcLang: lang,
+                              default: lang === "en",
+                            })
+                          ),
+                        attributes: {
+                          controlsList: "nodownload",
+                          crossOrigin: "noorigin",
+                        },
+                      },
+                    }}
+                    playing={true}
+                    controls
+                    muted
+                    autoPlay
+                  />
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-3">
+                  <ButtonCom
+                    backgroundColor={`${showVideo ? "info" : "danger"}`}
+                    onClick={handleToggleVideo}
+                  >
+                    {showVideo ? "Change Video" : "Back"}
+                  </ButtonCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="description">Description</LabelCom>
+
+                  {/* <ReactQuill
+                    modules={modules}
+                    theme="snow"
+                    value={description}
+                    onChange={(description) => {
+                      setValue("description", description);
+                      setDescription(description);
+                    }}
+                    placeholder="Describe your lesson ..."
+                    className="h-36"
+                  ></ReactQuill> */}
                 </div>
               </div>
             </div>
@@ -446,9 +616,9 @@ const AdminLessonListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" type="reset">
+              {/* <ButtonCom backgroundColor="danger" type="reset">
                 Cancel
-              </ButtonCom>
+              </ButtonCom> */}
             </div>
           </form>
         </div>

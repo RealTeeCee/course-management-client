@@ -1,4 +1,4 @@
-export const APP_KEY_NAME = "course";
+export const APP_KEY_NAME = "click_and_learn";
 export const BASE_DOMAIN_URL =
   process.env.REACT_APP_DOMAIN_URL ?? "http://localhost:3000";
 export const BASE_API_URL =
@@ -12,6 +12,9 @@ export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
 export const LIMIT_PAGE = 12;
+export const VIDEO_EXT_VALID = "mp4, avi, mov, wmv, flv, mkv, webm, mpeg, mpg";
+export const CAPTION_EXT_VALID = "en.vtt, vi.vtt, jp.vtt";
+export const CAPTION_EXT_REGEX = /\.(en|vi|jp)\.vtt$/;
 
 export const MESSAGE_GENERAL_FAILED = "Something was wrong!";
 export const MESSAGE_FIELD_REQUIRED = "This field is required";
@@ -22,9 +25,14 @@ export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
+
 export const MESSAGE_FIELD_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL_INVALID =
   "Invalid email! Correct: example@domain.com";
+
+export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
+export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
+
 export const MESSAGE_UPLOAD_IMAGE_FAILED = "Upload image error!";
 export const MESSAGE_NUMBER_POSITIVE =
   "This field must be greater than or equal to 0";
