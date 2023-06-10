@@ -18,6 +18,7 @@ import {
   MESSAGE_CAPTION_FILE_INVALID,
   VIDEO_EXT_VALID,
   CAPTION_EXT_REGEX,
+  statusItems,
 } from "../../../constants/config";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
@@ -29,21 +30,22 @@ import {
   IMG_BB_URL,
 } from "../../../constants/endpoint";
 import { useNavigate } from "react-router-dom/dist";
-import { showMessageError } from "../../../utils/helper";
+import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
 import ImageUploader from "quill-image-uploader";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
+import { SelectDefaultAntCom } from "../../../components/ant";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  duration: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
-  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  status: yup.number().default(1),
+  // name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  // status: yup.number().default(1),
+  // duration: yup
+  //   .number(MESSAGE_FIELD_REQUIRED)
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
   videoFile: yup
     .mixed()
     .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
@@ -55,19 +57,19 @@ const schemaValidation = yup.object().shape({
       const videoFileExt = value[0].name.split(".").pop().toLowerCase();
       return extValidArr.includes(videoFileExt);
     }),
-  captionFiles: yup
-    .mixed()
-    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
-      if (value) return true;
-    })
-    .test("fileFormat", MESSAGE_CAPTION_FILE_INVALID, function (value) {
-      if (!value) return true;
-      for (let i = 0; i < value.length; i++) {
-        const captionFile = value[i].name.toLowerCase();
-        if (!CAPTION_EXT_REGEX.test(captionFile)) return false;
-      }
-      return true;
-    }),
+  // captionFiles: yup
+  //   .mixed()
+  //   .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+  //     if (value) return true;
+  //   })
+  //   .test("fileFormat", MESSAGE_CAPTION_FILE_INVALID, function (value) {
+  //     if (!value) return true;
+  //     for (let i = 0; i < value.length; i++) {
+  //       const captionFile = value[i].name.toLowerCase();
+  //       if (!CAPTION_EXT_REGEX.test(captionFile)) return false;
+  //     }
+  //     return true;
+  //   }),
 });
 
 const AdminCreateLessonPage = () => {
@@ -137,6 +139,7 @@ const AdminCreateLessonPage = () => {
 
   const handleSubmitForm = async (values) => {
     const { name, duration, videoFile, captionFiles } = values;
+    let lessonId;
     try {
       setIsLoading(true);
 
@@ -148,7 +151,7 @@ const AdminCreateLessonPage = () => {
           sectionId,
         }
       );
-      const lessonId = await getLatestLessonId();
+      lessonId = await getLatestLessonId();
       if (!lessonId) throw new Error("Lesson ID not found");
 
       const fd = new FormData();
@@ -161,6 +164,10 @@ const AdminCreateLessonPage = () => {
       toast.success(`${res.data.message}`);
       navigate(`/admin/courses/${courseId}/sections/${sectionId}/lessons`);
     } catch (error) {
+      // Rollback
+      await axiosPrivate.delete(
+        `/section/${sectionId}/lesson?lessonId=${lessonId}`
+      );
       showMessageError(error);
     } finally {
       setIsLoading(false);
@@ -175,6 +182,17 @@ const AdminCreateLessonPage = () => {
       console.log("Error: ", error);
     }
   };
+
+  // const handleChangeVideo = (e) => {
+  //   const video = document.createElement("video");
+
+  //   video.preload = "metadata";
+  //   video.onloadedmetadata = function () {
+  //     setValue("duration", Math.round(video.duration));
+  //   };
+
+  //   video.src = URL.createObjectURL(e.target.files[0]);
+  // };
 
   return (
     <>
@@ -197,8 +215,8 @@ const AdminCreateLessonPage = () => {
                 <span>Lorem ipsum dolor sit amet consectetur</span>
               </div> */}
               <div className="card-body">
-                <div className="row">
-                  <div className="col-sm-6">
+                <div className="row text-center">
+                  <div className="col-sm-6 offset-3">
                     <LabelCom htmlFor="name" isRequired>
                       Lesson Name
                     </LabelCom>
@@ -211,17 +229,25 @@ const AdminCreateLessonPage = () => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-6">
+                  {/* <div className="col-sm-6">
                     <LabelCom htmlFor="duration">Duration</LabelCom>
                     <InputCom
-                      type="number"
+                      type="text"
                       control={control}
                       name="duration"
                       register={register}
                       placeholder="Input Duration"
                       errorMsg={errors.duration?.message}
                     ></InputCom>
-                  </div>
+                  </div> */}
+                  {/* <InputCom
+                    type="hidden"
+                    control={control}
+                    name="duration"
+                    register={register}
+                    placeholder="Input hidden duration"
+                    errorMsg={errors.duration?.message}
+                  ></InputCom> */}
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
@@ -236,6 +262,7 @@ const AdminCreateLessonPage = () => {
                       register={register}
                       placeholder="Upload video"
                       errorMsg={errors.videoFile?.message}
+                      onChange={(e) => getDurationFromVideo(e, setValue)}
                     ></InputCom>
                   </div>
                   <div className="col-sm-6">

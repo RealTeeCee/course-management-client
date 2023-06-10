@@ -12,6 +12,7 @@ export function formatNumber(number) {
 
 // priceStr: 1,000,000 - Output: 1000000
 export function convertStrMoneyToInt(strMoney) {
+  if(strMoney === 0) return strMoney;
   const numberString = strMoney.replace(/,/g, "");
   const intValue = parseInt(numberString, 10);
   if (Number.isNaN(intValue)) return 0;
@@ -37,4 +38,16 @@ export function showMessageError(error) {
   } else {
     toast.error(MESSAGE_GENERAL_FAILED);
   }
+}
+
+// Get Duration for Video
+export function getDurationFromVideo(e, setValue = () => {}, name = "duration") {
+  const video = document.createElement("video");
+
+  video.preload = "metadata";
+  video.onloadedmetadata = function () {
+    setValue(name, Math.round(video.duration));
+  };
+
+  video.src = URL.createObjectURL(e.target.files[0]);
 }

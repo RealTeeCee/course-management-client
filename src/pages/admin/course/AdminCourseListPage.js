@@ -61,6 +61,7 @@ import {
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
 import { Link } from "react-router-dom";
+import { getValue } from "@mui/system";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -83,10 +84,10 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  duration: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
+  // duration: yup
+  //   .number(MESSAGE_FIELD_REQUIRED)
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 // Label is category name , value is category_id
@@ -135,7 +136,7 @@ const AdminCourseListPage = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
+    watch,
     setError,
     reset,
     formState: { errors },
@@ -745,14 +746,14 @@ const AdminCourseListPage = () => {
                       status={errors.status && errors.status.message && "error"}
                       errorMsg={errors.status?.message}
                       placeholder="Choose Status"
-                      defaultValue={getValues("status")}
+                      defaultValue={watch("status")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="status"
                       register={register}
-                      defaultValue={getValues("status")}
+                      defaultValue={watch("status")}
                     ></InputCom>
                   </div>
                 </div>
@@ -762,14 +763,14 @@ const AdminCourseListPage = () => {
                     <SelectDefaultAntCom
                       listItems={levelItems}
                       onChange={handleChangeLevel}
-                      defaultValue={getValues("level")}
+                      defaultValue={watch("level")}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
                       name="level"
                       register={register}
-                      defaultValue={getValues("level")}
+                      defaultValue={watch("level")}
                     ></InputCom>
                   </div>
                 </div>
@@ -803,7 +804,7 @@ const AdminCourseListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-4">
+                {/* <div className="col-sm-4">
                   <LabelCom htmlFor="duration" subText="(Hour)">
                     Estimate Duration
                   </LabelCom>
@@ -815,8 +816,8 @@ const AdminCourseListPage = () => {
                     placeholder="Estimate Duration"
                     errorMsg={errors.duration?.message}
                   ></InputCom>
-                </div>
-                <div className="col-sm-3">
+                </div> */}
+                <div className="col-sm-5">
                   <LabelCom htmlFor="price" subText="($)">
                     Price
                   </LabelCom>
@@ -832,7 +833,7 @@ const AdminCourseListPage = () => {
                     value={price}
                   ></InputCom>
                 </div>
-                <div className="col-sm-3">
+                <div className="col-sm-5">
                   <LabelCom htmlFor="net_price" subText="($)">
                     Net Price
                   </LabelCom>

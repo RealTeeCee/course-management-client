@@ -46,6 +46,7 @@ const AdminSectionListPage = () => {
   /********* API State ********* */
   const [sections, setSections] = useState([]);
   const [course, setCourse] = useState({});
+  const [status, setStatus] = useState(0);
   /********* END API State ********* */
 
   /********* State ********* */
@@ -251,6 +252,8 @@ const AdminSectionListPage = () => {
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
       reset(res.data);
+      setStatus(res.data.status);
+      console.log("Data after fetch: ", res.data);
     } catch (error) {
       console.log(error);
     }
@@ -354,8 +357,14 @@ const AdminSectionListPage = () => {
     }
   };
 
+  useEffect(() => {
+    setStatus(status);
+    console.log("status in UseEffect: ", status);
+  }, [status]);
+
   return (
     <>
+      {console.log("Status after return: ", status)}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Section</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -445,7 +454,7 @@ const AdminSectionListPage = () => {
                       status={errors.status && errors.status.message && "error"}
                       errorMsg={errors.status?.message}
                       placeholder="Choose status"
-                      defaultValue={watch("status")}
+                      defaultValue={status}
                     ></SelectDefaultAntCom>
                     <InputCom
                       type="hidden"

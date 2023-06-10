@@ -7,7 +7,6 @@ import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
 import {
   IconEditCom,
-  IconEyeCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
@@ -20,9 +19,9 @@ import {
   MESSAGE_GENERAL_FAILED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_UPDATE_STATUS_SUCCESS,
   MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_VIDEO_FILE_INVALID,
+  statusItems,
   VIDEO_EXT_VALID,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
@@ -33,15 +32,16 @@ import { useParams } from "react-router-dom";
 import ReactModal from "react-modal";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
-import { showMessageError } from "../../../utils/helper";
+import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
 import {
   API_COURSE_URL,
   API_LESSON_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
-import { SwitchAntCom } from "../../../components/ant";
+import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
+import { TextAreaCom } from "../../../components/textarea";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -105,6 +105,13 @@ const AdminLessonListPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const resetState = () => {
+    setShowUpload(false);
+    setShowVideo(true);
+    setValue("videoFile", "");
+    setValue("captionFiles", "");
+  };
+
   const {
     control,
     register,
@@ -163,14 +170,6 @@ const AdminLessonListPage = () => {
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
-          </ButtonCom>
-          <ButtonCom
-            className="px-3 rounded-lg mr-2"
-            onClick={() => {
-              alert(`View Section id: ${row.id}`);
-            }}
-          >
-            <IconEyeCom className="w-5"></IconEyeCom>
           </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
@@ -248,7 +247,7 @@ const AdminLessonListPage = () => {
     []
   );
 
-  /********* Multiple One ********* */
+  /********* Delete One ********* */
   const handleDeleteLesson = ({ lessonId, name }) => {
     Swal.fire({
       title: "Are you sure?",
@@ -325,8 +324,6 @@ const AdminLessonListPage = () => {
     try {
       const res = await axiosPrivate.get(`${API_LESSON_URL}/${lessonId}/video`);
       setVideo(res.data);
-      console.log(video);
-      // reset(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -367,8 +364,9 @@ const AdminLessonListPage = () => {
   }, [lessons, search]);
 
   /********* Update ********* */
-  const handleSubmitForm = (values) => {
-    const { id, name, videoFile, captionFiles } = values;
+  const handleSubmitForm = async (values) => {
+    const { id, name, status, duration, description, videoFile, captionFiles } =
+      values;
     // Case Click choose Caption then click again and choose cancel then submit
     if (captionFiles !== "" && captionFiles.length === 0) {
       const captionSelector = document.querySelector(
@@ -379,23 +377,47 @@ const AdminLessonListPage = () => {
       setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("captionFiles", "");
     }
-    console.log(values);
-    // try {
-    //   setIsLoading(!isLoading);
-    //   const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
-    //     name,
-    //     sectionId,
-    //     id,
-    //   });
-    //   toast.success(`${res.data.message}`);
-    //   reset();
-    //   getLessonsBySectionId();
-    // } catch (error) {
-    //   showMessageError(error);
-    // } finally {
-    //   setIsLoading(false);
-    //   setIsOpen(false);
-    // }
+    try {
+      setIsLoading(!isLoading);
+      const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
+        name,
+        sectionId,
+        id,
+        status,
+        duration,
+      });
+      // Update lessons State
+      setLessons((prev) => {
+        const newData = prev.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              name,
+              status,
+              duration,
+              description,
+            };
+          }
+          return item;
+        });
+        return newData;
+      });
+      if (videoFile && videoFile.length > 0) {
+        const fd = new FormData();
+        fd.append("videoFile", videoFile[0]);
+        for (let i = 0; i < captionFiles.length; i++) {
+          fd.append("captionFiles", captionFiles[i]);
+        }
+        await axiosPrivate.post(`${API_LESSON_URL}/${id}/video`, fd);
+      }
+      toast.success(`${res.data.message}`);
+      // getLessonsBySectionId();
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
+    }
   };
 
   const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
@@ -420,16 +442,15 @@ const AdminLessonListPage = () => {
     // }
   };
 
-  const resetState = () => {
-    setShowUpload(false);
-    setShowVideo(true);
-    setValue("videoFile", "");
-    setValue("captionFiles", "");
+  const handleChangeStatus = (value) => {
+    setValue("status", value);
+    setError("status", { message: "" });
   };
 
-  const handleToggleVideo = () => {
+  const handleToggleChangeVideo = () => {
     setShowUpload(!showUpload);
     setShowVideo(!showVideo);
+    // Check if input video already, then Back will reset value
     if (!showVideo) {
       setValue("videoFile", "");
       setValue("captionFiles", "");
@@ -439,7 +460,7 @@ const AdminLessonListPage = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Section</HeadingH1Com>
+        <HeadingH1Com>Admin Lesson</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
       </div>
       <GapYCom></GapYCom>
@@ -474,7 +495,7 @@ const AdminLessonListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Section</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Lesson</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -511,7 +532,7 @@ const AdminLessonListPage = () => {
                     defaultValue={watch("name")}
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
+                {/* <div className="col-sm-3">
                   <LabelCom htmlFor="duration">Duration</LabelCom>
                   <InputCom
                     type="number"
@@ -522,6 +543,37 @@ const AdminLessonListPage = () => {
                     errorMsg={errors.duration?.message}
                     defaultValue={watch("duration")}
                   ></InputCom>
+                </div> */}
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="status">Status</LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      listItems={statusItems}
+                      onChange={handleChangeStatus}
+                      status={errors.status && errors.status.message && "error"}
+                      errorMsg={errors.status?.message}
+                      placeholder="Choose Status"
+                      defaultValue={watch("status")}
+                    ></SelectDefaultAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="status"
+                      register={register}
+                      defaultValue={watch("status")}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row justify-center">
+                <div className="col-sm-3 text-center">
+                  <ButtonCom
+                    backgroundColor={`${showVideo ? "info" : "danger"}`}
+                    onClick={handleToggleChangeVideo}
+                  >
+                    {showVideo ? "Change Video" : "Back"}
+                  </ButtonCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
@@ -535,6 +587,7 @@ const AdminLessonListPage = () => {
                     register={register}
                     placeholder="Upload video"
                     errorMsg={errors.videoFile?.message}
+                    onChange={(e) => getDurationFromVideo(e, setValue)}
                   ></InputCom>
                 </div>
                 <div className="col-sm-6">
@@ -551,7 +604,7 @@ const AdminLessonListPage = () => {
                 </div>
               </div>
               <div className={`row current-video ${showVideo ? "" : "hidden"}`}>
-                <div className="col-sm-12 text-center">
+                <div className="col-sm-12 text-center flex justify-center items-center">
                   <ReactPlayer
                     url={video?.url}
                     config={{
@@ -584,20 +637,14 @@ const AdminLessonListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-3">
-                  <ButtonCom
-                    backgroundColor={`${showVideo ? "info" : "danger"}`}
-                    onClick={handleToggleVideo}
-                  >
-                    {showVideo ? "Change Video" : "Back"}
-                  </ButtonCom>
-                </div>
-              </div>
-              <GapYCom className="mb-3"></GapYCom>
-              <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="description">Description</LabelCom>
-
+                  <TextAreaCom
+                    name="description"
+                    control={control}
+                    register={register}
+                    placeholder="Describe your lesson ..."
+                  ></TextAreaCom>
                   {/* <ReactQuill
                     modules={modules}
                     theme="snow"

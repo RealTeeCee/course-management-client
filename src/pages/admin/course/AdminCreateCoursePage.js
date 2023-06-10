@@ -48,7 +48,7 @@ const schemaValidation = yup.object().shape({
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  status: yup.number().default(1),
+  status: yup.number().default(0),
   level: yup.number().default(0),
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -63,10 +63,10 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  duration: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
+  // duration: yup
+  //   .number(MESSAGE_FIELD_REQUIRED)
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 const AdminCreateCoursePage = () => {
@@ -106,20 +106,7 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    // const {
-    //   name,
-    //   status,
-    //   level,
-    //   category_id,
-    //   price,
-    //   net_price,
-    //   image,
-    //   tags,
-    //   duration,
-    //   achievements,
-    //   description,
-    // } = values;
-
+    console.log(values);
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
     //   if (imageSelector) imageSelector.focus();
@@ -142,6 +129,7 @@ const AdminCreateCoursePage = () => {
           "courseJson",
           JSON.stringify({
             ...values,
+            status: 0,
             price: convertStrMoneyToInt(price),
             net_price: convertStrMoneyToInt(net_price),
           })
@@ -297,7 +285,7 @@ const AdminCreateCoursePage = () => {
               </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-4">
+                  <div className="col-sm-7">
                     <LabelCom htmlFor="name" isRequired>
                       Course Name
                     </LabelCom>
@@ -310,7 +298,7 @@ const AdminCreateCoursePage = () => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-3">
+                  {/* <div className="col-sm-3">
                     <LabelCom htmlFor="status">Status</LabelCom>
                     <div>
                       <SelectDefaultAntCom
@@ -321,6 +309,7 @@ const AdminCreateCoursePage = () => {
                         }
                         errorMsg={errors.status?.message}
                         placeholder="Choose Status"
+                        defaultValue={0}
                       ></SelectDefaultAntCom>
                       <InputCom
                         type="hidden"
@@ -330,7 +319,7 @@ const AdminCreateCoursePage = () => {
                         defaultValue={1}
                       ></InputCom>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-sm-3">
                     <LabelCom htmlFor="level">Level</LabelCom>
                     <div>
@@ -377,7 +366,7 @@ const AdminCreateCoursePage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  <div className="col-sm-4">
+                  {/* <div className="col-sm-4">
                     <LabelCom htmlFor="duration" subText="(Hour)">
                       Estimate Duration
                     </LabelCom>
@@ -389,8 +378,8 @@ const AdminCreateCoursePage = () => {
                       placeholder="Estimate Duration"
                       errorMsg={errors.duration?.message}
                     ></InputCom>
-                  </div>
-                  <div className="col-sm-3">
+                  </div> */}
+                  <div className="col-sm-5">
                     <LabelCom htmlFor="price" subText="($)">
                       Price
                     </LabelCom>
@@ -406,7 +395,7 @@ const AdminCreateCoursePage = () => {
                       value={price}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-3">
+                  <div className="col-sm-5">
                     <LabelCom htmlFor="net_price" subText="($)">
                       Net Price
                     </LabelCom>

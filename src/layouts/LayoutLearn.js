@@ -20,7 +20,7 @@ const LayoutLearning = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12 footer-copyright text-center">
-              <p className="mb-0">Copyright 2023 © Course Management</p>
+              <p className="mb-0">Copyright 2023 © Click & Learn</p>
             </div>
           </div>
         </div>

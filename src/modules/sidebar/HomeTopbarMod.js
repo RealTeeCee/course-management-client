@@ -48,9 +48,9 @@ const HomeTopbarMod = () => {
       <div>
         <Link to="/" className="inline-block">
           <img
-            srcSet="/logo192.png"
+            srcSet="/logo_click_thumb_light.png"
             className="w-12 h-12"
-            alt="Course Management Logo"
+            alt="Click And Learn Logo"
           />
         </Link>
       </div>
