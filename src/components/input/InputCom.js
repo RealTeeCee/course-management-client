@@ -34,7 +34,7 @@ const InputCom = (props) => {
       <div className="form-input position-relative">
         <input
           id={name}
-          className={`form-control tw-transition-all ${
+          className={`form-control tw-transition-all placeholder:italic ${
             errorMsg &&
             errorMsg.length > 0 &&
             "is-invalid border-tw-danger text-tw-danger"

@@ -32,6 +32,9 @@ import { showMessageError } from "../../../utils/helper";
 import { API_COURSE_URL } from "../../../constants/endpoint";
 import SelectDefaultAntCom from "../../../components/ant/SelectDefaultAntCom";
 import { SwitchAntCom } from "../../../components/ant";
+// import { MenuItem, Select } from "@mui/material";
+import { Select, Spin } from "antd";
+import LoadingCom from "../../../components/common/LoadingCom";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -56,6 +59,7 @@ const AdminSectionListPage = () => {
   const [tableKey, setTableKey] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
   const resetValues = () => {
     reset();
@@ -79,7 +83,6 @@ const AdminSectionListPage = () => {
     {
       name: "No",
       selector: (row, i) => ++i,
-      sortable: true,
       width: "70px",
     },
     {
@@ -112,7 +115,9 @@ const AdminSectionListPage = () => {
           className={`${
             row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
           }`}
-          onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
+          onChange={(isChecked) =>
+            handleChangeSwitch(row.id, courseId, isChecked)
+          }
         />
       ),
       sortable: true,
@@ -148,8 +153,8 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              setIsOpen(true);
-              getSectionById(row.id);
+              // setIsFetching(true);
+              handleEdit(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -265,9 +270,20 @@ const AdminSectionListPage = () => {
     }
   };
 
+  const fetchingData = async () => {
+    try {
+      setIsFetching(true);
+      await getSectionsByCourseId();
+      await getCourseById();
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   useEffect(() => {
-    getSectionsByCourseId();
-    getCourseById();
+    fetchingData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /********** END Fetch data Area ************ */
@@ -299,8 +315,19 @@ const AdminSectionListPage = () => {
   }, [sections, search]);
 
   /********* Edit ********* */
+  const handleEdit = async (sectionId) => {
+    try {
+      setIsFetching(true);
+      await getSectionById(sectionId);
+      setIsOpen(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
-  ///********* Update Area *********
+  //********* Update Area *********
   const handleChangeStatus = (value) => {
     setValue("status", value);
     setError("status", { message: "" });
@@ -330,21 +357,25 @@ const AdminSectionListPage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    console.log(values);
-    // const { id, name, status } = values;
     try {
       setIsLoading(!isLoading);
-      // const data = {
-      //   id,
-      //   name,
-      //   courseId,
-      //   status,
-      // };
-
       const res = await axiosPrivate.put(
         `${API_COURSE_URL}/${courseId}/section`,
         values
       );
+      // Update sections State
+      setSections((prev) => {
+        const newData = prev.map((item) => {
+          if (item.id === values.id) {
+            return {
+              ...item,
+              ...values,
+            };
+          }
+          return item;
+        });
+        return newData;
+      });
       toast.success(`${res.data.message}`);
     } catch (error) {
       showMessageError(error);
@@ -356,6 +387,7 @@ const AdminSectionListPage = () => {
 
   return (
     <>
+      {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Section</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -378,7 +410,7 @@ const AdminSectionListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[100vh]"></div>
+            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
@@ -415,12 +447,8 @@ const AdminSectionListPage = () => {
             ></InputCom>
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-12">
-                  <LabelCom
-                    htmlFor="name"
-                    className="text-center block"
-                    isRequired
-                  >
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="name" isRequired>
                     Section Name
                   </LabelCom>
                   <InputCom
@@ -433,9 +461,22 @@ const AdminSectionListPage = () => {
                     defaultValue={watch("name")}
                   ></InputCom>
                 </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="ordered" isRequired>
+                    Ordered
+                  </LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="ordered"
+                    register={register}
+                    placeholder="Input section ordered"
+                    errorMsg={errors.ordered?.message}
+                  ></InputCom>
+                </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
-              <div className="row">
+              {/* <div className="row">
                 <div className="col-sm-6">
                   <LabelCom htmlFor="status">Status</LabelCom>
                   <div>
@@ -469,7 +510,7 @@ const AdminSectionListPage = () => {
                     errorMsg={errors.ordered?.message}
                   ></InputCom>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>

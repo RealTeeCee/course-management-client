@@ -34,13 +34,10 @@ import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { API_TAG_URL, IMG_BB_URL } from "../../../constants/endpoint";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill, { Quill } from "react-quill";
-import ImageUploader from "quill-image-uploader";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
-Quill.register("modules/imageUploader", ImageUploader);
+import { TextEditorQuillCom } from "../../../components/texteditor";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -48,7 +45,7 @@ const schemaValidation = yup.object().shape({
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  status: yup.number().default(1),
+  status: yup.number().default(0),
   level: yup.number().default(0),
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -63,10 +60,10 @@ const schemaValidation = yup.object().shape({
     .nullable()
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  duration: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, MESSAGE_NUMBER_POSITIVE),
+  // duration: yup
+  //   .number(MESSAGE_FIELD_REQUIRED)
+  //   .typeError(MESSAGE_NUMBER_REQUIRED)
+  //   .min(0, MESSAGE_NUMBER_POSITIVE),
 });
 
 const AdminCreateCoursePage = () => {
@@ -106,20 +103,7 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    // const {
-    //   name,
-    //   status,
-    //   level,
-    //   category_id,
-    //   price,
-    //   net_price,
-    //   image,
-    //   tags,
-    //   duration,
-    //   achievements,
-    //   description,
-    // } = values;
-
+    console.log(values);
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
     //   if (imageSelector) imageSelector.focus();
@@ -142,6 +126,7 @@ const AdminCreateCoursePage = () => {
           "courseJson",
           JSON.stringify({
             ...values,
+            status: 0,
             price: convertStrMoneyToInt(price),
             net_price: convertStrMoneyToInt(net_price),
           })
@@ -242,40 +227,6 @@ const AdminCreateCoursePage = () => {
     setError("level", { message: "" });
   };
 
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
-      imageUploader: {
-        upload: async (file) => {
-          const fd = new FormData();
-          fd.append("image", file);
-          try {
-            const res = await axiosInstance({
-              method: "POST",
-              url: IMG_BB_URL,
-              data: fd,
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
-            return res.data.data.url;
-          } catch (error) {
-            toast.error(error.message);
-            return;
-          }
-        },
-      },
-    }),
-    []
-  );
-
   return (
     <>
       <div className="flex justify-between items-center">
@@ -297,7 +248,7 @@ const AdminCreateCoursePage = () => {
               </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-4">
+                  <div className="col-sm-7">
                     <LabelCom htmlFor="name" isRequired>
                       Course Name
                     </LabelCom>
@@ -310,7 +261,7 @@ const AdminCreateCoursePage = () => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-3">
+                  {/* <div className="col-sm-3">
                     <LabelCom htmlFor="status">Status</LabelCom>
                     <div>
                       <SelectDefaultAntCom
@@ -321,6 +272,7 @@ const AdminCreateCoursePage = () => {
                         }
                         errorMsg={errors.status?.message}
                         placeholder="Choose Status"
+                        defaultValue={0}
                       ></SelectDefaultAntCom>
                       <InputCom
                         type="hidden"
@@ -330,7 +282,7 @@ const AdminCreateCoursePage = () => {
                         defaultValue={1}
                       ></InputCom>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-sm-3">
                     <LabelCom htmlFor="level">Level</LabelCom>
                     <div>
@@ -377,7 +329,7 @@ const AdminCreateCoursePage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  <div className="col-sm-4">
+                  {/* <div className="col-sm-4">
                     <LabelCom htmlFor="duration" subText="(Hour)">
                       Estimate Duration
                     </LabelCom>
@@ -389,8 +341,8 @@ const AdminCreateCoursePage = () => {
                       placeholder="Estimate Duration"
                       errorMsg={errors.duration?.message}
                     ></InputCom>
-                  </div>
-                  <div className="col-sm-3">
+                  </div> */}
+                  <div className="col-sm-5">
                     <LabelCom htmlFor="price" subText="($)">
                       Price
                     </LabelCom>
@@ -406,7 +358,7 @@ const AdminCreateCoursePage = () => {
                       value={price}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-3">
+                  <div className="col-sm-5">
                     <LabelCom htmlFor="net_price" subText="($)">
                       Net Price
                     </LabelCom>
@@ -524,17 +476,14 @@ const AdminCreateCoursePage = () => {
                         register={register}
                         placeholder="Describe your course ..."
                       ></TextAreaCom> */}
-                    <ReactQuill
-                      modules={modules}
-                      theme="snow"
+                    <TextEditorQuillCom
                       value={description}
                       onChange={(description) => {
                         setValue("description", description);
                         setDescription(description);
                       }}
                       placeholder="Describe your course ..."
-                      className="h-36"
-                    ></ReactQuill>
+                    ></TextEditorQuillCom>
                   </div>
                 </div>
               </div>

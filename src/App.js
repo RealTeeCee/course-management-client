@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -66,10 +66,6 @@ const PaymentSuccessPage = lazy(() =>
 const PaymentErrorPage = lazy(() =>
   import("./pages/payment/PaymentErrorPage.js")
 );
-
-const customStyles = {
-  content: {},
-};
 
 Modal.setAppElement("#root");
 Modal.defaultStyles = {};
