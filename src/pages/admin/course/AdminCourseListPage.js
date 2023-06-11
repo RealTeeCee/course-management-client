@@ -50,11 +50,11 @@ import {
   SelectTagAntCom,
   SwitchAntCom,
 } from "../../../components/ant";
-import ReactQuill from "react-quill";
 import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import {
   convertIntToStrMoney,
+  convertSecondToDiffForHumans,
   convertStrMoneyToInt,
   showMessageError,
 } from "../../../utils/helper";
@@ -62,6 +62,8 @@ import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
 import { Link } from "react-router-dom";
 import { getValue } from "@mui/system";
+import LoadingCom from "../../../components/common/LoadingCom";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -163,12 +165,11 @@ const AdminCourseListPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const [courses, setCourses] = useState([]);
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
-
-  const [description, setDescription] = useState("");
 
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
@@ -179,14 +180,13 @@ const AdminCourseListPage = () => {
     {
       name: "No",
       selector: (row, i) => ++i,
-      sortable: true,
       width: "70px",
     },
     {
       name: "Course Name",
       selector: (row) => row.name,
       sortable: true,
-      // width: "250px",
+      width: "250px",
     },
     {
       name: "Category",
@@ -239,7 +239,7 @@ const AdminCourseListPage = () => {
     },
     {
       name: "Duration",
-      selector: (row) => row.duration,
+      selector: (row) => convertSecondToDiffForHumans(row.duration),
       sortable: true,
     },
     {
@@ -250,9 +250,7 @@ const AdminCourseListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              // alert(`Update Course id: ${row.id}`);
-              setIsOpen(true);
-              getCourseById(row.id);
+              handleEdit(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -464,6 +462,18 @@ const AdminCourseListPage = () => {
   };
 
   ///********* Update Area *********
+  const handleEdit = async (courseId) => {
+    try {
+      setIsFetching(true);
+      await getCourseById(courseId);
+      setIsOpen(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   const handleChangeStatus = (value) => {
     setValue("status", value);
     setError("status", { message: "" });
@@ -485,6 +495,20 @@ const AdminCourseListPage = () => {
   };
 
   const handleChangeSwitch = async (courseId, isChecked) => {
+    // From InActive to Active, asking before Public to Client
+    // if (isChecked) {
+    //   Swal.fire({
+    //     title: "Are you sure?",
+    //     html: "After change, this course will public to client",
+    //     icon: "question",
+    //     showCancelButton: true,
+    //     confirmButtonColor: "#7366ff",
+    //     cancelButtonColor: "#dc3545",
+    //     confirmButtonText: "Yes, delete it!",
+    //   }).then(async (result) => {
+    //     if (!result.isConfirmed) return;
+    //   });
+    // }
     try {
       const newCourses = courses.map((course) =>
         course.id === courseId
@@ -621,41 +645,42 @@ const AdminCourseListPage = () => {
     setAchievementSelected(itemsArrs);
   };
 
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
-      imageUploader: {
-        upload: async (file) => {
-          const fd = new FormData();
-          fd.append("image", file);
-          try {
-            const res = await axiosInstance({
-              method: "POST",
-              url: IMG_BB_URL,
-              data: fd,
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
-            return res.data.data.url;
-          } catch (error) {
-            toast.error(error.message);
-            return;
-          }
-        },
-      },
-    }),
-    []
-  );
+  // const modules = useMemo(
+  //   () => ({
+  //     toolbar: [
+  //       ["bold", "italic", "underline", "strike"],
+  //       ["blockquote"],
+  //       [{ header: 1 }, { header: 2 }], // custom button values
+  //       [{ list: "ordered" }, { list: "bullet" }],
+  //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  //       ["link", "image"],
+  //     ],
+  //     imageUploader: {
+  //       upload: async (file) => {
+  //         const fd = new FormData();
+  //         fd.append("image", file);
+  //         try {
+  //           const res = await axiosInstance({
+  //             method: "POST",
+  //             url: IMG_BB_URL,
+  //             data: fd,
+  //             headers: {
+  //               "Content-Type": "multipart/form-data",
+  //             },
+  //           });
+  //           return res.data.data.url;
+  //         } catch (error) {
+  //           toast.error(error.message);
+  //           return;
+  //         }
+  //       },
+  //     },
+  //   }),
+  //   []
+  // );
   return (
     <>
+      {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Courses</HeadingH1Com>
         <ButtonBackCom></ButtonBackCom>
@@ -682,7 +707,7 @@ const AdminCourseListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[100vh]"></div>
+            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
@@ -724,7 +749,7 @@ const AdminCourseListPage = () => {
               </div> */}
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-4">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="name" isRequired>
                     Course Name
                   </LabelCom>
@@ -737,7 +762,7 @@ const AdminCourseListPage = () => {
                     errorMsg={errors.name?.message}
                   ></InputCom>
                 </div>
-                <div className="col-sm-3">
+                {/* <div className="col-sm-3">
                   <LabelCom htmlFor="status">Status</LabelCom>
                   <div>
                     <SelectDefaultAntCom
@@ -756,8 +781,8 @@ const AdminCourseListPage = () => {
                       defaultValue={watch("status")}
                     ></InputCom>
                   </div>
-                </div>
-                <div className="col-sm-3">
+                </div> */}
+                <div className="col-sm-4">
                   <LabelCom htmlFor="level">Level</LabelCom>
                   <div>
                     <SelectDefaultAntCom
@@ -945,33 +970,35 @@ const AdminCourseListPage = () => {
               <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="description">Description</LabelCom>
-                  <TextAreaCom
-                    name="description"
-                    control={control}
-                    register={register}
-                    placeholder="Describe your course ..."
-                  ></TextAreaCom>
                   {/* <ReactQuill
-                      modules={modules}
-                      theme="snow"
-                      value={description}
-                      onChange={(description) => {
-                        setValue("description", description);
-                        setDescription(description);
-                      }}
-                      placeholder="Describe your course ..."
-                      className="h-36"
-                    ></ReactQuill> */}
+                    modules={modules}
+                    theme="snow"
+                    value={description}
+                    onChange={(description) => {
+                      setValue("description", description);
+                      setDescription(description);
+                    }}
+                    placeholder="Describe your course ..."
+                    className="h-36"
+                  ></ReactQuill> */}
+                  <TextEditorQuillCom
+                    value={watch("description")}
+                    onChange={(description) => {
+                      setValue("description", description);
+                    }}
+                    placeholder="Describe your course ..."
+                  ></TextEditorQuillCom>
                 </div>
               </div>
+              <GapYCom></GapYCom>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" onClick={resetValues}>
+              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
                 Reset
-              </ButtonCom>
+              </ButtonCom> */}
             </div>
           </form>
         </div>

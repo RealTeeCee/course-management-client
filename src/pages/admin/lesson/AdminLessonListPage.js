@@ -14,11 +14,13 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
   CAPTION_EXT_REGEX,
+  CAPTION_EXT_VALID,
   MESSAGE_CAPTION_FILE_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_GENERAL_FAILED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_UPDATE_STATUS_SUCCESS,
   MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_VIDEO_FILE_INVALID,
   statusItems,
@@ -32,16 +34,22 @@ import { useParams } from "react-router-dom";
 import ReactModal from "react-modal";
 import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
-import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
+import {
+  convertSecondToDiffForHumans,
+  getDurationFromVideo,
+  showMessageError,
+} from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
 import {
   API_COURSE_URL,
   API_LESSON_URL,
+  API_SECTION_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
 import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
 import { TextAreaCom } from "../../../components/textarea";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -141,7 +149,7 @@ const AdminLessonListPage = () => {
     },
     {
       name: "Duration",
-      selector: (row) => row.duration,
+      selector: (row) => convertSecondToDiffForHumans(row.duration),
     },
     {
       name: "Status",
@@ -420,26 +428,27 @@ const AdminLessonListPage = () => {
     }
   };
 
-  const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
-    // try {
-    //   const newSections = sections.map((section) =>
-    //     section.id === sectionId
-    //       ? {
-    //           ...section,
-    //           status: isChecked ? 1 : 0,
-    //         }
-    //       : section
-    //   );
-    //   const dataBody = newSections.find((section) => section.id === sectionId);
-    //   await axiosPrivate.put(
-    //     `${API_COURSE_URL}/${courseId}/section`,
-    //     JSON.stringify(dataBody)
-    //   );
-    //   toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-    //   getSectionsByCourseId();
-    // } catch (error) {
-    //   showMessageError(error);
-    // }
+  const handleChangeSwitch = async (lessonId, isChecked) => {
+    try {
+      const newLessons = lessons.map((lession) =>
+        lession.id === lessonId
+          ? {
+              ...lession,
+              status: isChecked ? 1 : 0,
+            }
+          : lession
+      );
+      const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
+      console.log("dataBody: ", dataBody);
+      await axiosPrivate.put(
+        `${API_SECTION_URL}/${sectionId}/lesson`,
+        JSON.stringify(dataBody)
+      );
+      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+      getLessonsBySectionId();
+    } catch (error) {
+      showMessageError(error);
+    }
   };
 
   const handleChangeStatus = (value) => {
@@ -481,7 +490,7 @@ const AdminLessonListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[100vh]"></div>
+            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
@@ -517,8 +526,8 @@ const AdminLessonListPage = () => {
               errorMsg={errors.id?.message}
             ></InputCom>
             <div className="card-body">
-              <div className="row">
-                <div className="col-sm-6">
+              <div className="row text-center">
+                <div className="col-sm-6 offset-3">
                   <LabelCom htmlFor="name" isRequired>
                     Lesson Name
                   </LabelCom>
@@ -544,7 +553,7 @@ const AdminLessonListPage = () => {
                     defaultValue={watch("duration")}
                   ></InputCom>
                 </div> */}
-                <div className="col-sm-6">
+                {/* <div className="col-sm-6">
                   <LabelCom htmlFor="status">Status</LabelCom>
                   <div>
                     <SelectDefaultAntCom
@@ -563,7 +572,7 @@ const AdminLessonListPage = () => {
                       defaultValue={watch("status")}
                     ></InputCom>
                   </div>
-                </div>
+                </div> */}
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row justify-center">
@@ -579,7 +588,12 @@ const AdminLessonListPage = () => {
               <GapYCom className="mb-3"></GapYCom>
               <div className={`row upload-new ${showUpload ? "" : "hidden"}`}>
                 <div className="col-sm-6">
-                  <LabelCom htmlFor="duration">Video</LabelCom>
+                  <LabelCom
+                    htmlFor="videoFile"
+                    subText={`File: ${VIDEO_EXT_VALID}`}
+                  >
+                    Video
+                  </LabelCom>
                   <InputCom
                     type="file"
                     control={control}
@@ -591,7 +605,12 @@ const AdminLessonListPage = () => {
                   ></InputCom>
                 </div>
                 <div className="col-sm-6">
-                  <LabelCom htmlFor="duration">Caption Files</LabelCom>
+                  <LabelCom
+                    htmlFor="captionFiles"
+                    subText={`File: ${CAPTION_EXT_VALID}`}
+                  >
+                    Caption Files
+                  </LabelCom>
                   <InputCom
                     type="file"
                     control={control}
@@ -639,33 +658,21 @@ const AdminLessonListPage = () => {
               <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="description">Description</LabelCom>
-                  <TextAreaCom
-                    name="description"
-                    control={control}
-                    register={register}
-                    placeholder="Describe your lesson ..."
-                  ></TextAreaCom>
-                  {/* <ReactQuill
-                    modules={modules}
-                    theme="snow"
-                    value={description}
+                  <TextEditorQuillCom
+                    value={watch("description")}
                     onChange={(description) => {
                       setValue("description", description);
-                      setDescription(description);
                     }}
                     placeholder="Describe your lesson ..."
-                    className="h-36"
-                  ></ReactQuill> */}
+                  ></TextEditorQuillCom>
                 </div>
               </div>
+              <GapYCom className="mb-5"></GapYCom>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" type="reset">
-                Cancel
-              </ButtonCom> */}
             </div>
           </form>
         </div>

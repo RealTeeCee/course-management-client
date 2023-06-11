@@ -34,13 +34,10 @@ import axiosInstance from "../../../api/axiosInstance";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { API_TAG_URL, IMG_BB_URL } from "../../../constants/endpoint";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill, { Quill } from "react-quill";
-import ImageUploader from "quill-image-uploader";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
-Quill.register("modules/imageUploader", ImageUploader);
+import { TextEditorQuillCom } from "../../../components/texteditor";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -229,40 +226,6 @@ const AdminCreateCoursePage = () => {
     setValue("level", value);
     setError("level", { message: "" });
   };
-
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
-      imageUploader: {
-        upload: async (file) => {
-          const fd = new FormData();
-          fd.append("image", file);
-          try {
-            const res = await axiosInstance({
-              method: "POST",
-              url: IMG_BB_URL,
-              data: fd,
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
-            return res.data.data.url;
-          } catch (error) {
-            toast.error(error.message);
-            return;
-          }
-        },
-      },
-    }),
-    []
-  );
 
   return (
     <>
@@ -513,17 +476,14 @@ const AdminCreateCoursePage = () => {
                         register={register}
                         placeholder="Describe your course ..."
                       ></TextAreaCom> */}
-                    <ReactQuill
-                      modules={modules}
-                      theme="snow"
+                    <TextEditorQuillCom
                       value={description}
                       onChange={(description) => {
                         setValue("description", description);
                         setDescription(description);
                       }}
                       placeholder="Describe your course ..."
-                      className="h-36"
-                    ></ReactQuill>
+                    ></TextEditorQuillCom>
                   </div>
                 </div>
               </div>

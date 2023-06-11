@@ -18,7 +18,6 @@ const SelectDefaultAntCom = ({
   selectedValue = null,
   ...rest
 }) => {
-  console.log("defaultVal: ", defaultValue);
   return (
     <>
       <Select
