@@ -1,6 +1,5 @@
 import { toast } from "react-toastify";
 import { MESSAGE_GENERAL_FAILED } from "../constants/config";
-import { format as formatFns, intervalToDuration } from "date-fns";
 
 // Input: 123456 - Output: 123.456 using For Count items
 export function formatNumber(number) {
