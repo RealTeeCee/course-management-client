@@ -520,7 +520,6 @@ const AdminCourseListPage = () => {
       );
 
       const dataBody = newCourses.find((course) => course.id === courseId);
-      console.log(dataBody);
 
       const {
         id,
