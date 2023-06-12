@@ -5,9 +5,13 @@ import { useParams, useSearchParams } from "react-router-dom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
 import { selectUserId } from "../../store/auth/authSelector";
-import { selectAllCourseState } from "../../store/course/courseSelector";
+import {
+  selectAllCourseState,
+  selectIsLoadLearningStatus,
+} from "../../store/course/courseSelector";
 import {
   onGetEnrollId,
+  onGetLearning,
   onGetTrackingLesson,
   onMyCourseLoading,
   onSaveTrackingVideo,
@@ -16,25 +20,11 @@ import {
 } from "../../store/course/courseSlice";
 
 const LearnPage = () => {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isSeek, setIsSeek] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-
-  const [isEnded, setIsEnded] = useState(false);
-  const [playedSeconds, setPlayedSeconds] = useState(0);
 
   const { slug } = useParams();
-
-  // const { user } = useSelector((state) => state.auth);
-  // const {
-  //   data,
-  //   selectedCourse,
-  //   video,
-  //   enrollId,
-  //   tracking,
-  //   video: { captionData },
-  // } = useSelector((state) => state.course);
 
   const userId = useSelector(selectUserId);
   const {
@@ -46,10 +36,11 @@ const LearnPage = () => {
     video: { captionData },
     sectionId,
     tracking,
-    //nguyen add
-    isSaved,
+    isSelectLessonManual,
+    resumePoint,
   } = useSelector(selectAllCourseState);
-
+  const isLoadLearningStatus = useSelector(selectIsLoadLearningStatus);
+  console.log("isLoadLearningStatus:", isLoadLearningStatus);
   const dispatch = useDispatch();
   const player = useRef();
 
@@ -65,52 +56,15 @@ const LearnPage = () => {
   useEffect(() => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
+      dispatch(onGetLearning(courseId));
     }
   }, [dispatch, courseId, userId]);
 
   useEffect(() => {
-    console.log(
-      "run useEffect onGetTrackingLesson lessonId: ",
-      lessonId,
-      "courseId: ",
-      courseId,
-      "enrollId: ",
-      enrollId,
-      "isSaved: ",
-      isSaved
-    );
-    if (
-      courseId > 0 &&
-      enrollId > 0 &&
-      lessonId > 0 &&
-      //nguyen add
-      isSaved
-    ) {
-      dispatch(
-        onGetTrackingLesson({ enrollmentId: enrollId, courseId, lessonId })
-      );
+    if (isLoadLearningStatus) {
+      dispatch(onGetTrackingLesson({ enrollmentId: enrollId, courseId }));
     }
-  }, [dispatch, lessonId, courseId, enrollId, isSaved]);
-
-  // useEffect(() => {
-  //   // if(playedSeconds > 0) {
-  //   if ((isPaused && !isSeek) || isEnded) {
-  //     // const timer = setTimeout(() =>
-  //     dispatch(
-  //       onSaveTrackingVideo({
-  //         enrollmentId: enrollId,
-  //         courseId: courseId,
-  //         sectionId: sectionId,
-  //         lessonId: lessonId,
-  //         videoId: video.id,
-  //         resumePoint: playedSeconds,
-  //       })
-  //     );
-
-  //     //,1000);return () => clearTimeout(timer);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isEnded, isPaused]);
+  }, [courseId, dispatch, enrollId, isLoadLearningStatus]);
 
   useEffect(() => {
     if (isCompleted) {
@@ -133,28 +87,30 @@ const LearnPage = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleGetProgress = ({ playedSeconds, played }) => {
+  const handleGetProgress = ({ played }) => {
     if (played > 0.9) {
       setIsCompleted(true);
     }
   };
 
   const handleEnded = () => {
-    dispatch(
-      onSaveTrackingVideo({
-        enrollmentId: enrollId,
-        courseId: courseId,
-        sectionId: sectionId,
-        lessonId: lessonId,
-        videoId: video.id,
-        resumePoint: player.current.getCurrentTime(),
-      })
-    );
+    if (lessonId > 0 && video.id > 0 && sectionId > 0) {
+      dispatch(
+        onSaveTrackingVideo({
+          enrollmentId: enrollId,
+          courseId: courseId,
+          sectionId: sectionId,
+          lessonId: lessonId,
+          videoId: video.id,
+          resumePoint: player.current.getCurrentTime(),
+        })
+      );
+    }
   };
 
   const handlePauseVideo = () => {
     console.log("handlePauseVideo: ", isSeek, lessonId);
-    if (lessonId > 0 && video.id > 0) {
+    if (lessonId > 0 && video.id > 0 && sectionId > 0) {
       dispatch(
         onSaveTrackingVideo({
           enrollmentId: enrollId,
@@ -174,7 +130,7 @@ const LearnPage = () => {
   };
 
   window.onbeforeunload = function (e) {
-    if (lessonId > 0 && video.id > 0) {
+    if (lessonId > 0 && video.id > 0 && sectionId > 0) {
       dispatch(
         onSaveTrackingVideo({
           enrollmentId: enrollId,
@@ -182,22 +138,24 @@ const LearnPage = () => {
           sectionId: sectionId,
           lessonId: lessonId,
           videoId: video.id,
-          resumePoint: playedSeconds,
+          resumePoint: player.current.getCurrentTime(),
         })
       );
     }
   };
-
+  console.log(isSelectLessonManual, resumePoint);
   useEffect(() => {
-    console.log(
-      "lessonId: " + lessonId + "  tracking.lessonId: " + tracking?.lessonId
-    );
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    if (lessonId === tracking?.lessonId)
-      player.current.seekTo(tracking.resumePoint);
-    // setIsPlaying(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracking?.lessonId]);
+    console.log(isSelectLessonManual, resumePoint);
+    if (isSelectLessonManual) {
+      setIsPlaying(true);
+      player.current.seekTo(resumePoint);
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      player.current.seekTo(tracking ? tracking.resumePoint : 0);
+      setIsPlaying(false);
+    }
+  }, [isSelectLessonManual, resumePoint, tracking]);
 
   return (
     <>
@@ -237,7 +195,6 @@ const LearnPage = () => {
             onProgress={handleGetProgress}
             onPause={handlePauseVideo}
             onEnded={handleEnded}
-            onPlay={() => setIsPaused(false)}
             onClick={handleTogglePlay}
           />
         </div>

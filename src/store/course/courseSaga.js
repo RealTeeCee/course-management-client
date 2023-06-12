@@ -12,6 +12,7 @@ import {
   handleOnFreeCourseLoading,
   handleOnBestSellerCourseLoading,
   handleOnRelatedCourseLoading,
+  handleOnManualSelectedLesson,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -21,6 +22,7 @@ import {
   onGetLearning,
   onGetTrackingLesson,
   onLoadProgress,
+  onManualSelectedLesson,
   onMyCourseLoading,
   onRelatedCourseLoading,
   onSaveTrackingLesson,
@@ -41,6 +43,7 @@ export default function* courseSaga() {
     takeLatest(onRelatedCourseLoading.type, handleOnRelatedCourseLoading),
     takeLatest(onGetEnrollId.type, handleOnGetEnrollId),
     takeLatest(onGetLearning.type, handleOnGetLearning),
+    takeLatest(onManualSelectedLesson.type, handleOnManualSelectedLesson),
     takeLatest(onGetTrackingLesson.type, handleOnGetTrackingLesson),
     takeLatest(onSaveTrackingLesson.type, handleOnSaveTrackingLesson),
     takeLatest(onSaveTrackingVideo.type, handleOnSaveTrackingVideo),

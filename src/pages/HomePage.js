@@ -31,7 +31,6 @@ const HomePage = () => {
     dispatch(onCourseLoading());
     dispatch(onFreeCourseLoading());
     dispatch(onBestSellerCourseLoading());
-    dispatch(onRelatedCourseLoading({ categoryId: 1, tagId: 1 }));
   }, [dispatch]);
 
   return (

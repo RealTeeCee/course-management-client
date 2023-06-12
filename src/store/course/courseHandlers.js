@@ -22,6 +22,7 @@ import {
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
   onLoadProgressSuccess,
+  onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
   onRelatedCourseSuccess,
@@ -121,9 +122,26 @@ function* handleOnGetLearning({ payload }) {
 function* handleOnGetTrackingLesson({ payload }) {
   try {
     const res = yield call(requestLoadTracking, payload);
+    if (res.status === 200) {
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnManualSelectedLesson({ payload }) {
+  console.log(payload);
+  try {
+    const res = yield call(requestLoadTracking, payload);
     console.log(res.data);
     if (res.status === 200) {
-      yield put(onGetTrackingLessonSuccess(res.data));
+      const { resumePoint } = res.data;
+      yield put(onManualSelectedLessonSuccess(resumePoint));
     }
   } catch (error) {
     showMessageError(error);
@@ -186,4 +204,5 @@ export {
   handleOnSaveTrackingVideo,
   handleOnUpdateCompletedVideo,
   handleLoadProgress,
+  handleOnManualSelectedLesson,
 };

@@ -12,6 +12,7 @@ import {
 } from "../../components/icon";
 import { MESSAGE_LOGOUT_SUCCESS } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
+import { onCourseInitalState } from "../../store/course/courseSlice";
 
 const LearnTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -106,6 +107,7 @@ const LearnTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
+                          dispatch(onCourseInitalState());
                         },
                       }
                     : {};

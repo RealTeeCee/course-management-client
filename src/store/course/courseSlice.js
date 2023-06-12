@@ -5,15 +5,19 @@ const { createSlice } = require("@reduxjs/toolkit");
  */
 const initialState = {
   isLoading: false,
-  isSuccess: false,
+  isLoadLearningStatus: false,
+  isSelectLessonManual: false,
+
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
   bestSellerCourse: [],
   relatedCourse: [],
   errorMessage: null,
-  selectedCourse: null, //onSelectedCourse(slug) - LearnPage.js -> filter data => data.slug === slug
+  courseId: 0, //onSelectedCourse(slug) - LearnPage.js -> filter data => data.slug === slug
   enrollId: 0, //onGetEnrollId(courseId, userId) - LearnPage.js
-
+  sectionId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> sectionId: action.payload.sectionId,
+  lessonId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> lessionId: action.payload.lessonId,
+  resumePoint: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> lessionId: action.payload.lessonId,
   //onGetLearning(courseId) - LearnSidebarMod.js
   learning: {
     sectionDto: [], //All section of giving course
@@ -22,8 +26,6 @@ const initialState = {
   },
 
   video: {}, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> filter learning.videoDto => videoDto.lessonId === lessonId
-  sectionId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> sectionId: action.payload.sectionId,
-  lessonId: 0, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> lessionId: action.payload.lessonId,
   tracking: null, // onGetTrackingLesson(enrollId, courseId) - courseHandlers.js -> select where tracked = TRUE
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
 
@@ -40,49 +42,41 @@ const courseSlice = createSlice({
     onMyCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       errorMessage: null,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isLoading: false,
       data: action.payload,
     }),
 
     onMyCourseFailed: (state, action) => ({
       ...state,
-      isSuccess: false,
       isLoading: false,
       errorMessage: action.payload,
     }),
     onCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isLoading: false,
       data: action.payload,
     }),
     onCourseFailed: (state, action) => ({
       ...state,
-      isSuccess: false,
       isLoading: false,
       errorMessage: action.payload,
     }),
     onFreeCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       errorMessage: null,
     }),
     onFreeCourseSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isLoading: false,
       freeCourse: action.payload,
     }),
@@ -90,12 +84,10 @@ const courseSlice = createSlice({
     onBestSellerCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       errorMessage: null,
     }),
     onBestSellerCourseSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isLoading: false,
       bestSellerCourse: action.payload,
     }),
@@ -103,12 +95,10 @@ const courseSlice = createSlice({
     onRelatedCourseLoading: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       errorMessage: null,
     }),
     onRelatedCourseSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isLoading: false,
       relatedCourse: action.payload,
     }),
@@ -121,7 +111,7 @@ const courseSlice = createSlice({
       if (filteredCourse.length > 0) {
         return {
           ...state,
-          selectedCourse: filteredCourse[0],
+          courseId: filteredCourse[0].id,
         };
       }
       return {
@@ -148,10 +138,34 @@ const courseSlice = createSlice({
         lessonId: action.payload.lessonId,
       };
     },
+    onManualSelectedLesson: (state, action) => {
+      const filteredVideo = state.learning.videoDto.filter(
+        (video) => video.lessonId === action.payload.lessonId
+      );
+
+      if (filteredVideo.length > 0) {
+        return {
+          ...state,
+          sectionId: action.payload.sectionId,
+          video: filteredVideo[0],
+          lessonId: action.payload.lessonId,
+          isSelectLessonManual: true,
+        };
+      }
+      return {
+        ...state,
+        sectionId: action.payload.sectionId,
+        lessonId: action.payload.lessonId,
+        isSelectLessonManual: true,
+      };
+    },
+    onManualSelectedLessonSuccess: (state, action) => ({
+      ...state,
+      resumePoint: action.payload,
+    }),
     onGetEnrollId: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -159,54 +173,42 @@ const courseSlice = createSlice({
     onGetEnrollIdSuccess: (state, action) => ({
       ...state,
       enrollId: action.payload,
-      isSuccess: true,
     }),
     onGetLearning: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       //nguyen add
       isSaved: false,
       errorMessage: null,
+      isLoadLearningStatus: false,
     }),
     onGetLearningSuccess: (state, action) => ({
       ...state,
       learning: action.payload,
-      isSuccess: true,
+      isLoadLearningStatus: true,
     }),
     onGetTrackingLesson: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
-      lessonId: action.payload.lessonId,
     }),
     onGetTrackingLessonSuccess: (state, action) => ({
       ...state,
       tracking: action.payload,
-      sectionId: action.payload.sectionId,
-      isSuccess: true,
     }),
     onSaveTrackingLesson: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
       lessonId: action.payload.lessonId,
     }),
     onSaveTrackingLessonSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       isSaved: true,
     }),
     onSaveTrackingVideo: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -214,32 +216,27 @@ const courseSlice = createSlice({
     }),
     onSaveTrackingVideoSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       //nguyen add
       isSaved: false,
       errorMessage: null,
     }),
     onUpdateCompletedVideoSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       progress: action.payload,
     }),
     onLoadProgress: (state, action) => ({
       ...state,
       isLoading: true,
-      isSuccess: false,
       //nguyen add
       isSaved: false,
       errorMessage: null,
     }),
     onLoadProgressSuccess: (state, action) => ({
       ...state,
-      isSuccess: true,
       progress: action.payload,
     }),
   },
@@ -261,6 +258,8 @@ export const {
   onRelatedCourseSuccess,
   onSelectedCourse,
   onSelectedLesson,
+  onManualSelectedLesson,
+  onManualSelectedLessonSuccess,
   onGetEnrollId,
   onGetEnrollIdSuccess,
   onGetLearning,

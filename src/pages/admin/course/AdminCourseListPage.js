@@ -259,7 +259,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              window.open(`/courses/${row.slug}`, "_blank");
+              window.open(`/learn/${row.slug}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>

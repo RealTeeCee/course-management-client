@@ -85,10 +85,10 @@ function App() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(onCourseInitalState());
-    // dispatch(onAuthInitalState());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   //   dispatch(onCourseInitalState());
+  //   // dispatch(onAuthInitalState());
+  // }, [dispatch]);
 
   // useEffect(() => {
   //   axiosBearer
