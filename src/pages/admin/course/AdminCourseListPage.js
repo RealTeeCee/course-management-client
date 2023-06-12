@@ -520,6 +520,7 @@ const AdminCourseListPage = () => {
       );
 
       const dataBody = newCourses.find((course) => course.id === courseId);
+      console.log(dataBody);
 
       const {
         id,
@@ -532,6 +533,7 @@ const AdminCourseListPage = () => {
         net_price,
         tags,
         duration,
+        enrollmentCount,
         achievements,
         description,
       } = dataBody;
@@ -553,6 +555,7 @@ const AdminCourseListPage = () => {
             .map((tag) => tag.trim())
             .join(","),
           duration,
+          enrollmentCount,
           achievements: achievements
             .split(",")
             .map((achievement) => achievement.trim())
