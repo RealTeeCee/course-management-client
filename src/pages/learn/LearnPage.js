@@ -14,19 +14,14 @@ import {
   onGetLearning,
   onGetTrackingLesson,
   onMyCourseLoading,
+  onReady,
+  onReload,
   onSaveTrackingVideo,
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 
 const LearnPage = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isSeek, setIsSeek] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-
-  const { slug } = useParams();
-
-  const userId = useSelector(selectUserId);
   const {
     data,
     courseId,
@@ -36,13 +31,24 @@ const LearnPage = () => {
     video: { captionData },
     sectionId,
     tracking,
-    isSelectLessonManual,
-    resumePoint,
+    isReady,
+    isReload,
   } = useSelector(selectAllCourseState);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isSeek, setIsSeek] = useState(false);
+  // const [isReady, setIsReady] = useState(ready);
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  const { slug } = useParams();
+
+  const userId = useSelector(selectUserId);
+
   const isLoadLearningStatus = useSelector(selectIsLoadLearningStatus);
-  console.log("isLoadLearningStatus:", isLoadLearningStatus);
+
   const dispatch = useDispatch();
   const player = useRef();
+
+  console.log("isReady: " + isReady + " isReload: " + isReload);
 
   useEffect(() => {
     if (data?.length === 0) {
@@ -51,20 +57,24 @@ const LearnPage = () => {
     if (data?.length > 0) {
       dispatch(onSelectedCourse(slug));
     }
-  }, [data?.length, dispatch, slug, userId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.length, slug, userId]);
 
   useEffect(() => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
       dispatch(onGetLearning(courseId));
     }
-  }, [dispatch, courseId, userId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, userId]);
 
   useEffect(() => {
+    console.log("isLoadLearningStatus", isLoadLearningStatus);
     if (isLoadLearningStatus) {
       dispatch(onGetTrackingLesson({ enrollmentId: enrollId, courseId }));
     }
-  }, [courseId, dispatch, enrollId, isLoadLearningStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, enrollId, isLoadLearningStatus]);
 
   useEffect(() => {
     if (isCompleted) {
@@ -109,7 +119,6 @@ const LearnPage = () => {
   };
 
   const handlePauseVideo = () => {
-    console.log("handlePauseVideo: ", isSeek, lessonId);
     if (lessonId > 0 && video.id > 0 && sectionId > 0) {
       dispatch(
         onSaveTrackingVideo({
@@ -125,11 +134,14 @@ const LearnPage = () => {
   };
 
   const handleSeekVideo = () => {
-    setIsPlaying(false);
-    setIsSeek(true);
+    // console.log("handleSeekVideo - isPlaying: ", isPlaying);
+    // setIsPlaying(false);
+    // setIsSeek(true);
   };
 
   window.onbeforeunload = function (e) {
+    dispatch(onReload(true));
+
     if (lessonId > 0 && video.id > 0 && sectionId > 0) {
       dispatch(
         onSaveTrackingVideo({
@@ -143,19 +155,15 @@ const LearnPage = () => {
       );
     }
   };
-  console.log(isSelectLessonManual, resumePoint);
-  useEffect(() => {
-    console.log(isSelectLessonManual, resumePoint);
-    if (isSelectLessonManual) {
-      setIsPlaying(true);
-      player.current.seekTo(resumePoint);
-      setIsPlaying(false);
-    } else {
-      setIsPlaying(true);
+
+  const handleOnReady = React.useCallback(() => {
+    if (!isReady || isReload) {
       player.current.seekTo(tracking ? tracking.resumePoint : 0);
-      setIsPlaying(false);
+      dispatch(onReady(true));
+      dispatch(onReload(false));
     }
-  }, [isSelectLessonManual, resumePoint, tracking]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady, isReload, tracking]);
 
   return (
     <>
@@ -196,6 +204,7 @@ const LearnPage = () => {
             onPause={handlePauseVideo}
             onEnded={handleEnded}
             onClick={handleTogglePlay}
+            onReady={handleOnReady}
           />
         </div>
         <div>

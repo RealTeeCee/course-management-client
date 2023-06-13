@@ -18,6 +18,8 @@ export const selectAllCourseState = createSelector(
     isSaved: courseSlice.isSaved,
     isSelectLessonManual: courseSlice.isSelectLessonManual,
     resumePoint: courseSlice.resumePoint,
+    isReload: courseSlice.isReload,
+    isReady: courseSlice.isReady,
   })
 );
 

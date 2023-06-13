@@ -1,15 +1,13 @@
 import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   selectAllCourseState,
   selectLearningLessonLength,
 } from "../../store/course/courseSelector";
 import {
-  onLoadProgress,
   onManualSelectedLesson,
-  onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
 const { Panel } = Collapse;
@@ -26,13 +24,9 @@ const CollapseAntCom = ({
 }) => {
   // const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  // const reqParams = new URLSearchParams(location.search);
-  // Load video when select lesson.
 
-  const { enrollId, courseId, video, sectionId, lessonId, tracking } =
+  const { enrollId, courseId, lessonId, tracking } =
     useSelector(selectAllCourseState);
-  const learningLessonLength = useSelector(selectLearningLessonLength);
 
   const [lessionId, setLessionId] = useState(0);
   const [manualSelectLesson, setManualSelectLesson] = useState(false);

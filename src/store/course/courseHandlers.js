@@ -140,8 +140,8 @@ function* handleOnManualSelectedLesson({ payload }) {
     const res = yield call(requestLoadTracking, payload);
     console.log(res.data);
     if (res.status === 200) {
-      const { resumePoint } = res.data;
-      yield put(onManualSelectedLessonSuccess(resumePoint));
+      // const { resumePoint } = res.data;
+      yield put(onManualSelectedLessonSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);

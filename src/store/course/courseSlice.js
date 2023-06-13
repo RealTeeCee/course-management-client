@@ -4,9 +4,10 @@ const { createSlice } = require("@reduxjs/toolkit");
  * *Slice*
  */
 const initialState = {
-  isLoading: false,
   isLoadLearningStatus: false,
   isSelectLessonManual: false,
+  isReload: false,
+  isReady: false,
 
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
@@ -39,67 +40,75 @@ const courseSlice = createSlice({
     onCourseInitalState: (state, action) => ({
       ...initialState,
     }),
+    onReload: (state, action) => {
+      return {
+        ...state,
+        errorMessage: null,
+        isReload: action.payload,
+        isLoadLearningStatus: false,
+      };
+    },
     onMyCourseLoading: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
-      isLoading: false,
+
       data: action.payload,
     }),
 
     onMyCourseFailed: (state, action) => ({
       ...state,
-      isLoading: false,
+
       errorMessage: action.payload,
     }),
     onCourseLoading: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
       ...state,
-      isLoading: false,
+
       data: action.payload,
     }),
     onCourseFailed: (state, action) => ({
       ...state,
-      isLoading: false,
+
       errorMessage: action.payload,
     }),
     onFreeCourseLoading: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onFreeCourseSuccess: (state, action) => ({
       ...state,
-      isLoading: false,
+
       freeCourse: action.payload,
     }),
 
     onBestSellerCourseLoading: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onBestSellerCourseSuccess: (state, action) => ({
       ...state,
-      isLoading: false,
+
       bestSellerCourse: action.payload,
     }),
 
     onRelatedCourseLoading: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onRelatedCourseSuccess: (state, action) => ({
       ...state,
-      isLoading: false,
+
       relatedCourse: action.payload,
     }),
 
@@ -150,6 +159,7 @@ const courseSlice = createSlice({
           video: filteredVideo[0],
           lessonId: action.payload.lessonId,
           isSelectLessonManual: true,
+          isReady: false,
         };
       }
       return {
@@ -157,15 +167,19 @@ const courseSlice = createSlice({
         sectionId: action.payload.sectionId,
         lessonId: action.payload.lessonId,
         isSelectLessonManual: true,
+        isReady: false,
       };
     },
     onManualSelectedLessonSuccess: (state, action) => ({
       ...state,
-      resumePoint: action.payload,
+      resumePoint: action.payload.resumePoint,
+      tracking: action.payload,
+      isReady: true,
+      isReload: true,
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
-      isLoading: true,
+
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -176,7 +190,7 @@ const courseSlice = createSlice({
     }),
     onGetLearning: (state, action) => ({
       ...state,
-      isLoading: true,
+
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -189,16 +203,17 @@ const courseSlice = createSlice({
     }),
     onGetTrackingLesson: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
     }),
     onGetTrackingLessonSuccess: (state, action) => ({
       ...state,
       tracking: action.payload,
+      resumePoint: action.payload.resumePoint,
     }),
     onSaveTrackingLesson: (state, action) => ({
       ...state,
-      isLoading: true,
+
       errorMessage: null,
       lessonId: action.payload.lessonId,
     }),
@@ -208,7 +223,7 @@ const courseSlice = createSlice({
     }),
     onSaveTrackingVideo: (state, action) => ({
       ...state,
-      isLoading: true,
+
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -219,7 +234,7 @@ const courseSlice = createSlice({
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
-      isLoading: true,
+
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -230,7 +245,7 @@ const courseSlice = createSlice({
     }),
     onLoadProgress: (state, action) => ({
       ...state,
-      isLoading: true,
+
       //nguyen add
       isSaved: false,
       errorMessage: null,
@@ -239,11 +254,16 @@ const courseSlice = createSlice({
       ...state,
       progress: action.payload,
     }),
+    onReady: (state, action) => ({
+      ...state,
+      isReady: action.payload,
+    }),
   },
 });
 
 export const {
   onCourseInitalState,
+  onReload,
   onMyCourseLoading,
   onMyCourseSuccess,
   onMyCourseFailed,
@@ -274,6 +294,7 @@ export const {
   onUpdateCompletedVideoSuccess,
   onLoadProgress,
   onLoadProgressSuccess,
+  onReady,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
