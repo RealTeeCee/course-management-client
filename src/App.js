@@ -57,6 +57,8 @@ const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
+const BlogCreatePage = lazy(() => import("./pages/blog/BlogCreatePage.js"));
+const BlogListPage = lazy(() => import("./pages/blog/BlogListPage.js"));
 
 const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
 
@@ -133,6 +135,14 @@ function App() {
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
+          <Route
+            path="/blogs/blogList"
+            element={<BlogListPage></BlogListPage>}
+          ></Route>
+          <Route
+            path="/blogs/blogCreate"
+            element={<BlogCreatePage></BlogCreatePage>}
+          ></Route>
 
           <Route
             path="/oauth2/redirect"
