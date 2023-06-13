@@ -61,6 +61,7 @@ const schemaValidation = yup.object().shape({
     .min(0, MESSAGE_NUMBER_POSITIVE),
   // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(1),
+  ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
   videoFile: yup
     .mixed()
     .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
@@ -148,10 +149,6 @@ const AdminLessonListPage = () => {
       sortable: true,
     },
     {
-      name: "Duration",
-      selector: (row) => convertSecondToDiffForHumans(row.duration),
-    },
-    {
       name: "Status",
       selector: (row) => (
         <SwitchAntCom
@@ -162,6 +159,15 @@ const AdminLessonListPage = () => {
           onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
         />
       ),
+    },
+    {
+      name: "Order",
+      selector: (row) => row.ordered,
+      sortable: true,
+    },
+    {
+      name: "Duration",
+      selector: (row) => convertSecondToDiffForHumans(row.duration),
     },
     {
       name: "Actions",
@@ -219,41 +225,6 @@ const AdminLessonListPage = () => {
     //   ),
     // },
   ];
-
-  //Description
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
-      imageUploader: {
-        upload: async (file) => {
-          const fd = new FormData();
-          fd.append("image", file);
-          try {
-            const res = await axiosInstance({
-              method: "POST",
-              url: IMG_BB_URL,
-              data: fd,
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
-            return res.data.data.url;
-          } catch (error) {
-            toast.error(error.message);
-            return;
-          }
-        },
-      },
-    }),
-    []
-  );
 
   /********* Delete One ********* */
   const handleDeleteLesson = ({ lessonId, name }) => {
@@ -373,8 +344,16 @@ const AdminLessonListPage = () => {
 
   /********* Update ********* */
   const handleSubmitForm = async (values) => {
-    const { id, name, status, duration, description, videoFile, captionFiles } =
-      values;
+    const {
+      id,
+      name,
+      status,
+      duration,
+      ordered,
+      description,
+      videoFile,
+      captionFiles,
+    } = values;
     // Case Click choose Caption then click again and choose cancel then submit
     if (captionFiles !== "" && captionFiles.length === 0) {
       const captionSelector = document.querySelector(
@@ -393,6 +372,8 @@ const AdminLessonListPage = () => {
         id,
         status,
         duration,
+        ordered,
+        description,
       });
       // Update lessons State
       setLessons((prev) => {
@@ -403,6 +384,7 @@ const AdminLessonListPage = () => {
               name,
               status,
               duration,
+              ordered,
               description,
             };
           }
@@ -439,7 +421,6 @@ const AdminLessonListPage = () => {
           : lession
       );
       const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
-      console.log("dataBody: ", dataBody);
       await axiosPrivate.put(
         `${API_SECTION_URL}/${sectionId}/lesson`,
         JSON.stringify(dataBody)
@@ -451,10 +432,10 @@ const AdminLessonListPage = () => {
     }
   };
 
-  const handleChangeStatus = (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-  };
+  // const handleChangeStatus = (value) => {
+  //   setValue("status", value);
+  //   setError("status", { message: "" });
+  // };
 
   const handleToggleChangeVideo = () => {
     setShowUpload(!showUpload);
@@ -526,8 +507,8 @@ const AdminLessonListPage = () => {
               errorMsg={errors.id?.message}
             ></InputCom>
             <div className="card-body">
-              <div className="row text-center">
-                <div className="col-sm-6 offset-3">
+              <div className="row">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="name" isRequired>
                     Lesson Name
                   </LabelCom>
@@ -536,43 +517,23 @@ const AdminLessonListPage = () => {
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Lesson Name"
+                    placeholder="Input lesson Name"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
                 </div>
-                {/* <div className="col-sm-3">
-                  <LabelCom htmlFor="duration">Duration</LabelCom>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="ordered">Ordered</LabelCom>
                   <InputCom
                     type="number"
                     control={control}
-                    name="duration"
+                    name="ordered"
                     register={register}
-                    placeholder="Input Duration"
-                    errorMsg={errors.duration?.message}
-                    defaultValue={watch("duration")}
+                    placeholder="Input lesson ordered"
+                    errorMsg={errors.ordered?.message}
+                    defaultValue={0}
                   ></InputCom>
-                </div> */}
-                {/* <div className="col-sm-6">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
-                </div> */}
+                </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row justify-center">
