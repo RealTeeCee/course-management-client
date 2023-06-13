@@ -77,6 +77,7 @@ const AdminSectionListPage = () => {
   });
   const { courseId } = useParams();
 
+  /********* Export Excel ********* */
   const { handleExcelData } = useExcelExport("section");
   const handleExport = () => {
     const headers = ["No", "Section Name", "Status", "Order"];
@@ -218,7 +219,7 @@ const AdminSectionListPage = () => {
     // },
   ];
 
-  /********* Multiple One ********* */
+  /********* Delete One ********* */
   const handleDeleteSection = ({ sectionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
