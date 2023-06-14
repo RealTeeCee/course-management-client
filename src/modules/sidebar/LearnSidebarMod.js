@@ -72,9 +72,9 @@ const LearnSidebarMod = () => {
     }
   }, [sectionId]);
 
-  useEffect(() => {
-    if (courseId) dispatch(onGetLearning(courseId));
-  }, [dispatch, courseId]);
+  // useEffect(() => {
+  //   if (courseId) dispatch(onGetLearning(courseId));
+  // }, [dispatch, courseId]);
 
   const handleChangeCollapse = (keys) => {
     console.log(keys);

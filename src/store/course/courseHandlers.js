@@ -10,7 +10,8 @@ import {
   requestLoadTracking,
   requestMyCourse,
   requestRelatedCourse,
-  requestSaveTracking,
+  requestSaveTrackingLesson,
+  requestSaveTrackingVideo,
   requestUpdateCompleted,
 } from "./courseRequests";
 import {
@@ -22,6 +23,7 @@ import {
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
   onLoadProgressSuccess,
+  onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
   onRelatedCourseSuccess,
@@ -36,6 +38,8 @@ import {
 function* handleOnMyCourseLoading(action) {
   try {
     const res = yield call(requestMyCourse, action.payload);
+
+    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onMyCourseSuccess(res.data));
@@ -119,9 +123,26 @@ function* handleOnGetLearning({ payload }) {
 function* handleOnGetTrackingLesson({ payload }) {
   try {
     const res = yield call(requestLoadTracking, payload);
+    if (res.status === 200) {
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnManualSelectedLesson({ payload }) {
+  console.log(payload);
+  try {
+    const res = yield call(requestLoadTracking, payload);
     console.log(res.data);
     if (res.status === 200) {
-      yield put(onGetTrackingLessonSuccess(res.data));
+      // const { resumePoint } = res.data;
+      yield put(onManualSelectedLessonSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);
@@ -129,18 +150,21 @@ function* handleOnGetTrackingLesson({ payload }) {
 }
 function* handleOnSaveTrackingLesson({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingLesson, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingLessonSuccess());
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
     }
-  } catch (error) {
-    showMessageError(error);
-  }
+  } catch (error) {}
 }
 function* handleOnSaveTrackingVideo({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingVideo, payload);
 
     if (res.status === 200) {
       yield put(onSaveTrackingVideoSuccess());
@@ -184,4 +208,5 @@ export {
   handleOnSaveTrackingVideo,
   handleOnUpdateCompletedVideo,
   handleLoadProgress,
+  handleOnManualSelectedLesson,
 };

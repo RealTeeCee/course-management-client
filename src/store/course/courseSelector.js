@@ -6,7 +6,7 @@ export const selectAllCourseState = createSelector(
   [selectCourseReducer],
   (courseSlice) => ({
     data: courseSlice.data,
-    courseId: courseSlice.selectedCourse?.id,
+    courseId: courseSlice.courseId,
     lessonId: courseSlice.lessonId,
     enrollId: courseSlice.enrollId,
     learning: courseSlice.learning,
@@ -16,6 +16,10 @@ export const selectAllCourseState = createSelector(
     progress: courseSlice.progress,
     //nguyen add
     isSaved: courseSlice.isSaved,
+    isSelectLessonManual: courseSlice.isSelectLessonManual,
+    resumePoint: courseSlice.resumePoint,
+    isReload: courseSlice.isReload,
+    isReady: courseSlice.isReady,
   })
 );
 
@@ -23,7 +27,7 @@ export const selectEnrollIdAndCourseId = createSelector(
   [selectCourseReducer],
   (courseSlice) => ({
     enrollId: courseSlice.enrollId,
-    courseId: courseSlice.selectedCourse.id,
+    courseId: courseSlice.courseId,
   })
 );
 
@@ -58,6 +62,14 @@ export const selectTracking = createSelector(
 export const selectProgress = createSelector(
   [selectCourseReducer],
   (courseSlice) => courseSlice.progress
+);
+export const selectLearningLessonLength = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.learning.lessonDto.length
+);
+export const selectIsLoadLearningStatus = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.isLoadLearningStatus
 );
 
 // export const selectCourseFailed = createSelector(

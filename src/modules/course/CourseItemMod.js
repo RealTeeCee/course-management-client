@@ -17,7 +17,7 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
         </div>
         <div className="c-card-body py-[1rem]">
           <CategoryTagMod icon={<IconFolderCom />}>
-            {course?.categoryName}
+            {course?.category_name}
           </CategoryTagMod>
 
           <CourseTitleMod className="font-tw-secondary">

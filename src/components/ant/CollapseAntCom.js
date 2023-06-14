@@ -2,9 +2,12 @@ import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
-  onLoadProgress,
+  selectAllCourseState,
+  selectLearningLessonLength,
+} from "../../store/course/courseSelector";
+import {
+  onManualSelectedLesson,
   onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
@@ -22,13 +25,12 @@ const CollapseAntCom = ({
 }) => {
   // const location = useLocation();
   const navigate = useNavigate();
-  // const reqParams = new URLSearchParams(location.search);
-  // Load video when select lesson.
 
-  const { enrollId, courseId, video, sectionId, lessonId, tracking } =
+  const { enrollId, courseId, lessonId, tracking, isSelectLessonManual } =
     useSelector(selectAllCourseState);
 
   const [lessionId, setLessionId] = useState(0);
+  const [manualSelectLesson, setManualSelectLesson] = useState(false);
   //  const lessionId = reqParams.get("id");
   const dispatch = useDispatch();
 
@@ -36,68 +38,92 @@ const CollapseAntCom = ({
 
   const handleClick = (child) => {
     setLessionId(child.id);
-    // navigate(`/learn/${slug}?id=${child.id}`);
     dispatch(
-      onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
+      //onSelectedLesson({ sectionId: child.sectionId, lessonId: child.id })
+      onManualSelectedLesson({
+        enrollmentId: enrollId,
+        courseId,
+        sectionId: child.sectionId,
+        lessonId: child.id,
+      })
     );
+    console.log(tracking?.id);
   };
 
   useEffect(() => {
-    if (isLearning && tracking?.lessonId > 0 && lessonId === 0) {
-      setLessionId(tracking.lessonId);
-      navigate(`/learn/${slug}?id=${tracking.lessonId}`);
+    if (isSelectLessonManual) {
+      dispatch(
+        onSaveTrackingLesson({
+          id: tracking?.id,
+          enrollmentId: enrollId,
+          courseId,
+        })
+      );
+    }
+  }, [courseId, dispatch, enrollId, isSelectLessonManual, tracking?.id]);
+
+  // Auto select lesson when load tracking success
+  useEffect(() => {
+    setLessionId(lessonId);
+
+    if (isLearning && tracking && !manualSelectLesson) {
+      navigate(`/learn/${slug}?id=${tracking?.lessonId}`);
+      setManualSelectLesson(true);
       dispatch(
         onSelectedLesson({
-          sectionId: tracking.sectionId,
-          lessonId: tracking.lessonId,
+          sectionId: tracking?.sectionId,
+          lessonId: tracking?.lessonId,
         })
       );
     }
-  }, [isLearning, navigate, slug, tracking, lessonId, dispatch]);
+    // if (isLearning) {
+    //   navigate(`/learn/${slug}?id=${lessonId}`);
+    // }
+  }, [dispatch, isLearning, lessonId, navigate, slug, tracking]);
 
   //Save Tracking Lesson
-  useEffect(() => {
-    console.log("Save Tracking sectionId: ", sectionId);
+  // useEffect(() => {
+  //   console.log("Save Tracking sectionId: ", sectionId);
 
-    if (
-      video &&
-      courseId &&
-      lessonId > 0 &&
-      video.id > 0 &&
-      //nguyen add
-      sectionId > 0
-    ) {
-      let timer = setTimeout(
-        () =>
-          dispatch(
-            onSaveTrackingLesson({
-              lessonId: lessonId,
-              sectionId: sectionId,
-              videoId: video.id,
-              courseId: courseId,
-              enrollmentId: enrollId,
-            })
-          ),
-        500 // run after 5s when user select lesson
-      );
-      // clean up previous timer if user select lesson in interval (< 1.5s)
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [dispatch, enrollId, sectionId, courseId, video, lessonId]);
+  //   if (
+  //     video &&
+  //     courseId &&
+  //     lessonId > 0 &&
+  //     video.id > 0 &&
+  //     //nguyen add
+  //     sectionId > 0
+  //   ) {
+  //     let timer = setTimeout(
+  //       () =>
+  //         dispatch(
+  //           onSaveTrackingLesson({
+  //             lessonId: lessonId,
+  //             sectionId: sectionId,
+  //             videoId: video.id,
+  //             courseId: courseId,
+  //             enrollmentId: enrollId,
+  //           })
+  //         ),
+  //       500 // run after 5s when user select lesson
+  //     );
+  //     // clean up previous timer if user select lesson in interval (< 1.5s)
+  //     return () => {
+  //       clearTimeout(timer);
+  //     };
+  //   }
+  // }, [dispatch, enrollId, sectionId, courseId, video, lessonId]);
 
   //Load progress
-  useEffect(() => {
-    if (enrollId > 0 && courseId > 0) {
-      dispatch(
-        onLoadProgress({
-          enrollmentId: enrollId,
-          courseId: courseId,
-        })
-      );
-    }
-  }, [courseId, dispatch, enrollId]);
+  // useEffect(() => {
+  //   if (enrollId > 0 && courseId > 0) {
+  //     dispatch(
+  //       onLoadProgress({
+  //         enrollmentId: enrollId,
+  //         courseId: courseId,
+  //       })
+  //     );
+  //   }
+  // }, [courseId, dispatch, enrollId]);
 
   return parentItems.length === 0 ? null : (
     <Collapse
