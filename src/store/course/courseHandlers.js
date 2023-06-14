@@ -10,7 +10,8 @@ import {
   requestLoadTracking,
   requestMyCourse,
   requestRelatedCourse,
-  requestSaveTracking,
+  requestSaveTrackingLesson,
+  requestSaveTrackingVideo,
   requestUpdateCompleted,
 } from "./courseRequests";
 import {
@@ -149,18 +150,21 @@ function* handleOnManualSelectedLesson({ payload }) {
 }
 function* handleOnSaveTrackingLesson({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingLesson, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingLessonSuccess());
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
     }
-  } catch (error) {
-    showMessageError(error);
-  }
+  } catch (error) {}
 }
 function* handleOnSaveTrackingVideo({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingVideo, payload);
 
     if (res.status === 200) {
       yield put(onSaveTrackingVideoSuccess());

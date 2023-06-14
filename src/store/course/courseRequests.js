@@ -27,8 +27,11 @@ export const requestLearning = (courseId) => {
 export const requestLoadTracking = (data) => {
   return axiosBearer.post(`/track/load`, data);
 };
-export const requestSaveTracking = (data) => {
+export const requestSaveTrackingVideo = (data) => {
   return axiosBearer.post(`/track/save`, data);
+};
+export const requestSaveTrackingLesson = (data) => {
+  return axiosBearer.post(`/track/save-tracking-lesson`, data);
 };
 export const requestUpdateCompleted = (data) => {
   return axiosBearer.post(`/track/complete`, data);

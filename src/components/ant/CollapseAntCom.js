@@ -8,6 +8,7 @@ import {
 } from "../../store/course/courseSelector";
 import {
   onManualSelectedLesson,
+  onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
 const { Panel } = Collapse;
@@ -25,7 +26,7 @@ const CollapseAntCom = ({
   // const location = useLocation();
   const navigate = useNavigate();
 
-  const { enrollId, courseId, lessonId, tracking } =
+  const { enrollId, courseId, lessonId, tracking, isSelectLessonManual } =
     useSelector(selectAllCourseState);
 
   const [lessionId, setLessionId] = useState(0);
@@ -46,7 +47,20 @@ const CollapseAntCom = ({
         lessonId: child.id,
       })
     );
+    console.log(tracking?.id);
   };
+
+  useEffect(() => {
+    if (isSelectLessonManual) {
+      dispatch(
+        onSaveTrackingLesson({
+          id: tracking?.id,
+          enrollmentId: enrollId,
+          courseId,
+        })
+      );
+    }
+  }, [courseId, dispatch, enrollId, isSelectLessonManual, tracking?.id]);
 
   // Auto select lesson when load tracking success
   useEffect(() => {

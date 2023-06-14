@@ -55,8 +55,8 @@ const courseSlice = createSlice({
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
-
       data: action.payload,
+      isReady: false,
     }),
 
     onMyCourseFailed: (state, action) => ({
@@ -158,7 +158,7 @@ const courseSlice = createSlice({
           sectionId: action.payload.sectionId,
           video: filteredVideo[0],
           lessonId: action.payload.lessonId,
-          isSelectLessonManual: true,
+          isSelectLessonManual: false,
           isReady: false,
         };
       }
@@ -166,7 +166,7 @@ const courseSlice = createSlice({
         ...state,
         sectionId: action.payload.sectionId,
         lessonId: action.payload.lessonId,
-        isSelectLessonManual: true,
+        isSelectLessonManual: false,
         isReady: false,
       };
     },
@@ -176,6 +176,7 @@ const courseSlice = createSlice({
       tracking: action.payload,
       isReady: true,
       isReload: true,
+      isSelectLessonManual: true,
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
@@ -203,22 +204,20 @@ const courseSlice = createSlice({
     }),
     onGetTrackingLesson: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onGetTrackingLessonSuccess: (state, action) => ({
       ...state,
       tracking: action.payload,
-      resumePoint: action.payload.resumePoint,
+      resumePoint: action.payload ? action.payload.resumePoint : 0,
     }),
     onSaveTrackingLesson: (state, action) => ({
       ...state,
-
       errorMessage: null,
-      lessonId: action.payload.lessonId,
     }),
     onSaveTrackingLessonSuccess: (state, action) => ({
       ...state,
+      tracking: action.payload,
       isSaved: true,
     }),
     onSaveTrackingVideo: (state, action) => ({
