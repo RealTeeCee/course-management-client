@@ -27,9 +27,9 @@ const LayoutAuthentication = () => {
               <div>
                 <Link to="/">
                   <img
-                    className="img-fluid for-light w-[200px] object-cover mx-auto"
-                    srcSet="/logo192.png"
-                    alt="Course Management Logo"
+                    className="img-fluid for-light w-[300px] object-cover mx-auto"
+                    srcSet="/logo_click_light.png"
+                    alt="Click and Learn Logo"
                   />
                 </Link>
               </div>

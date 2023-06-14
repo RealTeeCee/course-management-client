@@ -61,7 +61,7 @@ function* handleOnCourseLoading() {
       yield put(onCourseFailed(res.data));
     }
   } catch (error) {
-    showMessageError(error);
+    console.log(error);
   }
 }
 function* handleOnFreeCourseLoading() {
@@ -72,7 +72,7 @@ function* handleOnFreeCourseLoading() {
       yield put(onFreeCourseSuccess(res.data));
     }
   } catch (error) {
-    showMessageError(error);
+    console.log(error);
   }
 }
 function* handleOnBestSellerCourseLoading() {
@@ -83,7 +83,7 @@ function* handleOnBestSellerCourseLoading() {
       yield put(onBestSellerCourseSuccess(res.data));
     }
   } catch (error) {
-    showMessageError(error);
+    console.log(error);
   }
 }
 function* handleOnRelatedCourseLoading({ payload }) {

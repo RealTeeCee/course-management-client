@@ -1,13 +1,7 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Navigate,
-  redirect,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -15,9 +9,6 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { onCourseInitalState } from "./store/course/courseSlice.js";
-import { onAuthInitalState } from "./store/auth/authSlice.js";
-import { axiosBearer } from "./api/axiosInstance.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -73,10 +64,6 @@ const PaymentSuccessPage = lazy(() =>
 const PaymentErrorPage = lazy(() =>
   import("./pages/payment/PaymentErrorPage.js")
 );
-
-const customStyles = {
-  content: {},
-};
 
 Modal.setAppElement("#root");
 Modal.defaultStyles = {};
@@ -135,6 +122,15 @@ function App() {
           <Route
             path="/forbidden"
             element={<ErrorPage status={403}></ErrorPage>}
+          ></Route>
+          <Route
+            path="/token-expire"
+            element={
+              <ErrorPage
+                status={419}
+                message="The verified link is expired. Please try again"
+              ></ErrorPage>
+            }
           ></Route>
           {/* ********* END Error ********* */}
           <Route

@@ -112,11 +112,11 @@ export const statusItems = [
 
 export const levelItems = [
   {
-    value: 1,
-    label: "Advance",
-  },
-  {
     value: 0,
     label: "Basic",
+  },
+  {
+    value: 1,
+    label: "Advance",
   },
 ];

@@ -46,7 +46,8 @@ const LayoutHome = () => {
   };
 
   return (
-    <div className="layout-home px-10 py-6 bg-tw-light text-black min-h-screen">
+    // <div className="layout-home px-10 py-6 bg-tw-light text-black min-h-screen">
+    <div className="px-10 py-6 bg-tw-light text-black min-h-screen">
       {/* <ReactModal
         isOpen={false}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
@@ -116,7 +117,7 @@ const LayoutHome = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12 footer-copyright text-center">
-              <p className="mb-0">Copyright 2023 © Course Management</p>
+              <p className="mb-0">Copyright 2023 © Click & Learn</p>
             </div>
           </div>
         </div>

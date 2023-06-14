@@ -7,22 +7,11 @@ import ErrorCom from "../common/ErrorCom";
 //   console.log(`selected ${value}`);
 // };
 
-// const $listItems = [
-//   {
-//     value: 1,
-//     label: "Active",
-//   },
-//   {
-//     value: 0,
-//     label: "InActive",
-//   },
-// ];
-
 // Basic Usage
 const SelectDefaultAntCom = ({
   listItems = [],
   onChange = () => {},
-  defaultValue = 1,
+  defaultValue,
   status = "",
   errorMsg = "",
   className = "",
