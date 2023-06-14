@@ -13,6 +13,7 @@ import {
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
+  onManualSelectedLesson,
   onMyCourseLoading,
   onReady,
   onReload,
@@ -20,6 +21,7 @@ import {
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
+import { DialogNextVideo } from "../../components/mui";
 
 const LearnPage = () => {
   const {
@@ -33,9 +35,13 @@ const LearnPage = () => {
     tracking,
     isReady,
     isReload,
+    learning,
+    progress,
   } = useSelector(selectAllCourseState);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSeek, setIsSeek] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
+  const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -104,6 +110,12 @@ const LearnPage = () => {
   };
 
   const handleEnded = () => {
+    if (progress === 100) {
+      setIsFinal(true);
+    }
+    console.log(isFinal);
+
+    setIsEnd(true);
     if (lessonId > 0 && video.id > 0 && sectionId > 0) {
       dispatch(
         onSaveTrackingVideo({
@@ -165,10 +177,41 @@ const LearnPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, isReload, tracking]);
 
+  const handleCloseDialog = () => {
+    setIsEnd(false);
+  };
+
+  const handleNexVideo = () => {
+    const nextVideo =
+      learning.lessonDto[
+        learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
+      ];
+
+    console.log(nextVideo);
+    if (nextVideo !== undefined) {
+      dispatch(
+        onManualSelectedLesson({
+          enrollmentId: enrollId,
+          courseId,
+          sectionId: nextVideo.sectionId,
+          lessonId: nextVideo.id,
+        })
+      );
+    }
+
+    setIsEnd(false);
+  };
+
   return (
     <>
       <HeadingH1Com>Learn Page</HeadingH1Com>
       <GapYCom></GapYCom>
+      <DialogNextVideo
+        open={isEnd}
+        onClose={handleCloseDialog}
+        onNext={handleNexVideo}
+        isFinal={isFinal}
+      ></DialogNextVideo>
       <div className="video-container">
         <div className="video-item">
           <ReactPlayer
