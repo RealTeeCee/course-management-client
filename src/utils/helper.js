@@ -12,6 +12,7 @@ export function formatNumber(number) {
 
 // priceStr: 1,000,000 - Output: 1000000
 export function convertStrMoneyToInt(strMoney) {
+  if (strMoney === 0) return strMoney;
   const numberString = strMoney.replace(/,/g, "");
   const intValue = parseInt(numberString, 10);
   if (Number.isNaN(intValue)) return 0;
@@ -36,5 +37,55 @@ export function showMessageError(error) {
     toast.error(error.response.data.message);
   } else {
     toast.error(MESSAGE_GENERAL_FAILED);
+  }
+}
+
+// Get Duration for Video
+export function getDurationFromVideo(
+  e,
+  setValue = () => {},
+  name = "duration"
+) {
+  const video = document.createElement("video");
+
+  video.preload = "metadata";
+  video.onloadedmetadata = function () {
+    setValue(name, Math.round(video.duration));
+  };
+
+  video.src = URL.createObjectURL(e.target.files[0]);
+}
+
+// Convert second to Correct Timing, Input: 96, output: 1 min 36 seconds
+export function convertSecondToDiffForHumans(seconds = 3600) {
+  // >= 1 hour
+  if (seconds >= 3600) {
+    const hours = Math.floor(seconds / 3600);
+    const remainingSeconds = seconds % 3600;
+    const minutes = Math.floor(remainingSeconds / 60);
+
+    let formattedDuration = `${hours} ${hours >= 1 ? "hours" : "hour"}`;
+
+    if (minutes >= 1) {
+      formattedDuration += ` ${minutes} ${minutes >= 1 ? "mins" : "min"}`;
+    }
+
+    return formattedDuration;
+  } else if (seconds >= 60) {
+    // >= 1 min
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    let formattedDuration = `${minutes} ${minutes >= 1 ? "mins" : "min"}`;
+
+    if (remainingSeconds >= 1) {
+      formattedDuration += ` ${remainingSeconds} ${
+        remainingSeconds >= 1 ? "seconds" : "second"
+      }`;
+    }
+
+    return formattedDuration;
+  } else {
+    // Less than 1 minute
+    return `${seconds} ${seconds >= 1 ? "seconds" : "second"}`;
   }
 }

@@ -70,22 +70,22 @@ const sliderData = [
 //       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">
 //         <HeadingFormH1Com>MY BLOG</HeadingFormH1Com>
 //         <h2 className="py-4">
-          // <div>
-          //   We’ve got everything you need to deliver flexible and effective
-          //   skills development for your entire workforce.
-          // </div>
-          // <div>
-          //   Teach what you know and help learners explore their interests, gain
-          //   new skills, and advance their careers.
-          // </div>
-          // <div>
-          //   Publish the course you want, in the way you want, and always have
-          //   control of your own content.
-          // </div>
-          // <div>
-          //   Expand your professional network, build your expertise, and earn
-          //   money on each paid enrollment.
-          // </div>
+// <div>
+//   We’ve got everything you need to deliver flexible and effective
+//   skills development for your entire workforce.
+// </div>
+// <div>
+//   Teach what you know and help learners explore their interests, gain
+//   new skills, and advance their careers.
+// </div>
+// <div>
+//   Publish the course you want, in the way you want, and always have
+//   control of your own content.
+// </div>
+// <div>
+//   Expand your professional network, build your expertise, and earn
+//   money on each paid enrollment.
+// </div>
 //         </h2>
 //       </div>
 //       <section className="my-12">
@@ -159,12 +159,16 @@ const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const imageUrl = sliderData[0]?.url;
   const [isLoading, setIsLoading] = useState(true);
-  const { startIndex, endIndex, currentPage, handleChangePage } =
-    usePagination(1, LIMIT_PAGE);
+  const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
+    1,
+    LIMIT_PAGE
+  );
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axiosBearer.get(`/blog?_start=${startIndex}&_end=${endIndex}`);
+        const response = await axiosBearer.get(
+          `/blog?_start=${startIndex}&_end=${endIndex}`
+        );
         setBlogs(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -175,8 +179,6 @@ const BlogPage = () => {
 
     fetchBlogs();
   }, [startIndex, endIndex]);
-
-
 
   return (
     <>
@@ -216,7 +218,7 @@ const BlogPage = () => {
       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">
         <HeadingFormH1Com>MY BLOG</HeadingFormH1Com>
         <h2 className="py-4">
-        <div>
+          <div>
             We’ve got everything you need to deliver flexible and effective
             skills development for your entire workforce.
           </div>
@@ -239,54 +241,46 @@ const BlogPage = () => {
           {isLoading ? (
             <p>Loading...</p>
           ) : (
-            blogs.map((blog, index) => {
-              const blogIndex = startIndex + index;
-              if (blogIndex >= startIndex && blogIndex < endIndex) {
-                return (
-                  <Link key={blog.id} to={`/blogs/${blog.id}`}>
-                  <div
-                    key={blog.id}
-                    className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"
-                  >
-                    <div id="img">
-                      <img
-                        src={Carousel_3}
-                        alt=""
-                        className="w-full h-[250px] object-cover rounded-[10px] mb-[20px]"
-                      />
+            blogs.slice(startIndex, endIndex).map((blog) => (
+              <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                <div
+                  key={blog.id}
+                  className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"
+                >
+                  <div id="img">
+                    <img
+                      src={Carousel_3}
+                      alt=""
+                      className="w-full h-[250px] object-cover rounded-[10px] mb-[20px]"
+                    />
+                  </div>
+                  <div className="flex items-center mb-3">
+                    <AiOutlineTags className="mr-[10px] text-[25px]" />
+                    <label className="block mr-[20px] mb-0 text-[#999] text-[15px]">
+                      Nextjs
+                    </label>
+                  </div>
+                  <div id="details">
+                    <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
+                      <h3 className="font-[500]">{blog.name}</h3>
                     </div>
-                    <div className="flex items-center mb-3">
-                      <AiOutlineTags className="mr-[10px] text-[25px]" />
-                      <label className="block mr-[20px] mb-0 text-[#999] text-[15px]">
-                        Nextjs
+                    <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
+                      {blog.description.slice(0, 50)}
+                    </p>
+                    <div id="date" className="flex items-center mt-3">
+                      <AiOutlineClockCircle className="mr-[10px] text-[40px]" />
+                      <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                        {blog.created_at}
+                      </label>
+                      <BsFillPersonVcardFill className="mr-[10px] text-[40px]" />
+                      <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                        Nickhun
                       </label>
                     </div>
-                    <div id="details">
-                      <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
-                        <h3 className="font-[500]">{blog.name}</h3>
-                      </div>
-                      <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
-                        {blog.description}
-                      </p>
-                      <div id="date" className="flex items-center mt-3">
-                        <AiOutlineClockCircle className="mr-[10px] text-[40px]" />
-                        <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
-                          {blog.created_at}
-                        </label>
-                        <BsFillPersonVcardFill className="mr-[10px] text-[40px]" />
-                        <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
-                          Nickhun
-                        </label>
-                      </div>
-                    </div>
                   </div>
-                </Link>
-                );
-              }
-              return null;
-            })
-            
-           
+                </div>
+              </Link>
+            ))
           )}
         </div>
       </section>

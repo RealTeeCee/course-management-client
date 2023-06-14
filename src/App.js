@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -9,6 +9,7 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+
 import { onInitalState } from "./store/course/courseSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
@@ -61,10 +62,12 @@ const BlogCreatePage = lazy(() => import("./pages/blog/BlogCreatePage.js"));
 const BlogListPage = lazy(() => import("./pages/blog/BlogListPage.js"));
 
 const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
-
-const customStyles = {
-  content: {},
-};
+const PaymentSuccessPage = lazy(() =>
+  import("./pages/payment/PaymentSuccessPage.js")
+);
+const PaymentErrorPage = lazy(() =>
+  import("./pages/payment/PaymentErrorPage.js")
+);
 
 Modal.setAppElement("#root");
 Modal.defaultStyles = {};
@@ -104,7 +107,6 @@ function App() {
             path="/categories/:slug"
             element={<CategoryDetailPage></CategoryDetailPage>}
           ></Route>
-
           <Route path="/courses" element={<CoursePage></CoursePage>}></Route>
           <Route
             path="/courses/:slug"
@@ -124,12 +126,10 @@ function App() {
             path="/checkout/:slug"
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
-
           <Route
             path="/profile/:slug"
             element={<UserProfilePage></UserProfilePage>}
           ></Route>
-
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
@@ -142,6 +142,15 @@ function App() {
           <Route
             path="/blogs/blogCreate"
             element={<BlogCreatePage></BlogCreatePage>}
+          ></Route>
+
+          <Route
+            path="/payment/success"
+            element={<PaymentSuccessPage></PaymentSuccessPage>}
+          ></Route>
+          <Route
+            path="/payment/error"
+            element={<PaymentErrorPage></PaymentErrorPage>}
           ></Route>
 
           <Route

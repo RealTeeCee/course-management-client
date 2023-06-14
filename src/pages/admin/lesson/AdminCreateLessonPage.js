@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../../components/heading";
 import { InputCom } from "../../../components/input";
@@ -10,36 +10,60 @@ import "react-quill/dist/quill.snow.css";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
 import {
-  MESSAGE_GENERAL_FAILED,
-  MESSAGE_FIELD_INVALID,
-  MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_VIDEO_FILE_INVALID,
+  MESSAGE_CAPTION_FILE_INVALID,
+  VIDEO_EXT_VALID,
+  CAPTION_EXT_REGEX,
+  CAPTION_EXT_VALID,
 } from "../../../constants/config";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
-import { API_COURSE_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import {
+  API_LESSON_URL,
+  API_SECTION_URL,
+  IMG_BB_URL,
+} from "../../../constants/endpoint";
 import { useNavigate } from "react-router-dom/dist";
-import { showMessageError } from "../../../utils/helper";
+import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
+import ImageUploader from "quill-image-uploader";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
+import { TextEditorQuillCom } from "../../../components/texteditor";
+Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  id: yup.number(),
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  duration: yup
-    .string(MESSAGE_NUMBER_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, MESSAGE_NUMBER_POSITIVE),
-  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  status: yup.number().default(1),
-  // created_at: yup.date().required(MESSAGE_FIELD_REQUIRED),
+  description: yup.string(),
+  videoFile: yup
+    .mixed()
+    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+      if (value) return true;
+    })
+    .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
+      if (!value) return true;
+      const extValidArr = VIDEO_EXT_VALID.split(", ");
+      const videoFileExt = value[0]?.name.split(".").pop().toLowerCase();
+      return extValidArr.includes(videoFileExt);
+    }),
+  captionFiles: yup
+    .mixed()
+    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+      if (value) return true;
+    })
+    .test("fileFormat", MESSAGE_CAPTION_FILE_INVALID, function (value) {
+      if (!value) return true;
+      for (let i = 0; i < value.length; i++) {
+        const captionFile = value[i]?.name.toLowerCase();
+        if (!CAPTION_EXT_REGEX.test(captionFile)) return false;
+      }
+      return true;
+    }),
 });
-
 
 const AdminCreateLessonPage = () => {
   const {
@@ -54,10 +78,16 @@ const AdminCreateLessonPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const { courseId, sectionId } = useParams();
+
+  /********* API State ********* */
+  const [lessons, setLessons] = useState([]);
+  // const [section, setSection] = useState({});
+  // const [course, setCourse] = useState({});
+  /********* END API State ********* */
 
   const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
-  const { id,sectionId } = useParams();
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
   const resetValues = () => {
@@ -65,70 +95,52 @@ const AdminCreateLessonPage = () => {
     reset();
   };
 
+  const handleSubmitForm = async (values) => {
+    const { name, duration, description, videoFile, captionFiles } = values;
+    let lessonId;
+    try {
+      setIsLoading(true);
 
-   //Description
-  //  const modules = useMemo(
-  //   () => ({
-  //     toolbar: [
-  //       ["bold", "italic", "underline", "strike"],
-  //       ["blockquote"],
-  //       [{ header: 1 }, { header: 2 }], // custom button values
-  //       [{ list: "ordered" }, { list: "bullet" }],
-  //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  //       ["link", "image"],
-  //     ],
-  //     imageUploader: {
-  //       upload: async (file) => {
-  //         const fd = new FormData();
-  //         fd.append("image", file);
-  //         try {
-  //           const res = await axiosInstance({
-  //             method: "POST",
-  //             url: IMG_BB_URL,
-  //             data: fd,
-  //             headers: {
-  //               "Content-Type": "multipart/form-data",
-  //             },
-  //           });
-  //           return res.data.data.url;
-  //         } catch (error) {
-  //           toast.error(error.message);
-  //           return;
-  //         }
-  //       },
-  //     },
-  //   }),
-  //   []
-  // );
+      const res = await axiosPrivate.post(
+        `${API_SECTION_URL}/${sectionId}/lesson`,
+        {
+          name,
+          duration,
+          description,
+          sectionId,
+        }
+      );
+      lessonId = await getLatestLessonId();
+      if (!lessonId) throw new Error("Lesson ID not found");
 
-  /********* Get Course ID from API  ********* */
+      const fd = new FormData();
+      fd.append("videoFile", videoFile[0]);
+      for (let i = 0; i < captionFiles.length; i++) {
+        fd.append("captionFiles", captionFiles[i]);
+      }
+      await axiosPrivate.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
 
-const handleSubmitForm = async (values) => {
-  const { name,duration,description,status} = values;
-  try {
-    setIsLoading(!isLoading);
-    const data = {
-      name: name,
-      sectionId: sectionId,
-      duration: duration,
-      description: description,
-      status:status
-    };
-    console.log("name", name);
-    console.log("sectionId", sectionId);
-    console.log("duration", duration);
-    console.log("status", status);
-    console.log("description", description);
-    const res = await axiosPrivate.post(`/section/${sectionId}/lesson`, data);
-    toast.success(`${res.data.message}`);
-    navigate("/admin/courses/1/sections/3/lessons");
-  } catch (error) {
-    showMessageError(error);
-  } finally {
-    setIsLoading(false); // Đặt isLoading thành false để ẩn trạng thái đang tải
-   
-  }
-};
+      toast.success(`${res.data.message}`);
+      navigate(`/admin/courses/${courseId}/sections/${sectionId}/lessons`);
+    } catch (error) {
+      // Rollback
+      await axiosPrivate.delete(
+        `/section/${sectionId}/lesson?lessonId=${lessonId}`
+      );
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getLatestLessonId = async () => {
+    try {
+      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+      return res.data[0].id;
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
 
   return (
     <>
@@ -146,16 +158,12 @@ const handleSubmitForm = async (values) => {
               id="form-create"
               encType="multipart/form-data"
             >
-              {/* <div className="card-header">
-                <h5>Form Create Course</h5>
-                <span>Lorem ipsum dolor sit amet consectetur</span>
-              </div> */}
               <div className="card-body">
-                <div className="row">
-                  <div className="col-sm-4">
+                <div className="row text-center">
+                  <div className="col-sm-6 offset-3">
                     <LabelCom htmlFor="name" isRequired>
                       Lesson Name
-                    </LabelCom> 
+                    </LabelCom>
                     <InputCom
                       type="text"
                       control={control}
@@ -165,56 +173,64 @@ const handleSubmitForm = async (values) => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="status">Status</LabelCom>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-6">
+                    <LabelCom
+                      htmlFor="videoFile"
+                      subText={`File: ${VIDEO_EXT_VALID}`}
+                      isRequired
+                    >
+                      Video
+                    </LabelCom>
                     <InputCom
-                      type="number"
+                      type="file"
                       control={control}
-                      name="status"
+                      name="videoFile"
                       register={register}
-                      placeholder="Input Lesson status"
-                      errorMsg={errors.status?.message}
+                      placeholder="Upload video"
+                      errorMsg={errors.videoFile?.message}
+                      onChange={(e) => getDurationFromVideo(e, setValue)}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="duration">Duration</LabelCom>
+                  <div className="col-sm-6">
+                    <LabelCom
+                      htmlFor="captionFiles"
+                      subText={`File: ${CAPTION_EXT_VALID}`}
+                      isRequired
+                    >
+                      Caption Files
+                    </LabelCom>
                     <InputCom
-                      type="number"
+                      type="file"
                       control={control}
-                      name="duration"
+                      name="captionFiles"
                       register={register}
-                      placeholder="Input Duration"
-                      errorMsg={errors.duration?.message}
+                      placeholder="Upload caption files"
+                      multiple
+                      errorMsg={errors.captionFiles?.message}
                     ></InputCom>
                   </div>
                 </div>
-
                 <GapYCom className="mb-3"></GapYCom>
-
                 <div className="row">
                   <div className="col-sm-12">
                     <LabelCom htmlFor="description">Description</LabelCom>
-
-                    <ReactQuill
-                      // modules={modules}
-                      theme="snow"
+                    <TextEditorQuillCom
                       value={description}
                       onChange={(description) => {
                         setValue("description", description);
                         setDescription(description);
                       }}
-                      placeholder="Describe your course ..."
-                      className="h-36"
-                    ></ReactQuill>
+                      placeholder="Describe your lesson ..."
+                    ></TextEditorQuillCom>
                   </div>
                 </div>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
-                </ButtonCom>
-                <ButtonCom backgroundColor="danger" type="reset">
-                  Cancel
                 </ButtonCom>
               </div>
             </form>
