@@ -11,6 +11,7 @@ import {
   onSaveTrackingLesson,
   onSelectedLesson,
 } from "../../store/course/courseSlice";
+import { convertSecondToDiffForHumans } from "../../utils/helper";
 const { Panel } = Collapse;
 
 const CollapseAntCom = ({
@@ -161,7 +162,9 @@ const CollapseAntCom = ({
                           <span>
                             {lessionNo++}. {child.name}
                           </span>
-                          <span>{child.duration}</span>
+                          <span>
+                            {convertSecondToDiffForHumans(child.duration)}
+                          </span>
                         </Link>
                       );
                     } else {
@@ -173,7 +176,9 @@ const CollapseAntCom = ({
                           <span>
                             {lessionNo++}. {child.name}
                           </span>
-                          <span>{child.duration}</span>
+                          <span>
+                            {convertSecondToDiffForHumans(child.duration)}
+                          </span>
                         </div>
                       );
                     }

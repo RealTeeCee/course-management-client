@@ -10,7 +10,11 @@ import {
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import { MESSAGE_LOGOUT_SUCCESS } from "../../constants/config";
+import {
+  AVATAR_DEFAULT,
+  IMAGE_DEFAULT,
+  MESSAGE_LOGOUT_SUCCESS,
+} from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
 import HomeSearchMod from "../HomeSearchMod";
 
@@ -69,15 +73,9 @@ const HomeTopbarMod = () => {
             <div className="media profile-media gap-x-2">
               <img
                 className="object-cover rounded-full w-12 h-12"
-                src={`${
-                  user
-                    ? user.image ??
-                      "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
-                    : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930"
-                }`}
+                src={`${user ? user.image ?? AVATAR_DEFAULT : IMAGE_DEFAULT}`}
                 alt="User Avatar"
               />
-              {/* https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg */}
               <div className="media-body flex-1">
                 <span className="text-tw-primary font-medium font-tw-third">
                   {user ? user.name : "Welcome"}

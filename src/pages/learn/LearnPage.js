@@ -21,7 +21,10 @@ import {
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
-import { DialogNextVideo } from "../../components/mui";
+import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
+import { TabsAntCom } from "../../components/ant";
+import TextEditorQuillCom from "../../components/texteditor/TextEditorQuillCom";
+import { CommentCom } from "../../components/comment";
 
 const LearnPage = () => {
   const {
@@ -44,6 +47,7 @@ const LearnPage = () => {
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [note, setNote] = useState("");
 
   const { slug } = useParams();
 
@@ -202,10 +206,41 @@ const LearnPage = () => {
     setIsEnd(false);
   };
 
+  const tabItems = [
+    {
+      key: "1",
+      label: `Description`,
+      children: `Description of Course.....`,
+    },
+    {
+      key: "2",
+      label: `Note`,
+      children: (
+        <TextEditorQuillCom
+          value={note}
+          onChange={(note) => {
+            console.log("note:", note);
+            setNote(note);
+          }}
+          placeholder="Noted place..."
+        ></TextEditorQuillCom>
+      ),
+    },
+    {
+      key: "3",
+      label: `Rating`,
+      // check điều kiện user rating xong thì thêm props readOnly
+      children: <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
+    },
+    {
+      key: "4",
+      label: `Comment`,
+      children: <CommentCom />,
+    },
+  ];
+
   return (
     <>
-      <HeadingH1Com>Learn Page</HeadingH1Com>
-      <GapYCom></GapYCom>
       <DialogNextVideo
         open={isEnd}
         onClose={handleCloseDialog}
@@ -256,6 +291,7 @@ const LearnPage = () => {
           </button>
         </div>
       </div>
+      <TabsAntCom items={tabItems}></TabsAntCom>
     </>
   );
 };
