@@ -246,7 +246,7 @@ const CommentParent = ({
                     }}
                     placeholder={"Leave your reply here..."}
                   ></TextEditorQuillCom>
-                  <GapYCom className="mb-14"></GapYCom>
+                  <GapYCom className="mb-16"></GapYCom>
                   <div>
                     <ButtonCom
                       type="submit"
