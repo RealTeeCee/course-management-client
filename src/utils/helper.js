@@ -56,7 +56,7 @@ export function getDurationFromVideo(
   video.src = URL.createObjectURL(e.target.files[0]);
 }
 
-// Convert second to Correct Timing, Input: 96, output: 1 min 36 seconds
+// Convert second to DiffForHumans Timming, Input: 96, output: 1 min 36 seconds
 export function convertSecondToDiffForHumans(seconds = 3600) {
   // >= 1 hour
   if (seconds >= 3600) {
@@ -87,5 +87,23 @@ export function convertSecondToDiffForHumans(seconds = 3600) {
   } else {
     // Less than 1 minute
     return `${seconds} ${seconds >= 1 ? "seconds" : "second"}`;
+  }
+}
+
+// Convert second to Time, Input: 96, output: 1:36
+export function convertSecondToTime(seconds) {
+  let minutes = Math.floor(seconds / 60);
+  seconds = seconds % 60;
+  let hours = Math.floor(minutes / 60);
+  minutes = minutes % 60;
+
+  if (hours > 0) {
+    return `${hours}:${padZero(minutes)}:${padZero(seconds)}`;
+  } else {
+    return `${minutes}:${padZero(seconds)}`;
+  }
+
+  function padZero(num) {
+    return num.toString().padStart(2, "0");
   }
 }

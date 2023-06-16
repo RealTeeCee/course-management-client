@@ -19,7 +19,7 @@ const onChange = (key) => {
 //     children: `Content of Tab Pane 3`,
 //   },
 // ];
-const TabsAntCom = ({items = []}) => (
+const TabsAntCom = ({ items = [] }) => (
   <Tabs size="large" defaultActiveKey="1" items={items} onChange={onChange} />
 );
 export default TabsAntCom;

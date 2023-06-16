@@ -39,11 +39,11 @@ const SelectDefaultAntCom = ({
 SelectDefaultAntCom.propTypes = {
   listItems: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.number.isRequired,
+      value: PropTypes.any.isRequired,
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
-  defaultValue: PropTypes.number,
+  defaultValue: PropTypes.any,
   status: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,

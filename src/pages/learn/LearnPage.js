@@ -25,6 +25,7 @@ import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
 import { TabsAntCom } from "../../components/ant";
 import TextEditorQuillCom from "../../components/texteditor/TextEditorQuillCom";
 import { CommentCom } from "../../components/comment";
+import { NoteCom } from "../../components/note";
 
 const LearnPage = () => {
   const {
@@ -47,7 +48,6 @@ const LearnPage = () => {
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [note, setNote] = useState("");
 
   const { slug } = useParams();
 
@@ -215,16 +215,7 @@ const LearnPage = () => {
     {
       key: "2",
       label: `Note`,
-      children: (
-        <TextEditorQuillCom
-          value={note}
-          onChange={(note) => {
-            console.log("note:", note);
-            setNote(note);
-          }}
-          placeholder="Noted place..."
-        ></TextEditorQuillCom>
-      ),
+      children: <NoteCom />,
     },
     {
       key: "3",

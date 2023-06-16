@@ -94,7 +94,7 @@ const CommentCom = ({
       </ul>
       <GapYCom></GapYCom>
       <div
-        className="flex justify-center align-center"
+        className="flex justify-center items-center"
         onClick={() => setIsShowCommentBox(!isShowCommentBox)}
       >
         {isShowCommentBox ? (
@@ -122,6 +122,13 @@ const CommentCom = ({
               isLoading={isLoading}
             >
               Send
+            </ButtonCom>
+            <ButtonCom
+              className="!text-black ml-2"
+              backgroundColor="gray"
+              onClick={() => setIsShowCommentBox(false)}
+            >
+              Close
             </ButtonCom>
           </div>
         </form>
@@ -246,8 +253,7 @@ const CommentParent = ({
                     }}
                     placeholder={"Leave your reply here..."}
                   ></TextEditorQuillCom>
-                  <GapYCom className="mb-16"></GapYCom>
-                  <div>
+                  <div className="mt-14">
                     <ButtonCom
                       type="submit"
                       backgroundColor="pink"
@@ -258,7 +264,6 @@ const CommentParent = ({
                     <ButtonCom
                       className="!text-black ml-2"
                       backgroundColor="gray"
-                      isLoading={isLoading}
                       onClick={() => setIsReply(false)}
                     >
                       Close

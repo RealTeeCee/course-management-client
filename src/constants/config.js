@@ -121,6 +121,17 @@ export const levelItems = [
   },
 ];
 
+export const sortItems = [
+  {
+    value: "DESC",
+    label: "Sort by Newest",
+  },
+  {
+    value: "ASC",
+    label: "Sort by Oldest",
+  },
+];
+
 // Data Static Variable
 export const IMAGE_DEFAULT =
   "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930";

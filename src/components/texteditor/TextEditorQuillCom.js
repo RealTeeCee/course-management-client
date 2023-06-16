@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "../../api/axiosInstance";
 import { IMG_BB_URL } from "../../constants/endpoint";
@@ -13,9 +13,18 @@ Quill.register("modules/imageUploader", ImageUploader);
 const TextEditorQuillCom = ({
   value = "",
   onChange = (value) => {},
+  focus = false,
   placeholder = "Write your description...",
   className = "h-36",
 }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (focus && ref.current) {
+      ref.current.focus();
+    }
+  }, [focus]);
+
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -51,6 +60,7 @@ const TextEditorQuillCom = ({
   );
   return (
     <ReactQuill
+      ref={ref}
       modules={modules}
       theme="snow"
       value={value}

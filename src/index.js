@@ -24,6 +24,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import "./index.scss";
 import "swiper/css";
 import { ToastContainer } from "react-toastify";
+import { ConfigProvider } from "antd";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -32,7 +33,16 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#7366ff",
+            },
+          }}
+        >
+          <App />
+        </ConfigProvider>
+
         <ToastContainer
           bodyClassName="font-tw-primary"
           position="top-center"
