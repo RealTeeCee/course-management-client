@@ -71,7 +71,6 @@ const NoteCom = ({
   useEffect(() => {
     dispatch(onLoadNote({ enrollmentId: enrollId, courseId }));
   }, [courseId, dispatch, enrollId]);
-  console.log(notes);
 
   const getLessonAndSectionName = ({ sectionId, lessonId }) => {
     const section = learning.sectionDto.find((s) => s.id === sectionId);
@@ -93,8 +92,13 @@ const NoteCom = ({
     // 1. Filter notes where resumePoint = notePoint
     //    Yes: Update note for in notes =>
 
-    const existingNote = notes.find((note) => note.resumePoint === notePoint);
-
+    const existingNote = notes.find(
+      (note) =>
+        note.resumePoint === notePoint &&
+        note.sectionId === sectionId &&
+        note.lessonId === lessonId
+    );
+    console.log(existingNote);
     if (existingNote) {
       dispatch(
         onSaveNote({
@@ -167,6 +171,7 @@ const NoteCom = ({
         } cursor-pointer items-center px-3 py-2 rounded-lg hover:opacity-70 transition-all duration-300`}
         onClick={() => {
           setIsShowNote(!isShowNote);
+          setNote("");
           setIsFocus(!isFocus);
           onWriteNote();
         }}
@@ -244,39 +249,52 @@ const NoteCom = ({
       {notes.map((n) => {
         const { sectionName, lessonName } = getLessonAndSectionName(n);
         return openEditKey === n.id && isOpenEdit ? (
-          <React.Fragment key={n.id}>
-            <GapYCom></GapYCom>
-            <form>
-              <TextEditorQuillCom
-                value={note}
-                onChange={(note) => {
-                  setValue("note", note);
-                  setNote(note);
-                }}
-                placeholder={placeholder}
-                focus={isFocus}
-              ></TextEditorQuillCom>
-              <GapYCom className="mb-5"></GapYCom>
-              <div>
-                <ButtonCom
-                  isLoading={isLoading}
-                  onClick={() => handleEditNote(n)}
-                >
-                  Save
-                </ButtonCom>
-                <ButtonCom
-                  className="!text-black ml-2"
-                  backgroundColor="gray"
-                  onClick={() => {
-                    setIsOpenEdit(false);
-                    setIsFocus(false);
-                  }}
-                >
-                  Close
-                </ButtonCom>
+          <div
+            className="flex justify-between w-full items-center mt-4 "
+            key={n.id}
+          >
+            <div className=" w-full">
+              <div className="flex gap-x-2">
+                <ButtonCom>{convertSecondToTime(n.resumePoint)}</ButtonCom>
+                <span>
+                  <strong>{sectionName}</strong>
+                </span>
+
+                <span>{lessonName}</span>
               </div>
-            </form>
-          </React.Fragment>
+              <GapYCom></GapYCom>
+              <form className="ml-20 mr-20">
+                <TextEditorQuillCom
+                  value={note}
+                  onChange={(note) => {
+                    setValue("note", note);
+                    setNote(note);
+                  }}
+                  placeholder={placeholder}
+                  focus={isFocus}
+                ></TextEditorQuillCom>
+                <GapYCom className="mb-5"></GapYCom>
+                <div>
+                  <ButtonCom
+                    isLoading={isLoading}
+                    onClick={() => handleEditNote(n)}
+                  >
+                    Save
+                  </ButtonCom>
+                  <ButtonCom
+                    className="!text-black ml-2"
+                    backgroundColor="gray"
+                    onClick={() => {
+                      setIsOpenEdit(false);
+                      setIsFocus(false);
+                    }}
+                  >
+                    Close
+                  </ButtonCom>
+                </div>
+              </form>
+            </div>
+          </div>
         ) : (
           <div className="flex justify-between items-center mt-4" key={n.id}>
             <div className="flex gap-x-2">
