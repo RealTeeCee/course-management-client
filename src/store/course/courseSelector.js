@@ -14,12 +14,11 @@ export const selectAllCourseState = createSelector(
     sectionId: courseSlice.sectionId,
     tracking: courseSlice.tracking,
     progress: courseSlice.progress,
-    //nguyen add
-    isSaved: courseSlice.isSaved,
     isSelectLessonManual: courseSlice.isSelectLessonManual,
     resumePoint: courseSlice.resumePoint,
     isReload: courseSlice.isReload,
     isReady: courseSlice.isReady,
+    notes: courseSlice.notes,
   })
 );
 

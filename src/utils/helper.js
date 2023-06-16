@@ -86,7 +86,7 @@ export function convertSecondToDiffForHumans(seconds = 3600) {
     return formattedDuration;
   } else {
     // Less than 1 minute
-    return `${seconds} ${seconds >= 1 ? "seconds" : "second"}`;
+    return `${Math.round(seconds)} ${seconds >= 1 ? "seconds" : "second"}`;
   }
 }
 

@@ -48,6 +48,7 @@ const LearnPage = () => {
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
 
   const { slug } = useParams();
 
@@ -107,10 +108,11 @@ const LearnPage = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleGetProgress = ({ played }) => {
+  const handleGetProgress = ({ playedSeconds, played }) => {
     if (played > 0.9) {
       setIsCompleted(true);
     }
+    setPlayedSeconds(playedSeconds);
   };
 
   const handleEnded = () => {
@@ -147,6 +149,10 @@ const LearnPage = () => {
         })
       );
     }
+  };
+
+  const onWriteNote = () => {
+    setIsPlaying(false);
   };
 
   const handleSeekVideo = () => {
@@ -215,7 +221,7 @@ const LearnPage = () => {
     {
       key: "2",
       label: `Note`,
-      children: <NoteCom />,
+      children: <NoteCom notePoint={playedSeconds} onWriteNote={onWriteNote} />,
     },
     {
       key: "3",

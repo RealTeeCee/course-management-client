@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import * as yup from "yup";
 import { sortItems } from "../../constants/config";
+import { selectAllCourseState } from "../../store/course/courseSelector";
+import {
+  onDeleteNote,
+  onLoadNote,
+  onSaveNote,
+} from "../../store/course/courseSlice";
 import {
   convertSecondToDiffForHumans,
   convertSecondToTime,
@@ -8,10 +17,8 @@ import {
 import { SelectDefaultAntCom } from "../ant";
 import { ButtonCom } from "../button";
 import GapYCom from "../common/GapYCom";
-import { TextEditorQuillCom } from "../texteditor";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { IconEditCom, IconTrashCom } from "../icon";
+import { TextEditorQuillCom } from "../texteditor";
 
 const lessonItems = [
   {
@@ -33,11 +40,22 @@ const schemaValidation = yup.object().shape({
   // .required(MESSAGE_FIELD_REQUIRED)
 });
 
-const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
+const NoteCom = ({
+  noteUrl = "/note",
+  placeholder = "Write your note...",
+  notePoint,
+  onWriteNote,
+}) => {
   const [note, setNote] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isShowNote, setIsShowNote] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+  const [openEditKey, setOpenEditKey] = useState(0);
+  const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const dispatch = useDispatch();
+
+  const { lessonId, sectionId, enrollId, courseId, video, learning, notes } =
+    useSelector(selectAllCourseState);
 
   const {
     control,
@@ -50,41 +68,61 @@ const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+  useEffect(() => {
+    dispatch(onLoadNote({ enrollmentId: enrollId, courseId }));
+  }, [courseId, dispatch, enrollId]);
+  console.log(notes);
 
-  const handleSubmitForm = (values) => {
-    console.log(values);
+  const getLessonAndSectionName = ({ sectionId, lessonId }) => {
+    const section = learning.sectionDto.find((s) => s.id === sectionId);
+    const lesson = learning.lessonDto.find(
+      (s) => s.id === lessonId && s.sectionId === sectionId
+    );
+
+    if (section && lesson) {
+      return {
+        sectionName: section.name,
+        lessonName: lesson.name,
+      };
+    }
+    return null;
+  };
+
+  const handleSubmitForm = ({ note }) => {
     // call tới api noteUrl từ ngoài truyền vào, ko set cứng để bên khác xài lại
+    // 1. Filter notes where resumePoint = notePoint
+    //    Yes: Update note for in notes =>
 
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     const fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         ...values,
-    //         status: 0,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //       })
-    //     );
-    //     const res = await axiosPrivate.post(`/course`, fd);
-    //     toast.success(`${res.data.message}`);
-    //     resetValues();
-    //     navigate("/admin/courses");
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+    const existingNote = notes.find((note) => note.resumePoint === notePoint);
+
+    if (existingNote) {
+      dispatch(
+        onSaveNote({
+          id: existingNote.id,
+          description: note,
+          lessonId,
+          sectionId,
+          enrollmentId: enrollId,
+          courseId,
+          videoId: video.id,
+          resumePoint: notePoint,
+        })
+      );
+    } else {
+      dispatch(
+        onSaveNote({
+          description: note,
+          lessonId,
+          sectionId,
+          enrollmentId: enrollId,
+          courseId,
+          videoId: video.id,
+          resumePoint: notePoint,
+        })
+      );
+    }
+    setIsShowNote(false);
+    setNote("");
   };
 
   const handleChangeFilterLesson = (value) => {
@@ -98,13 +136,29 @@ const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
   };
 
   // Edit & Delete Area
-  const handleEditNote = (noteId) => {
-    alert("Edit Note id: " + noteId);
+  const handleEditNote = (editedNote) => {
+    console.log("note state: " + note);
+    console.log(editedNote);
+    dispatch(
+      onSaveNote({
+        ...editedNote,
+        description: note,
+      })
+    );
+    setIsOpenEdit(false);
+    setNote("");
+  };
+  const handleToggleEditNote = (note) => {
+    setOpenEditKey(note.id);
+    setNote(note.description);
+    setIsOpenEdit(true);
   };
 
   const handleDeleteNote = (noteId) => {
-    alert("Delete Note id: " + noteId);
+    alert("Deleted Note id: " + noteId);
+    dispatch(onDeleteNote(noteId));
   };
+
   return (
     <div>
       <button
@@ -114,12 +168,13 @@ const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
         onClick={() => {
           setIsShowNote(!isShowNote);
           setIsFocus(!isFocus);
+          onWriteNote();
         }}
       >
         <p>
           Create a new note at{" "}
           <span className="text-tw-light-pink">
-            {convertSecondToDiffForHumans(56)}
+            {convertSecondToDiffForHumans(notePoint)}
           </span>
         </p>
         <div
@@ -154,50 +209,8 @@ const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
           ></SelectDefaultAntCom>
         </div>
       </div>
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex gap-x-2">
-          <span className="bg-tw-primary text-white px-2 py-1 rounded-full flex-auto h-8">
-            {convertSecondToTime(96)}
-          </span>
-          <div>
-            <h5 className="font-bold text-lg">2. Course: PHP Advance</h5>
-            <div className="flex gap-x-2">
-              <span>1. Section 01</span>
-              <span>9. Lesson 09</span>
-            </div>
-            <div>
-              Text noted!!! Lorem ipsum dolor sit amet consectetur adipisicing
-              elit. Cupiditate, nesciunt quia. Sit quis magnam tempora, ipsam
-              deserunt ratione odit inventore at ab consectetur! Deleniti animi
-              corrupti odit cumque, voluptatibus corporis?
-            </div>
-          </div>
-        </div>
-        <div className="flex-none">
-          <ButtonCom
-            className="px-3 rounded-lg mr-2"
-            backgroundColor="info"
-            onClick={() => {
-              // Truyền noteId
-              handleEditNote(1);
-            }}
-          >
-            <IconEditCom className="w-5"></IconEditCom>
-          </ButtonCom>
-          <ButtonCom
-            className="px-3 rounded-lg"
-            backgroundColor="danger"
-            onClick={() => {
-              // Truyền noteId
-              handleDeleteNote(1);
-            }}
-          >
-            <IconTrashCom className="w-5"></IconTrashCom>
-          </ButtonCom>
-        </div>
-      </div>
       {isShowNote && (
-        <>
+        <React.Fragment>
           <GapYCom></GapYCom>
           <form onSubmit={handleSubmit(handleSubmitForm)}>
             <TextEditorQuillCom
@@ -226,8 +239,89 @@ const NoteCom = ({ noteUrl = "/note", placeholder = "Write your note..." }) => {
               </ButtonCom>
             </div>
           </form>
-        </>
+        </React.Fragment>
       )}
+      {notes.map((n) => {
+        const { sectionName, lessonName } = getLessonAndSectionName(n);
+        return openEditKey === n.id && isOpenEdit ? (
+          <React.Fragment key={n.id}>
+            <GapYCom></GapYCom>
+            <form>
+              <TextEditorQuillCom
+                value={note}
+                onChange={(note) => {
+                  setValue("note", note);
+                  setNote(note);
+                }}
+                placeholder={placeholder}
+                focus={isFocus}
+              ></TextEditorQuillCom>
+              <GapYCom className="mb-5"></GapYCom>
+              <div>
+                <ButtonCom
+                  isLoading={isLoading}
+                  onClick={() => handleEditNote(n)}
+                >
+                  Save
+                </ButtonCom>
+                <ButtonCom
+                  className="!text-black ml-2"
+                  backgroundColor="gray"
+                  onClick={() => {
+                    setIsOpenEdit(false);
+                    setIsFocus(false);
+                  }}
+                >
+                  Close
+                </ButtonCom>
+              </div>
+            </form>
+          </React.Fragment>
+        ) : (
+          <div className="flex justify-between items-center mt-4" key={n.id}>
+            <div className="flex gap-x-2">
+              <ButtonCom>{convertSecondToTime(n.resumePoint)}</ButtonCom>
+
+              <div>
+                {/*
+              <h5 className="font-bold text-lg">2. Course: PHP Advance</h5>
+              */}
+                <div className="flex gap-x-2">
+                  <span>
+                    <strong>{sectionName}</strong>
+                  </span>
+
+                  <span>{lessonName}</span>
+                </div>
+
+                <div dangerouslySetInnerHTML={{ __html: n.description }}></div>
+              </div>
+            </div>
+            <div className="flex-none">
+              <ButtonCom
+                className="px-3 rounded-lg mr-2"
+                backgroundColor="info"
+                onClick={() => {
+                  // Truyền noteId
+                  handleToggleEditNote(n);
+                }}
+              >
+                <IconEditCom className="w-5"></IconEditCom>
+              </ButtonCom>
+              <ButtonCom
+                className="px-3 rounded-lg"
+                backgroundColor="danger"
+                onClick={() => {
+                  // Truyền noteId
+                  handleDeleteNote(n.id);
+                }}
+              >
+                <IconTrashCom className="w-5"></IconTrashCom>
+              </ButtonCom>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

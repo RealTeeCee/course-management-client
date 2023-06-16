@@ -77,54 +77,7 @@ const CollapseAntCom = ({
         })
       );
     }
-    // if (isLearning) {
-    //   navigate(`/learn/${slug}?id=${lessonId}`);
-    // }
   }, [dispatch, isLearning, lessonId, navigate, slug, tracking]);
-
-  //Save Tracking Lesson
-  // useEffect(() => {
-  //   console.log("Save Tracking sectionId: ", sectionId);
-
-  //   if (
-  //     video &&
-  //     courseId &&
-  //     lessonId > 0 &&
-  //     video.id > 0 &&
-  //     //nguyen add
-  //     sectionId > 0
-  //   ) {
-  //     let timer = setTimeout(
-  //       () =>
-  //         dispatch(
-  //           onSaveTrackingLesson({
-  //             lessonId: lessonId,
-  //             sectionId: sectionId,
-  //             videoId: video.id,
-  //             courseId: courseId,
-  //             enrollmentId: enrollId,
-  //           })
-  //         ),
-  //       500 // run after 5s when user select lesson
-  //     );
-  //     // clean up previous timer if user select lesson in interval (< 1.5s)
-  //     return () => {
-  //       clearTimeout(timer);
-  //     };
-  //   }
-  // }, [dispatch, enrollId, sectionId, courseId, video, lessonId]);
-
-  //Load progress
-  // useEffect(() => {
-  //   if (enrollId > 0 && courseId > 0) {
-  //     dispatch(
-  //       onLoadProgress({
-  //         enrollmentId: enrollId,
-  //         courseId: courseId,
-  //       })
-  //     );
-  //   }
-  // }, [courseId, dispatch, enrollId]);
 
   return parentItems.length === 0 ? null : (
     <Collapse

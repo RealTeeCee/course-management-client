@@ -13,18 +13,24 @@ import {
   handleOnBestSellerCourseLoading,
   handleOnRelatedCourseLoading,
   handleOnManualSelectedLesson,
+  handleLoadNote,
+  handleSaveNote,
+  handleDeleteNote,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
   onCourseLoading,
+  onDeleteNote,
   onFreeCourseLoading,
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
+  onLoadNote,
   onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
   onRelatedCourseLoading,
+  onSaveNote,
   onSaveTrackingLesson,
   onSaveTrackingVideo,
   onUpdateCompletedVideo,
@@ -49,5 +55,8 @@ export default function* courseSaga() {
     takeLatest(onSaveTrackingVideo.type, handleOnSaveTrackingVideo),
     takeLatest(onUpdateCompletedVideo.type, handleOnUpdateCompletedVideo),
     takeLatest(onLoadProgress.type, handleLoadProgress),
+    takeLatest(onLoadNote.type, handleLoadNote),
+    takeLatest(onSaveNote.type, handleSaveNote),
+    takeLatest(onDeleteNote.type, handleDeleteNote),
   ]);
 }

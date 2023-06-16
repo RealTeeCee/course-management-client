@@ -1,3 +1,5 @@
+import { addNewNotes, deleteNotes } from "./courseHelper";
+
 const { createSlice } = require("@reduxjs/toolkit");
 
 /**
@@ -30,8 +32,7 @@ const initialState = {
   tracking: null, // onGetTrackingLesson(enrollId, courseId) - courseHandlers.js -> select where tracked = TRUE
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
 
-  //nguyen add
-  isSaved: false,
+  notes: [], //onGetNote
 };
 const courseSlice = createSlice({
   name: "course",
@@ -180,9 +181,6 @@ const courseSlice = createSlice({
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
-
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
     }),
     onGetEnrollIdSuccess: (state, action) => ({
@@ -191,9 +189,6 @@ const courseSlice = createSlice({
     }),
     onGetLearning: (state, action) => ({
       ...state,
-
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
       isLoadLearningStatus: false,
     }),
@@ -218,13 +213,9 @@ const courseSlice = createSlice({
     onSaveTrackingLessonSuccess: (state, action) => ({
       ...state,
       tracking: action.payload,
-      isSaved: true,
     }),
     onSaveTrackingVideo: (state, action) => ({
       ...state,
-
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
       lessonId: action.payload.lessonId,
     }),
@@ -233,9 +224,6 @@ const courseSlice = createSlice({
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
-
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
     }),
     onUpdateCompletedVideoSuccess: (state, action) => ({
@@ -244,9 +232,6 @@ const courseSlice = createSlice({
     }),
     onLoadProgress: (state, action) => ({
       ...state,
-
-      //nguyen add
-      isSaved: false,
       errorMessage: null,
     }),
     onLoadProgressSuccess: (state, action) => ({
@@ -257,6 +242,31 @@ const courseSlice = createSlice({
       ...state,
       isReady: action.payload,
     }),
+    onLoadNote: (state, action) => ({
+      ...state,
+    }),
+    onLoadNoteSuccess: (state, action) => ({
+      ...state,
+      notes: action.payload,
+    }),
+    onSaveNote: (state, action) => ({
+      ...state,
+    }),
+    onSaveNoteSuccess: (state, action) => {
+      return {
+        ...state,
+        notes: addNewNotes(state.notes, action.payload),
+      };
+    },
+    onDeleteNote: (state, action) => ({
+      ...state,
+    }),
+    onDeleteNoteSuccess: (state, action) => {
+      return {
+        ...state,
+        notes: deleteNotes(state.notes, action.payload),
+      };
+    },
   },
 });
 
@@ -294,6 +304,12 @@ export const {
   onLoadProgress,
   onLoadProgressSuccess,
   onReady,
+  onLoadNote,
+  onLoadNoteSuccess,
+  onSaveNote,
+  onSaveNoteSuccess,
+  onDeleteNote,
+  onDeleteNoteSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
