@@ -154,6 +154,9 @@ const LearnPage = () => {
   const onWriteNote = () => {
     setIsPlaying(false);
   };
+  const onSelectNote = (resumePoint) => {
+    player.current.seekTo(resumePoint);
+  };
 
   const handleSeekVideo = () => {
     // console.log("handleSeekVideo - isPlaying: ", isPlaying);
@@ -190,21 +193,24 @@ const LearnPage = () => {
   const handleCloseDialog = () => {
     setIsEnd(false);
   };
-
+  const nextLesson =
+    learning.lessonDto[
+      learning.lessonDto.findIndex((dto) => dto.id === tracking?.lessonId) + 1
+    ];
   const handleNexVideo = () => {
-    const nextVideo =
-      learning.lessonDto[
-        learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
-      ];
+    // const nextLesson =
+    //   learning.lessonDto[
+    //     learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
+    //   ];
 
-    console.log(nextVideo);
-    if (nextVideo !== undefined) {
+    console.log(nextLesson);
+    if (nextLesson !== undefined) {
       dispatch(
         onManualSelectedLesson({
           enrollmentId: enrollId,
           courseId,
-          sectionId: nextVideo.sectionId,
-          lessonId: nextVideo.id,
+          sectionId: nextLesson.sectionId,
+          lessonId: nextLesson.id,
         })
       );
     }
@@ -221,7 +227,13 @@ const LearnPage = () => {
     {
       key: "2",
       label: `Note`,
-      children: <NoteCom notePoint={playedSeconds} onWriteNote={onWriteNote} />,
+      children: (
+        <NoteCom
+          notePoint={playedSeconds}
+          onWriteNote={onWriteNote}
+          onSelectNote={onSelectNote}
+        />
+      ),
     },
     {
       key: "3",
@@ -239,6 +251,7 @@ const LearnPage = () => {
   return (
     <>
       <DialogNextVideo
+        nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
         onClose={handleCloseDialog}
         onNext={handleNexVideo}

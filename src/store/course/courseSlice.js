@@ -267,6 +267,19 @@ const courseSlice = createSlice({
         notes: deleteNotes(state.notes, action.payload),
       };
     },
+    onSelectedNote: (state, action) => {
+      const filteredVideo = state.learning.videoDto.find(
+        (video) => video.lessonId === action.payload.lessonId
+      );
+
+      return {
+        ...state,
+        sectionId: action.payload.sectionId,
+        lessonId: action.payload.lessonId,
+        resumePoint: action.payload.resumePoint,
+        video: filteredVideo,
+      };
+    },
   },
 });
 
@@ -310,6 +323,7 @@ export const {
   onSaveNoteSuccess,
   onDeleteNote,
   onDeleteNoteSuccess,
+  onSelectedNote,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

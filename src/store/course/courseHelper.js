@@ -15,6 +15,7 @@ export const addNewNotes = (notes = [], noteToAdd) => {
             ...note,
             lessonId: noteToAdd.lessonId,
             sectionId: noteToAdd.sectionId,
+            created_at: noteToAdd.created_at,
             description: noteToAdd.description,
           }
         : note

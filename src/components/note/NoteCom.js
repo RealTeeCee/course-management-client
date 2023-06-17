@@ -9,6 +9,7 @@ import {
   onDeleteNote,
   onLoadNote,
   onSaveNote,
+  onSelectedNote,
 } from "../../store/course/courseSlice";
 import {
   convertSecondToDiffForHumans,
@@ -18,6 +19,7 @@ import { SelectDefaultAntCom } from "../ant";
 import { ButtonCom } from "../button";
 import GapYCom from "../common/GapYCom";
 import { IconEditCom, IconTrashCom } from "../icon";
+import { DialogConfirm } from "../mui";
 import { TextEditorQuillCom } from "../texteditor";
 
 const lessonItems = [
@@ -26,12 +28,8 @@ const lessonItems = [
     label: "All Lessons",
   },
   {
-    value: 1,
-    label: "Lesson 01",
-  },
-  {
-    value: 2,
-    label: "Lesson 02",
+    value: "current",
+    label: "Current Lesson",
   },
 ];
 
@@ -45,17 +43,26 @@ const NoteCom = ({
   placeholder = "Write your note...",
   notePoint,
   onWriteNote,
+  onSelectNote,
 }) => {
   const [note, setNote] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isShowNote, setIsShowNote] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+  const [isFocusNote, setIsFocusNote] = useState(false);
   const [openEditKey, setOpenEditKey] = useState(0);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [colorKey, setColorKey] = useState(0);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [filterValue, setFilterValue] = useState("all");
+  const [order, setOrder] = useState("ASC");
+  const [deleteNote, setDeleteNote] = useState(0);
   const dispatch = useDispatch();
 
   const { lessonId, sectionId, enrollId, courseId, video, learning, notes } =
     useSelector(selectAllCourseState);
+
+  const [filterNote, setFilterNote] = useState(notes);
 
   const {
     control,
@@ -87,18 +94,19 @@ const NoteCom = ({
     return null;
   };
 
-  const handleSubmitForm = ({ note }) => {
-    // call tới api noteUrl từ ngoài truyền vào, ko set cứng để bên khác xài lại
-    // 1. Filter notes where resumePoint = notePoint
-    //    Yes: Update note for in notes =>
+  useEffect(() => {
+    setFilterValue("all");
+    handleChangeFilterLesson("all");
+  }, [lessonId]);
 
+  const handleSubmitForm = ({ note }) => {
     const existingNote = notes.find(
       (note) =>
         note.resumePoint === notePoint &&
         note.sectionId === sectionId &&
         note.lessonId === lessonId
     );
-    console.log(existingNote);
+
     if (existingNote) {
       dispatch(
         onSaveNote({
@@ -129,20 +137,35 @@ const NoteCom = ({
     setNote("");
   };
 
+  useEffect(() => {
+    let noteList = [];
+    if (filterValue === "current") {
+      noteList = [...notes.filter((n) => n.lessonId === lessonId)];
+    } else {
+      noteList = [...notes];
+    }
+
+    noteList = noteList.sort((a, b) => {
+      if (order === "ASC") {
+        return new Date(a.created_at) - new Date(b.created_at);
+      } else {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+    });
+
+    setFilterNote(noteList);
+  }, [filterValue, lessonId, notes, order]);
+
   const handleChangeFilterLesson = (value) => {
-    // Call API Gửi value là id của lesson qua BE, BE check nếu = "all" thì trả All records
+    setFilterValue(value);
   };
 
   const handleChangeSortLesson = (value) => {
-    // Call API Gửi value là các KEY của sort Query qua BE
-    // *** BE check nếu = "DESC" thì trả note theo created_at DESC
-    // *** BE check nếu = "ASC" thì trả note theo created_at ASC
+    setOrder(value);
   };
 
   // Edit & Delete Area
   const handleEditNote = (editedNote) => {
-    console.log("note state: " + note);
-    console.log(editedNote);
     dispatch(
       onSaveNote({
         ...editedNote,
@@ -152,19 +175,48 @@ const NoteCom = ({
     setIsOpenEdit(false);
     setNote("");
   };
+
   const handleToggleEditNote = (note) => {
     setOpenEditKey(note.id);
     setNote(note.description);
     setIsOpenEdit(true);
   };
 
-  const handleDeleteNote = (noteId) => {
-    alert("Deleted Note id: " + noteId);
-    dispatch(onDeleteNote(noteId));
+  const handleToggleDeleteNote = (noteId) => {
+    setOpenDialog(true);
+    setDeleteNote(noteId);
+  };
+  const onConfirm = () => {
+    dispatch(onDeleteNote(deleteNote));
+    setOpenDialog(false);
+  };
+
+  const handleSeekNote = (note) => {
+    setColorKey(note.id);
+    setIsFocusNote(true);
+    dispatch(
+      onSelectedNote({
+        enrollmentId: enrollId,
+        courseId,
+        sectionId: note.sectionId,
+        lessonId: note.lessonId,
+        resumePoint: note.resumePoint,
+      })
+    );
+    setTimeout(() => onSelectNote(note.resumePoint), 1000);
   };
 
   return (
     <div>
+      <DialogConfirm
+        title="Warning"
+        content="Do you want to delete this note?"
+        confirmContent="Yes"
+        closeContent="No"
+        onConfirm={onConfirm}
+        onClose={() => setOpenDialog(false)}
+        open={openDialog}
+      />
       <button
         className={`flex justify-between w-full border-2 solid ${
           isShowNote ? "border-tw-light-pink" : "border-tw-primary"
@@ -177,7 +229,7 @@ const NoteCom = ({
         }}
       >
         <p>
-          Create a new note at{" "}
+          <strong>Save</strong> a note at{" "}
           <span className="text-tw-light-pink">
             {convertSecondToDiffForHumans(notePoint)}
           </span>
@@ -201,6 +253,7 @@ const NoteCom = ({
           <SelectDefaultAntCom
             listItems={lessonItems}
             defaultValue={"all"}
+            value={filterValue}
             onChange={handleChangeFilterLesson}
             className="border-tw-primary border-2 solid rounded-lg bg-none"
           ></SelectDefaultAntCom>
@@ -209,6 +262,7 @@ const NoteCom = ({
           <SelectDefaultAntCom
             listItems={sortItems}
             defaultValue={"DESC"}
+            value={order}
             onChange={handleChangeSortLesson}
             className="border-tw-primary border-2 solid rounded-lg bg-none"
           ></SelectDefaultAntCom>
@@ -246,7 +300,7 @@ const NoteCom = ({
           </form>
         </React.Fragment>
       )}
-      {notes.map((n) => {
+      {filterNote.map((n) => {
         const { sectionName, lessonName } = getLessonAndSectionName(n);
         return openEditKey === n.id && isOpenEdit ? (
           <div
@@ -298,7 +352,14 @@ const NoteCom = ({
         ) : (
           <div className="flex justify-between items-center mt-4" key={n.id}>
             <div className="flex gap-x-2">
-              <ButtonCom>{convertSecondToTime(n.resumePoint)}</ButtonCom>
+              <ButtonCom
+                backgroundColor={
+                  isFocusNote && colorKey === n.id ? "dark" : "primary"
+                }
+                onClick={() => handleSeekNote(n)}
+              >
+                {convertSecondToTime(n.resumePoint)}
+              </ButtonCom>
 
               <div>
                 {/*
@@ -331,7 +392,7 @@ const NoteCom = ({
                 backgroundColor="danger"
                 onClick={() => {
                   // Truyền noteId
-                  handleDeleteNote(n.id);
+                  handleToggleDeleteNote(n.id);
                 }}
               >
                 <IconTrashCom className="w-5"></IconTrashCom>
