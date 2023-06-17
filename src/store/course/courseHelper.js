@@ -5,7 +5,7 @@ export const addNewNotes = (notes = [], noteToAdd) => {
       note.sectionId === noteToAdd.sectionId &&
       note.lessonId === noteToAdd.lessonId
   );
-  console.log(existingNote);
+
   if (existingNote) {
     return notes.map((note) =>
       note.resumePoint === noteToAdd.resumePoint &&
