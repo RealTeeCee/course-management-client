@@ -8,6 +8,7 @@ import { selectUserId } from "../../store/auth/authSelector";
 import {
   selectAllCourseState,
   selectIsLoadLearningStatus,
+  selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
   onGetEnrollId,
@@ -26,6 +27,8 @@ import { TabsAntCom } from "../../components/ant";
 import TextEditorQuillCom from "../../components/texteditor/TextEditorQuillCom";
 import { CommentCom } from "../../components/comment";
 import { NoteCom } from "../../components/note";
+import LoaderCom from "../../components/common/LoaderCom";
+import LoadingCom from "../../components/common/LoadingCom";
 
 const LearnPage = () => {
   const {
@@ -42,12 +45,14 @@ const LearnPage = () => {
     learning,
     progress,
   } = useSelector(selectAllCourseState);
+  const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSeek, setIsSeek] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
 
   const { slug } = useParams();
 
@@ -107,10 +112,11 @@ const LearnPage = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleGetProgress = ({ played }) => {
+  const handleGetProgress = ({ playedSeconds, played }) => {
     if (played > 0.9) {
       setIsCompleted(true);
     }
+    setPlayedSeconds(playedSeconds);
   };
 
   const handleEnded = () => {
@@ -149,6 +155,13 @@ const LearnPage = () => {
     }
   };
 
+  const onWriteNote = () => {
+    setIsPlaying(false);
+  };
+  const onSelectNote = (resumePoint) => {
+    player.current.seekTo(resumePoint);
+  };
+
   const handleSeekVideo = () => {
     // console.log("handleSeekVideo - isPlaying: ", isPlaying);
     // setIsPlaying(false);
@@ -184,38 +197,51 @@ const LearnPage = () => {
   const handleCloseDialog = () => {
     setIsEnd(false);
   };
-
+  const nextLesson =
+    learning.lessonDto[
+      learning.lessonDto.findIndex((dto) => dto.id === tracking?.lessonId) + 1
+    ];
   const handleNexVideo = () => {
-    const nextVideo =
-      learning.lessonDto[
-        learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
-      ];
+    // const nextLesson =
+    //   learning.lessonDto[
+    //     learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
+    //   ];
 
-    console.log(nextVideo);
-    if (nextVideo !== undefined) {
+    console.log(nextLesson);
+    if (nextLesson !== undefined) {
       dispatch(
         onManualSelectedLesson({
           enrollmentId: enrollId,
           courseId,
-          sectionId: nextVideo.sectionId,
-          lessonId: nextVideo.id,
+          sectionId: nextLesson.sectionId,
+          lessonId: nextLesson.id,
         })
       );
     }
 
     setIsEnd(false);
   };
-
+  const course = data.find((c) => c.id === courseId);
   const tabItems = [
     {
       key: "1",
       label: `Description`,
-      children: `Description of Course.....`,
+      children: (
+        <div
+          dangerouslySetInnerHTML={{ __html: course && course.description }}
+        ></div>
+      ),
     },
     {
       key: "2",
       label: `Note`,
-      children: <NoteCom />,
+      children: (
+        <NoteCom
+          notePoint={playedSeconds}
+          onWriteNote={onWriteNote}
+          onSelectNote={onSelectNote}
+        />
+      ),
     },
     {
       key: "3",
@@ -230,9 +256,12 @@ const LearnPage = () => {
     },
   ];
 
-  return (
-    <>
+  return isLoading ? (
+    <LoadingCom></LoadingCom>
+  ) : (
+    <React.Fragment>
       <DialogNextVideo
+        nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
         onClose={handleCloseDialog}
         onNext={handleNexVideo}
@@ -276,14 +305,10 @@ const LearnPage = () => {
             onReady={handleOnReady}
           />
         </div>
-        <div>
-          <button onClick={handleTogglePlay}>
-            {isPlaying ? "Pause" : "Play"}
-          </button>
-        </div>
+        <GapYCom></GapYCom>
       </div>
       <TabsAntCom items={tabItems}></TabsAntCom>
-    </>
+    </React.Fragment>
   );
 };
 

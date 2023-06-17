@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_API_URL } from "../constants/config";
-import { getToken } from "../utils/auth";
+import { getToken, setToken } from "../utils/auth";
 
 // Default
 const axiosInstance = axios.create({
@@ -52,6 +52,8 @@ axiosBearer.interceptors.response.use(
         const res = await axiosInstance.get(
           `/auth/refresh-token/${refresh_token}`
         );
+
+        setToken(res.data.access_token, res.data.refresh_token);
 
         prevReq.headers.Authorization = `Bearer ${res.data.access_token}`;
       }

@@ -1,15 +1,18 @@
-import { call, put } from "redux-saga/effects";
+import { call, put, delay } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
   requestBestSellerCourse,
   requestCourse,
+  requestDeleteNote,
   requestEnrollId,
   requestFreeCourse,
   requestLearning,
+  requestLoadNote,
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
   requestRelatedCourse,
+  requestSaveNote,
   requestSaveTrackingLesson,
   requestSaveTrackingVideo,
   requestUpdateCompleted,
@@ -18,16 +21,18 @@ import {
   onBestSellerCourseSuccess,
   onCourseFailed,
   onCourseSuccess,
+  onDeleteNoteSuccess,
   onFreeCourseSuccess,
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
+  onLoadNoteSuccess,
   onLoadProgressSuccess,
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
   onRelatedCourseSuccess,
-  onSaveTrackingLessonSuccess,
+  onSaveNoteSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
 } from "./courseSlice";
@@ -111,6 +116,7 @@ function* handleOnGetEnrollId({ payload }) {
 }
 function* handleOnGetLearning({ payload }) {
   try {
+    yield delay(2500);
     const res = yield call(requestLearning, payload);
 
     if (res.status === 200) {
@@ -194,19 +200,57 @@ function* handleLoadProgress({ payload }) {
     showMessageError(error);
   }
 }
+function* handleLoadNote({ payload }) {
+  try {
+    const res = yield call(requestLoadNote, payload);
+    if (res.status === 200) {
+      yield put(onLoadNoteSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+function* handleSaveNote({ payload }) {
+  try {
+    const res = yield call(requestSaveNote, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onSaveNoteSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+
+function* handleDeleteNote({ payload }) {
+  try {
+    const res = yield call(requestDeleteNote, payload);
+    if (res.status === 200) {
+      yield put(onDeleteNoteSuccess(payload));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
 
 export {
-  handleOnMyCourseLoading,
+  handleLoadNote,
+  handleLoadProgress,
+  handleOnBestSellerCourseLoading,
   handleOnCourseLoading,
   handleOnFreeCourseLoading,
-  handleOnBestSellerCourseLoading,
-  handleOnRelatedCourseLoading,
   handleOnGetEnrollId,
   handleOnGetLearning,
   handleOnGetTrackingLesson,
+  handleOnManualSelectedLesson,
+  handleOnMyCourseLoading,
+  handleOnRelatedCourseLoading,
   handleOnSaveTrackingLesson,
   handleOnSaveTrackingVideo,
   handleOnUpdateCompletedVideo,
-  handleLoadProgress,
-  handleOnManualSelectedLesson,
+  handleSaveNote,
+  handleDeleteNote,
 };

@@ -39,3 +39,12 @@ export const requestUpdateCompleted = (data) => {
 export const requestLoadProgress = (data) => {
   return axiosBearer.post(`/track/load-progress`, data);
 };
+export const requestLoadNote = (data) => {
+  return axiosBearer.post(`/track/load-notes`, data);
+};
+export const requestSaveNote = (data) => {
+  return axiosBearer.post(`/track/save-note`, data);
+};
+export const requestDeleteNote = (noteId) => {
+  return axiosBearer.delete(`/track/delete-note/${noteId}`);
+};

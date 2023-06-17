@@ -6,30 +6,33 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const AlertDialog = ({ open, nextLesson, onClose, onNext, isFinal }) => {
+const DialogConfirm = ({
+  open,
+  onClose,
+  closeContent,
+  onConfirm,
+  confirmContent,
+  title,
+  content,
+}) => {
   return (
     <div>
       <Dialog
         open={open}
+        onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {isFinal
-            ? "Notice: You 've completed 100% progress of lesson"
-            : `Up next: ${nextLesson}`}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {isFinal
-              ? "Are you ready to take on an exam?"
-              : "Do you want to go to next lesson?"}
+            {content}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>No</Button>
-          <Button autoFocus onClick={onNext}>
-            Yes
+          <Button onClick={onClose}>{closeContent}</Button>
+          <Button autoFocus onClick={onConfirm}>
+            {confirmContent}
           </Button>
         </DialogActions>
       </Dialog>
@@ -37,4 +40,4 @@ const AlertDialog = ({ open, nextLesson, onClose, onNext, isFinal }) => {
   );
 };
 
-export default AlertDialog;
+export default DialogConfirm;
