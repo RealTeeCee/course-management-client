@@ -47,13 +47,12 @@ axiosBearer.interceptors.response.use(
     ) {
       prevReq.sent = true;
       const { refresh_token } = getToken();
-      console.log(refresh_token);
-      console.log(prevReq);
+
       if (refresh_token) {
         const res = await axiosInstance.get(
           `/auth/refresh-token/${refresh_token}`
         );
-        console.log(res);
+
         setToken(res.data.access_token, res.data.refresh_token);
 
         prevReq.headers.Authorization = `Bearer ${res.data.access_token}`;
