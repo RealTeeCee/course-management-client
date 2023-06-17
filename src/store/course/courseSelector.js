@@ -52,6 +52,10 @@ export const selectLearning = createSelector(
   [selectCourseReducer],
   (courseSlice) => courseSlice.learning
 );
+export const selectIsLoading = createSelector(
+  [selectCourseReducer],
+  (courseSlice) => courseSlice.isLoading
+);
 
 export const selectTracking = createSelector(
   [selectCourseReducer],

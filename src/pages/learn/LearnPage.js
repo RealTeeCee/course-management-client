@@ -8,6 +8,7 @@ import { selectUserId } from "../../store/auth/authSelector";
 import {
   selectAllCourseState,
   selectIsLoadLearningStatus,
+  selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
   onGetEnrollId,
@@ -26,6 +27,8 @@ import { TabsAntCom } from "../../components/ant";
 import TextEditorQuillCom from "../../components/texteditor/TextEditorQuillCom";
 import { CommentCom } from "../../components/comment";
 import { NoteCom } from "../../components/note";
+import LoaderCom from "../../components/common/LoaderCom";
+import LoadingCom from "../../components/common/LoadingCom";
 
 const LearnPage = () => {
   const {
@@ -42,6 +45,7 @@ const LearnPage = () => {
     learning,
     progress,
   } = useSelector(selectAllCourseState);
+  const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSeek, setIsSeek] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
@@ -217,12 +221,16 @@ const LearnPage = () => {
 
     setIsEnd(false);
   };
-
+  const course = data.find((c) => c.id === courseId);
   const tabItems = [
     {
       key: "1",
       label: `Description`,
-      children: `Description of Course.....`,
+      children: (
+        <div
+          dangerouslySetInnerHTML={{ __html: course && course.description }}
+        ></div>
+      ),
     },
     {
       key: "2",
@@ -248,8 +256,10 @@ const LearnPage = () => {
     },
   ];
 
-  return (
-    <>
+  return isLoading ? (
+    <LoadingCom></LoadingCom>
+  ) : (
+    <React.Fragment>
       <DialogNextVideo
         nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
@@ -295,14 +305,10 @@ const LearnPage = () => {
             onReady={handleOnReady}
           />
         </div>
-        <div>
-          <button onClick={handleTogglePlay}>
-            {isPlaying ? "Pause" : "Play"}
-          </button>
-        </div>
+        <GapYCom></GapYCom>
       </div>
       <TabsAntCom items={tabItems}></TabsAntCom>
-    </>
+    </React.Fragment>
   );
 };
 

@@ -1,4 +1,4 @@
-import { call, put } from "redux-saga/effects";
+import { call, put, delay } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
   requestBestSellerCourse,
@@ -116,6 +116,7 @@ function* handleOnGetEnrollId({ payload }) {
 }
 function* handleOnGetLearning({ payload }) {
   try {
+    yield delay(2500);
     const res = yield call(requestLearning, payload);
 
     if (res.status === 200) {

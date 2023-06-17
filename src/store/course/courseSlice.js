@@ -6,6 +6,7 @@ const { createSlice } = require("@reduxjs/toolkit");
  * *Slice*
  */
 const initialState = {
+  isLoading: false,
   isLoadLearningStatus: false,
   isSelectLessonManual: false,
   isReload: false,
@@ -191,11 +192,13 @@ const courseSlice = createSlice({
       ...state,
       errorMessage: null,
       isLoadLearningStatus: false,
+      isLoading: true,
     }),
     onGetLearningSuccess: (state, action) => ({
       ...state,
       learning: action.payload,
       isLoadLearningStatus: true,
+      isLoading: false,
     }),
     onGetTrackingLesson: (state, action) => ({
       ...state,
