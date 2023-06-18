@@ -27,7 +27,7 @@ const ButtonCom = (props) => {
     children
   );
 
-  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] !leading-[0] ${padding} ${className} ${
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] ${padding} ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
   switch (backgroundColor) {

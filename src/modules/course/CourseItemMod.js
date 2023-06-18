@@ -10,14 +10,11 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
     <div className="c-card course-item">
       <Link to={url} className="tw-transition-all hover:opacity-80">
         <div className="c-card-header h-[158px]">
-          <ImageCom
-            srcSet="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjaG9vbHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-            alt={course?.slug}
-          ></ImageCom>
+          <ImageCom srcSet={course?.image} alt={course?.name}></ImageCom>
         </div>
         <div className="c-card-body py-[1rem]">
           <CategoryTagMod icon={<IconFolderCom />}>
-            {course?.categoryName}
+            {course?.category_name}
           </CategoryTagMod>
 
           <CourseTitleMod className="font-tw-secondary">

@@ -17,6 +17,7 @@ import {
   VIDEO_EXT_VALID,
   CAPTION_EXT_REGEX,
   CAPTION_EXT_VALID,
+  MESSAGE_NUMBER_REQUIRED,
 } from "../../../constants/config";
 import axiosInstance from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
@@ -38,7 +39,7 @@ Quill.register("modules/imageUploader", ImageUploader);
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  description: yup.string(),
+  ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
   videoFile: yup
     .mixed()
     .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
@@ -159,8 +160,8 @@ const AdminCreateLessonPage = () => {
               encType="multipart/form-data"
             >
               <div className="card-body">
-                <div className="row text-center">
-                  <div className="col-sm-6 offset-3">
+                <div className="row">
+                  <div className="col-sm-6">
                     <LabelCom htmlFor="name" isRequired>
                       Lesson Name
                     </LabelCom>
@@ -169,8 +170,20 @@ const AdminCreateLessonPage = () => {
                       control={control}
                       name="name"
                       register={register}
-                      placeholder="Input Lesson Name"
+                      placeholder="Input lesson Name"
                       errorMsg={errors.name?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="ordered">Ordered</LabelCom>
+                    <InputCom
+                      type="number"
+                      control={control}
+                      name="ordered"
+                      register={register}
+                      placeholder="Input lesson ordered"
+                      errorMsg={errors.ordered?.message}
+                      defaultValue={0}
                     ></InputCom>
                   </div>
                 </div>

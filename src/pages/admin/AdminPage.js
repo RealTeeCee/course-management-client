@@ -26,7 +26,13 @@ const AdminPage = () => {
             </div>
             <div className="card-body flex gap-x-4 h-[30vh]">
               <NavLink to="/admin/courses">
-                <ButtonCom backgroundColor="gradient">Course</ButtonCom>
+                <ButtonCom backgroundColor="gradient">Learning</ButtonCom>
+              </NavLink>
+              <NavLink to="/admin/blogs">
+                <ButtonCom backgroundColor="gradient">Blog</ButtonCom>
+              </NavLink>
+              <NavLink to="/admin/users">
+                <ButtonCom backgroundColor="gradient">User</ButtonCom>
               </NavLink>
               <NavLink to="/admin/blogs">
                 <ButtonCom backgroundColor="gradient">Blog</ButtonCom>

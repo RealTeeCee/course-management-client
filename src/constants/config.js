@@ -120,3 +120,21 @@ export const levelItems = [
     label: "Advance",
   },
 ];
+
+export const sortItems = [
+  {
+    value: "DESC",
+    label: "Sort by Newest",
+  },
+  {
+    value: "ASC",
+    label: "Sort by Oldest",
+  },
+];
+
+// Data Static Variable
+export const IMAGE_DEFAULT =
+  "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930";
+
+export const AVATAR_DEFAULT =
+  "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";

@@ -217,10 +217,10 @@ const AdminCreateCoursePage = () => {
     setAchievementSelected(itemsArrs);
   };
 
-  const handleChangeStatus = (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-  };
+  // const handleChangeStatus = (value) => {
+  //   setValue("status", value);
+  //   setError("status", { message: "" });
+  // };
 
   const handleChangeLevel = (value) => {
     setValue("level", value);

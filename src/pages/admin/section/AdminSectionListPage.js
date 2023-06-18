@@ -18,7 +18,6 @@ import {
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
-  statusItems,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -30,11 +29,10 @@ import { LabelCom } from "../../../components/label";
 import { InputCom } from "../../../components/input";
 import { showMessageError } from "../../../utils/helper";
 import { API_COURSE_URL } from "../../../constants/endpoint";
-import SelectDefaultAntCom from "../../../components/ant/SelectDefaultAntCom";
 import { SwitchAntCom } from "../../../components/ant";
-// import { MenuItem, Select } from "@mui/material";
-import { Select, Spin } from "antd";
 import LoadingCom from "../../../components/common/LoadingCom";
+import * as XLSX from "xlsx";
+import useExcelExport from "../../../hooks/useExportExcel";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -78,6 +76,19 @@ const AdminSectionListPage = () => {
     resolver: yupResolver(schemaValidation),
   });
   const { courseId } = useParams();
+
+  /********* Export Excel ********* */
+  const { handleExcelData } = useExcelExport("section");
+  const handleExport = () => {
+    const headers = ["No", "Section Name", "Status", "Order"];
+    const data = sections.map((section, index) => [
+      index + 1,
+      section.name,
+      section.status === 1 ? "Active" : "Inactive",
+      section.ordered,
+    ]);
+    handleExcelData(headers, data);
+  };
 
   const columns = [
     {
@@ -140,11 +151,11 @@ const AdminSectionListPage = () => {
         </>
       ),
     },
-    // {
-    //   name: "Date Created",
-    //   selector: (row) => new Date(row.created_at).toLocaleDateString(),
-
-    // },
+    {
+      name: "Order",
+      selector: (row) => row.ordered,
+      sortable: true,
+    },
     {
       name: "Actions",
       cell: (row) => (
@@ -159,14 +170,14 @@ const AdminSectionListPage = () => {
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
-          <ButtonCom
+          {/* <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
               alert(`View Section id: ${row.id}`);
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom>
+          </ButtonCom> */}
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -188,7 +199,7 @@ const AdminSectionListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
+          onClick={handleExport}
         >
           Export
         </div>
@@ -208,7 +219,7 @@ const AdminSectionListPage = () => {
     // },
   ];
 
-  /********* Multiple One ********* */
+  /********* Delete One ********* */
   const handleDeleteSection = ({ sectionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
@@ -242,6 +253,7 @@ const AdminSectionListPage = () => {
       const res = await axiosPrivate.get(
         `${API_COURSE_URL}/${courseId}/section`
       );
+      console.log(res.data);
       setSections(res.data);
       setFilterSection(res.data);
     } catch (error) {

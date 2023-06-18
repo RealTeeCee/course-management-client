@@ -11,3 +11,4 @@ export const {
   default: ImageCropUploadAntCom,
 } = require("./ImageCropUploadAntCom");
 export const { default: SwitchAntCom } = require("./SwitchAntCom");
+export const { default: TabsAntCom } = require("./TabsAntCom");

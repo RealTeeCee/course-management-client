@@ -1,22 +1,19 @@
 import React, { useEffect } from "react";
-import { v4 } from "uuid";
-import { HeadingH2Com } from "../components/heading";
-import { CategoryGridMod, CategoryItemMod } from "../modules/category";
-import { CourseGridMod, CourseItemMod } from "../modules/course";
+import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { v4 } from "uuid";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { API_COURSE_URL } from "../constants/endpoint";
+import { HeadingH2Com } from "../components/heading";
 import { categoryItems } from "../constants/config";
-import { useDispatch, useSelector } from "react-redux";
+import usePagination from "../hooks/usePagination";
+import { CategoryGridMod, CategoryItemMod } from "../modules/category";
+import { CourseGridMod, CourseItemMod } from "../modules/course";
 import {
   onBestSellerCourseLoading,
   onCourseLoading,
   onFreeCourseLoading,
-  onRelatedCourseLoading,
 } from "../store/course/courseSlice";
-import usePagination from "../hooks/usePagination";
 
 const HomePage = () => {
   // const axiosPrivate = useAxiosPrivate();

@@ -10,7 +10,7 @@ const LayoutLearning = () => {
 
       <div className="flex gap-x-10 items-start">
         <LearnSidebarMod></LearnSidebarMod>
-        <div className="flex-1">
+        <div className="flex-1 h-[200vh]">
           <Outlet></Outlet>
         </div>
       </div>

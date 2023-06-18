@@ -9,7 +9,7 @@ import { ButtonCom } from "../../../components/button";
 import "react-quill/dist/quill.snow.css";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
-import { MESSAGE_FIELD_REQUIRED } from "../../../constants/config";
+import { MESSAGE_FIELD_REQUIRED, MESSAGE_NUMBER_REQUIRED } from "../../../constants/config";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
@@ -20,6 +20,7 @@ import { showMessageError } from "../../../utils/helper";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
 });
 
 const AdminCreateSectionPage = () => {

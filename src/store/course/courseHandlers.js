@@ -1,31 +1,38 @@
-import { call, put } from "redux-saga/effects";
+import { call, put, delay } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
   requestBestSellerCourse,
   requestCourse,
+  requestDeleteNote,
   requestEnrollId,
   requestFreeCourse,
   requestLearning,
+  requestLoadNote,
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
   requestRelatedCourse,
-  requestSaveTracking,
+  requestSaveNote,
+  requestSaveTrackingLesson,
+  requestSaveTrackingVideo,
   requestUpdateCompleted,
 } from "./courseRequests";
 import {
   onBestSellerCourseSuccess,
   onCourseFailed,
   onCourseSuccess,
+  onDeleteNoteSuccess,
   onFreeCourseSuccess,
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
+  onLoadNoteSuccess,
   onLoadProgressSuccess,
+  onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
   onRelatedCourseSuccess,
-  onSaveTrackingLessonSuccess,
+  onSaveNoteSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
 } from "./courseSlice";
@@ -36,6 +43,8 @@ import {
 function* handleOnMyCourseLoading(action) {
   try {
     const res = yield call(requestMyCourse, action.payload);
+
+    console.log(res.data);
 
     if (res.status === 200) {
       yield put(onMyCourseSuccess(res.data));
@@ -107,6 +116,7 @@ function* handleOnGetEnrollId({ payload }) {
 }
 function* handleOnGetLearning({ payload }) {
   try {
+    yield delay(2500);
     const res = yield call(requestLearning, payload);
 
     if (res.status === 200) {
@@ -119,9 +129,26 @@ function* handleOnGetLearning({ payload }) {
 function* handleOnGetTrackingLesson({ payload }) {
   try {
     const res = yield call(requestLoadTracking, payload);
+    if (res.status === 200) {
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnManualSelectedLesson({ payload }) {
+  console.log(payload);
+  try {
+    const res = yield call(requestLoadTracking, payload);
     console.log(res.data);
     if (res.status === 200) {
-      yield put(onGetTrackingLessonSuccess(res.data));
+      // const { resumePoint } = res.data;
+      yield put(onManualSelectedLessonSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);
@@ -129,18 +156,21 @@ function* handleOnGetTrackingLesson({ payload }) {
 }
 function* handleOnSaveTrackingLesson({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingLesson, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingLessonSuccess());
+      const { lessonId } = res.data;
+      if (lessonId === 0) {
+        yield put(onGetTrackingLessonSuccess(null));
+      } else {
+        yield put(onGetTrackingLessonSuccess(res.data));
+      }
     }
-  } catch (error) {
-    showMessageError(error);
-  }
+  } catch (error) {}
 }
 function* handleOnSaveTrackingVideo({ payload }) {
   try {
-    const res = yield call(requestSaveTracking, payload);
+    const res = yield call(requestSaveTrackingVideo, payload);
 
     if (res.status === 200) {
       yield put(onSaveTrackingVideoSuccess());
@@ -170,18 +200,57 @@ function* handleLoadProgress({ payload }) {
     showMessageError(error);
   }
 }
+function* handleLoadNote({ payload }) {
+  try {
+    const res = yield call(requestLoadNote, payload);
+    if (res.status === 200) {
+      yield put(onLoadNoteSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+function* handleSaveNote({ payload }) {
+  try {
+    const res = yield call(requestSaveNote, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onSaveNoteSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+
+function* handleDeleteNote({ payload }) {
+  try {
+    const res = yield call(requestDeleteNote, payload);
+    if (res.status === 200) {
+      yield put(onDeleteNoteSuccess(payload));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
 
 export {
-  handleOnMyCourseLoading,
+  handleLoadNote,
+  handleLoadProgress,
+  handleOnBestSellerCourseLoading,
   handleOnCourseLoading,
   handleOnFreeCourseLoading,
-  handleOnBestSellerCourseLoading,
-  handleOnRelatedCourseLoading,
   handleOnGetEnrollId,
   handleOnGetLearning,
   handleOnGetTrackingLesson,
+  handleOnManualSelectedLesson,
+  handleOnMyCourseLoading,
+  handleOnRelatedCourseLoading,
   handleOnSaveTrackingLesson,
   handleOnSaveTrackingVideo,
   handleOnUpdateCompletedVideo,
-  handleLoadProgress,
+  handleSaveNote,
+  handleDeleteNote,
 };

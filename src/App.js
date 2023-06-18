@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
@@ -9,8 +9,6 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-
-import { onInitalState } from "./store/course/courseSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -80,9 +78,38 @@ function App() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(onInitalState());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   //   dispatch(onCourseInitalState());
+  //   // dispatch(onAuthInitalState());
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   axiosBearer
+  //     .post("http://localhost:8080/momo", {
+  //       userId: 1,
+  //       courseId: 1,
+  //       lang: "en",
+  //       requestType: "payWithATM",
+  //     })
+  //     .then((res) => {
+  //       console.log(res);
+  //       window.location.replace(res.data.payUrl);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
+
+  // useEffect(() => {
+  //   axiosBearer
+  //     .post("http://localhost:8080/paypal/pay", {
+  //       userId: 1,
+  //       courseId: 1,
+  //     })
+  //     .then((res) => {
+  //       console.log(res);
+  //       window.location.replace(res.data.payUrl);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   return (
     <Suspense fallback={<LoaderCom></LoaderCom>}>
@@ -101,6 +128,15 @@ function App() {
           <Route
             path="/forbidden"
             element={<ErrorPage status={403}></ErrorPage>}
+          ></Route>
+          <Route
+            path="/token-expire"
+            element={
+              <ErrorPage
+                status={419}
+                message="The verified link is expired. Please try again"
+              ></ErrorPage>
+            }
           ></Route>
           {/* ********* END Error ********* */}
           <Route
@@ -153,7 +189,7 @@ function App() {
             element={<PaymentSuccessPage></PaymentSuccessPage>}
           ></Route>
           <Route
-            path="/payment/error"
+            path="/payment/cancel"
             element={<PaymentErrorPage></PaymentErrorPage>}
           ></Route>
 
