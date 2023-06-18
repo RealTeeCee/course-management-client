@@ -2,7 +2,6 @@ import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { v4 } from "uuid";
-import { axiosPrivate } from "../../api/axiosInstance";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
@@ -75,7 +74,7 @@ const CourseDetailPage = () => {
   useEffect(() => {
     const getCourseBySlug = async () => {
       try {
-        // const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+        // const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       } catch (error) {
         console.log(error);
       }

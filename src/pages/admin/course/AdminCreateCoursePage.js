@@ -30,8 +30,7 @@ import {
   levelItems,
   MESSAGE_NET_PRICE_HIGHER_PRICE,
 } from "../../../constants/config";
-import axiosInstance from "../../../api/axiosInstance";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { API_TAG_URL, IMG_BB_URL } from "../../../constants/endpoint";
 import useOnChange from "../../../hooks/useOnChange";
@@ -81,7 +80,6 @@ const AdminCreateCoursePage = () => {
   /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
   /********* END API State ********* */
-  const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
@@ -103,7 +101,6 @@ const AdminCreateCoursePage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    console.log(values);
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
     //   if (imageSelector) imageSelector.focus();
@@ -132,12 +129,12 @@ const AdminCreateCoursePage = () => {
           })
         );
         // fd.append("file", image[0]);
-        // const res = await axiosPrivate.post(`/course`, fd, {
+        // const res = await axiosBearer.post(`/course`, fd, {
         //   headers: {
         //     "Content-type": "multipart/form-data",
         //   },
         // });
-        const res = await axiosPrivate.post(`/course`, fd);
+        const res = await axiosBearer.post(`/course`, fd);
         toast.success(`${res.data.message}`);
         resetValues();
         navigate("/admin/courses");
@@ -151,7 +148,7 @@ const AdminCreateCoursePage = () => {
 
   const getTags = async () => {
     try {
-      const res = await axiosPrivate.get(`${API_TAG_URL}`);
+      const res = await axiosBearer.get(`${API_TAG_URL}`);
       const newRes = res.data.map((item) => {
         const tagNames = item.name.split(" ");
         // ['Spring', 'Boot']
