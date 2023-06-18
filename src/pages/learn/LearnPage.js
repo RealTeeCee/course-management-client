@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import ReactPlayer from "react-player";
+import ReactPlayer from "react-player/lazy";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { TabsAntCom } from "../../components/ant";
@@ -272,7 +272,7 @@ const LearnPage = () => {
             ref={player}
             width="100%"
             height="500px"
-            url={`${video.url}?token=${access_token}`}
+            url={video ? `${video.url}?token=${access_token}` : ""}
             config={{
               youtube: {
                 playerVars: { showinfo: 1, controls: 1 },
