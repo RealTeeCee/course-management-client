@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player/lazy";
+
+import ReactPlayer from "react-player";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { TabsAntCom } from "../../components/ant";
+import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com } from "../../components/heading";
+import LoadingCom from "../../components/common/LoadingCom";
+import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
+import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
   selectAllCourseState,
@@ -22,13 +27,7 @@ import {
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
-import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
-import { TabsAntCom } from "../../components/ant";
-import TextEditorQuillCom from "../../components/texteditor/TextEditorQuillCom";
-import { CommentCom } from "../../components/comment";
-import { NoteCom } from "../../components/note";
-import LoaderCom from "../../components/common/LoaderCom";
-import LoadingCom from "../../components/common/LoadingCom";
+import { getToken } from "../../utils/auth";
 
 const LearnPage = () => {
   const {
@@ -47,7 +46,7 @@ const LearnPage = () => {
   } = useSelector(selectAllCourseState);
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSeek, setIsSeek] = useState(false);
+  // const [isSeek, setIsSeek] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
@@ -62,6 +61,8 @@ const LearnPage = () => {
 
   const dispatch = useDispatch();
   const player = useRef();
+
+  const { access_token } = getToken();
 
   console.log("isReady: " + isReady + " isReload: " + isReload);
 
@@ -273,7 +274,7 @@ const LearnPage = () => {
             ref={player}
             width="100%"
             height="500px"
-            url={video.url}
+            url={`${video.url}?token=${access_token}`}
             config={{
               youtube: {
                 playerVars: { showinfo: 1, controls: 1 },
