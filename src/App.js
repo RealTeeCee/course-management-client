@@ -37,6 +37,10 @@ const AdminCreateLessonPage = lazy(() =>
   import("./pages/admin/lesson/AdminCreateLessonPage.js")
 );
 
+const AdminBlogListPage = lazy(() =>
+  import("./pages/admin/blog/AdminBlogListPage.js")
+);
+
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
 const ErrorPage = lazy(() => import("./pages/errors/ErrorPage.js"));
@@ -196,6 +200,12 @@ function App() {
             <Route
               path="courses/:courseId/sections/:sectionId/lessons/create"
               element={<AdminCreateLessonPage></AdminCreateLessonPage>}
+            ></Route>
+
+            {/* Admin Blogs */}
+            <Route
+              path="blogs"
+              element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

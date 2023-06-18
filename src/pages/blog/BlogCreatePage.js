@@ -29,6 +29,7 @@ import { TextEditorQuillCom } from "../../components/texteditor";
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  status: yup.number().default(2),
   // image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   // category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
@@ -67,7 +68,8 @@ const BlogCreatePage = () => {
   /********* Get Blog ID from API  ********* */
   const handleSubmitForm = async (values) => {
     // console.log(values);
-    const { name, description } = values;
+    const { name, description} = values;
+    const status = values.status || 2;
     const user_id = user.id;
     console.log("user_id",user_id);
     try {
@@ -75,6 +77,7 @@ const BlogCreatePage = () => {
       const res = await axiosPrivate.post(`/blog`, {
         name,
         description,
+        status,
         user_id,
       });
       toast.success(`${res.data.message}`);
@@ -129,6 +132,22 @@ const BlogCreatePage = () => {
 
                   {!isHidden && (
                     <div className="col-sm-6">
+                      <LabelCom htmlFor="status" isRequired>
+                        User Status
+                      </LabelCom>
+                      <InputCom
+                        type="num"
+                        control={control}
+                        name="status"
+                        register={register}
+                        defaultValue={2}
+                        errorMsg={errors.status?.message}
+                      ></InputCom>
+                    </div>
+                    
+                  )}
+                  {!isHidden && (
+                    <div className="col-sm-6">
                       <LabelCom htmlFor="user_id" isRequired>
                         User ID
                       </LabelCom>
@@ -141,6 +160,7 @@ const BlogCreatePage = () => {
                         errorMsg={errors.user_id?.message}
                       ></InputCom>
                     </div>
+                    
                   )}
 
                   {/* <div className="col-sm-4">
