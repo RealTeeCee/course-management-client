@@ -12,6 +12,12 @@ import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
+const ForgetPasswordPage = lazy(() =>
+  import("./pages/auth/ForgetPasswordPage.js")
+);
+const ResetPasswordPage = lazy(() =>
+  import("./pages/auth/ResetPasswordPage.js")
+);
 
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
 const AdminCourseListPage = lazy(() =>
@@ -250,6 +256,14 @@ function App() {
           <Route
             path="/register"
             element={<RegisterPage></RegisterPage>}
+          ></Route>
+          <Route
+            path="/forget-password"
+            element={<ForgetPasswordPage></ForgetPasswordPage>}
+          ></Route>
+          <Route
+            path="/reset-password"
+            element={<ResetPasswordPage></ResetPasswordPage>}
           ></Route>
 
           <Route

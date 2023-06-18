@@ -63,8 +63,6 @@ const LearnPage = () => {
   const dispatch = useDispatch();
   const player = useRef();
 
-  console.log("isReady: " + isReady + " isReload: " + isReload);
-
   useEffect(() => {
     if (data?.length === 0) {
       dispatch(onMyCourseLoading(userId));
@@ -84,7 +82,6 @@ const LearnPage = () => {
   }, [courseId, userId]);
 
   useEffect(() => {
-    console.log("isLoadLearningStatus", isLoadLearningStatus);
     if (isLoadLearningStatus) {
       dispatch(onGetTrackingLesson({ enrollmentId: enrollId, courseId }));
     }
@@ -123,7 +120,6 @@ const LearnPage = () => {
     if (progress === 100) {
       setIsFinal(true);
     }
-    console.log(isFinal);
 
     setIsEnd(true);
     if (lessonId > 0 && video.id > 0 && sectionId > 0) {

@@ -139,7 +139,7 @@ const AdminCreateLessonPage = () => {
       const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
       return res.data[0].id;
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 

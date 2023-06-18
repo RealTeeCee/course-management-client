@@ -263,7 +263,7 @@ const AdminLessonListPage = () => {
       setLessons(res.data);
       setFilterLesson(res.data);
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 

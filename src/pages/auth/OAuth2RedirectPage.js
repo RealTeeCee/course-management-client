@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 function OAuth2RedirectPage() {
   const { errorMessage } = useSelector((state) => state.auth);
   const location = useLocation();
-  console.log(location);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const searchParams = new URLSearchParams(location.search);

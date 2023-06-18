@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper";
 import { v4 } from "uuid";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
@@ -35,12 +36,11 @@ const HomePage = () => {
     <>
       <div className="h-[200vh] relative">
         <Swiper
-          // slidesPerView={3}
+          modules={[Autoplay]}
           slidesPerView={"auto"}
-          // onSlideChange={() => console.log("slide change")}
-          // onSwiper={(swiper) => console.log(swiper)}
           grabCursor="true"
           className="!sticky top-0"
+          autoplay
         >
           <SwiperSlide>
             <div className="w-full h-[300px] rounded-lg relative">

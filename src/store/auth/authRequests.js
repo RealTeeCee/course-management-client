@@ -23,3 +23,25 @@ export const requestGetUser = (token) => {
 export const requestRefreshToken = (refresh_token) => {
   return axiosInstance.get(`/auth/refresh-token/${refresh_token}`);
 };
+
+export const requestForgetPassword = (email) => {
+  return axiosInstance.post(
+    `/auth/forget-password`,
+    JSON.stringify({
+      email,
+      oldPassword: "",
+      password: "",
+      confirmPassword: "",
+    })
+  );
+};
+
+export const requestResetPassword = ({ password, confirmPassword, token }) => {
+  return axiosInstance.post(
+    `/auth/reset-password?token=${encodeURIComponent(
+      token
+    )}&email=&oldPassword=&password=${encodeURIComponent(
+      password
+    )}&confirmPassword=${encodeURIComponent(confirmPassword)}`
+  );
+};

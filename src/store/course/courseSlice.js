@@ -130,7 +130,6 @@ const courseSlice = createSlice({
       };
     },
     onSelectedLesson: (state, action) => {
-      console.log(action.payload);
       const filteredVideo = state.learning.videoDto.filter(
         (video) => video.lessonId === action.payload.lessonId
       );
