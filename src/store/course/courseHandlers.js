@@ -44,8 +44,6 @@ function* handleOnMyCourseLoading(action) {
   try {
     const res = yield call(requestMyCourse, action.payload);
 
-    console.log(res.data);
-
     if (res.status === 200) {
       yield put(onMyCourseSuccess(res.data));
     } else {
@@ -142,7 +140,6 @@ function* handleOnGetTrackingLesson({ payload }) {
   }
 }
 function* handleOnManualSelectedLesson({ payload }) {
-  console.log(payload);
   try {
     const res = yield call(requestLoadTracking, payload);
     console.log(res.data);

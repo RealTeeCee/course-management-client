@@ -19,9 +19,8 @@ import {
   CAPTION_EXT_VALID,
   MESSAGE_NUMBER_REQUIRED,
 } from "../../../constants/config";
-import axiosInstance from "../../../api/axiosInstance";
+import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
 import {
   API_LESSON_URL,
@@ -87,7 +86,6 @@ const AdminCreateLessonPage = () => {
   // const [course, setCourse] = useState({});
   /********* END API State ********* */
 
-  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
@@ -102,7 +100,7 @@ const AdminCreateLessonPage = () => {
     try {
       setIsLoading(true);
 
-      const res = await axiosPrivate.post(
+      const res = await axiosBearer.post(
         `${API_SECTION_URL}/${sectionId}/lesson`,
         {
           name,
@@ -119,13 +117,13 @@ const AdminCreateLessonPage = () => {
       for (let i = 0; i < captionFiles.length; i++) {
         fd.append("captionFiles", captionFiles[i]);
       }
-      await axiosPrivate.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
+      await axiosBearer.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
 
       toast.success(`${res.data.message}`);
       navigate(`/admin/courses/${courseId}/sections/${sectionId}/lessons`);
     } catch (error) {
       // Rollback
-      await axiosPrivate.delete(
+      await axiosBearer.delete(
         `/section/${sectionId}/lesson?lessonId=${lessonId}`
       );
       showMessageError(error);
@@ -136,10 +134,10 @@ const AdminCreateLessonPage = () => {
 
   const getLatestLessonId = async () => {
     try {
-      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+      const res = await axiosBearer.get(`/section/${sectionId}/lesson`);
       return res.data[0].id;
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 

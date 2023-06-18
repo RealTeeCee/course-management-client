@@ -73,7 +73,7 @@ const CourseDetailPage = () => {
   useEffect(() => {
     const getCourseBySlug = async () => {
       try {
-        // const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+        // const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       } catch (error) {
         console.log(error);
       }

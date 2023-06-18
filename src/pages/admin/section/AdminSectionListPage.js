@@ -11,7 +11,6 @@ import {
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
   MESSAGE_FIELD_REQUIRED,
@@ -33,6 +32,7 @@ import { SwitchAntCom } from "../../../components/ant";
 import LoadingCom from "../../../components/common/LoadingCom";
 import * as XLSX from "xlsx";
 import useExcelExport from "../../../hooks/useExportExcel";
+import { axiosBearer } from "../../../api/axiosInstance";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -50,7 +50,6 @@ const AdminSectionListPage = () => {
   /********* END API State ********* */
 
   /********* State ********* */
-  const axiosPrivate = useAxiosPrivate();
   const [filterSection, setFilterSection] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -232,7 +231,7 @@ const AdminSectionListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPrivate.delete(
+          const res = await axiosBearer.delete(
             `${API_COURSE_URL}/${courseId}/section?sectionId=${sectionId}`
           );
 
@@ -250,7 +249,7 @@ const AdminSectionListPage = () => {
   /********* API List Section ********* */
   const getSectionsByCourseId = async () => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section`
       );
       console.log(res.data);
@@ -264,7 +263,7 @@ const AdminSectionListPage = () => {
   /********* Get SectionId from row ********* */
   const getSectionById = async (sectionId) => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
       reset(res.data);
@@ -275,7 +274,7 @@ const AdminSectionListPage = () => {
 
   const getCourseById = async () => {
     try {
-      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       setCourse(res.data);
     } catch (error) {
       console.log(error);
@@ -357,7 +356,7 @@ const AdminSectionListPage = () => {
       );
 
       const dataBody = newSections.find((section) => section.id === sectionId);
-      await axiosPrivate.put(
+      await axiosBearer.put(
         `${API_COURSE_URL}/${courseId}/section`,
         JSON.stringify(dataBody)
       );
@@ -371,7 +370,7 @@ const AdminSectionListPage = () => {
   const handleSubmitForm = async (values) => {
     try {
       setIsLoading(!isLoading);
-      const res = await axiosPrivate.put(
+      const res = await axiosBearer.put(
         `${API_COURSE_URL}/${courseId}/section`,
         values
       );

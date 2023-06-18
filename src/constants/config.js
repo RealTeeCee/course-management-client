@@ -29,6 +29,8 @@ export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
 export const MESSAGE_FIELD_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL_INVALID =
   "Invalid email! Correct: example@domain.com";
+export const MESSAGE_CONFIRM_PASSWORD_INVALID =
+  "Confirm password does not match with password";
 
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
@@ -46,6 +48,8 @@ export const MESSAGE_LOGIN_SUCCESS = "You have logged successfully !";
 export const MESSAGE_LOGOUT_SUCCESS = "You have logged out successfully !";
 export const MESSAGE_VERIFY_SUCCESS =
   "Your email has been verified! You can login now";
+export const MESSAGE_FORGET_PASSWORD_SUCCESS =
+  "We has successfully sent an email to reset your password. Please check your inbox or trash and follow the instructions provided.";
 export const MESSAGE_UPDATE_STATUS_SUCCESS = "Update status success !";
 
 export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";

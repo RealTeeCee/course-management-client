@@ -109,3 +109,9 @@ export function convertSecondToTime(seconds) {
     return num.toString().padStart(2, "0");
   }
 }
+
+// If text > maxLength, will slice 
+export function sliceText(text = "", maxLength = 50, loadMore = "...") {
+  if (text.length > maxLength) return `${text.slice(0, maxLength)}${loadMore}`;
+  return text;
+}

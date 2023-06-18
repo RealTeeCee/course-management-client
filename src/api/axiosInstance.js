@@ -11,15 +11,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Fetch Data using with Hook useAxiosPrivate
-export const axiosPrivate = axios.create({
-  baseURL: BASE_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-cache",
-  },
-});
-
 export const axiosBearer = axios.create({
   baseURL: BASE_API_URL,
 });

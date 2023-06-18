@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import {
+  APP_KEY_NAME,
   COOKIE_ACCESS_TOKEN_KEY,
   COOKIE_EXPIRED_DAYS,
   COOKIE_REFRESH_TOKEN_KEY,
@@ -59,4 +60,9 @@ export const removeToken = () => {
       domain: process.env.REACT_APP_COOKIE_DOMAIN,
     });
   }
+};
+
+// save Cookie remember password
+export const setRememberPassword = (email, password) => {
+  Cookies.set(`${APP_KEY_NAME}__${email}`, password);
 };

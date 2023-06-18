@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
+import { axiosBearer } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
@@ -10,7 +10,6 @@ import {
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
   CAPTION_EXT_REGEX,
@@ -23,7 +22,6 @@ import {
   MESSAGE_UPDATE_STATUS_SUCCESS,
   MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_VIDEO_FILE_INVALID,
-  statusItems,
   VIDEO_EXT_VALID,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
@@ -46,9 +44,8 @@ import {
   API_SECTION_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
-import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
+import {  SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
-import { TextAreaCom } from "../../../components/textarea";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 
 /********* Validation for Section function ********* */
@@ -101,7 +98,6 @@ const AdminLessonListPage = () => {
   /********* END API State ********* */
 
   /********* Variable State ********* */
-  const axiosPrivate = useAxiosPrivate();
   const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -239,7 +235,7 @@ const AdminLessonListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPrivate.delete(
+          const res = await axiosBearer.delete(
             `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
@@ -257,19 +253,19 @@ const AdminLessonListPage = () => {
   /********* API List Section ********* */
   const getLessonsBySectionId = async () => {
     try {
-      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+      const res = await axiosBearer.get(`/section/${sectionId}/lesson`);
       console.log(res.data);
 
       setLessons(res.data);
       setFilterLesson(res.data);
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 
   const getCourseById = async () => {
     try {
-      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       setCourse(res.data);
     } catch (error) {
       console.log(error);
@@ -278,7 +274,7 @@ const AdminLessonListPage = () => {
 
   const getSectionById = async () => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
       setSection(res.data);
@@ -290,7 +286,7 @@ const AdminLessonListPage = () => {
   /********* Get getLessonById from row ********* */
   const getLessonById = async (lessonId) => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `/section/${sectionId}/lesson/${lessonId}`
       );
       reset(res.data);
@@ -301,7 +297,7 @@ const AdminLessonListPage = () => {
 
   const getVideoByLessonId = async (lessonId) => {
     try {
-      const res = await axiosPrivate.get(`${API_LESSON_URL}/${lessonId}/video`);
+      const res = await axiosBearer.get(`${API_LESSON_URL}/${lessonId}/video`);
       setVideo(res.data);
     } catch (error) {
       console.log(error);
@@ -366,7 +362,7 @@ const AdminLessonListPage = () => {
     }
     try {
       setIsLoading(!isLoading);
-      const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
+      const res = await axiosBearer.put(`/section/${sectionId}/lesson`, {
         name,
         sectionId,
         id,
@@ -398,7 +394,7 @@ const AdminLessonListPage = () => {
         for (let i = 0; i < captionFiles.length; i++) {
           fd.append("captionFiles", captionFiles[i]);
         }
-        await axiosPrivate.post(`${API_LESSON_URL}/${id}/video`, fd);
+        await axiosBearer.post(`${API_LESSON_URL}/${id}/video`, fd);
       }
       toast.success(`${res.data.message}`);
       // getLessonsBySectionId();
@@ -421,7 +417,7 @@ const AdminLessonListPage = () => {
           : lession
       );
       const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
-      await axiosPrivate.put(
+      await axiosBearer.put(
         `${API_SECTION_URL}/${sectionId}/lesson`,
         JSON.stringify(dataBody)
       );

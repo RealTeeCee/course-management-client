@@ -9,13 +9,16 @@ import { ButtonCom } from "../../../components/button";
 import "react-quill/dist/quill.snow.css";
 import GapYCom from "../../../components/common/GapYCom";
 import { toast } from "react-toastify";
-import { MESSAGE_FIELD_REQUIRED, MESSAGE_NUMBER_REQUIRED } from "../../../constants/config";
+import {
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NUMBER_REQUIRED,
+} from "../../../constants/config";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
 import { API_COURSE_URL } from "../../../constants/endpoint";
 import { useNavigate } from "react-router-dom/dist";
 import { showMessageError } from "../../../utils/helper";
+import { axiosBearer } from "../../../api/axiosInstance";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -37,7 +40,6 @@ const AdminCreateSectionPage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ const AdminCreateSectionPage = () => {
   const handleSubmitForm = async (values) => {
     try {
       setIsLoading(!isLoading);
-      const res = await axiosPrivate.post(
+      const res = await axiosBearer.post(
         `${API_COURSE_URL}/${courseId}/section`,
         {
           ...values,
@@ -120,9 +122,6 @@ const AdminCreateSectionPage = () => {
               <div className="card-footer flex justify-end gap-x-5">
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
-                </ButtonCom>
-                <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                  Reset
                 </ButtonCom>
               </div>
             </form>

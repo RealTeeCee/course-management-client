@@ -58,7 +58,7 @@ const CommentCom = ({
     //         net_price: convertStrMoneyToInt(net_price),
     //       })
     //     );
-    //     const res = await axiosPrivate.post(`/course`, fd);
+    //     const res = await axiosBearer.post(`/course`, fd);
     //     toast.success(`${res.data.message}`);
     //     resetValues();
     //     navigate("/admin/courses");
@@ -192,7 +192,7 @@ const CommentParent = ({
     //         net_price: convertStrMoneyToInt(net_price),
     //       })
     //     );
-    //     const res = await axiosPrivate.post(`/course`, fd);
+    //     const res = await axiosBearer.post(`/course`, fd);
     //     toast.success(`${res.data.message}`);
     //     resetValues();
     //     navigate("/admin/courses");

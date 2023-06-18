@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import Cookies from "js-cookie";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +13,6 @@ import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import {
-  APP_KEY_NAME,
   MESSAGE_EMAIL_ACTIVED,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
@@ -24,15 +22,14 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
 import { toast } from "react-toastify";
+import { setRememberPassword } from "../../utils/auth";
 
 const schemaValidation = yup.object().shape({
   email: yup
     .string()
-    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required")
-    .email(MESSAGE_EMAIL_INVALID ?? "Invalid email"),
-  password: yup
-    .string()
-    .required(MESSAGE_FIELD_REQUIRED ?? "This fields is required"),
+    .required(MESSAGE_FIELD_REQUIRED)
+    .email(MESSAGE_EMAIL_INVALID),
+  password: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const LoginPage = () => {
@@ -59,7 +56,7 @@ const LoginPage = () => {
   const { value: isRemember, handleToggleBoolean: setIsRemember } =
     useClickToggleBoolean();
 
-  const handleLogin = (values) => {
+  const handleSubmitForm = (values) => {
     dispatch(onLogin(values));
   };
 
@@ -67,7 +64,7 @@ const LoginPage = () => {
     if (isLoginSuccess) {
       if (isRemember) {
         const { email, password } = getValues();
-        Cookies.set(`${APP_KEY_NAME}__${email}`, password);
+        setRememberPassword(email, password);
       }
       navigate("/");
     } else {
@@ -83,7 +80,7 @@ const LoginPage = () => {
         <AlertAntCom type="success" msg={MESSAGE_EMAIL_ACTIVED} />
       )}
 
-      <form className="theme-form" onSubmit={handleSubmit(handleLogin)}>
+      <form className="theme-form" onSubmit={handleSubmit(handleSubmitForm)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">
           Sign in your account
         </HeadingFormH1Com> */}
@@ -120,9 +117,9 @@ const LoginPage = () => {
             Remember password
           </CheckBoxCom>
           <div>
-            <a className="link" href="forget-password.html">
+            <Link className="link" to="/forget-password">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <GapYCom></GapYCom>
           <ButtonCom type="submit" className="w-full" isLoading={isLoading}>
