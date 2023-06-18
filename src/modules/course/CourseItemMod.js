@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IconFolderCom } from "../../components/icon";
 import { ImageCom } from "../../components/image";
+import { sliceText } from "../../utils/helper";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
@@ -21,7 +22,7 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
             {course?.name}
           </CourseTitleMod>
 
-          <CourseDescMod>{course?.description}</CourseDescMod>
+          <CourseDescMod>{sliceText(course?.description, 50)}</CourseDescMod>
 
           {isMyCourse && <p>Progress: {course?.progress}%</p>}
 
