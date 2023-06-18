@@ -36,6 +36,7 @@ import {
   convertSecondToDiffForHumans,
   getDurationFromVideo,
   showMessageError,
+  sliceText,
 } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
 import {
@@ -44,7 +45,7 @@ import {
   API_SECTION_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
-import {  SwitchAntCom } from "../../../components/ant";
+import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 
@@ -417,21 +418,13 @@ const AdminLessonListPage = () => {
           : lession
       );
       const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
-      await axiosBearer.put(
-        `${API_SECTION_URL}/${sectionId}/lesson`,
-        JSON.stringify(dataBody)
-      );
+      await axiosBearer.put(`${API_SECTION_URL}/${sectionId}/lesson`, dataBody);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getLessonsBySectionId();
     } catch (error) {
       showMessageError(error);
     }
   };
-
-  // const handleChangeStatus = (value) => {
-  //   setValue("status", value);
-  //   setError("status", { message: "" });
-  // };
 
   const handleToggleChangeVideo = () => {
     setShowUpload(!showUpload);
@@ -547,7 +540,7 @@ const AdminLessonListPage = () => {
                 <div className="col-sm-6">
                   <LabelCom
                     htmlFor="videoFile"
-                    subText={`File: ${VIDEO_EXT_VALID}`}
+                    subText={`File: ${sliceText(VIDEO_EXT_VALID, 20)}`}
                   >
                     Video
                   </LabelCom>

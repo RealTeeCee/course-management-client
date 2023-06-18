@@ -356,10 +356,7 @@ const AdminSectionListPage = () => {
       );
 
       const dataBody = newSections.find((section) => section.id === sectionId);
-      await axiosBearer.put(
-        `${API_COURSE_URL}/${courseId}/section`,
-        JSON.stringify(dataBody)
-      );
+      await axiosBearer.put(`${API_COURSE_URL}/${courseId}/section`, dataBody);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getSectionsByCourseId();
     } catch (error) {
