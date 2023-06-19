@@ -234,16 +234,13 @@ const AdminCreateCoursePage = () => {
             {
               title: "Admin",
               slug: "/admin",
-              isActive: false,
             },
             {
-              title: "Learning",
+              title: "Course",
               slug: "/admin/courses",
-              isActive: false,
             },
             {
-              title: "Create Course",
-              slug: "/admin/courses/create",
+              title: "Create",
               isActive: true,
             },
           ]}

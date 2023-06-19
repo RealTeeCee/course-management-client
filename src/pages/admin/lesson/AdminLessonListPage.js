@@ -48,6 +48,7 @@ import {
 import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -440,7 +441,26 @@ const AdminLessonListPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Lesson</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Lesson",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

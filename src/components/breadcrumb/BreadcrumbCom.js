@@ -12,13 +12,17 @@ const BreadcrumbCom = ({ items = [] }) => {
           key={item.slug}
           className={`breadcrumb-item ${item.isActive ? "active" : ""}`}
         >
-          <Link
-            to={item.slug}
-            title={`${item.title} Page`}
-            className={`${item.isActive ? "" : "text-tw-primary"}`}
-          >
-            {item.title}
-          </Link>
+          {item.isActive ? (
+            item.title
+          ) : (
+            <Link
+              to={item.slug}
+              title={`${item.title} Page`}
+              className={`${item.isActive ? "" : "text-tw-primary"}`}
+            >
+              {item.title}
+            </Link>
+          )}
         </li>
       ))}
     </ol>

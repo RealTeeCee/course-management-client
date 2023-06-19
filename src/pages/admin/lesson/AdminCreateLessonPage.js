@@ -33,6 +33,7 @@ import ImageUploader from "quill-image-uploader";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
@@ -145,7 +146,30 @@ const AdminCreateLessonPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Create Lesson</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Lesson",
+              slug: `/admin/courses/${courseId}/sections/${sectionId}/lessons`,
+            },
+            {
+              title: "Create",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

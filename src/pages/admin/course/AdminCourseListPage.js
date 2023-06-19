@@ -690,11 +690,9 @@ const AdminCourseListPage = () => {
             {
               title: "Admin",
               slug: "/admin",
-              isActive: false,
             },
             {
-              title: "Learning",
-              slug: "/admin/courses",
+              title: "Course",
               isActive: true,
             },
           ]}
