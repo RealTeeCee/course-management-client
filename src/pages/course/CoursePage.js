@@ -26,43 +26,32 @@ const CoursePage = () => {
         All Courses
       </HeadingH1Com>
       <GapYCom></GapYCom>
-      <CourseGridMod>
-        {data
-          ? data.map((course, index) => {
+      {data && (
+        <>
+          <CourseGridMod>
+            {data.map((course, index) => {
               if (index >= startIndex && index < endIndex) {
                 return (
                   <CourseItemMod
                     key={v4()}
                     isPaid={false}
                     isMyCourse={false}
-                    url={`/courses/${course.slug}`}
                     course={course}
                   ></CourseItemMod>
                 );
               }
               return null;
-            })
-          : Array(63)
-              .fill(0)
-              .map((item, index) => {
-                if (index >= startIndex && index < endIndex) {
-                  return (
-                    <CourseItemMod
-                      url={`/courses/learn-php-${++index}`}
-                      key={v4()}
-                    ></CourseItemMod>
-                  );
-                }
-                return null;
-              })}
-      </CourseGridMod>
-      <Pagination
-        current={currentPage}
-        defaultPageSize={LIMIT_PAGE}
-        total={data?.length}
-        onChange={handleChangePage}
-        className="mt-[1rem] text-center"
-      />
+            })}
+          </CourseGridMod>
+          <Pagination
+            current={currentPage}
+            defaultPageSize={LIMIT_PAGE}
+            total={data?.length}
+            onChange={handleChangePage}
+            className="mt-[1rem] text-center"
+          />
+        </>
+      )}
     </>
   );
 };

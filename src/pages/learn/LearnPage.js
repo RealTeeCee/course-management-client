@@ -36,7 +36,6 @@ const LearnPage = () => {
     enrollId,
     lessonId,
     video,
-
     captionData,
     sectionId,
     tracking,

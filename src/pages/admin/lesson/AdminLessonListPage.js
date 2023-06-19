@@ -360,7 +360,6 @@ const AdminLessonListPage = () => {
         'input[name="captionFiles"]'
       );
       if (captionSelector) captionSelector.focus();
-      // toast.error(MESSAGE_GENERAL_FAILED);
       setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("captionFiles", "");
       return;
@@ -439,8 +438,7 @@ const AdminLessonListPage = () => {
       setValue("captionFiles", "");
     }
   };
-  console.log(video);
-  console.log(video ? video.url + "?token=" + access_token : "");
+
   return (
     <>
       <div className="flex justify-between items-center">

@@ -96,7 +96,8 @@ const AdminCreateLessonPage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    const { name, duration, description, videoFile, captionFiles } = values;
+    const { name, duration, description, ordered, videoFile, captionFiles } =
+      values;
     let lessonId;
     try {
       setIsLoading(true);
@@ -108,6 +109,7 @@ const AdminCreateLessonPage = () => {
           duration,
           description,
           sectionId,
+          ordered,
         }
       );
       lessonId = await getLatestLessonId();

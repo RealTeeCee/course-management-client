@@ -12,6 +12,7 @@ export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
 export const LIMIT_PAGE = 12;
+export const LIMIT_HOME_PAGE = 4;
 export const VIDEO_EXT_VALID = "mp4, avi, mov, wmv, flv, mkv, webm, mpeg, mpg";
 export const CAPTION_EXT_VALID = "en.vtt, vi.vtt, jp.vtt";
 export const CAPTION_EXT_REGEX = /\.(en|vi|jp)\.vtt$/;
