@@ -17,6 +17,7 @@ import {
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
 import HomeSearchMod from "../HomeSearchMod";
+import { onCourseInitalState } from "../../store/course/courseSlice";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -108,6 +109,7 @@ const HomeTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
+                          dispatch(onCourseInitalState());
                         },
                       }
                     : {};

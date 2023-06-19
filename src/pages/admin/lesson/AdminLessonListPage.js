@@ -358,9 +358,10 @@ const AdminLessonListPage = () => {
         'input[name="captionFiles"]'
       );
       if (captionSelector) captionSelector.focus();
-      toast.error(MESSAGE_GENERAL_FAILED);
+      // toast.error(MESSAGE_GENERAL_FAILED);
       setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("captionFiles", "");
+      return;
     }
     try {
       setIsLoading(!isLoading);

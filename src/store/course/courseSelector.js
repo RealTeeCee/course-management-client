@@ -11,6 +11,7 @@ export const selectAllCourseState = createSelector(
     enrollId: courseSlice.enrollId,
     learning: courseSlice.learning,
     video: courseSlice.video,
+    captionData: courseSlice.video ? courseSlice.video.captionData : [], // tam vay nha
     sectionId: courseSlice.sectionId,
     tracking: courseSlice.tracking,
     progress: courseSlice.progress,
