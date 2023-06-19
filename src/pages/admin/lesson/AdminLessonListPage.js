@@ -48,6 +48,7 @@ import {
 import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { getToken } from "../../../utils/auth";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
@@ -96,7 +97,7 @@ const AdminLessonListPage = () => {
   const [lessons, setLessons] = useState([]);
   const [section, setSection] = useState({});
   const [course, setCourse] = useState({});
-  const [video, setVideo] = useState({});
+  const [video, setVideo] = useState(); //{} ko có null, undefined nên kiểm tra lúc nào cũng + token -> lỗi
   /********* END API State ********* */
 
   /********* Variable State ********* */
@@ -111,6 +112,7 @@ const AdminLessonListPage = () => {
   const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { access_token } = getToken();
 
   const resetState = () => {
     setShowUpload(false);
@@ -358,9 +360,10 @@ const AdminLessonListPage = () => {
         'input[name="captionFiles"]'
       );
       if (captionSelector) captionSelector.focus();
-      toast.error(MESSAGE_GENERAL_FAILED);
+      // toast.error(MESSAGE_GENERAL_FAILED);
       setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("captionFiles", "");
+      return;
     }
     try {
       setIsLoading(!isLoading);
@@ -436,7 +439,8 @@ const AdminLessonListPage = () => {
       setValue("captionFiles", "");
     }
   };
-
+  console.log(video);
+  console.log(video ? video.url + "?token=" + access_token : "");
   return (
     <>
       <div className="flex justify-between items-center">
@@ -595,7 +599,7 @@ const AdminLessonListPage = () => {
               <div className={`row current-video ${showVideo ? "" : "hidden"}`}>
                 <div className="col-sm-12 text-center flex justify-center items-center">
                   <ReactPlayer
-                    url={video?.url}
+                    url={video ? video.url + "?token=" + access_token : ""}
                     config={{
                       youtube: {
                         playerVars: { showinfo: 1, controls: 1 },

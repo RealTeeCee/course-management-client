@@ -105,7 +105,6 @@ const LearnTopbarMod = () => {
                   item.url === "/logout"
                     ? {
                         onClick: () => {
-                          toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
                           dispatch(onCourseInitalState());
                         },

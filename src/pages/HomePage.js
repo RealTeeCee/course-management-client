@@ -42,43 +42,45 @@ const HomePage = () => {
           className="!sticky top-0"
           autoplay
         >
-          <SwiperSlide>
-            <div className="w-full h-[300px] rounded-lg relative">
-              <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
-              <img
-                src="https://media.istockphoto.com/id/1321058115/vi/anh/k%E1%BA%BFt-xu%E1%BA%A5t-3d-c%E1%BB%A7a-blockchain-tr%C3%AAn-n%E1%BB%81n-t%E1%BA%A3ng-c%C3%B4ng-ngh%E1%BB%87.jpg?s=2048x2048&w=is&k=20&c=QoC7d4ZnAtBVR5PCS9U-itYA7MKfvZx-2pLM2K8AXxE="
-                alt=""
-                className="w-full h-full object-cover rounded-lg"
-              />
-              <div className="absolute left-5 bottom-10 w-full text-white">
-                <h2 className="font-bold text-3xl mb-[.75rem] w-[30rem]">
-                  Become Master ReactJS with Backend Laravel
-                </h2>
-                <p className="mb-[.75rem] text-xl">
-                  Saling only{" "}
-                  <span className="text-tw-light-pink font-bold">$300</span>
-                </p>
-                <div className="flex items-center gap-x-3 mb-8">
-                  <span className="px-4 py-2 border border-white rounded-md">
-                    Programming
-                  </span>
-                  <span className="px-4 py-2 border border-white rounded-md">
-                    Front-end
-                  </span>
-                  <span className="px-4 py-2 border border-white rounded-md">
-                    Back-end
-                  </span>
+          {bestSellerCourse.slice(0, 4).map((c) => (
+            <SwiperSlide key={c.id}>
+              <div className="w-full h-[300px] rounded-lg relative">
+                <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
+                <img
+                  src={c.image}
+                  alt={c.category_name}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+                <div className="absolute left-5 bottom-10 w-full text-white">
+                  <h2 className="font-bold text-3xl mb-[.75rem] w-[30rem]">
+                    {c.achievements}
+                  </h2>
+                  <p className="mb-[.75rem] text-xl">
+                    Only{" "}
+                    <span className="text-tw-light-pink font-bold">
+                      ${c.net_price}
+                    </span>
+                  </p>
+                  <div className="flex items-center gap-x-3 mb-8">
+                    {c.tags.split(",").map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-4 py-2 border border-white rounded-md"
+                      >
+                        {tag.toUpperCase()}
+                      </span>
+                    ))}
+                  </div>
+                  <ButtonCom
+                    className="font-tw-secondary font-semibold"
+                    // onClick={() => navigate(`/movie/${id}`)}
+                  >
+                    View Detail
+                  </ButtonCom>
                 </div>
-                <ButtonCom
-                  className="font-tw-secondary font-semibold"
-                  // onClick={() => navigate(`/movie/${id}`)}
-                >
-                  View Detail
-                </ButtonCom>
               </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>Slide 2</SwiperSlide>
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
 

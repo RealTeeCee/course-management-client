@@ -14,7 +14,6 @@ import {
   IconLearnCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
-import { API_COURSE_URL } from "../../constants/endpoint";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 
@@ -33,31 +32,31 @@ const lessionItems = [
   {
     id: 1,
     name: "What is PHP",
-    duration: "02:58",
-    section_id: 1,
+    duration: 178,
+    sectionId: 1,
   },
   {
     id: 2,
     name: "What is Laravel",
-    duration: "05:58",
-    section_id: 1,
+    duration: 358,
+    sectionId: 1,
   },
   {
     id: 3,
     name: "Install XamPP",
-    duration: "02:18",
-    section_id: 2,
+    duration: 138,
+    sectionId: 2,
   },
   {
     id: 4,
     name: "Install phpMyAdmin",
-    duration: "06:18",
-    section_id: 2,
+    duration: 378,
+    sectionId: 2,
   },
 ];
 
-const sessionIds = sectionItems.map((item) => String(item.id));
-const totalLession = 2;
+// const sessionIds = sectionItems.map((item) => String(item.id));
+// const totalLession = 2;
 
 const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
