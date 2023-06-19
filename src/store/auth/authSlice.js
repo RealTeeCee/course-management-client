@@ -17,6 +17,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState: { ...initialState },
   reducers: {
+    onAuthInitialState: (state, action) => ({
+      ...initialState,
+    }),
     onLoading: (state, action) => ({
       ...state,
       isLoading: action.payload,
@@ -82,7 +85,7 @@ const authSlice = createSlice({
 });
 
 export const {
-  // onAuthInitalState,
+  onAuthInitialState,
   onLoading,
   onLoginSuccess,
   onLogin,

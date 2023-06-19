@@ -9,7 +9,12 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
+import {
+  onAuthInitalState,
+  onAuthInitialState,
+  onGetUser,
+  onRemoveToken,
+} from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
@@ -82,13 +87,13 @@ function App() {
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
-    return () => {
-      clearTimeout(timer1);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  // useEffect(() => {
+  //   let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
+  //   return () => {
+  //     clearTimeout(timer1);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // });
 
   useEffect(() => {
     if (user?.status === 0) {
@@ -100,7 +105,7 @@ function App() {
 
   // useEffect(() => {
   //   //   dispatch(onCourseInitalState());
-  //   // dispatch(onAuthInitalState());
+  //   dispatch(onAuthInitialState());
   // }, [dispatch]);
 
   // useEffect(() => {

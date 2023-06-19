@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HeadingH1Com } from "../../../components/heading";
 import { InputCom } from "../../../components/input";
@@ -34,6 +34,12 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  onCourseLoading,
+  onSelectedCourse,
+} from "../../../store/course/courseSlice";
+import { selectAllCourseState } from "../../../store/course/courseSelector";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
@@ -88,12 +94,21 @@ const AdminCreateLessonPage = () => {
   /********* END API State ********* */
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [description, setDescription] = useState("");
   const resetValues = () => {
     // setcourseSelected(null);
     reset();
   };
+  const { data } = useSelector(selectAllCourseState);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(onCourseLoading());
+    }
+  }, [dispatch, isSuccess]);
 
   const handleSubmitForm = async (values) => {
     const { name, duration, description, ordered, videoFile, captionFiles } =
@@ -123,6 +138,7 @@ const AdminCreateLessonPage = () => {
       await axiosBearer.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
 
       toast.success(`${res.data.message}`);
+      setIsSuccess(true);
       navigate(`/admin/courses/${courseId}/sections/${sectionId}/lessons`);
     } catch (error) {
       // Rollback
@@ -132,6 +148,7 @@ const AdminCreateLessonPage = () => {
       showMessageError(error);
     } finally {
       setIsLoading(false);
+      setIsSuccess(false);
     }
   };
 
