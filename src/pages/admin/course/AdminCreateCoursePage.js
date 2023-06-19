@@ -37,6 +37,7 @@ import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -228,7 +229,22 @@ const AdminCreateCoursePage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Create Course</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Create",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

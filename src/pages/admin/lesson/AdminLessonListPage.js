@@ -36,6 +36,7 @@ import {
   convertSecondToDiffForHumans,
   getDurationFromVideo,
   showMessageError,
+  sliceText,
 } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
 import {
@@ -48,6 +49,7 @@ import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { getToken } from "../../../utils/auth";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -420,21 +422,13 @@ const AdminLessonListPage = () => {
           : lession
       );
       const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
-      await axiosBearer.put(
-        `${API_SECTION_URL}/${sectionId}/lesson`,
-        JSON.stringify(dataBody)
-      );
+      await axiosBearer.put(`${API_SECTION_URL}/${sectionId}/lesson`, dataBody);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getLessonsBySectionId();
     } catch (error) {
       showMessageError(error);
     }
   };
-
-  // const handleChangeStatus = (value) => {
-  //   setValue("status", value);
-  //   setError("status", { message: "" });
-  // };
 
   const handleToggleChangeVideo = () => {
     setShowUpload(!showUpload);
@@ -451,7 +445,26 @@ const AdminLessonListPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Lesson</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Lesson",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -551,7 +564,7 @@ const AdminLessonListPage = () => {
                 <div className="col-sm-6">
                   <LabelCom
                     htmlFor="videoFile"
-                    subText={`File: ${VIDEO_EXT_VALID}`}
+                    subText={`File: ${sliceText(VIDEO_EXT_VALID, 20)}`}
                   >
                     Video
                   </LabelCom>

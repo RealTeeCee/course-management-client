@@ -59,10 +59,11 @@ import {
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { getValue } from "@mui/system";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -437,7 +438,7 @@ const AdminCourseListPage = () => {
   const handleDeleteCourse = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete course: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete course: <span className="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -576,7 +577,7 @@ const AdminCourseListPage = () => {
     }
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete <span class="text-tw-danger">${
+      html: `You will delete <span className="text-tw-danger">${
         selectedRows.length
       } selected ${selectedRows.length > 1 ? "courses" : "course"}</span>`,
       icon: "question",
@@ -682,8 +683,20 @@ const AdminCourseListPage = () => {
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Courses</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <HeadingH1Com>Admin Learning</HeadingH1Com>
+        {/* <ButtonBackCom></ButtonBackCom> */}
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

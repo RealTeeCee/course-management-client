@@ -19,6 +19,7 @@ import { API_COURSE_URL } from "../../../constants/endpoint";
 import { useNavigate } from "react-router-dom/dist";
 import { showMessageError } from "../../../utils/helper";
 import { axiosBearer } from "../../../api/axiosInstance";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -74,7 +75,26 @@ const AdminCreateSectionPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Create Section</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Create",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

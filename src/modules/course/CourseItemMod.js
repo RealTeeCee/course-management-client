@@ -8,7 +8,7 @@ import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
 const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
   return (
-    <div className="c-card course-item">
+    <div className="c-card course-item col-md-4 col-xl-3">
       <Link to={url} className="tw-transition-all hover:opacity-80">
         <div className="c-card-header h-[158px]">
           <ImageCom srcSet={course?.image} alt={course?.name}></ImageCom>
@@ -19,10 +19,10 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
           </CategoryTagMod>
 
           <CourseTitleMod className="font-tw-secondary">
-            {course?.name}
+            {sliceText(course?.name, 20)}
           </CourseTitleMod>
 
-          <CourseDescMod>{sliceText(course?.description, 50)}</CourseDescMod>
+          <CourseDescMod>{sliceText(course?.description, 45)}</CourseDescMod>
 
           {isMyCourse && <p>Progress: {course?.progress}%</p>}
 
