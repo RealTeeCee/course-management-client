@@ -1,13 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
-import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaClock,
-  FaEdit,
-  FaHeart,
-} from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { v4 } from "uuid";
 import { FcLike, FcComments } from "react-icons/fc";
@@ -16,11 +9,23 @@ import {
   IconEmailCom,
   IconPhoneCom,
   IconUserCom,
-} from "../../components/icon"; 
-import { useSelector } from "react-redux";
+} from "../../components/icon";
+import { useDispatch, useSelector } from "react-redux";
+import { onMyCourseLoading } from "../../store/course/courseSlice";
+import { sliceText } from "../../utils/helper";
+import { AVATAR_DEFAULT } from "../../constants/config";
 
 const UserProfilePage = () => {
   const { user } = useSelector((state) => state.auth);
+  const { data } = useSelector((state) => state.course);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (user) {
+      dispatch(onMyCourseLoading(user.id));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+  console.log(data);
   console.log(user);
   const [coverImage, setCoverImage] = useState(Carousel_6);
 
@@ -66,9 +71,9 @@ const UserProfilePage = () => {
         </div>
         <div className="absolute -bottom-10">
           <img
-            src="https://petdep.net/wp-content/uploads/2022/11/gia-meo-anh-long-dai-.jpg"
+            src={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
             className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full"
-            alt="cover"
+            alt={user.name ?? "avatar-user"}
             style={{ objectFit: "cover", objectPosition: "center" }}
           />
           <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
@@ -90,7 +95,7 @@ const UserProfilePage = () => {
         </div>
       </div>
       <div className="text-center mt-12 text-3xl font-bold text-fBlack">
-        Ronald Oliver
+        {user?.name} {user?.lastName}
       </div>
       <div className="border border-fGrey mt-6 mb-6 border-opacity-10" />
 
@@ -99,7 +104,7 @@ const UserProfilePage = () => {
         <div className="col-span-12 md:col-span-5 row-start-2 md:row-start-1 space-y-4">
           {/* Start User profile */}
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
-            <div className="text-xl font-bold text-fBlack">User Profile</div>
+            <div className="text-xl font-bold text-fBlack">My Profile</div>
             <div className="mt-4 flex items-center">
               <IconUserCom></IconUserCom>
               <span className="ml-2">FPT Aptech </span>
@@ -161,22 +166,26 @@ const UserProfilePage = () => {
                   Courses Enrolled
                 </div>
               </div>
-              {Array(4)
-                .fill(0)
-                .map((item, index) => (
+              {data &&
+                data.length > 0 &&
+                data.map((item, index) => (
                   <Link key={v4()} to={`/courses/learn-${++index}`}>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                      <div>
-                        <img src={Carousel_6} alt="" className="w-full" />
+                      <div className="w-32">
+                        <img
+                          src={item?.image}
+                          alt={item.slug}
+                          className="w-full object-cover"
+                        />
                       </div>
                       <div className="md:col-span-2">
-                        <p className="font-bold">Build Website With Reactjs</p>
-                        <p className="mt-1">
-                          ReactJS is an open-source JavaScript library created
-                          by Facebook's Jordan Walke to make user interfaces for
-                          both web and mobile systems. React was first used in
-                          2011 on Facebook's newsfeed.
-                        </p>
+                        <p className="font-bold">{item.name}</p>
+                        <p
+                          className="mt-1"
+                          dangerouslySetInnerHTML={{
+                            __html: sliceText(item?.description, 200),
+                          }}
+                        ></p>
                       </div>
                     </div>
                   </Link>

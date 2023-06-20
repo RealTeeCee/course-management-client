@@ -110,8 +110,11 @@ export function convertSecondToTime(seconds) {
   }
 }
 
-// If text > maxLength, will slice 
+// If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
-  if (text.length > maxLength) return `${text.slice(0, maxLength)}${loadMore}`;
-  return text;
+  const newText = text.replace(/(<([^>]+)>)/gi, "");
+  if (newText.length > maxLength)
+    return `${newText.slice(0, maxLength)}${loadMore}`;
+
+  return newText;
 }

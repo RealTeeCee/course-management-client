@@ -1,11 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { toast } from "react-toastify";
-import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
+import { axiosBearer } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
@@ -16,11 +15,7 @@ import {
   IconTrashCom,
 } from "../../../components/icon";
 import { TableCom } from "../../../components/table";
-import {
-  API_COURSE_URL,
-  API_TAG_URL,
-  IMG_BB_URL,
-} from "../../../constants/endpoint";
+import { API_COURSE_URL, API_TAG_URL } from "../../../constants/endpoint";
 import * as yup from "yup";
 import {
   categoryItems,
@@ -37,7 +32,6 @@ import {
   MESSAGE_NET_PRICE_HIGHER_PRICE,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
-  statusItems,
   MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../../constants/config";
 import { LabelCom } from "../../../components/label";
@@ -49,7 +43,6 @@ import {
   SelectTagAntCom,
   SwitchAntCom,
 } from "../../../components/ant";
-import { TextAreaCom } from "../../../components/textarea";
 import Swal from "sweetalert2";
 import {
   convertIntToStrMoney,
@@ -59,8 +52,7 @@ import {
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
-import { Link, NavLink } from "react-router-dom";
-import { getValue } from "@mui/system";
+import { Link } from "react-router-dom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
@@ -91,19 +83,6 @@ const schemaValidation = yup.object().shape({
   //   .typeError(MESSAGE_NUMBER_REQUIRED)
   //   .min(0, MESSAGE_NUMBER_POSITIVE),
 });
-
-// Label is category name , value is category_id
-
-// const tagItems = [
-//   {
-//     value: "programming",
-//     label: "Programming",
-//   },
-//   {
-//     value: "php",
-//     label: "PHP",
-//   },
-// ];
 
 const AdminCourseListPage = () => {
   // More Action Menu
@@ -215,13 +194,7 @@ const AdminCourseListPage = () => {
       cell: (row) => (
         <>
           <Link to={`/admin/courses/${row.id}/sections`}>
-            <ButtonCom
-              className="px-3 rounded-lg mr-2"
-              backgroundColor="gray"
-              onClick={() => {
-                // alert(`Update Course id: ${row.id}`);
-              }}
-            >
+            <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
               <IconBookCom className="w-5 text-black"></IconBookCom>
             </ButtonCom>
           </Link>
@@ -425,8 +398,6 @@ const AdminCourseListPage = () => {
         getCourses();
         toast.success(`${res.data.message}`);
         setIsOpen(false);
-        // resetValues();
-        // navigate("/admin/courses");
       } catch (error) {
         showMessageError(error);
       } finally {
@@ -601,9 +572,6 @@ const AdminCourseListPage = () => {
         }
       }
     });
-
-    // Optionally, you can update the data source or refetch the data to reflect the changes
-    // Example: refetchData();
   };
 
   const handleChangeCategory = (value) => {
@@ -646,39 +614,6 @@ const AdminCourseListPage = () => {
     setAchievementSelected(itemsArrs);
   };
 
-  // const modules = useMemo(
-  //   () => ({
-  //     toolbar: [
-  //       ["bold", "italic", "underline", "strike"],
-  //       ["blockquote"],
-  //       [{ header: 1 }, { header: 2 }], // custom button values
-  //       [{ list: "ordered" }, { list: "bullet" }],
-  //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  //       ["link", "image"],
-  //     ],
-  //     imageUploader: {
-  //       upload: async (file) => {
-  //         const fd = new FormData();
-  //         fd.append("image", file);
-  //         try {
-  //           const res = await axiosInstance({
-  //             method: "POST",
-  //             url: IMG_BB_URL,
-  //             data: fd,
-  //             headers: {
-  //               "Content-Type": "multipart/form-data",
-  //             },
-  //           });
-  //           return res.data.data.url;
-  //         } catch (error) {
-  //           toast.error(error.message);
-  //           return;
-  //         }
-  //       },
-  //     },
-  //   }),
-  //   []
-  // );
   return (
     <>
       {isFetching && <LoadingCom />}

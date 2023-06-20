@@ -52,7 +52,6 @@ const courseSlice = createSlice({
     },
     onMyCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onMyCourseSuccess: (state, action) => ({
@@ -60,57 +59,46 @@ const courseSlice = createSlice({
       data: action.payload,
       isReady: false,
     }),
-
     onMyCourseFailed: (state, action) => ({
       ...state,
-
       errorMessage: action.payload,
     }),
     onCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
       ...state,
-
       data: action.payload,
     }),
     onCourseFailed: (state, action) => ({
       ...state,
-
       errorMessage: action.payload,
     }),
     onFreeCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onFreeCourseSuccess: (state, action) => ({
       ...state,
-
       freeCourse: action.payload,
     }),
 
     onBestSellerCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onBestSellerCourseSuccess: (state, action) => ({
       ...state,
-
       bestSellerCourse: action.payload,
     }),
 
     onRelatedCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onRelatedCourseSuccess: (state, action) => ({
       ...state,
-
       relatedCourse: action.payload,
     }),
 
