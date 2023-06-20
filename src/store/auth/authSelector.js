@@ -2,6 +2,10 @@ import { createSelector } from "@reduxjs/toolkit";
 
 const selectUserReducer = (state) => state.auth; //store in rootReducer
 
+export const selectUser = createSelector(
+  [selectUserReducer],
+  (authSlice) => authSlice.user
+);
 export const selectUserId = createSelector(
   [selectUserReducer],
   (authSlice) => authSlice.user.id

@@ -1,11 +1,19 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import GapYCom from "../common/GapYCom";
 import { TextEditorQuillCom } from "../texteditor";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ButtonCom } from "../button";
-import { IMAGE_DEFAULT } from "../../constants/config";
+import { BASE_API_URL, IMAGE_DEFAULT } from "../../constants/config";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, selectUserId } from "../../store/auth/authSelector";
+import {
+  onSaveLikeOfPost,
+  onSavePost,
+  onSaveReplyToPost,
+} from "../../store/course/courseSlice";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 
 const schemaValidation = yup.object().shape({
   comment: yup.string(),
@@ -18,9 +26,10 @@ const CommentCom = ({
   commentUrl = "",
   replyUrl = "",
 }) => {
-  const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isShowCommentBox, setIsShowCommentBox] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [comment, setComment] = useState("");
 
   const {
     control,
@@ -34,63 +43,75 @@ const CommentCom = ({
     resolver: yupResolver(schemaValidation),
   });
 
-  const handleSubmitForm = (values) => {
-    console.log(values);
-    // call tới api commentUrl từ ngoài truyền vào, ko set cứng để bên Blog xài lại
+  const dispatch = useDispatch();
 
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     const fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         ...values,
-    //         status: 0,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //       })
-    //     );
-    //     const res = await axiosBearer.post(`/course`, fd);
-    //     toast.success(`${res.data.message}`);
-    //     resetValues();
-    //     navigate("/admin/courses");
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+  useEffect(() => {
+    let url = BASE_API_URL + `/post/stream/${courseId}`;
+    const sse = new EventSource(url);
+
+    sse.addEventListener("post-list-event", (event) => {
+      //console.log(event);
+      const data = JSON.parse(event.data);
+      console.log(data);
+      setPosts(data);
+    });
+
+    sse.onerror = () => {
+      sse.close();
+    };
+    return () => {
+      sse.close();
+    };
+  }, []);
+
+  const user = useSelector(selectUser);
+  const { courseId } = useSelector(selectAllCourseState);
+
+  const handleSubmitForm = ({ comment }) => {
+    // console.log(values);
+    dispatch(onSavePost({ courseId, userId: user.id, content: comment }));
+
+    setTimeout(() => setIsShowCommentBox(false), 1500);
   };
   return (
     <section className="comment-box">
       {title && (
-        <>
+        <React.Fragment>
           <h4>Comment</h4>
           <hr />
-        </>
+        </React.Fragment>
       )}
       {/* Comment Items */}
       <ul>
-        <CommentParent
+        {posts.map((p) => (
+          <React.Fragment key={p.id}>
+            <CommentParent
+              image={p.postImageUrl == null ? IMAGE_DEFAULT : p.postImageUrl}
+              userName={p.userName}
+              role={p.role}
+              parentComment={p.content}
+              userPostId={p.userId}
+              postId={p.id}
+              ReplyCount={p.comments.length}
+              LikeCount={p.likedUsers.length}
+            ></CommentParent>
+            {p.comments.map((c) => (
+              <CommentChild
+                key={c.id}
+                image={c.imageUrl}
+                userName={c.userName}
+                role={c.role}
+                childComment={c.content}
+              ></CommentChild>
+            ))}
+          </React.Fragment>
+        ))}
+        {/*<CommentParent
           image="https://imgix.ranker.com/user_node_img/50081/1001612215/original/live-for-our-friends-photo-u1?auto=format&q=60&fit=crop&fm=pjpg&dpr=2&w=375"
           userName="Erza Scarlet"
           role="USER"
           parentComment="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
-        ></CommentParent>
-        <CommentChild
-          image="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-          userName="Ric Phạm"
-          role="ADMIN"
-          childComment="Thanks for your comment!"
-        ></CommentChild>
+        ></CommentParent>*/}
       </ul>
       <GapYCom></GapYCom>
       <div
@@ -142,6 +163,10 @@ const CommentParent = ({
   userName = "No Name",
   role = "USER",
   parentComment,
+  postId,
+  userPostId,
+  ReplyCount = 0,
+  LikeCount = 0,
 }) => {
   const [isLiked, setLiked] = useState(false);
   const [isReply, setIsReply] = useState(false);
@@ -160,7 +185,11 @@ const CommentParent = ({
     resolver: yupResolver(schemaValidation),
   });
 
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+
   const handleLike = (isLiked) => {
+    dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
     setLiked(!isLiked);
   };
 
@@ -168,40 +197,11 @@ const CommentParent = ({
     setIsReply(!isReply);
   };
   // Comment Parent
-  const handleSubmitForm = (values) => {
-    console.log(values);
+  const handleSubmitForm = ({ comment }) => {
+    console.log({ postId, userId: userPostId, content: comment });
     // Call tới api replyUrl ở trên truyền vào, ko set cứng để bên Blog xài lại
-
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     const fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         ...values,
-    //         status: 0,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //       })
-    //     );
-    //     const res = await axiosBearer.post(`/course`, fd);
-    //     toast.success(`${res.data.message}`);
-    //     resetValues();
-    //     navigate("/admin/courses");
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+    dispatch(onSaveReplyToPost({ postId, userId: user.id, content: comment }));
+    setTimeout(() => setIsReply(false), 1500);
   };
   return (
     <li>
@@ -226,7 +226,8 @@ const CommentParent = ({
                   } cursor-pointer transition-all duration-300`}
                   onClick={() => handleLike(isLiked)}
                 >
-                  <i className="icofont icofont-thumbs-up"></i>02 Liked
+                  <i className="icofont icofont-thumbs-up"></i>
+                  {LikeCount} Liked
                 </li>
                 <li
                   className={`${
@@ -234,15 +235,16 @@ const CommentParent = ({
                   } cursor-pointer transition-all duration-300`}
                   onClick={() => handleReply(isReply)}
                 >
-                  <i className="icofont icofont-ui-chat"></i>1 Reply
+                  <i className="icofont icofont-ui-chat"></i>
+                  {ReplyCount} Reply
                 </li>
               </ul>
             </div>
           </div>
-          <p>
-            {parentComment}
+          <div>
+            <div dangerouslySetInnerHTML={{ __html: parentComment }}></div>
             {isReply && (
-              <>
+              <React.Fragment>
                 <GapYCom className="mb-4"></GapYCom>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
                   <TextEditorQuillCom
@@ -271,9 +273,9 @@ const CommentParent = ({
                   </div>
                 </form>
                 <GapYCom className="mb-4"></GapYCom>
-              </>
+              </React.Fragment>
             )}
-          </p>
+          </div>
         </div>
       </div>
     </li>
@@ -293,7 +295,7 @@ const CommentChild = ({
           <div className="media">
             <img
               className="object-cover"
-              srcSet={image}
+              srcSet={image == null ? IMAGE_DEFAULT : image}
               alt={`${userName} avatar`}
             />
             <div className="media-body">
@@ -305,7 +307,7 @@ const CommentChild = ({
                   </h6>
                 </div>
               </div>
-              <p>{childComment}</p>
+              <div dangerouslySetInnerHTML={{ __html: childComment }}></div>
             </div>
           </div>
         </li>

@@ -8,11 +8,15 @@ import {
   requestFreeCourse,
   requestLearning,
   requestLoadNote,
+  requestLoadNotification,
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
   requestRelatedCourse,
+  requestSaveLike,
   requestSaveNote,
+  requestSavePost,
+  requestSaveReply,
   requestSaveTrackingLesson,
   requestSaveTrackingVideo,
   requestUpdateCompleted,
@@ -27,6 +31,7 @@ import {
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
   onLoadNoteSuccess,
+  onLoadNotificationSuccess,
   onLoadProgressSuccess,
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
@@ -233,6 +238,45 @@ function* handleDeleteNote({ payload }) {
   }
 }
 
+function* handleSavePost({ payload }) {
+  try {
+    const res = yield call(requestSavePost, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleSaveReplyToPost({ payload }) {
+  try {
+    const res = yield call(requestSaveReply, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleSaveLikeOfPost({ payload }) {
+  try {
+    const res = yield call(requestSaveLike, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleLoadNotification({ payload }) {
+  try {
+    const res = yield call(requestLoadNotification, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onLoadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -250,4 +294,8 @@ export {
   handleOnUpdateCompletedVideo,
   handleSaveNote,
   handleDeleteNote,
+  handleSavePost,
+  handleSaveReplyToPost,
+  handleSaveLikeOfPost,
+  handleLoadNotification,
 };

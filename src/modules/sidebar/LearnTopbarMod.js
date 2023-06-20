@@ -1,22 +1,21 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { ButtonCom } from "../../components/button";
 import {
-  IconBellCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import { MESSAGE_LOGOUT_SUCCESS } from "../../constants/config";
+import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import { onRemoveToken } from "../../store/auth/authSlice";
 import { onCourseInitalState } from "../../store/course/courseSlice";
 
 const LearnTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
   const { progress } = useSelector((state) => state.course);
+
   const userName = user?.email.split("@")[0];
   const userItems = [
     {
@@ -40,9 +39,8 @@ const LearnTopbarMod = () => {
       url: "/logout",
     },
   ];
-
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   return (
     <div className="topbar flex items-center justify-between mb-8">
       <div>
@@ -57,9 +55,10 @@ const LearnTopbarMod = () => {
       <div className="flex items-center justify-between gap-x-5">
         {progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>}
         <ButtonCom to="/my-courses" className="flex items-center">
-          <span className="text-sm font-medium">My Courses</span>
+          <span className="text-sm font-medium">My Coursess</span>
         </ButtonCom>
-        <IconBellCom></IconBellCom>
+        <NotificationListPopup />
+
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>

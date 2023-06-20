@@ -1,23 +1,23 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
-  IconBellCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
+import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import {
   AVATAR_DEFAULT,
   IMAGE_DEFAULT,
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import HomeSearchMod from "../HomeSearchMod";
 import { onCourseInitalState } from "../../store/course/courseSlice";
+import HomeSearchMod from "../HomeSearchMod";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -46,7 +46,6 @@ const HomeTopbarMod = () => {
   ];
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
@@ -67,7 +66,7 @@ const HomeTopbarMod = () => {
         <ButtonCom to="/my-courses" className="flex items-center">
           <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>
-        <IconBellCom></IconBellCom>
+        <NotificationListPopup />
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>

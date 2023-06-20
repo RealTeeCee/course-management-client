@@ -34,6 +34,9 @@ const initialState = {
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
 
   notes: [], //onGetNote
+  // posts: [], //onSavePost
+  notifs: [],
+  notifToastList: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -282,6 +285,27 @@ const courseSlice = createSlice({
         video: filteredVideo,
       };
     },
+    onSavePost: (state, action) => ({
+      ...state,
+    }),
+    onSaveReplyToPost: (state, action) => ({
+      ...state,
+    }),
+    onSaveLikeOfPost: (state, action) => ({
+      ...state,
+    }),
+    onLoadNotification: (state, action) => ({
+      ...state,
+    }),
+    onLoadNotificationSuccess: (state, action) => ({
+      ...state,
+      notifs: action.payload,
+    }),
+    onAddNotification: (state, action) => ({
+      ...state,
+      notifs: [...state.notifs, ...action.payload],
+      notifToastList: [...state.notifToastList, ...action.payload],
+    }),
   },
 });
 
@@ -326,6 +350,12 @@ export const {
   onDeleteNote,
   onDeleteNoteSuccess,
   onSelectedNote,
+  onSavePost,
+  onSaveReplyToPost,
+  onSaveLikeOfPost,
+  onLoadNotification,
+  onLoadNotificationSuccess,
+  onAddNotification,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

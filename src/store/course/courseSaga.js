@@ -16,6 +16,10 @@ import {
   handleLoadNote,
   handleSaveNote,
   handleDeleteNote,
+  handleSavePost,
+  handleSaveReplyToPost,
+  handleSaveLikeOfPost,
+  handleLoadNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -26,11 +30,15 @@ import {
   onGetLearning,
   onGetTrackingLesson,
   onLoadNote,
+  onLoadNotification,
   onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
   onRelatedCourseLoading,
+  onSaveLikeOfPost,
   onSaveNote,
+  onSavePost,
+  onSaveReplyToPost,
   onSaveTrackingLesson,
   onSaveTrackingVideo,
   onUpdateCompletedVideo,
@@ -58,5 +66,9 @@ export default function* courseSaga() {
     takeLatest(onLoadNote.type, handleLoadNote),
     takeLatest(onSaveNote.type, handleSaveNote),
     takeLatest(onDeleteNote.type, handleDeleteNote),
+    takeLatest(onSavePost.type, handleSavePost),
+    takeLatest(onSaveReplyToPost.type, handleSaveReplyToPost),
+    takeLatest(onSaveLikeOfPost.type, handleSaveLikeOfPost),
+    takeLatest(onLoadNotification.type, handleLoadNotification),
   ]);
 }
