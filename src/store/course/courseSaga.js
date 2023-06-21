@@ -20,6 +20,7 @@ import {
   handleSaveReplyToPost,
   handleSaveLikeOfPost,
   handleLoadNotification,
+  handleReadNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -34,6 +35,7 @@ import {
   onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
+  onReadNotification,
   onRelatedCourseLoading,
   onSaveLikeOfPost,
   onSaveNote,
@@ -70,5 +72,6 @@ export default function* courseSaga() {
     takeLatest(onSaveReplyToPost.type, handleSaveReplyToPost),
     takeLatest(onSaveLikeOfPost.type, handleSaveLikeOfPost),
     takeLatest(onLoadNotification.type, handleLoadNotification),
+    takeLatest(onReadNotification.type, handleReadNotification),
   ]);
 }

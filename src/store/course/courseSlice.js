@@ -37,6 +37,8 @@ const initialState = {
   // posts: [], //onSavePost
   notifs: [],
   notifToastList: [],
+  isRead: false,
+  updatedNotifToastList: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -303,9 +305,28 @@ const courseSlice = createSlice({
     }),
     onAddNotification: (state, action) => ({
       ...state,
-      notifs: [...state.notifs, ...action.payload],
-      notifToastList: [...state.notifToastList, ...action.payload],
+      notifs: action.payload,
+      notifToastList: action.payload,
     }),
+    onReadNotification: (state, action) => ({
+      ...state,
+    }),
+    onReadNotificationSuccess: (state, action) => ({
+      ...state,
+      isRead: true,
+    }),
+    onRemoveFromToastList: (state, action) => {
+      let newNotifToastList = [action.payload];
+      console.log(newNotifToastList);
+
+      const filteredNotifToastList = newNotifToastList.filter(
+        (x) => x.id !== action.payload.id
+      );
+      return {
+        ...state,
+        updatedNotifToastList: filteredNotifToastList,
+      };
+    },
   },
 });
 
@@ -356,6 +377,9 @@ export const {
   onLoadNotification,
   onLoadNotificationSuccess,
   onAddNotification,
+  onReadNotification,
+  onReadNotificationSuccess,
+  onRemoveFromToastList,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

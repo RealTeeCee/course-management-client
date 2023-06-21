@@ -9,18 +9,9 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import {
-  onAuthInitalState,
-  onAuthInitialState,
-  onGetUser,
-  onRemoveToken,
-} from "./store/auth/authSlice.js";
-import {
-  onAddNotification,
-  onCourseInitalState,
-} from "./store/course/courseSlice.js";
+import { onRemoveToken } from "./store/auth/authSlice.js";
+import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
-import { BASE_API_URL } from "./constants/config.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -106,23 +97,6 @@ function App() {
       dispatch(onCourseInitalState());
     }
   }, [dispatch, navigate, user?.status]);
-
-  useEffect(() => {
-    let url = BASE_API_URL + "/push-notifications/" + user.id;
-    const sse = new EventSource(url);
-
-    sse.addEventListener("user-list-event", (event) => {
-      const data = JSON.parse(event.data);
-      dispatch(onAddNotification(data));
-    });
-
-    sse.onerror = () => {
-      sse.close();
-    };
-    return () => {
-      sse.close();
-    };
-  }, []);
 
   // useEffect(() => {
   //   //   dispatch(onCourseInitalState());

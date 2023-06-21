@@ -1,13 +1,20 @@
-import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
+import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
+import * as React from "react";
+import { useDispatch } from "react-redux";
+import { onReadNotification } from "../../store/course/courseSlice";
+import { convertSecondToDiffForHumans } from "../../utils/helper";
 
 export default function NotificationList({ notifs }) {
+  const dispatch = useDispatch();
+  const handleReadNotification = (notifId) => {
+    dispatch(onReadNotification(notifId));
+  };
   return (
     <List
       sx={{
@@ -15,11 +22,22 @@ export default function NotificationList({ notifs }) {
         maxWidth: 360,
         bgcolor: "background.paper",
         borderRadius: 2,
+        padding: "5px",
       }}
     >
       {notifs.map((notif, i) => (
         <React.Fragment key={notif.id}>
-          <ListItem alignItems="flex-start">
+          <ListItem
+            alignItems="flex-start"
+            onClick={() => handleReadNotification(notif.id)}
+            sx={{
+              bgcolor: notif.read ? "#fff" : "#757575",
+              borderRadius: 2,
+              "&:hover": {
+                bgcolor: notif.read ? "#f0f0f0" : "#616161",
+              },
+            }}
+          >
             <ListItemAvatar>
               <Avatar
                 alt={notif.userFrom.first_name}
@@ -27,16 +45,45 @@ export default function NotificationList({ notifs }) {
               />
             </ListItemAvatar>
             <ListItemText
-              primary={notif.userFrom.first_name}
-              secondary={
+              primary={
                 <React.Fragment>
                   <Typography
-                    sx={{ display: "inline" }}
+                    sx={{
+                      display: "inline",
+                      color: notif.read ? "black" : "#fff",
+                    }}
                     component="span"
                     variant="body2"
-                    color="text.primary"
-                  ></Typography>
+                  >
+                    {notif.read ? (
+                      notif.userFrom.first_name
+                    ) : (
+                      <React.Fragment>
+                        {notif.userFrom.first_name}{" "}
+                        <strong style={{ color: "violet" }}>unread</strong>
+                      </React.Fragment>
+                    )}
+                  </Typography>
+                </React.Fragment>
+              }
+              secondary={
+                <React.Fragment>
                   {notif.content}
+                  <Typography
+                    sx={{
+                      display: "inline",
+                      color: notif.read ? "black" : "#cfc6d5",
+                    }}
+                    component="span"
+                    variant="body2"
+                  >
+                    <br></br>
+                    {convertSecondToDiffForHumans(
+                      Math.floor(Date.now() / 1000) -
+                        Math.floor(new Date(notif.created_at).getTime() / 1000)
+                    )}{" "}
+                    ago...
+                  </Typography>
                 </React.Fragment>
               }
             />

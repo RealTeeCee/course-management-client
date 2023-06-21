@@ -21,6 +21,8 @@ export const selectAllCourseState = createSelector(
     isReady: courseSlice.isReady,
     notes: courseSlice.notes,
     notifs: courseSlice.notifs,
+    notifToastList: courseSlice.notifToastList,
+    updatedNotifToastList: courseSlice.updatedNotifToastList,
   })
 );
 

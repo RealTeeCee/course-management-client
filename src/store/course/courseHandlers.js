@@ -12,6 +12,7 @@ import {
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
+  requestReadNotification,
   requestRelatedCourse,
   requestSaveLike,
   requestSaveNote,
@@ -36,6 +37,7 @@ import {
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
+  onReadNotificationSuccess,
   onRelatedCourseSuccess,
   onSaveNoteSuccess,
   onSaveTrackingVideoSuccess,
@@ -277,6 +279,18 @@ function* handleLoadNotification({ payload }) {
     console.log(error);
   }
 }
+function* handleReadNotification({ payload }) {
+  try {
+    const res = yield call(requestReadNotification, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onReadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -298,4 +312,5 @@ export {
   handleSaveReplyToPost,
   handleSaveLikeOfPost,
   handleLoadNotification,
+  handleReadNotification,
 };

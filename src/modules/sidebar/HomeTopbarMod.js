@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,12 +12,17 @@ import {
 import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import {
   AVATAR_DEFAULT,
+  BASE_API_URL,
   IMAGE_DEFAULT,
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onCourseInitalState } from "../../store/course/courseSlice";
+import {
+  onAddNotification,
+  onCourseInitalState,
+} from "../../store/course/courseSlice";
 import HomeSearchMod from "../HomeSearchMod";
+import NotificationToastList from "../../components/mui/NotificationToastList";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -46,9 +51,28 @@ const HomeTopbarMod = () => {
   ];
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    if (user) {
+      let url = BASE_API_URL + "/push-notifications/" + user.id;
+      const sse = new EventSource(url);
 
+      sse.addEventListener("user-list-event", (event) => {
+        const data = JSON.parse(event.data);
+        dispatch(onAddNotification(data));
+      });
+
+      sse.onerror = () => {
+        sse.close();
+      };
+      return () => {
+        sse.close();
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
+      <NotificationToastList></NotificationToastList>
       <div>
         <Link to="/" className="inline-block">
           <img

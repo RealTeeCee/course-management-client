@@ -92,8 +92,9 @@ const CommentCom = ({
               parentComment={p.content}
               userPostId={p.userId}
               postId={p.id}
-              ReplyCount={p.comments.length}
-              LikeCount={p.likedUsers.length}
+              replyCount={p.comments.length}
+              likeCount={p.likedUsers.length}
+              likeUsers={p.likedUsers}
             ></CommentParent>
             {p.comments.map((c) => (
               <CommentChild
@@ -165,13 +166,22 @@ const CommentParent = ({
   parentComment,
   postId,
   userPostId,
-  ReplyCount = 0,
-  LikeCount = 0,
+  replyCount = 0,
+  likeCount = 0,
+  likeUsers,
 }) => {
-  const [isLiked, setLiked] = useState(false);
+  const user = useSelector(selectUser);
+  const [isLiked, setLiked] = useState(
+    likeUsers.find((like) => like.id === user.id) ? true : false
+  );
   const [isReply, setIsReply] = useState(false);
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [likeNum, setLikeNum] = useState(likeCount);
+
+  useEffect(() => {
+    setLikeNum(likeCount);
+  }, [likeCount]);
 
   const {
     control,
@@ -186,11 +196,15 @@ const CommentParent = ({
   });
 
   const dispatch = useDispatch();
-  const user = useSelector(selectUser);
 
-  const handleLike = (isLiked) => {
-    dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
+  const handleLike = () => {
     setLiked(!isLiked);
+    if (!isLiked) {
+      setLikeNum(likeNum + 1);
+    } else {
+      setLikeNum(likeNum - 1);
+    }
+    dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
   };
 
   const handleReply = (isReply) => {
@@ -222,12 +236,12 @@ const CommentParent = ({
               <ul className="comment-social float-start float-md-end">
                 <li
                   className={`${
-                    isLiked && "text-primary"
+                    isLiked ? "text-primary" : ""
                   } cursor-pointer transition-all duration-300`}
-                  onClick={() => handleLike(isLiked)}
+                  onClick={handleLike}
                 >
                   <i className="icofont icofont-thumbs-up"></i>
-                  {LikeCount} Liked
+                  {likeNum} Liked
                 </li>
                 <li
                   className={`${
@@ -236,7 +250,7 @@ const CommentParent = ({
                   onClick={() => handleReply(isReply)}
                 >
                   <i className="icofont icofont-ui-chat"></i>
-                  {ReplyCount} Reply
+                  {replyCount} Reply
                 </li>
               </ul>
             </div>

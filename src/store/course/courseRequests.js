@@ -60,3 +60,6 @@ export const requestSaveLike = (data) => {
 export const requestLoadNotification = (userId) => {
   return axiosBearer.post(`/notification/${userId}`);
 };
+export const requestReadNotification = (notifId) => {
+  return axiosBearer.patch(`/notification/read/${notifId}`);
+};
