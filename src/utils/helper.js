@@ -110,6 +110,18 @@ export function convertSecondToTime(seconds) {
   }
 }
 
+// Input: 2023-06-20T16:21:34.017435Z, Output: June 20, 2023
+export function convertDateTime(dateTimeString) {
+  if (dateTimeString === null) return;
+  const dateTime = new Date(dateTimeString);
+  const options = { month: "long", day: "numeric", year: "numeric" };
+  const newDateTime = new Intl.DateTimeFormat("en-US", options).format(
+    dateTime
+  );
+
+  return newDateTime;
+}
+
 // If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
   const newText = text.replace(/(<([^>]+)>)/gi, "");

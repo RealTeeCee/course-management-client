@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
 import { FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { v4 } from "uuid";
 import { FcLike, FcComments } from "react-icons/fc";
 import {
   IconClockCom,
@@ -12,8 +11,9 @@ import {
 } from "../../components/icon";
 import { useDispatch, useSelector } from "react-redux";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
-import { sliceText } from "../../utils/helper";
+import { convertDateTime, sliceText } from "../../utils/helper";
 import { AVATAR_DEFAULT } from "../../constants/config";
+import { ImageCom } from "../../components/image";
 
 const UserProfilePage = () => {
   const { user } = useSelector((state) => state.auth);
@@ -45,7 +45,7 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div className="max-w-[1240px] mx-auto py-6 px-4">
+    <div className="mx-auto py-6 px-4">
       <div className="relative h-96 rounded-b flex justify-center rounded-lg">
         <img
           src={coverImage}
@@ -95,7 +95,7 @@ const UserProfilePage = () => {
         </div>
       </div>
       <div className="text-center mt-12 text-3xl font-bold text-fBlack">
-        {user?.name} {user?.lastName}
+        {user?.name}
       </div>
       <div className="border border-fGrey mt-6 mb-6 border-opacity-10" />
 
@@ -104,10 +104,15 @@ const UserProfilePage = () => {
         <div className="col-span-12 md:col-span-5 row-start-2 md:row-start-1 space-y-4">
           {/* Start User profile */}
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
-            <div className="text-xl font-bold text-fBlack">My Profile</div>
+            <div className="flex items-center justify-between">
+              <div className="text-xl font-bold text-fBlack">My Profile</div>
+              <button className="transition-all duration-300 text-tw-primary hover:opacity-60">
+                Edit
+              </button>
+            </div>
             <div className="mt-4 flex items-center">
               <IconUserCom></IconUserCom>
-              <span className="ml-2">FPT Aptech </span>
+              <span className="ml-2">FPT Aptech</span>
             </div>
             <div className="mt-4 flex items-center">
               <IconEmailCom></IconEmailCom>
@@ -115,11 +120,13 @@ const UserProfilePage = () => {
             </div>
             <div className="mt-4 flex items-center">
               <IconPhoneCom></IconPhoneCom>
-              <span className="ml-2">091900909 </span>
+              <span className="ml-2">091900909</span>
             </div>
             <div className="mt-4 flex items-center">
               <IconClockCom></IconClockCom>
-              <span className="ml-2">From 2019 To Present </span>
+              <span className="ml-2">
+                Registered at: {convertDateTime(user?.created_at)}
+              </span>
             </div>
           </div>
           {/* Start User profile */}
@@ -165,18 +172,20 @@ const UserProfilePage = () => {
                 <div className="text-xl font-bold text-fBlack">
                   Courses Enrolled
                 </div>
+                <Link
+                  to="/my-courses"
+                  className="transition-all duration-300 text-tw-primary hover:opacity-60"
+                >
+                  See all
+                </Link>
               </div>
               {data &&
                 data.length > 0 &&
-                data.map((item, index) => (
-                  <Link key={v4()} to={`/courses/learn-${++index}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
-                      <div className="w-32">
-                        <img
-                          src={item?.image}
-                          alt={item.slug}
-                          className="w-full object-cover"
-                        />
+                data.slice(0, 4).map((item, index) => (
+                  <Link key={item.slug} to={`/learn/${item.slug}`}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 mt-4 transition-all duration-300 hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]">
+                      <div className="h-28">
+                        <ImageCom srcSet={item?.image} alt={item.slug} />
                       </div>
                       <div className="md:col-span-2">
                         <p className="font-bold">{item.name}</p>

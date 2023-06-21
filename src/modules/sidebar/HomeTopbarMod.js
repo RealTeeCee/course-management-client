@@ -18,16 +18,12 @@ import {
 import { onRemoveToken } from "../../store/auth/authSlice";
 import HomeSearchMod from "../HomeSearchMod";
 import { onCourseInitalState } from "../../store/course/courseSlice";
+import IconRefreshCom from "../../components/icon/IconRefreshCom";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
   const userName = user?.email.split("@")[0];
   const userItems = [
-    {
-      icon: <IconUserCom />,
-      title: "Profile",
-      url: `/profile/${userName}`,
-    },
     {
       icon: <IconRegisterCom />,
       title: "Register",
@@ -37,6 +33,16 @@ const HomeTopbarMod = () => {
       icon: <IconLoginCom />,
       title: "Log in",
       url: "/login",
+    },
+    {
+      icon: <IconUserCom />,
+      title: "Profile",
+      url: `/profile/${userName}`,
+    },
+    {
+      icon: <IconRefreshCom />,
+      title: "Password",
+      url: `/change-password`,
     },
     {
       icon: <IconLogoutCom />,
@@ -99,7 +105,9 @@ const HomeTopbarMod = () => {
                 // If user is not login, exclude "/logout" URL
                 if (
                   !user &&
-                  (item.url === "/logout" || item.url.includes("/profile"))
+                  (item.url === "/logout" ||
+                    item.url.includes("/profile") ||
+                    item.url === "/change-password")
                 ) {
                   return null;
                 }
