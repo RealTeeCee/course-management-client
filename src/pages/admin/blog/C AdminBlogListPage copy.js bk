@@ -11,14 +11,8 @@ import {
 import { axiosBearer } from "../../../api/axiosInstance";
 import { toast } from "react-toastify";
 import {
-  MAX_LENGTH_NAME,
-  MESSAGE_FIELD_MAX_LENGTH_NAME,
-  MESSAGE_FIELD_MIN_LENGTH_NAME,
-  MESSAGE_FIELD_REQUIRED,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
-  MESSAGE_UPLOAD_REQUIRED,
-  MIN_LENGTH_NAME,
   categoryItems,
 } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
@@ -44,84 +38,24 @@ import { Navigate } from "react-router-dom";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 const schemaValidation = yup.object().shape({
-  name: yup
-    .string()
-    .required(MESSAGE_FIELD_REQUIRED)
-    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
-    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  status: yup.number().default(2),
-  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
-  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  status: yup.number().default(1),
 });
 
-const statusItems = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "InActive",
-  },
-  {
-    value: 2,
-    label: "Proccessing",
-  },
-];
-const AdminBlogListPage = () => {
-  /********* State ********* */
-  //API State
+const AdminBlogListPageC = () => {
+  /********* API State ********* */
+  const [blogs, setBlogs] = useState([]);
   const [image, setImage] = useState([]);
   const [categorySelected, setCategorySelected] = useState(null);
-  const [statusSelected, setStatusSelected] = useState(null);
-
-  // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
-  const [blogs, setBlogs] = useState([]);
-  const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
+  const [filterBlog, setFilterBlog] = useState([]);
   const { user } = useSelector((state) => state.auth);
-  const user_id = user.id;
-
-  /********* END API State ********* */
-
-  /********* More Action Menu ********* */
-  const dropdownItems = [
-    {
-      key: "1",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
-        >
-          Export
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
-        >
-          Remove All
-        </div>
-      ),
-    },
-  ];
-
-  //manage status and event in form
   const {
     control,
     register,
@@ -134,11 +68,11 @@ const AdminBlogListPage = () => {
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+
   const resetValues = () => {
     reset();
   };
 
-  /********* Fetch API Area ********* */
   const columns = [
     {
       name: "No",
@@ -193,9 +127,14 @@ const AdminBlogListPage = () => {
             </ButtonCom>
           );
         }
-       
       },
     },
+    // {
+    //   name: "Description",
+    //   selector: (row) => row.description,
+    //   sortable: true,
+    //   width: "550px",
+    // },
     {
       name: "Action",
       cell: (row) => (
@@ -212,7 +151,7 @@ const AdminBlogListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              window.open(`/blogs/${row.id}`);
+              <Link key={blog.id} to={`/blogs/${blog.id}`} />;
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -231,8 +170,49 @@ const AdminBlogListPage = () => {
     },
   ];
 
-  /********* Call API ********* */
-  //Get All Blog
+  const statusItems = [
+    {
+      value: 1,
+      label: "Active",
+    },
+    {
+      value: 0,
+      label: "InActive",
+    },
+    {
+      value: 2,
+      label: "Proccessing",
+    },
+  ];
+
+  // More Action Menu
+  const dropdownItems = [
+    {
+      key: "1",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-success transition-all duration-300"
+          onClick={() => toast.info("Developing...")}
+        >
+          Export
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleDeleteMultipleRecords()}
+        >
+          Remove All
+        </div>
+      ),
+    },
+  ];
+
   const getBlogs = async () => {
     try {
       const res = await axiosBearer.get(`/blog/blogs`);
@@ -244,32 +224,13 @@ const AdminBlogListPage = () => {
     }
   };
 
+  // /********* Fetch API Area ********* */
   useEffect(() => {
     getBlogs();
   }, []);
 
-  const handleChangeCategory = (value) => {
-    setValue("category_id", value);
-    setError("category_id", { message: "" });
-    setCategorySelected(value);
-  };
-
-  const handleChangeStatus = async (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-    setCategorySelected(value);
-  };
-
-  const clearSelectedRows = () => {
-    setSelectedRows([]);
-    setTableKey((prevKey) => prevKey + 1);
-  };
-
-  const handleRowSelection = (currentRowsSelected) => {
-    setSelectedRows(currentRowsSelected.selectedRows);
-  };
-
-  /********* Search ********* */
+  /********* Action Area ********* */
+  // Search in Table
   useEffect(() => {
     const result = blogs.filter((blog) => {
       const keys = Object.keys(blog);
@@ -294,7 +255,26 @@ const AdminBlogListPage = () => {
     setFilterBlog(result);
   }, [blogs, search]);
 
-  /********* Delete one API ********* */
+  const handleChangeCategory = (value) => {
+    setValue("category_id", value);
+    setError("category_id", { message: "" });
+    setCategorySelected(value);
+  };
+
+  const handleChangeStatus = (id, status) => {
+    console.log(id);
+    console.log(status);
+  };
+  const clearSelectedRows = () => {
+    setSelectedRows([]);
+    setTableKey((prevKey) => prevKey + 1);
+  };
+
+  const handleRowSelection = (currentRowsSelected) => {
+    setSelectedRows(currentRowsSelected.selectedRows);
+  };
+
+  // Delete one
   const handleDeleteBlog = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
@@ -318,7 +298,7 @@ const AdminBlogListPage = () => {
     });
   };
 
-  /********* Multi Delete API ********* */
+  // Muti Delete
   const handleDeleteMultipleRecords = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
@@ -350,26 +330,37 @@ const AdminBlogListPage = () => {
         }
       }
     });
+
+    // Optionally, you can update the data source or refetch the data to reflect the changes
+    // Example: refetchData();
   };
-  /********* Update API ********* */
-  const handleEdit = async (blogId) => {
+
+  ///********* Update Area *********
+  const handleSubmitForm = async (values) => {
+    console.log(values);
+    const user_id = user.id;
     try {
-      setIsFetching(true);
-      await getBlogById(blogId);
-      setIsOpen(true);
+      setIsLoading(!isLoading);
+      const res = await axiosBearer.put(`/blog`, {
+        ...values,
+        user_id,
+        view_count: 0,
+      });
+      toast.success(`${res.data.message}`);
+      resetValues();
+      Navigate(`/admin/blogs`);
     } catch (error) {
-      console.log(error);
+      showMessageError(error);
     } finally {
-      setIsFetching(false);
+      setIsLoading(false);
     }
   };
 
   const getBlogById = async (blogId) => {
     try {
-      const res = await axiosPrivate.get(`blog/${blogId}`);
+      const res = await axiosBearer.get(`blog/${blogId}`);
       reset(res.data);
       setCategorySelected(res.data.category_id);
-      setStatusSelected(res.data.status);
       const resImage = res.data.image;
       const imgObj = [
         {
@@ -385,23 +376,15 @@ const AdminBlogListPage = () => {
       console.log(error);
     }
   };
-
-  const handleSubmitForm = async (values) => {
-    console.log(values);
+  const handleEdit = async (blogId) => {
     try {
-      setIsLoading(!isLoading);
-      const res = await axiosBearer.put(`/blog`, {
-        ...values,
-        user_id,
-        view_count: 0,
-      });
-      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getBlogs();
-      Navigate(`/admin/blogs`);
+      setIsFetching(true);
+      await getBlogById(blogId);
+      setIsOpen(true);
     } catch (error) {
-      showMessageError(error);
+      console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
     }
   };
 
@@ -418,19 +401,19 @@ const AdminBlogListPage = () => {
           <div className="card">
             <div className="card-header py-3">
               {/* <HeadingH2Com className="text-tw-light-pink">
-                List Courses
-              </HeadingH2Com> */}
+            List Courses
+          </HeadingH2Com> */}
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate="/blogs/blogCreate"
-                  title="List Blogs"
+                  title="Admin Management Blog"
                   columns={columns}
                   items={filterBlog}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
-                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
+                  onSelectedRowsChange={handleRowSelection}
+                  // selected Mutilple
                 ></TableCom>
               </span>
             </div>
@@ -438,7 +421,6 @@ const AdminBlogListPage = () => {
           </div>
         </div>
       </div>
-
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
@@ -449,7 +431,7 @@ const AdminBlogListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Course</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Blog</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -467,13 +449,12 @@ const AdminBlogListPage = () => {
               control={control}
               name="id"
               register={register}
-              placeholder="Blog hidden id"
+              placeholder="Course hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
-
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-8">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="name" isRequired>
                     Blog Name
                   </LabelCom>
@@ -482,52 +463,10 @@ const AdminBlogListPage = () => {
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Course Name"
+                    placeholder="Input Blog Name"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
-                </div>
-                <div className="col-sm-2 relative">
-                  <LabelCom htmlFor="image" isRequired>
-                    Image
-                  </LabelCom>
-                  <div className="absolute w-full">
-                    <ImageCropUploadAntCom
-                      name="image"
-                      onSetValue={setValue}
-                      errorMsg={errors.image?.message}
-                      editImage={image}
-                    ></ImageCropUploadAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="image"
-                      register={register}
-                    ></InputCom>
-                  </div>
-                </div>
-              </div>
-              <GapYCom className="mb-20"></GapYCom>
-              <div className="row">
-                <div className="col-sm-4">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
                 </div>
                 <div className="col-sm-4">
                   <LabelCom htmlFor="category_id" isRequired>
@@ -545,7 +484,6 @@ const AdminBlogListPage = () => {
                         "error"
                       }
                       errorMsg={errors.category_id?.message}
-                      placeholder="Input category to search"
                     ></SelectSearchAntCom>
                     <InputCom
                       type="hidden"
@@ -556,7 +494,54 @@ const AdminBlogListPage = () => {
                   </div>
                 </div>
               </div>
-              <GapYCom className="mb-35 bt-10"></GapYCom>
+
+              <GapYCom className="mb-10"></GapYCom>
+              <div className="row">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="status" isRequired>
+                    Choose Status
+                  </LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      listItems={statusItems}
+                      onChange={handleChangeStatus}
+                      status={errors.status && errors.status.message && "error"}
+                      errorMsg={errors.status?.message}
+                      placeholder="Choose Status"
+                      defaultValue={watch("status")}
+                    ></SelectDefaultAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="status"
+                      register={register}
+                      defaultValue={watch("status")}
+                    ></InputCom>
+                  </div>
+                  
+                </div>
+
+                <div className="col-sm-2 relative">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  <div className="absolute w-full">
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                      value={watch("image")}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-20"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="description">Description</LabelCom>
@@ -565,7 +550,6 @@ const AdminBlogListPage = () => {
                     onChange={(description) => {
                       setValue("description", description);
                     }}
-                    placeholder="Describe your course ..."
                   ></TextEditorQuillCom>
                 </div>
               </div>
@@ -575,9 +559,6 @@ const AdminBlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
             </div>
           </form>
         </div>
@@ -585,4 +566,4 @@ const AdminBlogListPage = () => {
     </>
   );
 };
-export default AdminBlogListPage;
+export default AdminBlogListPageC;

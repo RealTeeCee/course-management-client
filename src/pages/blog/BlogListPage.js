@@ -62,6 +62,7 @@ const BlogListPage = () => {
   const [isHidden, setIsHidden] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const userId = user.id;
   const resetValues = () => {
     reset();
   };
@@ -91,17 +92,17 @@ const BlogListPage = () => {
       selector: (row) => row.name,
       sortable: true,
     },
-    // {
-    //   name: "Category",
-    //   selector: (row) => row.category_name,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Image",
-    //   selector: (row) => (
-    //     <img width={50} height={50} src={`${row.image}`} alt={row.name} />
-    //   ),
-    // },
+    {
+      name: "Category",
+      selector: (row) => row.category_name,
+      sortable: true,
+    },
+    {
+      name: "Image",
+      selector: (row) => (
+        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+      ),
+    },
     {
       name: "Actions",
       cell: (row) => (
@@ -121,10 +122,11 @@ const BlogListPage = () => {
     },
   ];
    /********* Get SectionId from row ********* */
-   const getBlogById = async (id) => {
+   const getBlogById = async (userId) => {
+    console.log("userId",user.id);
     try {
-      const res = await axiosPrivate.get(
-        `/blog/${id}`
+      const res = await axiosBearer.get(
+        `/blog/my-blog/${userId}`
       );
       reset(res.data);
     } catch (error) {
@@ -137,7 +139,7 @@ const BlogListPage = () => {
     const fetchBlogs = async () => {
       try {
         if (user && user.id) {
-          const response = await axiosBearer.get(`/blog`);
+          const response = await axiosBearer.get(`/blog/my-blog/${userId}`);
           const filteredBlogs = response.data.filter(blog => blog.user_id === user.id);
           setBlogs(filteredBlogs);
           setIsLoading(false);
@@ -222,6 +224,7 @@ const BlogListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
+                  urlCreate="/blogs/blogCreate"
                   title={`Blog: ${user.name}`}
                   columns={columns}
                   items={blogs}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import ButtonBackCom from "../../components/button/ButtonBackCom";
 import * as yup from "yup";
 import {
@@ -24,14 +25,15 @@ import {
   SelectSearchAntCom,
 } from "../../components/ant";
 import { TextEditorQuillCom } from "../../components/texteditor";
-
+import { axiosBearer } from "../../api/axiosInstance";
+import ReactHtmlParser from "react-html-parser";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(2),
-  // image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
-  // category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
+  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 const BlogCreatePage = () => {
   const {
@@ -52,7 +54,6 @@ const BlogCreatePage = () => {
   /********* END API Area ********* */
   const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
-  const { courseId } = useParams();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [categorySelected, setCategorySelected] = useState(null);
@@ -66,21 +67,44 @@ const BlogCreatePage = () => {
   };
 
   /********* Get Blog ID from API  ********* */
+  // const handleSubmitForm = async (values) => {
+  //   // console.log(values);
+  //   const { name, description, category_id} = values;
+  //   const image = watch('image'); // Lấy giá trị của hình ảnh từ watch
+  //   const status = values.status || 2;
+  //   const user_id = user.id;
+  //   console.log("user_id",user_id);
+  //   try {
+  //     setIsLoading(!isLoading);
+  //     const res = await axiosPrivate.post(`/blog`, {
+
+  //    ...values,
+  //       status,
+  //       user_id,
+
+  //     });
+  //     toast.success(`${res.data.message}`);
+  //     navigate(`/blogs`);
+  //   } catch (error) {
+  //     showMessageError(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleSubmitForm = async (values) => {
-    // console.log(values);
-    const { name, description} = values;
-    const status = values.status || 2;
+    console.log(values);
     const user_id = user.id;
-    console.log("user_id",user_id);
     try {
       setIsLoading(!isLoading);
-      const res = await axiosPrivate.post(`/blog`, {
-        name,
-        description,
-        status,
+      const res = await axiosBearer.post(`/blog`, {
+        ...values,
         user_id,
+        status: 2,
+        view_count: 0,
       });
       toast.success(`${res.data.message}`);
+      resetValues();
       navigate(`/blogs`);
     } catch (error) {
       showMessageError(error);
@@ -130,7 +154,7 @@ const BlogCreatePage = () => {
                     ></InputCom>
                   </div>
 
-                  {!isHidden && (
+                  {/* {!isHidden && (
                     <div className="col-sm-6">
                       <LabelCom htmlFor="status" isRequired>
                         User Status
@@ -144,7 +168,6 @@ const BlogCreatePage = () => {
                         errorMsg={errors.status?.message}
                       ></InputCom>
                     </div>
-                    
                   )}
                   {!isHidden && (
                     <div className="col-sm-6">
@@ -160,10 +183,9 @@ const BlogCreatePage = () => {
                         errorMsg={errors.user_id?.message}
                       ></InputCom>
                     </div>
-                    
-                  )}
+                  )} */}
 
-                  {/* <div className="col-sm-4">
+                  <div className="col-sm-4">
                     <LabelCom htmlFor="category_id" isRequired>
                       Choose Category
                     </LabelCom>
@@ -206,11 +228,12 @@ const BlogCreatePage = () => {
                         register={register}
                       ></InputCom>
                     </div>
-                  </div> */}
+                  </div>
                   <GapYCom className="mb-10"></GapYCom>
                   <div className="row">
                     <div className="col-sm-12">
                       <LabelCom htmlFor="description">Description</LabelCom>
+                      <div>{ReactHtmlParser(description)}</div>
                       <TextEditorQuillCom
                         value={description}
                         onChange={(description) => {
@@ -218,7 +241,7 @@ const BlogCreatePage = () => {
                           setDescription(description);
                         }}
                         placeholder="Describe your course ..."
-                      ></TextEditorQuillCom>
+                      />
                     </div>
                   </div>
                 </div>

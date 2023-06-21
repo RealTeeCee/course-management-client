@@ -1,29 +1,22 @@
-import BlogCarouselPage from "./BlogCarouselPage";
-import BlogSelectPage from "./BlogSelectPage";
-import LayoutHome from "../../layouts/LayoutHome";
 import { useEffect, useState } from "react";
-import Carousel_4 from "../../assets/blog_image/Carousel_4.jpg";
-import Carousel_3 from "../../assets/blog_image/Carousel_3.jpg";
-import {
-  BsArrowLeftSquareFill,
-  BsArrowRightSquareFill,
-  BsFillPersonVcardFill,
-  BsPatchPlusFill,
-} from "react-icons/bs";
+import Carousel_9 from "../../assets/blog_image/Carousel_9.jpg";
+import { BsFillPersonVcardFill, BsPatchPlusFill } from "react-icons/bs";
 import { Link, NavLink } from "react-router-dom";
 import { FaBlog, FaCog, FaPlug } from "react-icons/fa";
 import usePagination from "../../hooks/usePagination";
 import { Pagination } from "antd";
 import { LIMIT_PAGE } from "../../constants/config";
 import { HeadingFormH1Com } from "../../components/heading";
-import ButtonCom from "../../components/button/ButtonCom";
-import { v4 } from "uuid";
 import { AiOutlineClockCircle, AiOutlineTags } from "react-icons/ai";
+import { FaEye } from "react-icons/fa";
 import { axiosBearer, axiosPrivate } from "../../api/axiosInstance";
+import { useSelector } from "react-redux";
+import moment from "moment/moment";
+import ReactHtmlParser from "react-html-parser";
 
 const sliderData = [
   {
-    url: Carousel_4,
+    url: Carousel_9,
   },
 ];
 // const BlogPage = () => {
@@ -159,6 +152,7 @@ const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const imageUrl = sliderData[0]?.url;
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useSelector((state) => state.auth);
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
     1,
     LIMIT_PAGE
@@ -167,9 +161,14 @@ const BlogPage = () => {
     const fetchBlogs = async () => {
       try {
         const response = await axiosBearer.get(
-          `/blog?_start=${startIndex}&_end=${endIndex}`
+          `/blog/blogs?_start=${startIndex}&_end=${endIndex}`
         );
-        setBlogs(response.data);
+        // setBlogs(response.data);
+        const formattedBlogs = response.data.map((blog) => ({
+          ...blog,
+          created_at: moment(blog.created_at).format("DD/MM/YYYY"), // Format the date
+        }));
+        setBlogs(formattedBlogs);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
@@ -187,31 +186,26 @@ const BlogPage = () => {
 
       <div className="w-full h-full object-cover relative ">
         {/**** Image and Sidebar ****/}
-        {imageUrl && <img src={imageUrl} alt="/" className="w-full h-60" />}
+        {imageUrl && <img src={imageUrl} alt="/" className="w-full h-60 object-cover" />}
 
-        <nav className="flex justify-center space-x-20 h-16 bg-white">
-          <NavLink
-            to="/blogs"
-            className="flex items-center text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
-          >
-            <FaBlog className="mr-1" />
-            Blog
-          </NavLink>
-          <Link
-            to="/blogs/blogList"
-            className="flex items-center  text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
-          >
-            <FaCog className="mr-1" />
-            List
-          </Link>
-          <Link
-            to="/blogs/blogCreate"
-            className="flex items-center text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
-          >
-            <BsPatchPlusFill className="mr-1" />
-            Create
-          </Link>
-        </nav>
+        {user && (
+          <nav className="flex justify-center space-x-20 h-16 bg-white">
+            <Link
+              to="/blogs/blogList"
+              className="flex items-center  text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
+            >
+              <FaCog className="mr-1" />
+              List
+            </Link>
+            <Link
+              to="/blogs/blogCreate"
+              className="flex items-center text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
+            >
+              <BsPatchPlusFill className="mr-1" />
+              Create
+            </Link>
+          </nav>
+        )}
       </div>
 
       {/**** Body Blog ****/}
@@ -220,19 +214,15 @@ const BlogPage = () => {
         <h2 className="py-4">
           <div>
             We’ve got everything you need to deliver flexible and effective
-            skills development for your entire workforce.
-          </div>
-          <div>
+            skills development for your entire workforce. <br />
             Teach what you know and help learners explore their interests, gain
             new skills, and advance their careers.
-          </div>
-          <div>
+            <br />
             Publish the course you want, in the way you want, and always have
-            control of your own content.
-          </div>
-          <div>
+            control of your own content. <br />
             Expand your professional network, build your expertise, and earn
             money on each paid enrollment.
+            <br />
           </div>
         </h2>
       </div>
@@ -249,7 +239,7 @@ const BlogPage = () => {
                 >
                   <div id="img">
                     <img
-                      src={Carousel_3}
+                      src={blog.image}
                       alt=""
                       className="w-full h-[250px] object-cover rounded-[10px] mb-[20px]"
                     />
@@ -257,7 +247,7 @@ const BlogPage = () => {
                   <div className="flex items-center mb-3">
                     <AiOutlineTags className="mr-[10px] text-[25px]" />
                     <label className="block mr-[20px] mb-0 text-[#999] text-[15px]">
-                      Nextjs
+                      {blog.category_name}
                     </label>
                   </div>
                   <div id="details">
@@ -265,17 +255,22 @@ const BlogPage = () => {
                       <h3 className="font-[500]">{blog.name}</h3>
                     </div>
                     <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
-                      {blog.description.slice(0, 50)}
+                      {ReactHtmlParser(blog.description.slice(0, 50))}
+                      {/* {blog.description.slice(0, 50)} */}
                     </p>
                     <div id="date" className="flex items-center mt-3">
-                      <AiOutlineClockCircle className="mr-[10px] text-[40px]" />
-                      <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
-                        {blog.created_at}
-                      </label>
-                      <BsFillPersonVcardFill className="mr-[10px] text-[40px]" />
-                      <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
-                        Nickhun
-                      </label>
+                      <div className="flex items-center">
+                        <AiOutlineClockCircle className="mr-[10px] text-[35px]" />
+                        <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                          {blog.created_at}
+                        </label>
+                      </div>
+                      <div className="flex items-center ml-auto">
+                        <FaEye className="mr-[10px] text-[35px]" />
+                        <label className="block mr-[20px] mb-0 text-[#999] text-[13px]">
+                          {blog.view_count}
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
