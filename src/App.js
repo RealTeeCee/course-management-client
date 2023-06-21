@@ -1,7 +1,7 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import { permissions } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
@@ -9,9 +9,18 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
+import { onCourseInitalState } from "./store/course/courseSlice.js";
+import { getToken } from "./utils/auth.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
+const ForgetPasswordPage = lazy(() =>
+  import("./pages/auth/ForgetPasswordPage.js")
+);
+const ResetPasswordPage = lazy(() =>
+  import("./pages/auth/ResetPasswordPage.js")
+);
 
 const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
 const AdminCourseListPage = lazy(() =>
@@ -76,7 +85,24 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const { access_token } = getToken();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  useEffect(() => {
+    let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
+    return () => {
+      clearTimeout(timer1);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  useEffect(() => {
+    if (user?.status === 0) {
+      navigate("/logout");
+      dispatch(onRemoveToken());
+      dispatch(onCourseInitalState());
+    }
+  }, [dispatch, navigate, user?.status]);
 
   // useEffect(() => {
   //   //   dispatch(onCourseInitalState());
@@ -271,6 +297,14 @@ function App() {
           <Route
             path="/register"
             element={<RegisterPage></RegisterPage>}
+          ></Route>
+          <Route
+            path="/forget-password"
+            element={<ForgetPasswordPage></ForgetPasswordPage>}
+          ></Route>
+          <Route
+            path="/reset-password"
+            element={<ResetPasswordPage></ResetPasswordPage>}
           ></Route>
 
           <Route

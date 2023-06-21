@@ -19,9 +19,8 @@ import {
   CAPTION_EXT_VALID,
   MESSAGE_NUMBER_REQUIRED,
 } from "../../../constants/config";
-import axiosInstance from "../../../api/axiosInstance";
+import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
 import {
   API_LESSON_URL,
@@ -34,6 +33,7 @@ import ImageUploader from "quill-image-uploader";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill, { Quill } from "react-quill";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
@@ -87,7 +87,6 @@ const AdminCreateLessonPage = () => {
   // const [course, setCourse] = useState({});
   /********* END API State ********* */
 
-  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
@@ -97,18 +96,20 @@ const AdminCreateLessonPage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    const { name, duration, description, videoFile, captionFiles } = values;
+    const { name, duration, description, ordered, videoFile, captionFiles } =
+      values;
     let lessonId;
     try {
       setIsLoading(true);
 
-      const res = await axiosPrivate.post(
+      const res = await axiosBearer.post(
         `${API_SECTION_URL}/${sectionId}/lesson`,
         {
           name,
           duration,
           description,
           sectionId,
+          ordered,
         }
       );
       lessonId = await getLatestLessonId();
@@ -119,13 +120,13 @@ const AdminCreateLessonPage = () => {
       for (let i = 0; i < captionFiles.length; i++) {
         fd.append("captionFiles", captionFiles[i]);
       }
-      await axiosPrivate.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
+      await axiosBearer.post(`${API_LESSON_URL}/${lessonId}/video`, fd);
 
       toast.success(`${res.data.message}`);
       navigate(`/admin/courses/${courseId}/sections/${sectionId}/lessons`);
     } catch (error) {
       // Rollback
-      await axiosPrivate.delete(
+      await axiosBearer.delete(
         `/section/${sectionId}/lesson?lessonId=${lessonId}`
       );
       showMessageError(error);
@@ -136,10 +137,10 @@ const AdminCreateLessonPage = () => {
 
   const getLatestLessonId = async () => {
     try {
-      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+      const res = await axiosBearer.get(`/section/${sectionId}/lesson`);
       return res.data[0].id;
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 
@@ -147,7 +148,30 @@ const AdminCreateLessonPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Create Lesson</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Lesson",
+              slug: `/admin/courses/${courseId}/sections/${sectionId}/lessons`,
+            },
+            {
+              title: "Create",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

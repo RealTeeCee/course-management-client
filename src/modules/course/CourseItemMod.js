@@ -2,12 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IconFolderCom } from "../../components/icon";
 import { ImageCom } from "../../components/image";
+import { sliceText } from "../../utils/helper";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
 const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
   return (
-    <div className="c-card course-item">
+    <div className="c-card course-item col-md-4 col-xl-3">
       <Link to={url} className="tw-transition-all hover:opacity-80">
         <div className="c-card-header h-[158px]">
           <ImageCom srcSet={course?.image} alt={course?.name}></ImageCom>
@@ -18,10 +19,10 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
           </CategoryTagMod>
 
           <CourseTitleMod className="font-tw-secondary">
-            {course?.name}
+            {sliceText(course?.name, 20)}
           </CourseTitleMod>
 
-          <CourseDescMod>{course?.description}</CourseDescMod>
+          <CourseDescMod>{sliceText(course?.description, 45)}</CourseDescMod>
 
           {isMyCourse && <p>Progress: {course?.progress}%</p>}
 

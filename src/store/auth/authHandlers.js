@@ -1,15 +1,25 @@
 import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
-import { MESSAGE_GENERAL_FAILED } from "../../constants/config";
+import {
+  MESSAGE_FORGET_PASSWORD_SUCCESS,
+  MESSAGE_GENERAL_FAILED,
+} from "../../constants/config";
 import { removeToken, setToken } from "../../utils/auth";
 import { showMessageError } from "../../utils/helper";
 import {
+  requestForgetPassword,
   requestGetUser,
   requestLogin,
   requestRefreshToken,
   requestRegister,
+  requestResetPassword,
 } from "./authRequests";
-import { onLoading, onLoginSuccess, onUpdateUserToken } from "./authSlice";
+import {
+  onLoading,
+  onLoginSuccess,
+  onResetPasswordSuccess,
+  onUpdateUserToken,
+} from "./authSlice";
 
 /**
  * *** Handler ***
@@ -64,7 +74,7 @@ function* handleOnGetUser({ payload: access_token }) {
       toast.error(res.data.message);
     }
   } catch (error) {
-    toast.error(MESSAGE_GENERAL_FAILED);
+    console.log(error);
   }
 }
 
@@ -78,7 +88,7 @@ function* handleOnRefreshToken(action) {
       yield call(handleOnRemoveToken());
     }
   } catch (error) {
-    toast.error(MESSAGE_GENERAL_FAILED);
+    console.log(error);
   }
 }
 
@@ -92,10 +102,47 @@ function* handleOnRemoveToken() {
   removeToken();
 }
 
+function* handleOnForgetPassword({ payload }) {
+  try {
+    yield put(onLoading(true));
+    const res = yield call(requestForgetPassword, payload.email);
+    if (res.status === 200) {
+      toast.success(MESSAGE_FORGET_PASSWORD_SUCCESS, {
+        autoClose: 10000,
+      });
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    yield put(onLoading(false));
+  }
+}
+
+function* handleOnResetPassword({ payload }) {
+  try {
+    yield put(onLoading(true));
+    const res = yield call(requestResetPassword, payload);
+    if (res.data.type === "success") {
+      toast.success(res.data.message);
+      yield put(onResetPasswordSuccess(true));
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    yield put(onLoading(false));
+  }
+}
+
 export {
   handleOnRegister,
   handleOnLogin,
   handleOnGetUser,
   handleOnRefreshToken,
   handleOnRemoveToken,
+  handleOnForgetPassword,
+  handleOnResetPassword,
 };

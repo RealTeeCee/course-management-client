@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { toast } from "react-toastify";
-import axiosInstance from "../../../api/axiosInstance";
+import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
@@ -21,7 +21,6 @@ import {
   API_TAG_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
   categoryItems,
@@ -60,10 +59,11 @@ import {
 } from "../../../utils/helper";
 import useOnChange from "../../../hooks/useOnChange";
 import { v4 } from "uuid";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { getValue } from "@mui/system";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -166,7 +166,6 @@ const AdminCourseListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
   const [courses, setCourses] = useState([]);
   const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
@@ -279,7 +278,7 @@ const AdminCourseListPage = () => {
 
   const getCourses = async () => {
     try {
-      const res = await axiosPrivate.get(API_COURSE_URL);
+      const res = await axiosBearer.get(API_COURSE_URL);
       console.log(res.data);
       setCourses(res.data);
       setFilterCourse(res.data);
@@ -290,7 +289,7 @@ const AdminCourseListPage = () => {
 
   const getTags = async () => {
     try {
-      const res = await axiosPrivate.get(`${API_TAG_URL}`);
+      const res = await axiosBearer.get(`${API_TAG_URL}`);
       const newRes = res.data.map((item) => {
         const tagNames = item.name.split(" ");
         // ['Spring', 'Boot']
@@ -317,7 +316,7 @@ const AdminCourseListPage = () => {
 
   const getCourseById = async (courseId) => {
     try {
-      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       reset(res.data);
       setValue("price", convertIntToStrMoney(res.data.price));
       setValue("net_price", convertIntToStrMoney(res.data.net_price));
@@ -422,7 +421,7 @@ const AdminCourseListPage = () => {
           })
         );
 
-        const res = await axiosPrivate.put(`/course`, fd);
+        const res = await axiosBearer.put(`/course`, fd);
         getCourses();
         toast.success(`${res.data.message}`);
         setIsOpen(false);
@@ -439,7 +438,7 @@ const AdminCourseListPage = () => {
   const handleDeleteCourse = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete course: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete course: <span className="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -448,7 +447,7 @@ const AdminCourseListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPrivate.delete(
+          const res = await axiosBearer.delete(
             `${API_COURSE_URL}?courseId=${id}`
           );
           getCourses();
@@ -563,7 +562,7 @@ const AdminCourseListPage = () => {
         })
       );
 
-      await axiosPrivate.put(`/course`, fd);
+      await axiosBearer.put(`/course`, fd);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getCourses();
     } catch (error) {
@@ -578,7 +577,7 @@ const AdminCourseListPage = () => {
     }
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete <span class="text-tw-danger">${
+      html: `You will delete <span className="text-tw-danger">${
         selectedRows.length
       } selected ${selectedRows.length > 1 ? "courses" : "course"}</span>`,
       icon: "question",
@@ -590,7 +589,7 @@ const AdminCourseListPage = () => {
       if (result.isConfirmed) {
         try {
           const deletePromises = selectedRows.map((row) =>
-            axiosPrivate.delete(`${API_COURSE_URL}?courseId=${row.id}`)
+            axiosBearer.delete(`${API_COURSE_URL}?courseId=${row.id}`)
           );
           await Promise.all(deletePromises);
           toast.success(`Delete ${selectedRows.length} courses success`);
@@ -684,8 +683,20 @@ const AdminCourseListPage = () => {
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Courses</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <HeadingH1Com>Admin Learning</HeadingH1Com>
+        {/* <ButtonBackCom></ButtonBackCom> */}
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

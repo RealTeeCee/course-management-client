@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axiosInstance, { axiosPrivate } from "../../../api/axiosInstance";
+import { axiosBearer } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
 import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
@@ -10,7 +10,6 @@ import {
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import * as yup from "yup";
 import {
   CAPTION_EXT_REGEX,
@@ -23,7 +22,6 @@ import {
   MESSAGE_UPDATE_STATUS_SUCCESS,
   MESSAGE_UPLOAD_REQUIRED,
   MESSAGE_VIDEO_FILE_INVALID,
-  statusItems,
   VIDEO_EXT_VALID,
 } from "../../../constants/config";
 import { toast } from "react-toastify";
@@ -38,6 +36,7 @@ import {
   convertSecondToDiffForHumans,
   getDurationFromVideo,
   showMessageError,
+  sliceText,
 } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom/dist";
 import {
@@ -46,10 +45,11 @@ import {
   API_SECTION_URL,
   IMG_BB_URL,
 } from "../../../constants/endpoint";
-import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
+import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
-import { TextAreaCom } from "../../../components/textarea";
 import { TextEditorQuillCom } from "../../../components/texteditor";
+import { getToken } from "../../../utils/auth";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -97,11 +97,10 @@ const AdminLessonListPage = () => {
   const [lessons, setLessons] = useState([]);
   const [section, setSection] = useState({});
   const [course, setCourse] = useState({});
-  const [video, setVideo] = useState({});
+  const [video, setVideo] = useState(); //{} ko có null, undefined nên kiểm tra lúc nào cũng + token -> lỗi
   /********* END API State ********* */
 
   /********* Variable State ********* */
-  const axiosPrivate = useAxiosPrivate();
   const [filterLesson, setFilterLesson] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -113,6 +112,7 @@ const AdminLessonListPage = () => {
   const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { access_token } = getToken();
 
   const resetState = () => {
     setShowUpload(false);
@@ -239,7 +239,7 @@ const AdminLessonListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosPrivate.delete(
+          const res = await axiosBearer.delete(
             `/section/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
@@ -257,19 +257,19 @@ const AdminLessonListPage = () => {
   /********* API List Section ********* */
   const getLessonsBySectionId = async () => {
     try {
-      const res = await axiosPrivate.get(`/section/${sectionId}/lesson`);
+      const res = await axiosBearer.get(`/section/${sectionId}/lesson`);
       console.log(res.data);
 
       setLessons(res.data);
       setFilterLesson(res.data);
     } catch (error) {
-      console.log("Error: ", error);
+      console.log(error);
     }
   };
 
   const getCourseById = async () => {
     try {
-      const res = await axiosPrivate.get(`${API_COURSE_URL}/${courseId}`);
+      const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
       setCourse(res.data);
     } catch (error) {
       console.log(error);
@@ -278,7 +278,7 @@ const AdminLessonListPage = () => {
 
   const getSectionById = async () => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section/${sectionId}`
       );
       setSection(res.data);
@@ -290,7 +290,7 @@ const AdminLessonListPage = () => {
   /********* Get getLessonById from row ********* */
   const getLessonById = async (lessonId) => {
     try {
-      const res = await axiosPrivate.get(
+      const res = await axiosBearer.get(
         `/section/${sectionId}/lesson/${lessonId}`
       );
       reset(res.data);
@@ -301,7 +301,7 @@ const AdminLessonListPage = () => {
 
   const getVideoByLessonId = async (lessonId) => {
     try {
-      const res = await axiosPrivate.get(`${API_LESSON_URL}/${lessonId}/video`);
+      const res = await axiosBearer.get(`${API_LESSON_URL}/${lessonId}/video`);
       setVideo(res.data);
     } catch (error) {
       console.log(error);
@@ -360,13 +360,13 @@ const AdminLessonListPage = () => {
         'input[name="captionFiles"]'
       );
       if (captionSelector) captionSelector.focus();
-      toast.error(MESSAGE_GENERAL_FAILED);
       setError("captionFiles", { message: MESSAGE_UPLOAD_REQUIRED });
       setValue("captionFiles", "");
+      return;
     }
     try {
       setIsLoading(!isLoading);
-      const res = await axiosPrivate.put(`/section/${sectionId}/lesson`, {
+      const res = await axiosBearer.put(`/section/${sectionId}/lesson`, {
         name,
         sectionId,
         id,
@@ -398,7 +398,7 @@ const AdminLessonListPage = () => {
         for (let i = 0; i < captionFiles.length; i++) {
           fd.append("captionFiles", captionFiles[i]);
         }
-        await axiosPrivate.post(`${API_LESSON_URL}/${id}/video`, fd);
+        await axiosBearer.post(`${API_LESSON_URL}/${id}/video`, fd);
       }
       toast.success(`${res.data.message}`);
       // getLessonsBySectionId();
@@ -421,21 +421,13 @@ const AdminLessonListPage = () => {
           : lession
       );
       const dataBody = newLessons.find((lesson) => lesson.id === lessonId);
-      await axiosPrivate.put(
-        `${API_SECTION_URL}/${sectionId}/lesson`,
-        JSON.stringify(dataBody)
-      );
+      await axiosBearer.put(`${API_SECTION_URL}/${sectionId}/lesson`, dataBody);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getLessonsBySectionId();
     } catch (error) {
       showMessageError(error);
     }
   };
-
-  // const handleChangeStatus = (value) => {
-  //   setValue("status", value);
-  //   setError("status", { message: "" });
-  // };
 
   const handleToggleChangeVideo = () => {
     setShowUpload(!showUpload);
@@ -451,7 +443,26 @@ const AdminLessonListPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Lesson</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Course",
+              slug: "/admin/courses",
+            },
+            {
+              title: "Section",
+              slug: `/admin/courses/${courseId}/sections`,
+            },
+            {
+              title: "Lesson",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -551,7 +562,7 @@ const AdminLessonListPage = () => {
                 <div className="col-sm-6">
                   <LabelCom
                     htmlFor="videoFile"
-                    subText={`File: ${VIDEO_EXT_VALID}`}
+                    subText={`File: ${sliceText(VIDEO_EXT_VALID, 20)}`}
                   >
                     Video
                   </LabelCom>
@@ -586,7 +597,7 @@ const AdminLessonListPage = () => {
               <div className={`row current-video ${showVideo ? "" : "hidden"}`}>
                 <div className="col-sm-12 text-center flex justify-center items-center">
                   <ReactPlayer
-                    url={video?.url}
+                    url={video ? video.url + "?token=" + access_token : ""}
                     config={{
                       youtube: {
                         playerVars: { showinfo: 1, controls: 1 },

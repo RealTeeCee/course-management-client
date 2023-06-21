@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
@@ -14,7 +15,19 @@ const AdminPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Admin Dashboard</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Admin Dashboard</HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
+
       <GapYCom></GapYCom>
       <div className="row">
         <div className="col-sm-12">
