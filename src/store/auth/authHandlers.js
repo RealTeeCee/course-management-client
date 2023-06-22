@@ -16,10 +16,14 @@ import {
 } from "./authRequests";
 import {
   onLoading,
+  onRegisterSuccess,
   onLoginSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
+  onLogin,
 } from "./authSlice";
+import { Navigate } from "react-router-dom";
+import { delay } from "lodash";
 
 /**
  * *** Handler ***
