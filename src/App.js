@@ -66,6 +66,9 @@ const CourseDetailPage = lazy(() =>
 const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
 
 const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
+const UserChangePasswordPage = lazy(() =>
+  import("./pages/user/UserChangePasswordPage.js")
+);
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
@@ -193,8 +196,12 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
           <Route
-            path="/profile/:slug"
+            path="/profile/:userEmail"
             element={<UserProfilePage></UserProfilePage>}
+          ></Route>
+          <Route
+            path="/profile/change-password"
+            element={<UserChangePasswordPage></UserChangePasswordPage>}
           ></Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
@@ -218,7 +225,6 @@ function App() {
             path="/payment/cancel"
             element={<PaymentErrorPage></PaymentErrorPage>}
           ></Route>
-
           <Route
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}

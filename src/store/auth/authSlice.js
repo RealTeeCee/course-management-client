@@ -1,17 +1,18 @@
 const { createSlice } = require("@reduxjs/toolkit");
 
-/**
- * *Slice*
- */
 const initialState = {
   user: null,
   email: null,
   token: null,
   access_token: null,
+  oldPassword: null,
+  password: null,
+  confirmPassword: null,
   isLoading: false,
   isLoginSuccess: false,
   isRegisterSuccess: false,
   isResetPasswordSuccess: false,
+  isUserChangePasswordSuccess: false,
   errorMessage: null,
 };
 const authSlice = createSlice({
@@ -87,6 +88,10 @@ const authSlice = createSlice({
       ...state,
       isResetPasswordSuccess: action.payload,
     }),
+    onUserChangePassword: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
 });
 
@@ -107,6 +112,7 @@ export const {
   onForgetPassword,
   onResetPassword,
   onResetPasswordSuccess,
+  onUserChangePassword,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;

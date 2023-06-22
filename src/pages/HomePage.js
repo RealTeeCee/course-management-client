@@ -45,6 +45,7 @@ const HomePage = () => {
     dispatch(onBestSellerCourseLoading());
     // dispatch(onRelatedCourseLoading({ categoryId: 1, tagId: 1 }));
   }, [dispatch]);
+  console.log(bestSellerCourse);
 
   return (
     <>
@@ -148,7 +149,7 @@ const HomePage = () => {
           </>
         ) : (
           <HeadingH2Com className="text-black text-4xl text-center py-10">
-            Empty best selling data
+            Empty best selling courses
           </HeadingH2Com>
         )}
 

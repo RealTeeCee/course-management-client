@@ -23,6 +23,8 @@ import {
 } from "../../store/course/courseSlice";
 import HomeSearchMod from "../HomeSearchMod";
 import NotificationToastList from "../../components/mui/NotificationToastList";
+import IconRefreshCom from "../../components/icon/IconRefreshCom";
+import { sliceText } from "../../utils/helper";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -34,14 +36,19 @@ const HomeTopbarMod = () => {
       url: `/profile/${userName}`,
     },
     {
-      icon: <IconRegisterCom />,
-      title: "Register",
-      url: "/register",
+      icon: <IconRefreshCom />,
+      title: "Password",
+      url: `/profile/change-password`,
     },
     {
       icon: <IconLoginCom />,
       title: "Log in",
       url: "/login",
+    },
+    {
+      icon: <IconRegisterCom />,
+      title: "Register",
+      url: "/register",
     },
     {
       icon: <IconLogoutCom />,
@@ -102,7 +109,7 @@ const HomeTopbarMod = () => {
               />
               <div className="media-body flex-1">
                 <span className="text-tw-primary font-medium font-tw-third">
-                  {user ? user.name : "Welcome"}
+                  {user ? sliceText(user.name, 10) : "Welcome"}
                 </span>
                 <p className="mb-0 font-roboto flex items-center gap-x-2">
                   {user ? user.role : "Guest"}
@@ -122,7 +129,9 @@ const HomeTopbarMod = () => {
                 // If user is not login, exclude "/logout" URL
                 if (
                   !user &&
-                  (item.url === "/logout" || item.url.includes("/profile"))
+                  (item.url === "/logout" ||
+                    item.url.includes("/profile") ||
+                    item.url === "/profile/change-password")
                 ) {
                   return null;
                 }

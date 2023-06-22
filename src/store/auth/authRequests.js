@@ -1,8 +1,8 @@
-const { default: axiosInstance } = require("../../api/axiosInstance");
+const {
+  default: axiosInstance,
+  axiosBearer,
+} = require("../../api/axiosInstance");
 
-/**
- * **Request**
- */
 export const requestRegister = (data) => {
   return axiosInstance.post("/auth/register", data);
 };
@@ -44,4 +44,8 @@ export const requestResetPassword = ({ password, confirmPassword, token }) => {
       password
     )}&confirmPassword=${encodeURIComponent(confirmPassword)}`
   );
+};
+
+export const requestUserChangePassword = (data) => {
+  return axiosBearer.post(`/auth/change-password`, data);
 };
