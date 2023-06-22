@@ -48,3 +48,24 @@ export const requestSaveNote = (data) => {
 export const requestDeleteNote = (noteId) => {
   return axiosBearer.delete(`/track/delete-note/${noteId}`);
 };
+export const requestSavePost = (data) => {
+  return axiosBearer.post(`/post`, data);
+};
+export const requestDeletePost = (postId) => {
+  return axiosBearer.delete(`/post/${postId}`);
+};
+export const requestSaveReply = (data) => {
+  return axiosBearer.post(`/post/comment`, data);
+};
+export const requestDeleteReply = (commentId) => {
+  return axiosBearer.delete(`/post/comment/${commentId}`);
+};
+export const requestSaveLike = (data) => {
+  return axiosBearer.post(`/post/like`, data);
+};
+export const requestLoadNotification = (userId) => {
+  return axiosBearer.post(`/notification/${userId}`);
+};
+export const requestReadNotification = (notifId) => {
+  return axiosBearer.patch(`/notification/read/${notifId}`);
+};

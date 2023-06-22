@@ -1,11 +1,23 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import GapYCom from "../common/GapYCom";
-import { TextEditorQuillCom } from "../texteditor";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
+import { BASE_API_URL, IMAGE_DEFAULT } from "../../constants/config";
+import { selectUser } from "../../store/auth/authSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
+import {
+  onDeletePost,
+  onRemoveReplyInPost,
+  onSaveLikeOfPost,
+  onSavePost,
+  onSaveReplyToPost,
+} from "../../store/course/courseSlice";
 import { ButtonCom } from "../button";
-import { IMAGE_DEFAULT } from "../../constants/config";
+import GapYCom from "../common/GapYCom";
+import { IconTrashCom } from "../icon";
+import { DialogConfirm } from "../mui";
+import { TextEditorQuillCom } from "../texteditor";
 
 const schemaValidation = yup.object().shape({
   comment: yup.string(),
@@ -18,9 +30,10 @@ const CommentCom = ({
   commentUrl = "",
   replyUrl = "",
 }) => {
-  const [comment, setComment] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isShowCommentBox, setIsShowCommentBox] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [comment, setComment] = useState("");
 
   const {
     control,
@@ -34,63 +47,101 @@ const CommentCom = ({
     resolver: yupResolver(schemaValidation),
   });
 
-  const handleSubmitForm = (values) => {
-    console.log(values);
-    // call tới api commentUrl từ ngoài truyền vào, ko set cứng để bên Blog xài lại
+  const dispatch = useDispatch();
 
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     const fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         ...values,
-    //         status: 0,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //       })
-    //     );
-    //     const res = await axiosBearer.post(`/course`, fd);
-    //     toast.success(`${res.data.message}`);
-    //     resetValues();
-    //     navigate("/admin/courses");
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+  useEffect(() => {
+    let url = BASE_API_URL + `/post/stream/${courseId}`;
+    const sse = new EventSource(url);
+
+    sse.addEventListener("post-list-event", (event) => {
+      const data = JSON.parse(event.data);
+      setPosts(data);
+    });
+
+    sse.onerror = () => {
+      sse.close();
+    };
+    return () => {
+      sse.close();
+    };
+  }, []);
+
+  const user = useSelector(selectUser);
+  const { courseId, isSubmitting } = useSelector(selectAllCourseState);
+
+  const handleSubmitForm = ({ comment }) => {
+    const newPost = {
+      comments: [],
+      content: comment,
+      courseId,
+      created_at: new Date(),
+      id: Math.floor(Math.random() * 1000) + 1000,
+      likedUsers: [],
+      role: user.role,
+      userId: user.id,
+      userName: user.name,
+    };
+    setPosts([...posts, newPost]);
+    dispatch(onSavePost({ courseId, userId: user.id, content: comment }));
+
+    setIsShowCommentBox(false);
+    setComment("");
+  };
+
+  const addComment = (comment) => {
+    const newPosts = [...posts];
+
+    const newPost = newPosts.find((p) => p.id === comment.postId);
+    if (newPost !== undefined) {
+      newPost.comments = [...newPost.comments, comment];
+      setPosts(newPosts);
+    }
   };
   return (
     <section className="comment-box">
       {title && (
-        <>
+        <React.Fragment>
           <h4>Comment</h4>
           <hr />
-        </>
+        </React.Fragment>
       )}
       {/* Comment Items */}
       <ul>
-        <CommentParent
+        {posts.map((p) => (
+          <React.Fragment key={p.id}>
+            <CommentParent
+              post={p}
+              image={p.postImageUrl == null ? IMAGE_DEFAULT : p.postImageUrl}
+              userName={p.userName}
+              role={p.role}
+              parentComment={p.content}
+              userPostId={p.userId}
+              postId={p.id}
+              replyCount={p.comments.length}
+              likeCount={p.likedUsers.length}
+              likeUsers={p.likedUsers}
+              comments={p.comments}
+              addComment={addComment}
+            ></CommentParent>
+            {p.comments.map((c) => (
+              <CommentChild
+                key={c.id}
+                image={c.imageUrl}
+                userName={c.userName}
+                role={c.role}
+                commentId={c.id}
+                userCommentId={c.userId}
+                childComment={c.content}
+              ></CommentChild>
+            ))}
+          </React.Fragment>
+        ))}
+        {/*<CommentParent
           image="https://imgix.ranker.com/user_node_img/50081/1001612215/original/live-for-our-friends-photo-u1?auto=format&q=60&fit=crop&fm=pjpg&dpr=2&w=375"
           userName="Erza Scarlet"
           role="USER"
           parentComment="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
-        ></CommentParent>
-        <CommentChild
-          image="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
-          userName="Ric Phạm"
-          role="ADMIN"
-          childComment="Thanks for your comment!"
-        ></CommentChild>
+        ></CommentParent>*/}
       </ul>
       <GapYCom></GapYCom>
       <div
@@ -119,7 +170,7 @@ const CommentCom = ({
             <ButtonCom
               type="submit"
               backgroundColor="pink"
-              isLoading={isLoading}
+              isLoading={isSubmitting}
             >
               Send
             </ButtonCom>
@@ -142,11 +193,29 @@ const CommentParent = ({
   userName = "No Name",
   role = "USER",
   parentComment,
+  postId,
+  userPostId,
+  replyCount = 0,
+  likeCount = 0,
+  likeUsers,
+  comments,
+  addComment,
+  addPost,
 }) => {
-  const [isLiked, setLiked] = useState(false);
+  const user = useSelector(selectUser);
+  const [isLiked, setLiked] = useState(
+    likeUsers.find((like) => like.id === user.id) ? true : false
+  );
   const [isReply, setIsReply] = useState(false);
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [likeNum, setLikeNum] = useState(likeCount);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [deletedPostId, setDeletedPostId] = useState(0);
+
+  useEffect(() => {
+    setLikeNum(likeCount);
+  }, [likeCount]);
 
   const {
     control,
@@ -160,51 +229,61 @@ const CommentParent = ({
     resolver: yupResolver(schemaValidation),
   });
 
-  const handleLike = (isLiked) => {
+  const dispatch = useDispatch();
+
+  const handleLike = () => {
     setLiked(!isLiked);
+    if (!isLiked) {
+      setLikeNum(likeNum + 1);
+    } else {
+      setLikeNum(likeNum - 1);
+    }
+    dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
   };
 
   const handleReply = (isReply) => {
     setIsReply(!isReply);
   };
   // Comment Parent
-  const handleSubmitForm = (values) => {
-    console.log(values);
+  const handleSubmitForm = ({ comment }) => {
     // Call tới api replyUrl ở trên truyền vào, ko set cứng để bên Blog xài lại
+    const newComments = {
+      content: comment,
+      created_at: new Date(),
+      id: Math.floor(Math.random() * 1000) + 1000,
+      imageUrl: user.imageUrl,
+      postId,
+      role: user.role,
+      userId: user.id,
+      userName: user.name,
+    };
 
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     const fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         ...values,
-    //         status: 0,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //       })
-    //     );
-    //     const res = await axiosBearer.post(`/course`, fd);
-    //     toast.success(`${res.data.message}`);
-    //     resetValues();
-    //     navigate("/admin/courses");
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+    addComment(newComments);
+    dispatch(onSaveReplyToPost({ postId, userId: user.id, content: comment }));
+    setIsReply(false);
+    setComment("");
+  };
+
+  const handleToggleDeletePost = (postId) => {
+    setOpenDialog(true);
+    setDeletedPostId(postId);
+  };
+
+  const onConfirm = () => {
+    dispatch(onDeletePost(deletedPostId));
+    setOpenDialog(false);
   };
   return (
     <li>
+      <DialogConfirm
+        title="Warning"
+        content="Do you want to delete this note?"
+        confirmContent="Yes"
+        closeContent="No"
+        onConfirm={onConfirm}
+        onClose={() => setOpenDialog(false)}
+        open={openDialog}
+      />
       <div className="media align-self-center">
         <img
           className="object-cover"
@@ -214,19 +293,36 @@ const CommentParent = ({
         <div className="media-body">
           <div className="row">
             <div className="col-md-4">
-              <h6 className="mt-0">
-                {userName} <span>( {role} )</span>
+              <h6
+                className="mt-0"
+                style={
+                  role === "ADMIN"
+                    ? { color: "#7366ff", fontWeight: "bold" }
+                    : { color: "black" }
+                }
+              >
+                {userName}
+                <span
+                  style={
+                    role === "ADMIN"
+                      ? { color: "#f73164", fontWeight: "bold" }
+                      : { color: "rgba(43,43,43,0.7)" }
+                  }
+                >
+                  ( {role} )
+                </span>
               </h6>
             </div>
             <div className="col-md-8">
               <ul className="comment-social float-start float-md-end">
                 <li
                   className={`${
-                    isLiked && "text-primary"
+                    isLiked ? "text-primary" : ""
                   } cursor-pointer transition-all duration-300`}
-                  onClick={() => handleLike(isLiked)}
+                  onClick={handleLike}
                 >
-                  <i className="icofont icofont-thumbs-up"></i>02 Liked
+                  <i className="icofont icofont-thumbs-up"></i>
+                  {likeNum} Liked
                 </li>
                 <li
                   className={`${
@@ -234,15 +330,34 @@ const CommentParent = ({
                   } cursor-pointer transition-all duration-300`}
                   onClick={() => handleReply(isReply)}
                 >
-                  <i className="icofont icofont-ui-chat"></i>1 Reply
+                  <i className="icofont icofont-ui-chat"></i>
+                  {replyCount} Reply
                 </li>
               </ul>
             </div>
           </div>
-          <p>
-            {parentComment}
+          <div>
+            <div className="flex justify-between items-center">
+              <div className="flex gap-x-3">
+                <div dangerouslySetInnerHTML={{ __html: parentComment }}></div>
+              </div>
+              {user.role === "ADMIN" || user.id === userPostId ? (
+                <div className="flex gap-x-3">
+                  <ButtonCom
+                    className="px-3 rounded-lg"
+                    backgroundColor="danger"
+                    onClick={() => handleToggleDeletePost(postId)}
+                  >
+                    <IconTrashCom className="w-4"></IconTrashCom>
+                  </ButtonCom>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+
             {isReply && (
-              <>
+              <React.Fragment>
                 <GapYCom className="mb-4"></GapYCom>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
                   <TextEditorQuillCom
@@ -271,9 +386,9 @@ const CommentParent = ({
                   </div>
                 </form>
                 <GapYCom className="mb-4"></GapYCom>
-              </>
+              </React.Fragment>
             )}
-          </p>
+          </div>
         </div>
       </div>
     </li>
@@ -284,28 +399,86 @@ const CommentChild = ({
   image = "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
   userName = "Ric Phạm",
   role = "ADMIN",
+  commentId = 0,
+  userCommentId = 0,
   childComment = "Thanks for your comment!",
 }) => {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const [openDialogComment, setOpenDialogComment] = useState(false);
+  const [deleteCommentId, setDeleteCommentId] = useState(false);
+
+  const handleToggleDeleteComment = (commentId) => {
+    setOpenDialogComment(true);
+    setDeleteCommentId(commentId);
+  };
+
+  const onConfirm = () => {
+    dispatch(onRemoveReplyInPost(deleteCommentId));
+    setOpenDialogComment(false);
+  };
+
   return (
     <li>
+      <DialogConfirm
+        title="Warning"
+        content="Do you want to delete this note?"
+        confirmContent="Yes"
+        closeContent="No"
+        onConfirm={onConfirm}
+        onClose={() => setOpenDialogComment(false)}
+        open={openDialogComment}
+      />
       <ul>
         <li>
           <div className="media">
             <img
               className="object-cover"
-              srcSet={image}
+              srcSet={image == null ? IMAGE_DEFAULT : image}
               alt={`${userName} avatar`}
             />
             <div className="media-body">
               <div className="row">
                 <div className="col-xl-12">
-                  <h6 className="mt-0">
+                  <h6
+                    className="mt-0"
+                    style={
+                      role === "ADMIN"
+                        ? { color: "#7366ff", fontWeight: "bold" }
+                        : { color: "black" }
+                    }
+                  >
                     {userName}
-                    <span>( {role} )</span>
+                    <span
+                      style={
+                        role === "ADMIN"
+                          ? { color: "#f73164", fontWeight: "bold" }
+                          : { color: "rgba(43,43,43,0.7)" }
+                      }
+                    >
+                      ( {role} )
+                    </span>
                   </h6>
                 </div>
               </div>
-              <p>{childComment}</p>
+              <div className="flex justify-between items-center">
+                <div className="flex gap-x-3">
+                  <div dangerouslySetInnerHTML={{ __html: childComment }}></div>
+                </div>
+                {user.role === "ADMIN" || user.id === userCommentId ? (
+                  <div className="flex gap-x-3">
+                    <ButtonCom
+                      className="px-3 rounded-lg"
+                      backgroundColor="danger"
+                      onClick={() => handleToggleDeleteComment(commentId)}
+                    >
+                      <IconTrashCom className="w-4"></IconTrashCom>
+                    </ButtonCom>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
           </div>
         </li>
