@@ -8,6 +8,7 @@ const { createSlice } = require("@reduxjs/toolkit");
 const initialState = {
   isLoading: false,
   isLoadLearningStatus: false,
+  isSubmitting: false,
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
@@ -38,7 +39,7 @@ const initialState = {
   notifs: [],
   notifToastList: [],
   isRead: false,
-  updatedNotifToastList: [],
+  updatedNotif: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -289,8 +290,24 @@ const courseSlice = createSlice({
     },
     onSavePost: (state, action) => ({
       ...state,
+      isSubmitting: true,
+    }),
+    onSavePostSuccess: (state, action) => ({
+      ...state,
+      isSubmitting: false,
+    }),
+    onDeletePost: (state, action) => ({
+      ...state,
     }),
     onSaveReplyToPost: (state, action) => ({
+      ...state,
+      isSubmitting: true,
+    }),
+    onSaveReplyToPostSuccess: (state, action) => ({
+      ...state,
+      isSubmitting: false,
+    }),
+    onRemoveReplyInPost: (state, action) => ({
       ...state,
     }),
     onSaveLikeOfPost: (state, action) => ({
@@ -316,15 +333,11 @@ const courseSlice = createSlice({
       isRead: true,
     }),
     onRemoveFromToastList: (state, action) => {
-      let newNotifToastList = [action.payload];
-      console.log(newNotifToastList);
-
-      const filteredNotifToastList = newNotifToastList.filter(
-        (x) => x.id !== action.payload.id
-      );
+      let newNotif = [action.payload];
+      const filteredNotif = newNotif.filter((x) => x.id !== action.payload.id);
       return {
         ...state,
-        updatedNotifToastList: filteredNotifToastList,
+        updatedNotif: filteredNotif,
       };
     },
   },
@@ -372,7 +385,10 @@ export const {
   onDeleteNoteSuccess,
   onSelectedNote,
   onSavePost,
+  onSavePostSuccess,
+  onDeletePost,
   onSaveReplyToPost,
+  onSaveReplyToPostSuccess,
   onSaveLikeOfPost,
   onLoadNotification,
   onLoadNotificationSuccess,
@@ -380,6 +396,7 @@ export const {
   onReadNotification,
   onReadNotificationSuccess,
   onRemoveFromToastList,
+  onRemoveReplyInPost,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

@@ -15,6 +15,7 @@ import {
   onCourseInitalState,
 } from "../../store/course/courseSlice";
 import { BASE_API_URL } from "../../constants/config";
+import NotificationToastList from "../../components/mui/NotificationToastList";
 
 const LearnTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -65,6 +66,7 @@ const LearnTopbarMod = () => {
 
   return (
     <div className="topbar flex items-center justify-between mb-8">
+      <NotificationToastList></NotificationToastList>
       <div>
         <Link to="/" className="inline-block">
           <img
@@ -77,7 +79,7 @@ const LearnTopbarMod = () => {
       <div className="flex items-center justify-between gap-x-5">
         {progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>}
         <ButtonCom to="/my-courses" className="flex items-center">
-          <span className="text-sm font-medium">My Coursess</span>
+          <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>
         <NotificationListPopup />
 

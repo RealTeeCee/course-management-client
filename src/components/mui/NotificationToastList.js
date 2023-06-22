@@ -1,11 +1,10 @@
-import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
+import Snackbar from "@mui/material/Snackbar";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAllCourseState } from "../../store/course/courseSelector";
-import React, { useEffect, useState } from "react";
-import { onRemoveFromToastList } from "../../store/course/courseSlice";
 import { selectUser } from "../../store/auth/authSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
+import { onRemoveFromToastList } from "../../store/course/courseSlice";
 
 function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
@@ -13,30 +12,32 @@ function TransitionUp(props) {
 
 export default function NotificationToastList() {
   const dispatch = useDispatch();
-  const { notifToastList, updatedNotifToastList } =
-    useSelector(selectAllCourseState);
+  const { notifToastList } = useSelector(selectAllCourseState);
   const user = useSelector(selectUser);
-  console.log(updatedNotifToastList);
 
-  const [newNotifToastList, setNewNotifToastList] = useState([]);
-  console.log(newNotifToastList);
+  const [newNotif, setNewNotif] = useState([]);
+
   const [openStates, setOpenStates] = useState(false);
 
+  const prevNotifListLengthRef = useRef(notifToastList?.length);
+
   useEffect(() => {
-    console.log(
-      "aaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-    );
-    if (user?.id > 0 && notifToastList?.length > 0) {
-      const isReadNotifToastList = notifToastList.filter(
+    if (
+      user?.id > 0 &&
+      notifToastList?.length > 0 &&
+      notifToastList?.length > prevNotifListLengthRef.current
+    ) {
+      const isReadNotif = notifToastList.filter(
         (notif) => notif.read === false
       );
-      setNewNotifToastList(isReadNotifToastList);
+
+      setNewNotif(isReadNotif[isReadNotif.length - 1]);
     }
+    prevNotifListLengthRef.current = notifToastList?.length;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, notifToastList?.length]);
 
-  // const handleOpen = (toast, index) => () => {
-  //   console.log(toast);
+  // const handleOpen = (toast) => () => {
   //   if (toast.length > 0) {
   //     setOpenStates((prevOpenStates) =>
   //       prevOpenStates.map((state, i) => (i === index ? true : state))
@@ -45,7 +46,7 @@ export default function NotificationToastList() {
   //   dispatch(onRemoveFromToastList(toast));
   // };
 
-  const handleClose = (toast, index) => () => {
+  const handleClose = (toast) => () => {
     dispatch(onRemoveFromToastList(toast));
     setOpenStates(false);
     // setOpenStates((prevOpenStates) =>
@@ -54,54 +55,33 @@ export default function NotificationToastList() {
   };
 
   useEffect(() => {
-    if (updatedNotifToastList?.length === 0 && newNotifToastList?.length > 0) {
-      setOpenStates(true);
+    if ((user?.id > 0 && newNotif?.length === 0) || newNotif === undefined) {
+      setOpenStates(false);
       // setOpenStates(notifToastList ? notifToastList.map(() => false) : []);
-    } else if (updatedNotifToastList?.length > 0) {
+    }
+
+    if (user?.id > 0 && newNotif?.length !== 0 && newNotif !== undefined) {
       setOpenStates(true);
     }
-  }, [newNotifToastList?.length, updatedNotifToastList?.length]);
+  }, [newNotif, user?.id]);
 
   return (
-    <React.Fragment>
-      {updatedNotifToastList?.length > 0
-        ? updatedNotifToastList &&
-          updatedNotifToastList.map((toast, index) => (
-            <React.Fragment key={toast.id}>
-              {/*<Button onClick={handleClick(index)}>Up</Button>*/}
-              <Snackbar
-                open={openStates}
-                // onClose={() => dispatch(onRemoveFromToastList(toast))}
-                onClose={handleClose(toast, index)}
-                autoHideDuration={4000}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                TransitionComponent={TransitionUp}
-                message={toast.content}
-              />
-            </React.Fragment>
-          ))
-        : newNotifToastList &&
-          newNotifToastList.map((toast, index) => (
-            <React.Fragment key={toast.id}>
-              {/*<Button onClick={handleClick(index)}>Up</Button>*/}
-              <Snackbar
-                open={openStates}
-                // onClose={() => dispatch(onRemoveFromToastList(toast))}
-                onClose={handleClose(toast, index)}
-                autoHideDuration={4000}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                style={{ position: "absolute", bottom: 10 + index * 50 }}
-                TransitionComponent={TransitionUp}
-                message={toast.content}
-              />
-            </React.Fragment>
-          ))}
-    </React.Fragment>
+    <Snackbar
+      open={openStates}
+      // onClose={() => dispatch(onRemoveFromToastList(newNotif))}
+      onClose={handleClose(newNotif)}
+      autoHideDuration={4000}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      style={{
+        position: "absolute",
+        bottom: 20,
+        //  + index * 50
+      }}
+      TransitionComponent={TransitionUp}
+      message={newNotif?.content}
+    />
   );
 }

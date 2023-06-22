@@ -4,6 +4,8 @@ import {
   requestBestSellerCourse,
   requestCourse,
   requestDeleteNote,
+  requestDeletePost,
+  requestDeleteReply,
   requestEnrollId,
   requestFreeCourse,
   requestLearning,
@@ -40,6 +42,8 @@ import {
   onReadNotificationSuccess,
   onRelatedCourseSuccess,
   onSaveNoteSuccess,
+  onSavePostSuccess,
+  onSaveReplyToPostSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
 } from "./courseSlice";
@@ -244,6 +248,17 @@ function* handleSavePost({ payload }) {
   try {
     const res = yield call(requestSavePost, payload);
     if (res.status === 200) {
+      yield put(onSavePostSuccess());
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleDeletePost({ payload }) {
+  try {
+    const res = yield call(requestDeletePost, payload);
+    if (res.status === 200) {
     }
   } catch (error) {
     console.log(error);
@@ -254,11 +269,23 @@ function* handleSaveReplyToPost({ payload }) {
   try {
     const res = yield call(requestSaveReply, payload);
     if (res.status === 200) {
+      yield put(onSaveReplyToPostSuccess());
     }
   } catch (error) {
     console.log(error);
   }
 }
+
+function* handleRemoveReplyInPost({ payload }) {
+  try {
+    const res = yield call(requestDeleteReply, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 function* handleSaveLikeOfPost({ payload }) {
   try {
     const res = yield call(requestSaveLike, payload);
@@ -309,7 +336,9 @@ export {
   handleSaveNote,
   handleDeleteNote,
   handleSavePost,
+  handleDeletePost,
   handleSaveReplyToPost,
+  handleRemoveReplyInPost,
   handleSaveLikeOfPost,
   handleLoadNotification,
   handleReadNotification,

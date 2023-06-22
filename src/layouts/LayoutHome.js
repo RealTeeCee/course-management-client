@@ -36,7 +36,6 @@ const LayoutHome = () => {
 
   const handleSubmitForm = (values) => {
     const { name, category_id } = values;
-    console.log(values);
     setIsLoading(!isLoading);
 
     // After done, remove loading
