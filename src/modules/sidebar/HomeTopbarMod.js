@@ -1,39 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
-  IconBellCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
+import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import {
   AVATAR_DEFAULT,
+  BASE_API_URL,
   IMAGE_DEFAULT,
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
+import {
+  onAddNotification,
+  onCourseInitalState,
+} from "../../store/course/courseSlice";
 import HomeSearchMod from "../HomeSearchMod";
-import { onCourseInitalState } from "../../store/course/courseSlice";
+import NotificationToastList from "../../components/mui/NotificationToastList";
 import IconRefreshCom from "../../components/icon/IconRefreshCom";
+import { sliceText } from "../../utils/helper";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
   const userName = user?.email.split("@")[0];
   const userItems = [
-    {
-      icon: <IconRegisterCom />,
-      title: "Register",
-      url: "/register",
-    },
-    {
-      icon: <IconLoginCom />,
-      title: "Log in",
-      url: "/login",
-    },
     {
       icon: <IconUserCom />,
       title: "Profile",
@@ -42,7 +38,17 @@ const HomeTopbarMod = () => {
     {
       icon: <IconRefreshCom />,
       title: "Password",
-      url: `/change-password`,
+      url: `/profile/change-password`,
+    },
+    {
+      icon: <IconLoginCom />,
+      title: "Log in",
+      url: "/login",
+    },
+    {
+      icon: <IconRegisterCom />,
+      title: "Register",
+      url: "/register",
     },
     {
       icon: <IconLogoutCom />,
@@ -52,10 +58,28 @@ const HomeTopbarMod = () => {
   ];
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      let url = BASE_API_URL + "/push-notifications/" + user.id;
+      const sse = new EventSource(url);
 
+      sse.addEventListener("user-list-event", (event) => {
+        const data = JSON.parse(event.data);
+        dispatch(onAddNotification(data));
+      });
+
+      sse.onerror = () => {
+        sse.close();
+      };
+      return () => {
+        sse.close();
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
+      <NotificationToastList></NotificationToastList>
       <div>
         <Link to="/" className="inline-block">
           <img
@@ -73,7 +97,7 @@ const HomeTopbarMod = () => {
         <ButtonCom to="/my-courses" className="flex items-center">
           <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>
-        <IconBellCom></IconBellCom>
+        <NotificationListPopup />
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>
@@ -85,7 +109,7 @@ const HomeTopbarMod = () => {
               />
               <div className="media-body flex-1">
                 <span className="text-tw-primary font-medium font-tw-third">
-                  {user ? user.name : "Welcome"}
+                  {user ? sliceText(user.name, 10) : "Welcome"}
                 </span>
                 <p className="mb-0 font-roboto flex items-center gap-x-2">
                   {user ? user.role : "Guest"}
@@ -107,7 +131,7 @@ const HomeTopbarMod = () => {
                   !user &&
                   (item.url === "/logout" ||
                     item.url.includes("/profile") ||
-                    item.url === "/change-password")
+                    item.url === "/profile/change-password")
                 ) {
                   return null;
                 }

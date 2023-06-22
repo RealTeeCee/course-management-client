@@ -1,7 +1,6 @@
 import { Tabs } from "antd";
-const onChange = (key) => {
-  // console.log(key);
-};
+import { useEffect, useState } from "react";
+
 // const items = [
 //   {
 //     key: "1",
@@ -19,7 +18,38 @@ const onChange = (key) => {
 //     children: `Content of Tab Pane 3`,
 //   },
 // ];
-const TabsAntCom = ({ items = [] }) => (
-  <Tabs size="large" defaultActiveKey="1" items={items} onChange={onChange} />
-);
+const TabsAntCom = ({ items = [] }) => {
+  const [key, setKey] = useState(1);
+  const [newItems, setNewItems] = useState([]);
+  const onChange = (key) => {
+    setKey(key);
+  };
+
+  useEffect(() => {
+    if (key !== "4") {
+      const newItems = items.map((item) => {
+        if (item.key === "4") {
+          return {
+            ...item,
+            children: null,
+          };
+        }
+        return item;
+      });
+
+      setNewItems(newItems);
+    } else {
+      setNewItems(items);
+    }
+  }, [key, items]);
+
+  return (
+    <Tabs
+      size="large"
+      defaultActiveKey="1"
+      items={newItems}
+      onChange={onChange}
+    />
+  );
+};
 export default TabsAntCom;

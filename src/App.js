@@ -9,7 +9,7 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
+import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
@@ -44,6 +44,10 @@ const AdminCreateLessonPage = lazy(() =>
   import("./pages/admin/lesson/AdminCreateLessonPage.js")
 );
 
+const AdminBlogListPage = lazy(() =>
+  import("./pages/admin/blog/AdminBlogListPage.js")
+);
+
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
 const ErrorPage = lazy(() => import("./pages/errors/ErrorPage.js"));
@@ -68,6 +72,8 @@ const UserChangePasswordPage = lazy(() =>
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
+const BlogCreatePage = lazy(() => import("./pages/blog/BlogCreatePage.js"));
+const BlogListPage = lazy(() => import("./pages/blog/BlogListPage.js"));
 
 const LearnPage = lazy(() => import("./pages/learn/LearnPage.js"));
 const PaymentSuccessPage = lazy(() =>
@@ -103,7 +109,7 @@ function App() {
 
   // useEffect(() => {
   //   //   dispatch(onCourseInitalState());
-  //   // dispatch(onAuthInitalState());
+  //   dispatch(onAuthInitialState());
   // }, [dispatch]);
 
   // useEffect(() => {
@@ -190,11 +196,11 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
           <Route
-            path="/profile/:slug"
+            path="/profile/:userEmail"
             element={<UserProfilePage></UserProfilePage>}
           ></Route>
           <Route
-            path="/change-password"
+            path="/profile/change-password"
             element={<UserChangePasswordPage></UserChangePasswordPage>}
           ></Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
@@ -202,6 +208,15 @@ function App() {
             path="/blogs/:id"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
+          <Route
+            path="/blogs/blogList"
+            element={<BlogListPage></BlogListPage>}
+          ></Route>
+          <Route
+            path="/blogs/blogCreate"
+            element={<BlogCreatePage></BlogCreatePage>}
+          ></Route>
+
           <Route
             path="/payment/success"
             element={<PaymentSuccessPage></PaymentSuccessPage>}
@@ -253,6 +268,12 @@ function App() {
             <Route
               path="courses/:courseId/sections/:sectionId/lessons/create"
               element={<AdminCreateLessonPage></AdminCreateLessonPage>}
+            ></Route>
+
+            {/* Admin Blogs */}
+            <Route
+              path="blogs"
+              element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

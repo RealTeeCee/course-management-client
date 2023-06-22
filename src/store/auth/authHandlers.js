@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 import {
+  MESSAGE_CHANGE_PASSWORD_SUCCESS,
   MESSAGE_FORGET_PASSWORD_SUCCESS,
   MESSAGE_GENERAL_FAILED,
 } from "../../constants/config";
@@ -13,17 +14,18 @@ import {
   requestRefreshToken,
   requestRegister,
   requestResetPassword,
+  requestUserChangePassword,
 } from "./authRequests";
 import {
   onLoading,
+  onRegisterSuccess,
   onLoginSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
+  onLogin,
+  onUserChangePassword,
 } from "./authSlice";
 
-/**
- * *** Handler ***
- */
 function* handleOnRegister(action) {
   try {
     const res = yield call(requestRegister, action.payload);
@@ -137,6 +139,24 @@ function* handleOnResetPassword({ payload }) {
   }
 }
 
+function* handleOnUserChangePassword({ payload }) {
+  console.log("handle: ", payload);
+  try {
+    yield put(onLoading(true));
+    const res = yield call(requestUserChangePassword, payload);
+    if (res.status === 200) {
+      toast.success(MESSAGE_CHANGE_PASSWORD_SUCCESS);
+      yield put(onUserChangePassword(true));
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    yield put(onLoading(false));
+  }
+}
+
 export {
   handleOnRegister,
   handleOnLogin,
@@ -145,4 +165,5 @@ export {
   handleOnRemoveToken,
   handleOnForgetPassword,
   handleOnResetPassword,
+  handleOnUserChangePassword,
 };

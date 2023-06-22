@@ -7,6 +7,7 @@ import {
   handleOnGetUser,
   handleOnForgetPassword,
   handleOnResetPassword,
+  handleOnUserChangePassword,
 } from "./authHandlers";
 import {
   onLogin,
@@ -16,10 +17,10 @@ import {
   onGetUser,
   onForgetPassword,
   onResetPassword,
+  onUserChangePassword,
 } from "./authSlice";
 
 /**
- * *** Saga ***
  * after declare a Saga, assign into rootSaga
  */
 export default function* authSaga() {
@@ -30,4 +31,5 @@ export default function* authSaga() {
   yield takeLatest(onGetUser.type, handleOnGetUser);
   yield takeLatest(onForgetPassword.type, handleOnForgetPassword);
   yield takeLatest(onResetPassword.type, handleOnResetPassword);
+  yield takeLatest(onUserChangePassword.type, handleOnUserChangePassword);
 }

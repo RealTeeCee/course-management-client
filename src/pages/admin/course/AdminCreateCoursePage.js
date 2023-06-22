@@ -100,7 +100,7 @@ const AdminCreateCoursePage = () => {
     reset();
     getTags();
   };
-
+ 
   const handleSubmitForm = async (values) => {
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
@@ -329,7 +329,7 @@ const AdminCreateCoursePage = () => {
                       <ImageCropUploadAntCom
                         name="image"
                         onSetValue={setValue}
-                        errorMsg={errors.image?.message}
+                        errorMsg={errors.image?.message} 
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
