@@ -140,7 +140,6 @@ function* handleOnResetPassword({ payload }) {
 }
 
 function* handleOnUserChangePassword({ payload }) {
-  console.log("handle: ", payload);
   try {
     yield put(onLoading(true));
     const res = yield call(requestUserChangePassword, payload);

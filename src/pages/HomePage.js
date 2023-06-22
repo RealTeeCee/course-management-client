@@ -45,7 +45,6 @@ const HomePage = () => {
     dispatch(onBestSellerCourseLoading());
     // dispatch(onRelatedCourseLoading({ categoryId: 1, tagId: 1 }));
   }, [dispatch]);
-  console.log(bestSellerCourse);
 
   return (
     <>

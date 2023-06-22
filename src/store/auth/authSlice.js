@@ -35,7 +35,6 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRegister: (state, action) => ({
-      // ...initialState,
       ...state,
       ...action.payload,
     }),

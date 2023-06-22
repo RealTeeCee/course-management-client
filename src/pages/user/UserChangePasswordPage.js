@@ -53,7 +53,6 @@ const UserChangePasswordPage = () => {
 
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  console.log(user);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,12 +69,15 @@ const UserChangePasswordPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Change password</HeadingH1Com>
-        {/* <ButtonBackCom></ButtonBackCom> */}
         <BreadcrumbCom
           items={[
             {
               title: "Home",
               slug: "/",
+            },
+            {
+              title: "Profile",
+              slug: `/profile/${user?.email.split("@")[0]}`,
             },
             {
               title: "Change Password",
