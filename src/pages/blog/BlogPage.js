@@ -12,7 +12,6 @@ import { FaEye } from "react-icons/fa";
 import { axiosBearer, axiosPrivate } from "../../api/axiosInstance";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
-import ReactHtmlParser from "react-html-parser";
 
 const sliderData = [
   {
@@ -164,10 +163,16 @@ const BlogPage = () => {
           `/blog/blogs?_start=${startIndex}&_end=${endIndex}`
         );
         // setBlogs(response.data);
-        const formattedBlogs = response.data.map((blog) => ({
-          ...blog,
-          created_at: moment(blog.created_at).format("DD/MM/YYYY"), // Format the date
-        }));
+        // const formattedBlogs = response.data.map((blog) => ({
+        //   ...blog,
+        //   created_at: moment(blog.created_at).format("DD/MM/YYYY"), // Format the date
+        // }));
+        const formattedBlogs = response.data
+          .filter((blog) => blog.status === 1)
+          .map((blog) => ({
+            ...blog,
+            created_at: moment(blog.created_at).format("DD/MM/YYYY"), // Format the date
+          }));
         setBlogs(formattedBlogs);
         setIsLoading(false);
       } catch (error) {
@@ -186,24 +191,20 @@ const BlogPage = () => {
 
       <div className="w-full h-full object-cover relative ">
         {/**** Image and Sidebar ****/}
-        {imageUrl && <img src={imageUrl} alt="/" className="w-full h-60 object-cover" />}
+        {imageUrl && (
+          <img src={imageUrl} alt="/" className="w-full h-60 object-cover" />
+        )}
 
         {user && (
-          <nav className="flex justify-center space-x-20 h-16 bg-white">
+          <nav className="flex justify-end space-x-20 h-16 bg-white">
             <Link
               to="/blogs/blogList"
-              className="flex items-center  text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
-            >
-              <FaCog className="mr-1" />
-              List
-            </Link>
-            <Link
-              to="/blogs/blogCreate"
               className="flex items-center text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
             >
-              <BsPatchPlusFill className="mr-1" />
-              Create
+              <FaCog className="mr-1" />
+              Management Blog
             </Link>
+            
           </nav>
         )}
       </div>
@@ -254,10 +255,16 @@ const BlogPage = () => {
                     <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
                       <h3 className="font-[500]">{blog.name}</h3>
                     </div>
-                    <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
+                    {/* <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
                       {ReactHtmlParser(blog.description.slice(0, 50))}
-                      {/* {blog.description.slice(0, 50)} */}
-                    </p>
+                    </p> */}
+                    <p
+                      className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]"
+                      dangerouslySetInnerHTML={{
+                        __html: blog.description.slice(0, 50),
+                      }}
+                    ></p>
+
                     <div id="date" className="flex items-center mt-3">
                       <div className="flex items-center">
                         <AiOutlineClockCircle className="mr-[10px] text-[35px]" />

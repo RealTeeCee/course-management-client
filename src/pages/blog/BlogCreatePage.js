@@ -9,7 +9,6 @@ import {
 } from "../../constants/config";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_COURSE_URL } from "../../constants/endpoint";
 import { toast } from "react-toastify";
@@ -26,7 +25,7 @@ import {
 } from "../../components/ant";
 import { TextEditorQuillCom } from "../../components/texteditor";
 import { axiosBearer } from "../../api/axiosInstance";
-import ReactHtmlParser from "react-html-parser";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -52,13 +51,13 @@ const BlogCreatePage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [categorySelected, setCategorySelected] = useState(null);
   const [description, setDescription] = useState("");
   const [isHidden, setIsHidden] = useState(true);
+  const [isDescriptionEmpty, setIsDescriptionEmpty] = useState(true);
 
   const resetValues = () => {
     reset();
@@ -105,7 +104,7 @@ const BlogCreatePage = () => {
       });
       toast.success(`${res.data.message}`);
       resetValues();
-      navigate(`/blogs`);
+      navigate(`/blogs/blogList`); 
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -124,7 +123,22 @@ const BlogCreatePage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Create Blog</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Blog",
+              slug: "/blogs",
+            },
+            {
+              title: "Blog List",
+              slug: "/blogs/blogList",
+            },
+            {
+              title: "Create blog",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -231,9 +245,9 @@ const BlogCreatePage = () => {
                   </div>
                   <GapYCom className="mb-10"></GapYCom>
                   <div className="row">
-                    <div className="col-sm-12">
+                    {/* <div className="col-sm-12">
                       <LabelCom htmlFor="description">Description</LabelCom>
-                      <div>{ReactHtmlParser(description)}</div>
+                     
                       <TextEditorQuillCom
                         value={description}
                         onChange={(description) => {
@@ -242,7 +256,18 @@ const BlogCreatePage = () => {
                         }}
                         placeholder="Describe your course ..."
                       />
-                    </div>
+                    </div> */}
+                    <TextEditorQuillCom
+                      value={description}
+                      onChange={(newDescription) => {
+                        setValue("description", newDescription);
+                        setDescription(newDescription);
+                        setIsDescriptionEmpty(newDescription.trim() === "");
+                      }}
+                      placeholder={
+                        isDescriptionEmpty ? "Describe your course ..." : ""
+                      }
+                    />
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>

@@ -44,7 +44,7 @@ import { Navigate } from "react-router-dom";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -84,7 +84,6 @@ const AdminBlogListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
   const [blogs, setBlogs] = useState([]);
   const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
@@ -193,7 +192,6 @@ const AdminBlogListPage = () => {
             </ButtonCom>
           );
         }
-       
       },
     },
     {
@@ -366,7 +364,7 @@ const AdminBlogListPage = () => {
 
   const getBlogById = async (blogId) => {
     try {
-      const res = await axiosPrivate.get(`blog/${blogId}`);
+      const res = await axiosBearer.get(`blog/${blogId}`);
       reset(res.data);
       setCategorySelected(res.data.category_id);
       setStatusSelected(res.data.status);
@@ -410,7 +408,18 @@ const AdminBlogListPage = () => {
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Courses</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Admin",
+              slug: "/admin",
+            },
+            {
+              title: "Management Blog",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

@@ -6,6 +6,7 @@ import {
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
@@ -13,7 +14,7 @@ import {
   MIN_LENGTH_NAME,
   statusItems,
 } from "../../constants/config";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useParams } from "react-router-dom";
@@ -38,6 +39,7 @@ import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import { useSelector } from "react-redux";
 import { axiosBearer } from "../../api/axiosInstance";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -54,14 +56,14 @@ const schemaValidation = yup.object().shape({
 const BlogListPage = () => {
   /********* State ********* */
   const [blogs, setBlogs] = useState([]);
-  const axiosPrivate = useAxiosPrivate();
-  const [filterSection, setFilterSection] = useState([]);
+  const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
   const [isHidden, setIsHidden] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const [selectedRows, setSelectedRows] = useState([]);
   const userId = user.id;
   const resetValues = () => {
     reset();
@@ -117,10 +119,47 @@ const BlogListPage = () => {
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
+          <ButtonCom
+            className="px-3 rounded-lg"
+            backgroundColor="danger"
+            onClick={() => {
+              handleDeleteBlog(row);
+            }}
+          >
+            <IconTrashCom className="w-5"></IconTrashCom>
+          </ButtonCom>
         </>
+      ),
+    }, 
+  ];
+
+  const dropdownItems = [
+    {
+      key: "1",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-success transition-all duration-300"
+          onClick={() => toast.info("Developing...")}
+        >
+          Export
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleDeleteMultipleRecords()}
+        >
+          Remove All
+        </div>
       ),
     },
   ];
+
    /********* Get SectionId from row ********* */
    const getBlogById = async (userId) => {
     console.log("userId",user.id);
@@ -155,37 +194,21 @@ const BlogListPage = () => {
   
   
 
-  /********** END Fetch data Area ************ */
-
-  /********* API Search Section ********* */
-  useEffect(() => {
-    const result = blogs.filter((blog) => {
-      const keys = Object.keys(blog);
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        const value = blog[key];
-        if (
-          typeof value === "string" &&
-          value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-        ) {
-          return true;
-        }
-        if (
-          typeof value === "number" &&
-          String(value).toLocaleLowerCase() === search.toLocaleLowerCase()
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    setFilterSection(result);
-  }, [blogs, search]);
+ /********* Call API ********* */
+  //Get All Blog
+  const getBlogs = async () => {
+    try {
+      const res = await axiosBearer.get(`/blog/blogs`);
+      console.log(res.data);
+      setBlogs(res.data);
+      setFilterBlog(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   /********* Edit ********* */
-
-  ///********* Update Area *********
 
   const handleSubmitForm = async (values) => {
     console.log(values);
@@ -200,7 +223,7 @@ const BlogListPage = () => {
       //   status,
       // };
 
-      const res = await axiosPrivate.put(`/blog`, values);
+      const res = await axiosBearer.put(`/blog`, values);
       toast.success(`${res.data.message}`);
     } catch (error) {
       showMessageError(error);
@@ -210,11 +233,113 @@ const BlogListPage = () => {
     }
   };
 
+  /********* Search ********* */
+  useEffect(() => {
+    const result = blogs.filter((blog) => {
+      const keys = Object.keys(blog);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const value = blog[key];
+        if (
+          typeof value === "string" &&
+          value.toLowerCase().includes(search.toLowerCase())
+        ) {
+          return true;
+        }
+        if (
+          typeof value === "number" &&
+          String(value).toLowerCase() === search.toLowerCase()
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+    setFilterBlog(result);
+  }, [blogs, search]);
+
+ /********* Delete one API ********* */
+ const handleDeleteBlog = ({ id, name }) => {
+  Swal.fire({
+    title: "Are you sure?",
+    html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#7366ff",
+    cancelButtonColor: "#dc3545",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosBearer.delete(`/blog/${id}`);
+        getBlogs();
+        reset(res.data);
+        toast.success(res.data.message);
+      } catch (error) {
+        showMessageError(error);
+      }
+    }
+  });
+};
+
+/********* Multi Delete API ********* */
+const handleDeleteMultipleRecords = () => {
+  if (selectedRows.length === 0) {
+    toast.warning(MESSAGE_NO_ITEM_SELECTED);
+    return;
+  }
+  Swal.fire({
+    title: "Are you sure?",
+    html: `You will delete <span class="text-tw-danger">${
+      selectedRows.length
+    } selected ${selectedRows.length > 1 ? "blogs" : "blog"}</span>`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#7366ff",
+    cancelButtonColor: "#dc3545",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const deletePromises = selectedRows.map((row) =>
+          axiosBearer.delete(`/blog/${row.id}`)
+        );
+        await Promise.all(deletePromises);
+        toast.success(`Delete ${selectedRows.length} blogs success`);
+      } catch (error) {
+        showMessageError(error);
+      } finally {
+        getBlogs();
+        clearSelectedRows();
+      }
+    }
+  });
+};
+
+const clearSelectedRows = () => {
+  setSelectedRows([]);
+  setTableKey((prevKey) => prevKey + 1);
+};
+
+const handleRowSelection = (currentRowsSelected) => {
+  setSelectedRows(currentRowsSelected.selectedRows);
+};
   return (
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Blog Management</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Blog",
+              slug: "/blogs",
+            },
+            {
+              title: "Blog List",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -227,9 +352,11 @@ const BlogListPage = () => {
                   urlCreate="/blogs/blogCreate"
                   title={`Blog: ${user.name}`}
                   columns={columns}
-                  items={blogs}
+                  items={filterBlog}
                   search={search}
                   setSearch={setSearch}
+                  dropdownItems={dropdownItems}
+                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
                 ></TableCom>
               </span>
             </div>
