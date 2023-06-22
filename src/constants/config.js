@@ -84,7 +84,7 @@ export const categoryItems = [
     description:
       "Unleash your creativity with graphic design. Learn how to create visually appealing designs, manipulate images, and develop skills using popular design software. Discover the art of communication through visual elements.",
   },
-  {
+  { 
     value: 3,
     label: "Artificial Intelligence",
     slug: "artificial-intelligence",

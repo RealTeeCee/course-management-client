@@ -16,10 +16,13 @@ import {
 } from "./authRequests";
 import {
   onLoading,
+  onRegisterSuccess,
   onLoginSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
+  onLogin,
 } from "./authSlice";
+
 
 /**
  * *** Handler ***

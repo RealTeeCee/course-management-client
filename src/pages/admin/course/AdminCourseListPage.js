@@ -1007,7 +1007,7 @@ const AdminCourseListPage = () => {
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
-                Update
+                Update 
               </ButtonCom>
               {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
                 Reset

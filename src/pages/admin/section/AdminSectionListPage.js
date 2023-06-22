@@ -68,7 +68,7 @@ const AdminSectionListPage = () => {
     register,
     handleSubmit,
     setValue,
-    setError,
+    setError, 
     reset,
     watch,
     formState: { errors },

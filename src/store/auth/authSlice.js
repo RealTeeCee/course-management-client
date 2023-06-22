@@ -10,6 +10,7 @@ const initialState = {
   access_token: null,
   isLoading: false,
   isLoginSuccess: false,
+  isRegisterSuccess: false,
   isResetPasswordSuccess: false,
   errorMessage: null,
 };
@@ -30,7 +31,12 @@ const authSlice = createSlice({
       ...action.payload,
     }),
     onRegister: (state, action) => ({
-      ...initialState,
+      // ...initialState,
+      ...state,
+      ...action.payload,
+    }),
+    onRegisterSuccess: (state, action) => ({
+      ...state,
       ...action.payload,
     }),
     onUpdateUserToken: (state, action) => ({
@@ -87,6 +93,7 @@ export const {
   onLoginSuccess,
   onLogin,
   onRegister,
+  onRegisterSuccess,
   onUpdateUserToken,
   onGetUser,
   onRefreshToken,

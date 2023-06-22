@@ -69,7 +69,7 @@ const TextEditorQuillCom = ({
       className={className}
     ></ReactQuill>
   );
-};
+}; 
 
 TextEditorQuillCom.propTypes = {
   onChange: PropTypes.func.isRequired,

@@ -41,13 +41,14 @@ const AdminPage = () => {
               <NavLink to="/admin/courses">
                 <ButtonCom backgroundColor="gradient">Learning</ButtonCom>
               </NavLink>
-              <NavLink to="/admin/blogs">
-                <ButtonCom backgroundColor="gradient">Blog</ButtonCom>
-              </NavLink>
               <NavLink to="/admin/users">
                 <ButtonCom backgroundColor="gradient">User</ButtonCom>
               </NavLink>
+              <NavLink to="/admin/blogs">
+                <ButtonCom backgroundColor="gradient">Blog</ButtonCom>
+              </NavLink>
             </div>
+            
           </div>
         </div>
       </div>
