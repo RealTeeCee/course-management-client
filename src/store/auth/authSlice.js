@@ -5,9 +5,9 @@ const initialState = {
   email: null,
   token: null,
   access_token: null,
-  oldPassword: null,
-  password: null,
-  confirmPassword: null,
+  // oldPassword: null,
+  // password: null,
+  // confirmPassword: null,
   isLoading: false,
   isLoginSuccess: false,
   isRegisterSuccess: false,
@@ -89,7 +89,6 @@ const authSlice = createSlice({
     }),
     onUserChangePassword: (state, action) => ({
       ...state,
-      ...action.payload,
     }),
   },
 });

@@ -145,7 +145,7 @@ function* handleOnUserChangePassword({ payload }) {
     const res = yield call(requestUserChangePassword, payload);
     if (res.status === 200) {
       toast.success(MESSAGE_CHANGE_PASSWORD_SUCCESS);
-      yield put(onUserChangePassword(true));
+      // yield put(onUserChangePassword(true));
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
     }
