@@ -110,8 +110,23 @@ export function convertSecondToTime(seconds) {
   }
 }
 
-// If text > maxLength, will slice 
+// Input: 2023-06-20T16:21:34.017435Z, Output: June 20, 2023
+export function convertDateTime(dateTimeString) {
+  if (dateTimeString === null) return;
+  const dateTime = new Date(dateTimeString);
+  const options = { month: "long", day: "numeric", year: "numeric" };
+  const newDateTime = new Intl.DateTimeFormat("en-US", options).format(
+    dateTime
+  );
+
+  return newDateTime;
+}
+
+// If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
-  if (text.length > maxLength) return `${text.slice(0, maxLength)}${loadMore}`;
-  return text;
+  const newText = text.replace(/(<([^>]+)>)/gi, "");
+  if (newText.length > maxLength)
+    return `${newText.slice(0, maxLength)}${loadMore}`;
+
+  return newText;
 }

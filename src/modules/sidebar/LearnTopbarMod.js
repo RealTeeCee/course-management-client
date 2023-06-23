@@ -1,22 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { ButtonCom } from "../../components/button";
 import {
-  IconBellCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import { MESSAGE_LOGOUT_SUCCESS } from "../../constants/config";
+import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onCourseInitalState } from "../../store/course/courseSlice";
+import {
+  onAddNotification,
+  onCourseInitalState,
+} from "../../store/course/courseSlice";
+import { BASE_API_URL } from "../../constants/config";
+import NotificationToastList from "../../components/mui/NotificationToastList";
 
 const LearnTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
   const { progress } = useSelector((state) => state.course);
+
   const userName = user?.email.split("@")[0];
   const userItems = [
     {
@@ -40,11 +44,29 @@ const LearnTopbarMod = () => {
       url: "/logout",
     },
   ];
-
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  useEffect(() => {
+    let url = BASE_API_URL + "/push-notifications/" + user.id;
+    const sse = new EventSource(url);
+
+    sse.addEventListener("user-list-event", (event) => {
+      const data = JSON.parse(event.data);
+      dispatch(onAddNotification(data));
+    });
+
+    sse.onerror = () => {
+      sse.close();
+    };
+    return () => {
+      sse.close();
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   return (
     <div className="topbar flex items-center justify-between mb-8">
+      <NotificationToastList></NotificationToastList>
       <div>
         <Link to="/" className="inline-block">
           <img
@@ -59,7 +81,8 @@ const LearnTopbarMod = () => {
         <ButtonCom to="/my-courses" className="flex items-center">
           <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>
-        <IconBellCom></IconBellCom>
+        <NotificationListPopup />
+
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>

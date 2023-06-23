@@ -52,6 +52,8 @@ export const MESSAGE_VERIFY_SUCCESS =
 export const MESSAGE_FORGET_PASSWORD_SUCCESS =
   "We has successfully sent an email to reset your password. Please check your inbox or trash and follow the instructions provided.";
 export const MESSAGE_UPDATE_STATUS_SUCCESS = "Update status success !";
+export const MESSAGE_CHANGE_PASSWORD_SUCCESS =
+  "Your password have been changed successfull !";
 
 export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";
 
@@ -84,7 +86,7 @@ export const categoryItems = [
     description:
       "Unleash your creativity with graphic design. Learn how to create visually appealing designs, manipulate images, and develop skills using popular design software. Discover the art of communication through visual elements.",
   },
-  { 
+  {
     value: 3,
     label: "Artificial Intelligence",
     slug: "artificial-intelligence",

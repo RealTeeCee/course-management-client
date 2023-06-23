@@ -9,7 +9,7 @@ import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
-import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
+import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
@@ -66,6 +66,9 @@ const CourseDetailPage = lazy(() =>
 const CheckoutPage = lazy(() => import("./pages/checkout/CheckoutPage.js"));
 
 const UserProfilePage = lazy(() => import("./pages/user/UserProfilePage.js"));
+const UserChangePasswordPage = lazy(() =>
+  import("./pages/user/UserChangePasswordPage.js")
+);
 
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
@@ -88,13 +91,13 @@ function App() {
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
-    return () => {
-      clearTimeout(timer1);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  // useEffect(() => {
+  //   let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
+  //   return () => {
+  //     clearTimeout(timer1);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // });
 
   useEffect(() => {
     if (user?.status === 0) {
@@ -106,7 +109,7 @@ function App() {
 
   // useEffect(() => {
   //   //   dispatch(onCourseInitalState());
-  //   // dispatch(onAuthInitalState());
+  //   dispatch(onAuthInitialState());
   // }, [dispatch]);
 
   // useEffect(() => {
@@ -193,8 +196,12 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
           <Route
-            path="/profile/:slug"
+            path="/profile/:userEmail"
             element={<UserProfilePage></UserProfilePage>}
+          ></Route>
+          <Route
+            path="/profile/change-password"
+            element={<UserChangePasswordPage></UserChangePasswordPage>}
           ></Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
@@ -218,7 +225,6 @@ function App() {
             path="/payment/cancel"
             element={<PaymentErrorPage></PaymentErrorPage>}
           ></Route>
-
           <Route
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}

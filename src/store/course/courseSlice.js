@@ -8,6 +8,7 @@ const { createSlice } = require("@reduxjs/toolkit");
 const initialState = {
   isLoading: false,
   isLoadLearningStatus: false,
+  isSubmitting: false,
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
@@ -34,6 +35,11 @@ const initialState = {
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
 
   notes: [], //onGetNote
+  // posts: [], //onSavePost
+  notifs: [],
+  notifToastList: [],
+  isRead: false,
+  updatedNotif: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -52,7 +58,6 @@ const courseSlice = createSlice({
     },
     onMyCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onMyCourseSuccess: (state, action) => ({
@@ -60,57 +65,46 @@ const courseSlice = createSlice({
       data: action.payload,
       isReady: false,
     }),
-
     onMyCourseFailed: (state, action) => ({
       ...state,
-
       errorMessage: action.payload,
     }),
     onCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
       ...state,
-
       data: action.payload,
     }),
     onCourseFailed: (state, action) => ({
       ...state,
-
       errorMessage: action.payload,
     }),
     onFreeCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onFreeCourseSuccess: (state, action) => ({
       ...state,
-
       freeCourse: action.payload,
     }),
 
     onBestSellerCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onBestSellerCourseSuccess: (state, action) => ({
       ...state,
-
       bestSellerCourse: action.payload,
     }),
 
     onRelatedCourseLoading: (state, action) => ({
       ...state,
-
       errorMessage: null,
     }),
     onRelatedCourseSuccess: (state, action) => ({
       ...state,
-
       relatedCourse: action.payload,
     }),
 
@@ -282,6 +276,58 @@ const courseSlice = createSlice({
         video: filteredVideo,
       };
     },
+    onSavePost: (state, action) => ({
+      ...state,
+      isSubmitting: true,
+    }),
+    onSavePostSuccess: (state, action) => ({
+      ...state,
+      isSubmitting: false,
+    }),
+    onDeletePost: (state, action) => ({
+      ...state,
+    }),
+    onSaveReplyToPost: (state, action) => ({
+      ...state,
+      isSubmitting: true,
+    }),
+    onSaveReplyToPostSuccess: (state, action) => ({
+      ...state,
+      isSubmitting: false,
+    }),
+    onRemoveReplyInPost: (state, action) => ({
+      ...state,
+    }),
+    onSaveLikeOfPost: (state, action) => ({
+      ...state,
+    }),
+    onLoadNotification: (state, action) => ({
+      ...state,
+    }),
+    onLoadNotificationSuccess: (state, action) => ({
+      ...state,
+      notifs: action.payload,
+    }),
+    onAddNotification: (state, action) => ({
+      ...state,
+      notifs: action.payload,
+      notifToastList: action.payload,
+    }),
+    onReadNotification: (state, action) => ({
+      ...state,
+    }),
+    onReadNotificationSuccess: (state, action) => ({
+      ...state,
+      isRead: true,
+    }),
+    onRemoveFromToastList: (state, action) => {
+      let newNotif = [action.payload];
+      const filteredNotif = newNotif.filter((x) => x.id !== action.payload.id);
+      return {
+        ...state,
+        updatedNotif: filteredNotif,
+      };
+    },
   },
 });
 
@@ -326,6 +372,19 @@ export const {
   onDeleteNote,
   onDeleteNoteSuccess,
   onSelectedNote,
+  onSavePost,
+  onSavePostSuccess,
+  onDeletePost,
+  onSaveReplyToPost,
+  onSaveReplyToPostSuccess,
+  onSaveLikeOfPost,
+  onLoadNotification,
+  onLoadNotificationSuccess,
+  onAddNotification,
+  onReadNotification,
+  onReadNotificationSuccess,
+  onRemoveFromToastList,
+  onRemoveReplyInPost,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

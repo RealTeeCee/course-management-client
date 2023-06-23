@@ -4,15 +4,22 @@ import {
   requestBestSellerCourse,
   requestCourse,
   requestDeleteNote,
+  requestDeletePost,
+  requestDeleteReply,
   requestEnrollId,
   requestFreeCourse,
   requestLearning,
   requestLoadNote,
+  requestLoadNotification,
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
+  requestReadNotification,
   requestRelatedCourse,
+  requestSaveLike,
   requestSaveNote,
+  requestSavePost,
+  requestSaveReply,
   requestSaveTrackingLesson,
   requestSaveTrackingVideo,
   requestUpdateCompleted,
@@ -27,12 +34,16 @@ import {
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
   onLoadNoteSuccess,
+  onLoadNotificationSuccess,
   onLoadProgressSuccess,
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
+  onReadNotificationSuccess,
   onRelatedCourseSuccess,
   onSaveNoteSuccess,
+  onSavePostSuccess,
+  onSaveReplyToPostSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
 } from "./courseSlice";
@@ -233,6 +244,80 @@ function* handleDeleteNote({ payload }) {
   }
 }
 
+function* handleSavePost({ payload }) {
+  try {
+    const res = yield call(requestSavePost, payload);
+    if (res.status === 200) {
+      yield put(onSavePostSuccess());
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleDeletePost({ payload }) {
+  try {
+    const res = yield call(requestDeletePost, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleSaveReplyToPost({ payload }) {
+  try {
+    const res = yield call(requestSaveReply, payload);
+    if (res.status === 200) {
+      yield put(onSaveReplyToPostSuccess());
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleRemoveReplyInPost({ payload }) {
+  try {
+    const res = yield call(requestDeleteReply, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleSaveLikeOfPost({ payload }) {
+  try {
+    const res = yield call(requestSaveLike, payload);
+    if (res.status === 200) {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleLoadNotification({ payload }) {
+  try {
+    const res = yield call(requestLoadNotification, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onLoadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleReadNotification({ payload }) {
+  try {
+    const res = yield call(requestReadNotification, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onReadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -250,4 +335,11 @@ export {
   handleOnUpdateCompletedVideo,
   handleSaveNote,
   handleDeleteNote,
+  handleSavePost,
+  handleDeletePost,
+  handleSaveReplyToPost,
+  handleRemoveReplyInPost,
+  handleSaveLikeOfPost,
+  handleLoadNotification,
+  handleReadNotification,
 };
