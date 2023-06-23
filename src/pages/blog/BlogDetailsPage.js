@@ -20,7 +20,7 @@ const BlogDetailsPage = () => {
   const { user } = useSelector((state) => state.auth);
   const [viewCount, setViewCount] = useState(0);// Lưu trữ số lượt truy cập
 
-
+ 
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {

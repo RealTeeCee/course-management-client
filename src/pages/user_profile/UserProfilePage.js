@@ -115,7 +115,7 @@ const UserProfilePage = () => {
             <div className="text-xl font-bold text-fBlack">User Profile</div>
             <div className="mt-4 flex items-center">
               <FaUser />
-              <span className="ml-2">FPT Aptech </span>
+              <span className="ml-2">FPT AAA </span>
             </div>
             <div className="mt-4 flex items-center">
               <FaEnvelope />
