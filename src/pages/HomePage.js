@@ -148,7 +148,7 @@ const HomePage = () => {
           </>
         ) : (
           <HeadingH2Com className="text-black text-4xl text-center py-10">
-            Empty best selling courses
+            No data
           </HeadingH2Com>
         )}
 

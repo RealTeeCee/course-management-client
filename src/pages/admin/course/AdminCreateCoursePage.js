@@ -100,7 +100,7 @@ const AdminCreateCoursePage = () => {
     reset();
     getTags();
   };
- 
+
   const handleSubmitForm = async (values) => {
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
@@ -255,10 +255,6 @@ const AdminCreateCoursePage = () => {
               onSubmit={handleSubmit(handleSubmitForm)}
               id="form-create"
             >
-              {/* <div className="card-header">
-                <h5>Form Create Course</h5>
-                <span>Lorem ipsum dolor sit amet consectetur</span>
-              </div> */}
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-7">
@@ -329,7 +325,7 @@ const AdminCreateCoursePage = () => {
                       <ImageCropUploadAntCom
                         name="image"
                         onSetValue={setValue}
-                        errorMsg={errors.image?.message} 
+                        errorMsg={errors.image?.message}
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
@@ -504,12 +500,6 @@ const AdminCreateCoursePage = () => {
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
                 </ButtonCom>
-                {/* <ButtonCom backgroundColor="danger" type="button" onClick={() => {
-                  reset();
-                  resetValues();
-                }}>
-                  Reset
-                </ButtonCom> */}
               </div>
             </form>
           </div>

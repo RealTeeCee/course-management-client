@@ -130,3 +130,18 @@ export function sliceText(text = "", maxLength = 50, loadMore = "...") {
 
   return newText;
 }
+
+// str = "Graphic Design" - Output = "graphic-design"
+export function convertStrToSlug(str) {
+  str = str.trim();
+  str = str.toLowerCase();
+  str = str.replace(/\s+/g, "-");
+  // Remove non-alphanumeric characters and hyphens
+  str = str.replace(/[^a-z0-9-]/g, "");
+  // Remove consecutive hyphens
+  str = str.replace(/-{2,}/g, "-");
+  // Remove leading and trailing hyphens
+  str = str.replace(/^-+|-+$/g, "");
+
+  return str;
+}

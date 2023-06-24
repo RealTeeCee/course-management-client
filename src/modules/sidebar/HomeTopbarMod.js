@@ -104,7 +104,9 @@ const HomeTopbarMod = () => {
             <div className="media profile-media gap-x-2">
               <img
                 className="object-cover rounded-full w-12 h-12"
-                src={`${user ? user.image ?? AVATAR_DEFAULT : IMAGE_DEFAULT}`}
+                src={`${
+                  user ? user.imageUrl ?? AVATAR_DEFAULT : IMAGE_DEFAULT
+                }`}
                 alt="User Avatar"
               />
               <div className="media-body flex-1">

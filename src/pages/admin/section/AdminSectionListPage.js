@@ -68,7 +68,7 @@ const AdminSectionListPage = () => {
     register,
     handleSubmit,
     setValue,
-    setError, 
+    setError,
     reset,
     watch,
     formState: { errors },
@@ -434,7 +434,6 @@ const AdminSectionListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
@@ -500,41 +499,6 @@ const AdminSectionListPage = () => {
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
-              {/* <div className="row">
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
-                </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="ordered" isRequired>
-                    Ordered
-                  </LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="ordered"
-                    register={register}
-                    placeholder="Input section ordered"
-                    errorMsg={errors.ordered?.message}
-                  ></InputCom>
-                </div>
-              </div> */}
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
