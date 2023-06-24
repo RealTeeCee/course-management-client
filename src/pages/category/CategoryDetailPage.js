@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { categoryItems, LIMIT_PAGE } from "../../constants/config";
@@ -24,22 +25,37 @@ const CategoryDetailPage = () => {
     (item, index) => convertStrToSlug(item.category_name) === slug
   );
 
-  console.log(coursesByCategorySlug);
-
   useEffect(() => {
     dispatch(onCourseLoading());
   }, [dispatch]);
 
-  // Đợi API getCoursesByCategorySlug
   return (
     <>
-      <HeadingH1Com
-        number={
-          coursesByCategorySlug && formatNumber(coursesByCategorySlug.length)
-        }
-      >
-        {categoryDetail.label}
-      </HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com
+          number={
+            coursesByCategorySlug && formatNumber(coursesByCategorySlug.length)
+          }
+        >
+          {categoryDetail.label}
+        </HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Category",
+              slug: "/categories",
+            },
+            {
+              title: categoryDetail.label,
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
       <GapYCom></GapYCom>
       <CourseGridMod>
         {coursesByCategorySlug && coursesByCategorySlug.length > 0 ? (
