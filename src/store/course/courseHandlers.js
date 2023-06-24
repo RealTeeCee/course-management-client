@@ -9,6 +9,7 @@ import {
   requestEnrollId,
   requestFreeCourse,
   requestLearning,
+  requestLoadCourseRating,
   requestLoadNote,
   requestLoadNotification,
   requestLoadProgress,
@@ -23,6 +24,7 @@ import {
   requestSaveTrackingLesson,
   requestSaveTrackingVideo,
   requestUpdateCompleted,
+  requestUpdateUserRating,
 } from "./courseRequests";
 import {
   onBestSellerCourseSuccess,
@@ -33,6 +35,7 @@ import {
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
+  onLoadCourseRatingSuccess,
   onLoadNoteSuccess,
   onLoadNotificationSuccess,
   onLoadProgressSuccess,
@@ -46,7 +49,9 @@ import {
   onSaveReplyToPostSuccess,
   onSaveTrackingVideoSuccess,
   onUpdateCompletedVideoSuccess,
+  onUpdateUserRatingSuccess,
 } from "./courseSlice";
+import { toast } from "react-toastify";
 
 /**
  * *** Handler ***
@@ -318,6 +323,30 @@ function* handleReadNotification({ payload }) {
   }
 }
 
+function* handleUpdateUserRating({ payload }) {
+  try {
+    const res = yield call(requestUpdateUserRating, payload);
+    if (res.status === 200) {
+      yield put(onUpdateUserRatingSuccess(payload.rating));
+      toast.success("Thank for your rating.");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* handleLoadCourseRating({ payload }) {
+  try {
+    const res = yield call(requestLoadCourseRating, payload);
+    if (res.status === 200) {
+      yield put(onLoadCourseRatingSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -342,4 +371,6 @@ export {
   handleSaveLikeOfPost,
   handleLoadNotification,
   handleReadNotification,
+  handleUpdateUserRating,
+  handleLoadCourseRating,
 };

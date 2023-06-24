@@ -28,6 +28,7 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
+import RatingList from "../../components/mui/RatingList";
 
 const LearnPage = () => {
   const {
@@ -246,7 +247,10 @@ const LearnPage = () => {
       key: "3",
       label: `Rating`,
       // check điều kiện user rating xong thì thêm props readOnly
-      children: <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
+      children: (
+        // <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
+        <RatingList userRating={3.5} courseRating={4.5} readOnly></RatingList>
+      ),
     },
     {
       key: "4",

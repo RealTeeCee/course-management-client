@@ -24,6 +24,9 @@ export const selectAllCourseState = createSelector(
     notifs: courseSlice.notifs,
     notifToastList: courseSlice.notifToastList,
     updatedNotif: courseSlice.updatedNotif,
+    rating: courseSlice.rating,
+    userRating: courseSlice.userRating,
+    courseRating: courseSlice.courseRating,
   })
 );
 
