@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
+import FormGroupCom from "../../components/common/FormGroupCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
 import {
   MAX_LENGTH_VARCHAR,
   MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
-import FormGroupCom from "../../components/common/FormGroupCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { useDispatch, useSelector } from "react-redux";
 import { onUserChangePassword } from "../../store/auth/authSlice";
 
 const schemaValidation = yup.object().shape({

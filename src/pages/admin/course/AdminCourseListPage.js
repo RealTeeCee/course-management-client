@@ -655,7 +655,6 @@ const AdminCourseListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>

@@ -7,18 +7,53 @@ import {
   IconClockCom,
   IconEmailCom,
   IconPhoneCom,
+  IconRemoveCom,
   IconUserCom,
 } from "../../components/icon";
 import { useDispatch, useSelector } from "react-redux";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { convertDateTime, sliceText } from "../../utils/helper";
-import { AVATAR_DEFAULT } from "../../constants/config";
+import { AVATAR_DEFAULT, MESSAGE_FIELD_REQUIRED } from "../../constants/config";
 import { ImageCom } from "../../components/image";
+import GapYCom from "../../components/common/GapYCom";
+import { ButtonCom } from "../../components/button";
+import { LabelCom } from "../../components/label";
+import { InputCom } from "../../components/input";
+import { HeadingFormH5Com } from "../../components/heading";
+import ReactModal from "react-modal";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schemaValidation = yup.object().shape({
+  // name: yup
+  //   .string()
+  //   .required(MESSAGE_FIELD_REQUIRED)
+  //   .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+  //   .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+});
 
 const UserProfilePage = () => {
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
   const { user } = useSelector((state) => state.auth);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (user) {
       dispatch(onMyCourseLoading(user.id));
@@ -42,6 +77,67 @@ const UserProfilePage = () => {
     if (file) {
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleSubmitForm = (values) => {
+    // const {
+    //   id,
+    //   name,
+    //   status,
+    //   level,
+    //   category_id,
+    //   price,
+    //   net_price,
+    //   image,
+    //   tags,
+    //   duration,
+    //   achievements,
+    //   description,
+    // } = values;
+    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
+    //   const netPriceSelector = document.querySelector(
+    //     'input[name="net_price"]'
+    //   );
+    //   if (netPriceSelector) netPriceSelector.focus();
+    //   toast.error(MESSAGE_GENERAL_FAILED);
+    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
+    // } else {
+    //   try {
+    //     setIsLoading(!isLoading);
+    //     let fd = new FormData();
+    //     fd.append(
+    //       "courseJson",
+    //       JSON.stringify({
+    //         id,
+    //         name,
+    //         status,
+    //         level,
+    //         image,
+    //         category_id,
+    //         price: convertStrMoneyToInt(price),
+    //         net_price: convertStrMoneyToInt(net_price),
+    //         tags,
+    //         duration,
+    //         achievements,
+    //         description,
+    //       })
+    //     );
+    //     const res = await axiosBearer.put(`/course`, fd);
+    //     getCourses();
+    //     toast.success(`${res.data.message}`);
+    //     setIsOpen(false);
+    //   } catch (error) {
+    //     showMessageError(error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // }
+  };
+
+  // ************** Edit Profile **************************
+  const handleEditProfile = (id) => {
+    console.log("User ID:", id);
+    setIsOpen(true);
   };
 
   return (
@@ -71,10 +167,9 @@ const UserProfilePage = () => {
         </div>
         <div className="absolute -bottom-10">
           <img
-            src={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
-            className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full"
+            srcSet={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
+            className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full object-center"
             alt={user.name ?? "avatar-user"}
-            style={{ objectFit: "cover", objectPosition: "center" }}
           />
           <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
             <label
@@ -106,22 +201,25 @@ const UserProfilePage = () => {
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="text-xl font-bold text-fBlack">My Profile</div>
-              <button className="transition-all duration-300 text-tw-primary hover:opacity-60">
+              <button
+                className="transition-all duration-300 text-tw-primary hover:opacity-60"
+                onClick={() => handleEditProfile(user?.id)}
+              >
                 Edit
               </button>
             </div>
             <div className="mt-4 flex items-center">
               <IconUserCom></IconUserCom>
-              <span className="ml-2">FPT Aptech</span>
+              <span className="ml-2">{user && user.name}</span>
             </div>
             <div className="mt-4 flex items-center">
               <IconEmailCom></IconEmailCom>
               <span className="ml-2">{user && user.email}</span>
             </div>
-            <div className="mt-4 flex items-center">
+            {/* <div className="mt-4 flex items-center">
               <IconPhoneCom></IconPhoneCom>
               <span className="ml-2">091900909</span>
-            </div>
+            </div> */}
             <div className="mt-4 flex items-center">
               <IconClockCom></IconClockCom>
               <span className="ml-2">
@@ -204,6 +302,87 @@ const UserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Edit */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Profile</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitForm)}
+          >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Course hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
+            {/* <div className="card-header">
+                <h5>Form Create Course</h5>
+                <span>Lorem ipsum dolor sit amet consectetur</span>
+              </div> */}
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="first_name" isRequired>
+                    First Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="first_name"
+                    register={register}
+                    placeholder="Input First Name"
+                    errorMsg={errors.first_name?.message}
+                  ></InputCom>
+                </div>
+                {/* <div className="col-sm-2 relative">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  <div className="absolute w-full">
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                      editImage={image}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div> */}
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Save
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </div>
   );
 };
