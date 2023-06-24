@@ -40,6 +40,9 @@ const initialState = {
   notifToastList: [],
   isRead: false,
   updatedNotif: [],
+  rating: 0,
+  userRating: 0,
+  courseRating: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -117,6 +120,8 @@ const courseSlice = createSlice({
         return {
           ...state,
           courseId: filteredCourse[0].id,
+          rating: filteredCourse[0].rating,
+          userRating: filteredCourse[0].userRating,
         };
       }
       return {
@@ -328,6 +333,20 @@ const courseSlice = createSlice({
         updatedNotif: filteredNotif,
       };
     },
+    onUpdateUserRating: (state, action) => ({
+      ...state,
+    }),
+    onUpdateUserRatingSuccess: (state, action) => ({
+      ...state,
+      userRating: action.payload,
+    }),
+    onLoadCourseRating: (state, action) => ({
+      ...state,
+    }),
+    onLoadCourseRatingSuccess: (state, action) => ({
+      ...state,
+      courseRating: action.payload,
+    }),
   },
 });
 
@@ -385,6 +404,10 @@ export const {
   onReadNotificationSuccess,
   onRemoveFromToastList,
   onRemoveReplyInPost,
+  onUpdateUserRating,
+  onUpdateUserRatingSuccess,
+  onLoadCourseRating,
+  onLoadCourseRatingSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

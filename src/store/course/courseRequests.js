@@ -69,3 +69,9 @@ export const requestLoadNotification = (userId) => {
 export const requestReadNotification = (notifId) => {
   return axiosBearer.patch(`/notification/read/${notifId}`);
 };
+export const requestUpdateUserRating = (data) => {
+  return axiosBearer.post(`/enrollment/rating`, data);
+};
+export const requestLoadCourseRating = (courseId) => {
+  return axiosBearer.get(`/enrollment/rating/${courseId}`);
+};
