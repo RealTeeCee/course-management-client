@@ -5,9 +5,6 @@ const initialState = {
   email: null,
   token: null,
   access_token: null,
-  // oldPassword: null,
-  // password: null,
-  // confirmPassword: null,
   isLoading: false,
   isLoginSuccess: false,
   isRegisterSuccess: false,
@@ -89,6 +86,13 @@ const authSlice = createSlice({
     }),
     onUserChangePassword: (state, action) => ({
       ...state,
+      isUserChangePasswordSuccess: false,
+      isLoading: true,
+    }),
+    onUserChangePasswordSuccess: (state, action) => ({
+      ...state,
+      isUserChangePasswordSuccess: action.payload,
+      isLoading: false,
     }),
   },
 });
@@ -111,6 +115,7 @@ export const {
   onResetPassword,
   onResetPasswordSuccess,
   onUserChangePassword,
+  onUserChangePasswordSuccess,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;

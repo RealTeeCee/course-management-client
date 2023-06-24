@@ -24,6 +24,7 @@ import {
   onUpdateUserToken,
   onLogin,
   onUserChangePassword,
+  onUserChangePasswordSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -141,11 +142,10 @@ function* handleOnResetPassword({ payload }) {
 
 function* handleOnUserChangePassword({ payload }) {
   try {
-    yield put(onLoading(true));
     const res = yield call(requestUserChangePassword, payload);
     if (res.status === 200) {
       toast.success(MESSAGE_CHANGE_PASSWORD_SUCCESS);
-      // yield put(onUserChangePassword(true));
+      yield put(onUserChangePasswordSuccess(true));
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
     }
