@@ -249,7 +249,7 @@ const LearnPage = () => {
       // check điều kiện user rating xong thì thêm props readOnly
       children: (
         // <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
-        <RatingList userRating={3.5} courseRating={4.5} readOnly></RatingList>
+        <RatingList></RatingList>
       ),
     },
     {
