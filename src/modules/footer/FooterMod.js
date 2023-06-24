@@ -1,8 +1,8 @@
 import React from "react";
 
-const LayoutFooter = () => {
+const FooterMod = () => {
   return (
-    <footer className="footer bg-tw-light text-black flex justify-center items-center text-4xl z-10 relative mx-auto">
+    <footer className="footer bg-tw-light text-black flex justify-center items-center text-4xl mx-auto">
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-12 footer-copyright text-center">
@@ -14,4 +14,4 @@ const LayoutFooter = () => {
   );
 };
 
-export default LayoutFooter;
+export default FooterMod;

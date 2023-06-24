@@ -37,6 +37,7 @@ const CoursePage = () => {
                     isPaid={false}
                     isMyCourse={false}
                     course={course}
+                    url={`/courses/${course?.slug}`}
                   ></CourseItemMod>
                 );
               }

@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import GapYCom from "../components/common/GapYCom";
+import { FooterMod } from "../modules/footer";
 import { LearnSidebarMod, LearnTopbarMod } from "../modules/sidebar";
-import LayoutFooter from "./footer/LayoutFooter";
 
 const LayoutLearning = () => {
   return (
@@ -19,7 +19,7 @@ const LayoutLearning = () => {
 
         <GapYCom></GapYCom>
       </div>
-      <LayoutFooter />
+      <FooterMod />
     </>
   );
 };

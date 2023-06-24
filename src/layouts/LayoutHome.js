@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { FooterMod } from "../modules/footer";
 import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
-import LayoutFooter from "./footer/LayoutFooter";
 
 const LayoutHome = () => {
   return (
@@ -16,7 +16,7 @@ const LayoutHome = () => {
           </div>
         </div>
       </div>
-      <LayoutFooter />
+      <FooterMod />
     </>
   );
 };
