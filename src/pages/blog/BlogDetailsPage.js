@@ -18,57 +18,39 @@ const BlogDetailsPage = () => {
   const { id } = useParams();
   const [blogs, setBlogs] = useState(null);
   const { user } = useSelector((state) => state.auth);
-  const [viewCount, setViewCount] = useState(0);// Lưu trữ số lượt truy cập
-
- 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axiosBearer.get(`/blog/${id}`);
-  //       console.log(response);
-  //       setBlogs({
-  //         name: response.data.name,
-  //         description: response.data.description,
-  //         image: response.data.image,
-  //         view_count: response.data.view_count,
-  //         created_at: response.data.created_at
-  //           ? moment(response.data.created_at).format("DD/MM/YYYY")
-  //           : "", // Format the date
-  //       });
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [id]);
-
-  const fetchData = async () => {
-    try {
-      const response = await axiosBearer.get(`/blog/${id}`);
-      console.log(response);
-      const blogData = {
-        name: response.data.name,
-        description: response.data.description,
-        image: response.data.image,
-        view_count: response.data.view_count,
-        created_at: response.data.created_at
-          ? moment(response.data.created_at).format("DD/MM/YYYY")
-          : "",
-      };
-      setBlogs(blogData);
+  const [viewCount, setViewCount] = useState(0);
   
-      // Increase view count
-      const updatedViewCount = blogData.view_count + 1;
-      setViewCount(updatedViewCount);
-      console.log("count",updatedViewCount)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await updateViewCount(); // Call updateViewCount to update new view_count
+        const response = await axiosBearer.get(`/blog/${id}`);
+        console.log(response);
+        setBlogs({
+          name: response.data.name,
+          description: response.data.description,
+          image: response.data.image,
+          view_count: response.data.view_count,
+          created_at: response.data.created_at
+            ? moment(response.data.created_at).format("DD/MM/YYYY")
+            : "", // Format the date
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const updateViewCount = async () => {
+    try {
+      await axiosBearer.put(`/blog/view-count/${id}`, { view_count: viewCount + 1 });
+      setViewCount(prevCount => prevCount + 1);
     } catch (error) {
       console.log(error);
     }
   };
-  
-  fetchData();
-  
   
   return (
     <>
