@@ -16,6 +16,7 @@ import {
   IconStarCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
+import { categoryItems } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
 import { selectAllCourseState } from "../../store/course/courseSelector";
@@ -141,12 +142,19 @@ const CourseDetailPage = () => {
       setOpenKeys([]);
     }
   };
+
+  const category = categoryItems.find(
+    (item) => item.slug === convertStrToSlug(courseBySlug?.category_name)
+  );
+
   return (
     <>
       <div
         className="course-detail-banner bg-cover bg-no-repeat bg-center bg-opacity-40 text-white h-32 rounded-3xl flex items-center justify-center mb-5"
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(54, 12, 46, 0) -1.75%, #000 90%),url(https://images.unsplash.com/photo-1619410283995-43d9134e7656?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2dyYW1taW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60)`,
+          backgroundImage: `linear-gradient(180deg, rgba(54, 12, 46, 0) -1.75%, #000 90%),url(${
+            category.coverImage ?? category.image
+          })`,
         }}
       >
         <HeadingH2Com className="bg-gradient-to-r from-tw-light-pink to-tw-primary bg-clip-text text-transparent !text-4xl !font-bold">

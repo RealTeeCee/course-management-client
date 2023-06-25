@@ -8,6 +8,7 @@ import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
+import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
@@ -196,13 +197,18 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
           <Route
-            path="/profile/:userEmail"
-            element={<UserProfilePage></UserProfilePage>}
-          ></Route>
-          <Route
-            path="/profile/change-password"
-            element={<UserChangePasswordPage></UserChangePasswordPage>}
-          ></Route>
+            path="/profile"
+            element={<CheckUserLoginPage></CheckUserLoginPage>}
+          >
+            <Route
+              path=":userName"
+              element={<UserProfilePage></UserProfilePage>}
+            ></Route>
+            <Route
+              path="change-password"
+              element={<UserChangePasswordPage></UserChangePasswordPage>}
+            ></Route>
+          </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
@@ -216,7 +222,6 @@ function App() {
             path="/blogs/blogCreate"
             element={<BlogCreatePage></BlogCreatePage>}
           ></Route>
-
           <Route
             path="/payment/success"
             element={<PaymentSuccessPage></PaymentSuccessPage>}

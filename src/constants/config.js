@@ -74,6 +74,8 @@ export const categoryItems = [
     slug: "programming",
     image:
       "https://www.theschoolrun.com/sites/theschoolrun.com/files/article_images/what_is_a_programming_language.jpg",
+    coverImage:
+      "https://images.unsplash.com/photo-1619410283995-43d9134e7656?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2dyYW1taW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
     description:
       "Explore the world of programming and learn how to create software, websites, and applications. Gain hands-on experience with popular programming languages and tools, and build a foundation for a successful career in technology.",
   },
@@ -83,6 +85,8 @@ export const categoryItems = [
     slug: "graphic-design",
     image:
       "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8R3JhcGhpYyUyMERlc2lnbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    coverImage:
+      "https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8R3JhcGhpYyUyMGRlc2lnbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
     description:
       "Unleash your creativity with graphic design. Learn how to create visually appealing designs, manipulate images, and develop skills using popular design software. Discover the art of communication through visual elements.",
   },
@@ -92,6 +96,8 @@ export const categoryItems = [
     slug: "artificial-intelligence",
     image:
       "https://media.istockphoto.com/id/1440356809/photo/artificial-intelligence-technology-robot-futuristic-data-science-data-analytics-quantum.webp?b=1&s=170667a&w=0&k=20&c=wXYn8o0Y5OYTZbRFTeXvyQ2V4dt8HMHPLgFSJxjqWcg=",
+    coverImage:
+      "https://media.istockphoto.com/id/1364859722/photo/artificial-intelligence-concept.webp?b=1&s=170667a&w=0&k=20&c=eHRkMLmlR79tWkAuR0_eJCerG4xNP7iPMgjqE3mzbZU=",
     description:
       "Dive into the fascinating field of Artificial Intelligence (AI). Learn about machine learning, neural networks, and data analysis algorithms. Explore how AI is transforming various industries and gain insights into the future of intelligent systems.",
   },

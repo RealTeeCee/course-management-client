@@ -1,20 +1,16 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { USER_ROLE } from "../../constants/permissions";
 
-const CheckAuthPage = ({ allowPermissions = [] }) => {
+const CheckUserLoginPage = () => {
   const { user } = useSelector((state) => state.auth);
-  const userRole = user?.role || USER_ROLE;
   const location = useLocation();
 
-  return allowPermissions?.includes(userRole) ? (
+  return user ? (
     <Outlet />
-  ) : user ? (
-    <Navigate to="/forbidden" replace state={{ from: location }}></Navigate>
   ) : (
     <Navigate to="/login" replace state={{ from: location }}></Navigate>
   );
 };
 
-export default CheckAuthPage;
+export default CheckUserLoginPage;

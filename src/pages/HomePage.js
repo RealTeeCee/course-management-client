@@ -92,7 +92,7 @@ const HomePage = () => {
                     className="font-tw-secondary font-semibold"
                     onClick={() => navigate(`/courses/${c.slug}`)}
                   >
-                    View Detail
+                    See more
                   </ButtonCom>
                 </div>
               </div>
