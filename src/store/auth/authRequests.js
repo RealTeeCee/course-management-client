@@ -49,3 +49,7 @@ export const requestResetPassword = ({ password, confirmPassword, token }) => {
 export const requestUserChangePassword = (data) => {
   return axiosBearer.post(`/auth/change-password`, data);
 };
+
+export const requestUserUpdateProfile = (data) => {
+  return axiosBearer.put(`/auth/user`, data);
+};

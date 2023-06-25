@@ -504,9 +504,6 @@ const AdminSectionListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom>
             </div>
           </form>
         </div>

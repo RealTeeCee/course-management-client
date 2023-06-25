@@ -1,23 +1,14 @@
 import { takeLatest } from "redux-saga/effects";
 import {
-  handleOnLogin,
-  handleOnRegister,
-  handleOnRefreshToken,
-  handleOnRemoveToken,
-  handleOnGetUser,
-  handleOnForgetPassword,
-  handleOnResetPassword,
-  handleOnUserChangePassword,
+  handleOnForgetPassword, handleOnGetUser, handleOnLogin, handleOnRefreshToken, handleOnRegister, handleOnRemoveToken, handleOnResetPassword,
+  handleOnUserChangePassword, handleOnUserUpdateProfile
 } from "./authHandlers";
 import {
-  onLogin,
+  onForgetPassword, onGetUser, onLogin,
   onRefreshToken,
   onRegister,
-  onRemoveToken,
-  onGetUser,
-  onForgetPassword,
-  onResetPassword,
-  onUserChangePassword,
+  onRemoveToken, onResetPassword,
+  onUserChangePassword, onUserUpdateProfile
 } from "./authSlice";
 
 /**
@@ -32,4 +23,5 @@ export default function* authSaga() {
   yield takeLatest(onForgetPassword.type, handleOnForgetPassword);
   yield takeLatest(onResetPassword.type, handleOnResetPassword);
   yield takeLatest(onUserChangePassword.type, handleOnUserChangePassword);
+  yield takeLatest(onUserUpdateProfile.type, handleOnUserUpdateProfile);
 }

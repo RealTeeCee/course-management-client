@@ -1,36 +1,47 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
-import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
+import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
+import { FcComments, FcLike } from "react-icons/fc";
+import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { FcLike, FcComments } from "react-icons/fc";
+import { v4 } from "uuid";
+import * as yup from "yup";
+import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
+import { ImageCropUploadAntCom } from "../../components/ant";
+import { ButtonCom } from "../../components/button";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingFormH5Com } from "../../components/heading";
 import {
   IconClockCom,
   IconEmailCom,
-  IconPhoneCom,
   IconRemoveCom,
   IconUserCom,
 } from "../../components/icon";
-import { useDispatch, useSelector } from "react-redux";
+import { ImageCom } from "../../components/image";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
+import {
+  AVATAR_DEFAULT,
+  MAX_LENGTH_NAME,
+  MESSAGE_FIELD_REQUIRED,
+} from "../../constants/config";
+import { onUserUpdateProfile } from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { convertDateTime, sliceText } from "../../utils/helper";
-import { AVATAR_DEFAULT, MESSAGE_FIELD_REQUIRED } from "../../constants/config";
-import { ImageCom } from "../../components/image";
-import GapYCom from "../../components/common/GapYCom";
-import { ButtonCom } from "../../components/button";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { HeadingFormH5Com } from "../../components/heading";
-import ReactModal from "react-modal";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 const schemaValidation = yup.object().shape({
-  // name: yup
-  //   .string()
-  //   .required(MESSAGE_FIELD_REQUIRED)
-  //   .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
-  //   .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  first_name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
+  last_name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
 });
 
 const UserProfilePage = () => {
@@ -39,8 +50,6 @@ const UserProfilePage = () => {
     register,
     handleSubmit,
     setValue,
-    watch,
-    setError,
     reset,
     formState: { errors },
   } = useForm({
@@ -53,10 +62,30 @@ const UserProfilePage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState([]);
+
+  const resetValues = () => {
+    reset();
+    Object.keys(user).forEach((key) => {
+      setValue(key, user[key]);
+    });
+    const resImage = user.imageUrl;
+    const imgObj = [
+      {
+        uid: v4(),
+        name: resImage.substring(resImage.lastIndexOf("/") + 1),
+        status: "done",
+        url: resImage,
+      },
+    ];
+
+    setImage(imgObj);
+  };
 
   useEffect(() => {
     if (user) {
       dispatch(onMyCourseLoading(user.id));
+      resetValues();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -80,64 +109,22 @@ const UserProfilePage = () => {
   };
 
   const handleSubmitForm = (values) => {
-    // const {
-    //   id,
-    //   name,
-    //   status,
-    //   level,
-    //   category_id,
-    //   price,
-    //   net_price,
-    //   image,
-    //   tags,
-    //   duration,
-    //   achievements,
-    //   description,
-    // } = values;
-    // if (convertStrMoneyToInt(net_price) > convertStrMoneyToInt(price)) {
-    //   const netPriceSelector = document.querySelector(
-    //     'input[name="net_price"]'
-    //   );
-    //   if (netPriceSelector) netPriceSelector.focus();
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    //   setError("net_price", { message: MESSAGE_NET_PRICE_HIGHER_PRICE });
-    // } else {
-    //   try {
-    //     setIsLoading(!isLoading);
-    //     let fd = new FormData();
-    //     fd.append(
-    //       "courseJson",
-    //       JSON.stringify({
-    //         id,
-    //         name,
-    //         status,
-    //         level,
-    //         image,
-    //         category_id,
-    //         price: convertStrMoneyToInt(price),
-    //         net_price: convertStrMoneyToInt(net_price),
-    //         tags,
-    //         duration,
-    //         achievements,
-    //         description,
-    //       })
-    //     );
-    //     const res = await axiosBearer.put(`/course`, fd);
-    //     getCourses();
-    //     toast.success(`${res.data.message}`);
-    //     setIsOpen(false);
-    //   } catch (error) {
-    //     showMessageError(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+    console.log("values: ", values);
+    const { id, email, first_name, last_name, imageUrl } = values;
+    dispatch(
+      onUserUpdateProfile({
+        id,
+        first_name,
+        last_name,
+        imageUrl,
+      })
+    );
   };
 
   // ************** Edit Profile **************************
-  const handleEditProfile = (id) => {
-    console.log("User ID:", id);
+  const handleEdit = () => {
     setIsOpen(true);
+    resetValues();
   };
 
   return (
@@ -149,7 +136,7 @@ const UserProfilePage = () => {
           alt="cover"
           style={{ objectFit: "cover", objectPosition: "center" }}
         />
-        <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
+        {/* <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
           <label
             htmlFor="upload-cover-image"
             className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white"
@@ -164,14 +151,14 @@ const UserProfilePage = () => {
             className="hidden"
             id="upload-cover-image"
           />
-        </div>
+        </div> */}
         <div className="absolute -bottom-10">
           <img
             srcSet={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
             className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full object-center"
             alt={user.name ?? "avatar-user"}
           />
-          <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
+          {/* <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
             <label
               htmlFor="upload-cover-image"
               className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white"
@@ -186,7 +173,7 @@ const UserProfilePage = () => {
               className="hidden"
               id="upload-cover-image"
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="text-center mt-12 text-3xl font-bold text-fBlack">
@@ -203,7 +190,7 @@ const UserProfilePage = () => {
               <div className="text-xl font-bold text-fBlack">My Profile</div>
               <button
                 className="transition-all duration-300 text-tw-primary hover:opacity-60"
-                onClick={() => handleEditProfile(user?.id)}
+                onClick={() => handleEdit()}
               >
                 Edit
               </button>
@@ -322,22 +309,15 @@ const UserProfilePage = () => {
           </ButtonCom>
         </div>
         <div className="card-body">
-          <form
-            className="theme-form"
-            onSubmit={handleSubmit(handleSubmitForm)}
-          >
+          <form onSubmit={handleSubmit(handleSubmitForm)}>
             <InputCom
               type="hidden"
               control={control}
               name="id"
               register={register}
-              placeholder="Course hidden id"
+              placeholder="Profile hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
-            {/* <div className="card-header">
-                <h5>Form Create Course</h5>
-                <span>Lorem ipsum dolor sit amet consectetur</span>
-              </div> */}
             <div className="card-body">
               <div className="row">
                 <div className="col-sm-6">
@@ -349,33 +329,49 @@ const UserProfilePage = () => {
                     control={control}
                     name="first_name"
                     register={register}
-                    placeholder="Input First Name"
+                    placeholder="Input first name"
                     errorMsg={errors.first_name?.message}
                   ></InputCom>
                 </div>
-                {/* <div className="col-sm-2 relative">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="last_name" isRequired>
+                    Last Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="last_name"
+                    register={register}
+                    placeholder="Input last name"
+                    errorMsg={errors.last_name?.message}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-6 offset-5 relative">
                   <LabelCom htmlFor="image" isRequired>
-                    Image
+                    Avatar
                   </LabelCom>
                   <div className="absolute w-full">
                     <ImageCropUploadAntCom
-                      name="image"
+                      name="imageUrl"
                       onSetValue={setValue}
-                      errorMsg={errors.image?.message}
+                      errorMsg={errors.imageUrl?.message}
                       editImage={image}
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
-                      name="image"
+                      name="imageUrl"
                       register={register}
                     ></InputCom>
                   </div>
-                </div> */}
+                </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
             </div>
-            <div className="card-footer flex justify-end gap-x-5">
+            <div className="card-footer flex justify-end gap-x-5 mt-20">
               <ButtonCom type="submit" isLoading={isLoading}>
                 Save
               </ButtonCom>
