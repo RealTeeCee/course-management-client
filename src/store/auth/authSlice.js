@@ -10,7 +10,6 @@ const initialState = {
   isRegisterSuccess: false,
   isResetPasswordSuccess: false,
   isUserChangePasswordSuccess: false,
-  isUserUpdateProfileSuccess: false,
   errorMessage: null,
 };
 const authSlice = createSlice({
@@ -97,13 +96,7 @@ const authSlice = createSlice({
     }),
     onUserUpdateProfile: (state, action) => ({
       ...state,
-      isUserUpdateProfileSuccess: false,
       isLoading: true,
-    }),
-    onUserUpdateProfileSuccess: (state, action) => ({
-      ...state,
-      isUserUpdateProfileSuccess: action.payload,
-      isLoading: false,
     }),
   },
 });
@@ -128,7 +121,6 @@ export const {
   onUserChangePassword,
   onUserChangePasswordSuccess,
   onUserUpdateProfile,
-  onUserUpdateProfileSuccess,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;

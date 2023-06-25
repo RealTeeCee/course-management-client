@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
@@ -28,6 +28,11 @@ import { sliceText } from "../../utils/helper";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
+  const { progress } = useSelector((state) => state.course);
+
+  const location = useLocation();
+  const isLearnPage = location.pathname.startsWith("/learn");
+
   const userName = user?.email.split("@")[0];
   const userItems = [
     {
@@ -89,15 +94,26 @@ const HomeTopbarMod = () => {
           />
         </Link>
       </div>
-      <div className="w-full max-w-[458px]">
+      {!isLearnPage && (
+        <div className="w-full max-w-[458px]">
+          <HomeSearchMod></HomeSearchMod>
+        </div>
+      )}
+      {/* <div className="w-full max-w-[458px]">
         <HomeSearchMod></HomeSearchMod>
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-between gap-x-5">
-        <ButtonCom to="/my-courses" className="flex items-center">
-          <span className="text-sm font-medium">My Courses</span>
-        </ButtonCom>
-        <NotificationListPopup />
+        {isLearnPage &&
+          (progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>)}
+        {user && (
+          <>
+            <ButtonCom to="/my-courses" className="flex items-center">
+              <span className="text-sm font-medium">My Courses</span>
+            </ButtonCom>
+            <NotificationListPopup />
+          </>
+        )}
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>

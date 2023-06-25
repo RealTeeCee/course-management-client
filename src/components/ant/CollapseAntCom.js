@@ -61,7 +61,8 @@ const CollapseAntCom = ({
         })
       );
     }
-  }, [courseId, dispatch, enrollId, isSelectLessonManual, tracking?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSelectLessonManual]);
 
   // Auto select lesson when load tracking success
   useEffect(() => {
@@ -77,7 +78,8 @@ const CollapseAntCom = ({
         })
       );
     }
-  }, [dispatch, isLearning, lessonId, navigate, slug, tracking]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLearning, lessonId, tracking, manualSelectLesson]);
 
   return parentItems.length === 0 ? null : (
     <Collapse
