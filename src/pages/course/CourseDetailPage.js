@@ -13,12 +13,21 @@ import {
   IconClockCom,
   IconImportantCom,
   IconLearnCom,
+  IconStarCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
-import { onRelatedCourseLoading } from "../../store/course/courseSlice";
-import { convertStrToSlug } from "../../utils/helper";
+import { selectAllCourseState } from "../../store/course/courseSelector";
+import {
+  onGetLearning,
+  onRelatedCourseLoading,
+} from "../../store/course/courseSlice";
+import {
+  convertIntToStrMoney,
+  convertSecondToDiffForHumans,
+  convertStrToSlug,
+} from "../../utils/helper";
 
 const sectionItems = [
   {
@@ -66,7 +75,10 @@ const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   // const [openKeys, setOpenKeys] = useState(["1"]);
-  const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
+  // const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
+  const { courseId, learning, sectionId } = useSelector(selectAllCourseState);
+
+  console.log("learning: ", learning);
   const relatedCourseLimitPage = 4;
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
     1,
@@ -77,6 +89,15 @@ const CourseDetailPage = () => {
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
   console.log("courseBySlug: ", courseBySlug);
+
+  useEffect(() => {
+    if (courseBySlug?.id) {
+      // dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
+      dispatch(onGetLearning(courseBySlug?.id));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug?.id]);
+
   useEffect(() => {
     if (courseBySlug)
       dispatch(
@@ -85,14 +106,34 @@ const CourseDetailPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseBySlug]);
 
+  const [openKeys, setOpenKeys] = useState(
+    String(learning.sectionDto.length > 0 ? learning.sectionDto[0].id : 0)
+  );
+
+  useEffect(() => {
+    if (sectionId) {
+      setOpenKeys(sectionId);
+    }
+  }, [sectionId]);
+
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
-    if (keys.length === sectionItems.length) {
+    setIsOpen(false);
+    if (keys.length === learning.sectionDto.length) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
   };
+
+  // const handleChangeCollapse = (keys) => {
+  //   setOpenKeys(keys);
+  //   if (keys.length === sectionItems.length) {
+  //     setIsOpen(true);
+  //   } else {
+  //     setIsOpen(false);
+  //   }
+  // };
 
   const handleToggleOpen = () => {
     setIsOpen(!isOpen);
@@ -142,6 +183,7 @@ const CourseDetailPage = () => {
                     <div className="course-detail-archives row">
                       {(courseBySlug?.achievements)
                         .split(",")
+                        // eslint-disable-next-line array-callback-return
                         .map((item, index) => {
                           if (index <= 3)
                             return (
@@ -172,7 +214,9 @@ const CourseDetailPage = () => {
                     </span>
                     <span className="">
                       Timing:{" "}
-                      <strong className="text-tw-light-pink">15 minute</strong>
+                      <strong className="text-tw-light-pink">
+                        {convertSecondToDiffForHumans(courseBySlug?.duration)}
+                      </strong>
                     </span>
                   </div>
                   <div
@@ -184,12 +228,20 @@ const CourseDetailPage = () => {
                     {isOpen ? "Close all" : "Open All"}
                   </div>
                 </div>
-                <CollapseAntCom
+                {/* <CollapseAntCom
                   isOpen={isOpen}
                   onChange={handleChangeCollapse}
                   openKeys={openKeys}
                   parentItems={sectionItems}
                   childItems={lessionItems}
+                ></CollapseAntCom> */}
+                <CollapseAntCom
+                  isOpen={isOpen}
+                  onChange={handleChangeCollapse}
+                  openKeys={openKeys}
+                  parentItems={learning.sectionDto}
+                  childItems={learning.lessonDto}
+                  slug={slug}
                 ></CollapseAntCom>
               </div>
             </div>
@@ -198,19 +250,25 @@ const CourseDetailPage = () => {
             <div className="sticky top-0">
               <div className="course-detail-image h-60">
                 <ImageCom
-                  srcSet="https://media.istockphoto.com/id/1477080857/photo/online-course-learn-to-code-sign-with-headset-microphone-and-coffee.jpg?b=1&s=170667a&w=0&k=20&c=DLFOezLOyv0MMFqNjYO1Li4Yvqt5qixce_LU1naZXV0="
+                  srcSet={courseBySlug?.image}
                   alt="Default Course Detail Thumb"
                 ></ImageCom>
               </div>
               <GapYCom></GapYCom>
               <div className="text-center mx-auto">
-                {false ? (
+                {courseBySlug?.price === 0 ? (
                   <HeadingH2Com className="text-tw-light-pink !text-3xl">
                     Free Course
                   </HeadingH2Com>
                 ) : (
                   <HeadingH2Com className="!text-3xl">
-                    Buy only <span className="text-tw-light-pink">$300</span>
+                    Buy only{" "}
+                    <span className="text-tw-light-pink">
+                      $
+                      {courseBySlug?.net_price > 0
+                        ? convertIntToStrMoney(courseBySlug?.net_price)
+                        : convertIntToStrMoney(courseBySlug?.price)}
+                    </span>
                   </HeadingH2Com>
                 )}
                 <GapYCom></GapYCom>
@@ -223,33 +281,49 @@ const CourseDetailPage = () => {
                 <div className="pl-[10.5rem] mx-auto text-start text-sm">
                   <div className="flex flex-col gap-y-2">
                     <div className="flex items-center gap-x-2">
-                      {false ? (
-                        <IconCircleCom className="text-tw-danger bg-tw-danger rounded-full"></IconCircleCom>
+                      {courseBySlug?.level === 1 ? (
+                        <>
+                          <IconCircleCom className="text-tw-danger bg-tw-danger rounded-full"></IconCircleCom>
+                          <div className="flex-1">Advance Course</div>
+                        </>
                       ) : (
-                        <IconCircleCom className="text-tw-success bg-tw-success rounded-full"></IconCircleCom>
+                        <>
+                          <IconCircleCom className="text-tw-success bg-tw-success rounded-full"></IconCircleCom>
+                          <div className="flex-1">Basic Course</div>
+                        </>
                       )}
-                      <div className="flex-1">Basic Course</div>
                     </div>
                     <div className="flex items-center gap-x-2">
                       <IconLearnCom className="text-tw-info"></IconLearnCom>
                       <div className="flex-1">
-                        Total: <span className="font-medium">4</span> courses
+                        Total: <span className="font-medium">4</span> lessons
                       </div>
                     </div>
                     <div className="flex items-center gap-x-2">
                       <IconClockCom className="text-tw-primary"></IconClockCom>
                       <div className="flex-1">
                         Time learning:{" "}
-                        <span className="font-medium">15 minute</span>
+                        <span className="font-medium">
+                          {convertSecondToDiffForHumans(courseBySlug?.duration)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-x-2">
+                      <IconStarCom className="text-tw-warning"></IconStarCom>
+                      <div className="flex-1">
+                        Rating:{" "}
+                        <span className="font-medium">
+                          {courseBySlug?.rating} / 5
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-x-2">
                       <IconImportantCom className="text-tw-danger"></IconImportantCom>
                       <div className="flex-1">
                         Requirement:{" "}
-                        {true ? (
+                        {courseBySlug?.requirement ? (
                           <span className="font-medium">
-                            Know basic programming
+                            {courseBySlug?.requirement}
                           </span>
                         ) : (
                           <span className="font-medium">No</span>
@@ -264,7 +338,10 @@ const CourseDetailPage = () => {
         </div>
         <GapYCom></GapYCom>
         {/* Free Course */}
-        <HeadingH2Com className="text-tw-primary" number={23}>
+        <HeadingH2Com
+          className="text-tw-primary"
+          number={relatedCourse && relatedCourse.length}
+        >
           Related Course
         </HeadingH2Com>
         <GapYCom></GapYCom>
