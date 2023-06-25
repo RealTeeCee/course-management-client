@@ -107,6 +107,8 @@ export const categoryItems = [
     slug: "data-science",
     image:
       "https://media.istockphoto.com/id/1405263192/vi/anh/kh%C3%A1i-ni%E1%BB%87m-khoa-h%E1%BB%8Dc-d%E1%BB%AF-li%E1%BB%87u.jpg?s=2048x2048&w=is&k=20&c=U5JcK90r1rbbLMuQm9G8e3BvFerS4fSLbS4BRyQYZd4=",
+    coverImage:
+      "https://media.istockphoto.com/id/1395356010/photo/finance-forecast-graph-chart-data-financial-planning-marketing-business-man-working-on-stock.webp?b=1&s=170667a&w=0&k=20&c=AwNh0Z_COCW7c_TpO__DX-8Bhkn2ff_BkcUe_8i_M4w=",
     description:
       "Unlock the power of data through data science. Discover techniques for analyzing and interpreting data, and gain insights to drive informed decision-making. Learn how to extract meaningful information from complex datasets and solve real-world problems.",
   },
