@@ -48,7 +48,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="h-[200vh] relative">
+      <div className="h-[100vh] relative">
         <Swiper
           modules={[Autoplay]}
           slidesPerView={"auto"}
@@ -101,7 +101,7 @@ const HomePage = () => {
         </Swiper>
       </div>
 
-      <div className="relative z-10 -mt-[160vh] pt-3 min-h-screen bg-tw-light">
+      <div className="relative z-10 -mt-[60vh] pt-3 min-h-screen bg-tw-light">
         {/* Category  */}
         <HeadingH2Com className="text-tw-primary" number={4}>
           Categories

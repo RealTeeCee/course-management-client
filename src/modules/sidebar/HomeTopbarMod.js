@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
@@ -28,6 +28,11 @@ import { sliceText } from "../../utils/helper";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
+  const { progress } = useSelector((state) => state.course);
+
+  const location = useLocation();
+  const isLearnPage = location.pathname.startsWith("/learn");
+
   const userName = user?.email.split("@")[0];
   const userItems = [
     {
@@ -89,11 +94,18 @@ const HomeTopbarMod = () => {
           />
         </Link>
       </div>
-      <div className="w-full max-w-[458px]">
+      {!isLearnPage && (
+        <div className="w-full max-w-[458px]">
+          <HomeSearchMod></HomeSearchMod>
+        </div>
+      )}
+      {/* <div className="w-full max-w-[458px]">
         <HomeSearchMod></HomeSearchMod>
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-between gap-x-5">
+        {isLearnPage &&
+          (progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>)}
         <ButtonCom to="/my-courses" className="flex items-center">
           <span className="text-sm font-medium">My Courses</span>
         </ButtonCom>

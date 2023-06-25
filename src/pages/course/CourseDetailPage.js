@@ -1,5 +1,6 @@
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
@@ -16,6 +17,8 @@ import {
 import { ImageCom } from "../../components/image";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
+import { onRelatedCourseLoading } from "../../store/course/courseSlice";
+import { convertStrToSlug } from "../../utils/helper";
 
 const sectionItems = [
   {
@@ -59,6 +62,7 @@ const lessionItems = [
 // const totalLession = 2;
 
 const CourseDetailPage = () => {
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   // const [openKeys, setOpenKeys] = useState(["1"]);
@@ -69,17 +73,17 @@ const CourseDetailPage = () => {
     relatedCourseLimitPage
   );
 
-  // Fetch data
+  const { data, relatedCourse } = useSelector((state) => state.course);
+
+  const courseBySlug = data.find((item, index) => item.slug === slug);
+  console.log("courseBySlug: ", courseBySlug);
   useEffect(() => {
-    const getCourseBySlug = async () => {
-      try {
-        // const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getCourseBySlug();
-  }, []);
+    if (courseBySlug)
+      dispatch(
+        onRelatedCourseLoading({ categoryId: courseBySlug.category_id })
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug]);
 
   const handleChangeCollapse = (keys) => {
     setOpenKeys(keys);
@@ -105,7 +109,12 @@ const CourseDetailPage = () => {
         }}
       >
         <HeadingH2Com className="bg-gradient-to-r from-tw-light-pink to-tw-primary bg-clip-text text-transparent !text-4xl !font-bold">
-          Programming
+          <Link
+            to={`/categories/${convertStrToSlug(courseBySlug?.category_name)}`}
+            className="tw-transition-all hover:text-white"
+          >
+            {courseBySlug?.category_name}
+          </Link>
         </HeadingH2Com>
       </div>
       <div className="course-detail-body">
@@ -113,31 +122,39 @@ const CourseDetailPage = () => {
           <div className="col-sm-7 relative">
             <div className="course-detail-header">
               <HeadingH1Com className="course-detail-title !mb-3">
-                Become Master PHP
+                {courseBySlug?.name}
               </HeadingH1Com>
               <GapYCom></GapYCom>
-              <div className="course-detail-description">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi
-                officia quos mollitia laboriosam molestiae commodi, quidem dicta
-                cupiditate architecto pariatur vel explicabo voluptate
-                temporibus rem modi nobis, ipsam, suscipit inventore!
-              </div>
+              <div
+                className="course-detail-description"
+                dangerouslySetInnerHTML={{ __html: courseBySlug?.description }}
+              ></div>
             </div>
             <GapYCom></GapYCom>
+            <hr />
+            <GapYCom></GapYCom>
             <div className="course-detail-body">
-              <HeadingH2Com>What will you achieve?</HeadingH2Com>
-              <GapYCom></GapYCom>
-              <div className="course-detail-archives row">
-                {Array(4)
-                  .fill(0)
-                  .map((item, index) => (
-                    <ArchiveItems
-                      key={index}
-                      title="Become Master with PHP - Laravel"
-                    ></ArchiveItems>
-                  ))}
-              </div>
-              <GapYCom></GapYCom>
+              {courseBySlug?.achievements &&
+                courseBySlug.achievements.trim() !== "" && (
+                  <>
+                    <HeadingH2Com>What will you achieve?</HeadingH2Com>
+                    <GapYCom></GapYCom>
+                    <div className="course-detail-archives row">
+                      {(courseBySlug?.achievements)
+                        .split(",")
+                        .map((item, index) => {
+                          if (index <= 3)
+                            return (
+                              <ArchiveItems
+                                key={v4()}
+                                title={item}
+                              ></ArchiveItems>
+                            );
+                        })}
+                    </div>
+                    <GapYCom></GapYCom>
+                  </>
+                )}
               <div className="course-detail-description">
                 <HeadingH2Com className="text-tw-primary">
                   Course Description
@@ -252,22 +269,36 @@ const CourseDetailPage = () => {
         </HeadingH2Com>
         <GapYCom></GapYCom>
         <CourseGridMod>
-          {Array(23)
-            .fill(0)
-            .map((item, index) => {
+          {relatedCourse && relatedCourse.length > 0 ? (
+            relatedCourse.map((course, index) => {
               if (index >= startIndex && index < endIndex) {
-                return <CourseItemMod key={v4()}></CourseItemMod>;
+                return (
+                  <CourseItemMod
+                    key={v4()}
+                    isPaid={false}
+                    isMyCourse={false}
+                    course={course}
+                    url={`/courses/${course?.slug}`}
+                  ></CourseItemMod>
+                );
               }
               return null;
-            })}
+            })
+          ) : (
+            <HeadingH2Com className="text-black text-4xl text-center py-10">
+              No data
+            </HeadingH2Com>
+          )}
         </CourseGridMod>
-        <Pagination
-          current={currentPage}
-          defaultPageSize={relatedCourseLimitPage}
-          total={23}
-          onChange={handleChangePage}
-          className="mt-[1rem] text-end"
-        />
+        {relatedCourse.length > relatedCourseLimitPage && (
+          <Pagination
+            current={currentPage}
+            defaultPageSize={relatedCourseLimitPage}
+            total={relatedCourse.length}
+            onChange={handleChangePage}
+            className="mt-[1rem] text-end"
+          />
+        )}
       </div>
     </>
   );
