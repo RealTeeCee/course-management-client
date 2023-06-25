@@ -17,7 +17,7 @@ import {
   MAX_LENGTH_VARCHAR,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_POLICY_REQUIRED,
+  MESSAGE_POLICY_REQUIRED, 
 } from "../../constants/config";
 import { useDispatch } from "react-redux";
 import { onRegister } from "../../store/auth/authSlice";
@@ -78,24 +78,30 @@ const RegisterPage = () => {
   //   }, 3000);
   // };
 
+  // const handleRegister = async (values) => {
+  //   if (!acceptTerm) {
+  //     toast.warning(MESSAGE_POLICY_REQUIRED);
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   try {
+  //     await dispatch(onRegister({ ...values, permissions: [] }));
+  //     toast.success("Registration successful!");
+  //     reset();
+  //     navigate("/login");
+  //   } catch (error) {
+  //     toast.error("Registration failed!");
+  //     setIsLoading(false);
+  //   }
+  // };
+  
   const handleRegister = async (values) => {
     if (!acceptTerm) {
       toast.warning(MESSAGE_POLICY_REQUIRED);
       return;
     }
-    setIsLoading(true);
-    try {
-      await dispatch(onRegister({ ...values, permissions: [] }));
-      toast.success("Registration successful!");
-      reset();
-      navigate("/login");
-    } catch (error) {
-      toast.error("Registration failed!");
-      setIsLoading(false);
-    }
+    dispatch(onRegister(values));
   };
-  
-
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>

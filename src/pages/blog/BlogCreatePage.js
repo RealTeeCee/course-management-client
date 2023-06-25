@@ -243,8 +243,9 @@ const BlogCreatePage = () => {
                       ></InputCom>
                     </div>
                   </div>
-                  <GapYCom className="mb-10"></GapYCom>
+                  <GapYCom className="mt-20"></GapYCom>
                   <div className="row">
+                  <LabelCom htmlFor="description">Description</LabelCom>
                     {/* <div className="col-sm-12">
                       <LabelCom htmlFor="description">Description</LabelCom>
                      

@@ -41,7 +41,6 @@ import { useSelector } from "react-redux";
 import { axiosBearer } from "../../api/axiosInstance";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 
-
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup
