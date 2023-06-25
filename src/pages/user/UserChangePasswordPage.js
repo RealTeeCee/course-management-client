@@ -1,19 +1,21 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
+import FormGroupCom from "../../components/common/FormGroupCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
 import {
   MAX_LENGTH_VARCHAR,
+  MESSAGE_CONFIRM_PASSWORD_INVALID,
   MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
-import FormGroupCom from "../../components/common/FormGroupCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { useDispatch, useSelector } from "react-redux";
+import { selectIsUserChangePasswordSuccess } from "../../store/auth/authSelector";
 import { onUserChangePassword } from "../../store/auth/authSlice";
 
 const schemaValidation = yup.object().shape({
@@ -29,10 +31,7 @@ const schemaValidation = yup.object().shape({
     .max(MAX_LENGTH_VARCHAR, `Maximum ${MAX_LENGTH_VARCHAR} letters`),
   confirmPassword: yup
     .string()
-    .oneOf(
-      [yup.ref("password"), null],
-      "Confirm password not match with password"
-    )
+    .oneOf([yup.ref("password"), null], MESSAGE_CONFIRM_PASSWORD_INVALID)
     .min(8, "Minimum is 8 letters")
     .max(MAX_LENGTH_VARCHAR, `Maximum ${MAX_LENGTH_VARCHAR} letters`)
     .required(MESSAGE_FIELD_REQUIRED),
@@ -43,18 +42,20 @@ const UserChangePasswordPage = () => {
     control,
     register,
     handleSubmit,
-    setValue,
-    setError,
     reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
+  const { user, isLoading } = useSelector((state) => state.auth);
+  const isChangePassword = useSelector(selectIsUserChangePasswordSuccess);
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (isChangePassword) reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChangePassword]);
+  const dispatch = useDispatch();
 
   const handleSubmitForm = (values) => {
     dispatch(
@@ -92,7 +93,6 @@ const UserChangePasswordPage = () => {
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
-            id="form-create"
           >
             <FormGroupCom>
               <LabelCom htmlFor="oldPassword" isRequired>
@@ -133,9 +133,11 @@ const UserChangePasswordPage = () => {
                 errorMsg={errors.confirmPassword?.message}
               ></InputCom>
             </FormGroupCom>
-            <ButtonCom type="submit" isLoading={isLoading}>
-              Save
-            </ButtonCom>
+            <div className="card-footer">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Save
+              </ButtonCom>
+            </div>
           </form>
         </div>
       </div>

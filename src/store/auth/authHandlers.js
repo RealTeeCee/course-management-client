@@ -15,6 +15,7 @@ import {
   requestRegister,
   requestResetPassword,
   requestUserChangePassword,
+  requestUserUpdateProfile,
 } from "./authRequests";
 import {
   onLoading,
@@ -24,6 +25,8 @@ import {
   onUpdateUserToken,
   onLogin,
   onUserChangePassword,
+  onUserChangePasswordSuccess,
+  onUserUpdateProfileSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -141,14 +144,30 @@ function* handleOnResetPassword({ payload }) {
 
 function* handleOnUserChangePassword({ payload }) {
   try {
-    yield put(onLoading(true));
     const res = yield call(requestUserChangePassword, payload);
     if (res.status === 200) {
       toast.success(MESSAGE_CHANGE_PASSWORD_SUCCESS);
-      yield put(onUserChangePassword(true));
+      yield put(onUserChangePasswordSuccess(true));
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
     }
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    yield put(onLoading(false));
+  }
+}
+
+function* handleOnUserUpdateProfile({ payload }) {
+  try {
+    const res = yield call(requestUserUpdateProfile, payload);
+    console.log("res: ", res);
+    // if (res.status === 200) {
+    //   toast.success("Save change successfully");
+    //   yield put(onUserUpdateProfileSuccess(true));
+    // } else {
+    //   toast.error(MESSAGE_GENERAL_FAILED);
+    // }
   } catch (error) {
     showMessageError(error);
   } finally {
@@ -165,4 +184,5 @@ export {
   handleOnForgetPassword,
   handleOnResetPassword,
   handleOnUserChangePassword,
+  handleOnUserUpdateProfile,
 };

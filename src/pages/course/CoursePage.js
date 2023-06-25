@@ -1,14 +1,15 @@
 import { Pagination } from "antd";
 import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com } from "../../components/heading";
 import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
-import { formatNumber } from "../../utils/helper";
-import { useDispatch, useSelector } from "react-redux";
 import { onCourseLoading } from "../../store/course/courseSlice";
+import { formatNumber } from "../../utils/helper";
 
 const CoursePage = () => {
   const { startIndex, endIndex, currentPage, handleChangePage } =
@@ -22,9 +23,23 @@ const CoursePage = () => {
 
   return (
     <>
-      <HeadingH1Com number={formatNumber(data?.length)}>
-        All Courses
-      </HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com number={formatNumber(data?.length)}>
+          All Courses
+        </HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
       <GapYCom></GapYCom>
       {data && (
         <>
@@ -37,6 +52,7 @@ const CoursePage = () => {
                     isPaid={false}
                     isMyCourse={false}
                     course={course}
+                    url={`/courses/${course?.slug}`}
                   ></CourseItemMod>
                 );
               }

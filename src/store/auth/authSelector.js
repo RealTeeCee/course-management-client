@@ -11,6 +11,11 @@ export const selectUserId = createSelector(
   (authSlice) => authSlice.user.id
 );
 
+export const selectIsUserChangePasswordSuccess = createSelector(
+  [selectUserReducer],
+  (authSlice) => authSlice.isUserChangePasswordSuccess
+);
+
 // export const selectUserIsSuccess = createSelector(
 //   [selectUserReducer],
 //   (userSlice) => userSlice.isSuccess

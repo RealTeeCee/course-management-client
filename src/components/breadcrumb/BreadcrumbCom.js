@@ -7,7 +7,7 @@ import { v4 } from "uuid";
 
 const BreadcrumbCom = ({ items = [] }) => {
   return (
-    <ol className="breadcrumb">
+    <ol className="breadcrumb mb-0">
       {items.map((item, i) => (
         <li
           key={v4()}
@@ -32,6 +32,7 @@ const BreadcrumbCom = ({ items = [] }) => {
 
 BreadcrumbCom.propTypes = {
   items: PropTypes.array.isRequired,
+  isActive: PropTypes.bool,
 };
 export default withErrorBoundary(BreadcrumbCom, {
   FallbackComponent: ErrorCom,

@@ -407,7 +407,7 @@ const AdminBlogListPage = () => {
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Courses</HeadingH1Com>
+        <HeadingH1Com>Admin Blogs</HeadingH1Com>
         <BreadcrumbCom
           items={[
             {
@@ -415,7 +415,7 @@ const AdminBlogListPage = () => {
               slug: "/admin",
             },
             {
-              title: "Management Blog",
+              title: "Blog",
               isActive: true,
             },
           ]}
@@ -574,7 +574,7 @@ const AdminBlogListPage = () => {
                     onChange={(description) => {
                       setValue("description", description);
                     }}
-                    placeholder="Describe your course ..."
+                    placeholder="Write your blog..."
                   ></TextEditorQuillCom>
                 </div>
               </div>

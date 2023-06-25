@@ -1,27 +1,91 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
-import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
+import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
+import { FcComments, FcLike } from "react-icons/fc";
+import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { FcLike, FcComments } from "react-icons/fc";
+import { v4 } from "uuid";
+import * as yup from "yup";
+import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
+import { ImageCropUploadAntCom } from "../../components/ant";
+import { ButtonCom } from "../../components/button";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingFormH5Com } from "../../components/heading";
 import {
   IconClockCom,
   IconEmailCom,
-  IconPhoneCom,
+  IconRemoveCom,
   IconUserCom,
 } from "../../components/icon";
-import { useDispatch, useSelector } from "react-redux";
+import { ImageCom } from "../../components/image";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
+import {
+  AVATAR_DEFAULT,
+  MAX_LENGTH_NAME,
+  MESSAGE_FIELD_REQUIRED,
+} from "../../constants/config";
+import { onUserUpdateProfile } from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { convertDateTime, sliceText } from "../../utils/helper";
-import { AVATAR_DEFAULT } from "../../constants/config";
-import { ImageCom } from "../../components/image";
+
+const schemaValidation = yup.object().shape({
+  first_name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
+  last_name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
+});
 
 const UserProfilePage = () => {
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
   const { user } = useSelector((state) => state.auth);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState([]);
+
+  const resetValues = () => {
+    reset();
+    Object.keys(user).forEach((key) => {
+      setValue(key, user[key]);
+    });
+    const resImage = user.imageUrl;
+    const imgObj = [
+      {
+        uid: v4(),
+        name: resImage.substring(resImage.lastIndexOf("/") + 1),
+        status: "done",
+        url: resImage,
+      },
+    ];
+
+    setImage(imgObj);
+  };
+
   useEffect(() => {
     if (user) {
       dispatch(onMyCourseLoading(user.id));
+      resetValues();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -44,6 +108,25 @@ const UserProfilePage = () => {
     }
   };
 
+  const handleSubmitForm = (values) => {
+    console.log("values: ", values);
+    const { id, email, first_name, last_name, imageUrl } = values;
+    dispatch(
+      onUserUpdateProfile({
+        id,
+        first_name,
+        last_name,
+        imageUrl,
+      })
+    );
+  };
+
+  // ************** Edit Profile **************************
+  const handleEdit = () => {
+    setIsOpen(true);
+    resetValues();
+  };
+
   return (
     <div className="mx-auto py-6 px-4">
       <div className="relative h-96 rounded-b flex justify-center rounded-lg">
@@ -53,7 +136,7 @@ const UserProfilePage = () => {
           alt="cover"
           style={{ objectFit: "cover", objectPosition: "center" }}
         />
-        <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
+        {/* <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
           <label
             htmlFor="upload-cover-image"
             className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white"
@@ -68,15 +151,14 @@ const UserProfilePage = () => {
             className="hidden"
             id="upload-cover-image"
           />
-        </div>
+        </div> */}
         <div className="absolute -bottom-10">
           <img
-            src={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
-            className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full"
+            srcSet={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
+            className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full object-center"
             alt={user.name ?? "avatar-user"}
-            style={{ objectFit: "cover", objectPosition: "center" }}
           />
-          <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
+          {/* <div className="absolute bottom-0 right-0 p-1 bg-white rounded-full">
             <label
               htmlFor="upload-cover-image"
               className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white"
@@ -91,7 +173,7 @@ const UserProfilePage = () => {
               className="hidden"
               id="upload-cover-image"
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="text-center mt-12 text-3xl font-bold text-fBlack">
@@ -106,22 +188,25 @@ const UserProfilePage = () => {
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="text-xl font-bold text-fBlack">My Profile</div>
-              <button className="transition-all duration-300 text-tw-primary hover:opacity-60">
+              <button
+                className="transition-all duration-300 text-tw-primary hover:opacity-60"
+                onClick={() => handleEdit()}
+              >
                 Edit
               </button>
             </div>
             <div className="mt-4 flex items-center">
               <IconUserCom></IconUserCom>
-              <span className="ml-2">FPT Aptech</span>
+              <span className="ml-2">{user && user.name}</span>
             </div>
             <div className="mt-4 flex items-center">
               <IconEmailCom></IconEmailCom>
               <span className="ml-2">{user && user.email}</span>
             </div>
-            <div className="mt-4 flex items-center">
+            {/* <div className="mt-4 flex items-center">
               <IconPhoneCom></IconPhoneCom>
               <span className="ml-2">091900909</span>
-            </div>
+            </div> */}
             <div className="mt-4 flex items-center">
               <IconClockCom></IconClockCom>
               <span className="ml-2">
@@ -204,6 +289,96 @@ const UserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Edit */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Profile</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form onSubmit={handleSubmit(handleSubmitForm)}>
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Profile hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="first_name" isRequired>
+                    First Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="first_name"
+                    register={register}
+                    placeholder="Input first name"
+                    errorMsg={errors.first_name?.message}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="last_name" isRequired>
+                    Last Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="last_name"
+                    register={register}
+                    placeholder="Input last name"
+                    errorMsg={errors.last_name?.message}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-6 offset-5 relative">
+                  <LabelCom htmlFor="image" isRequired>
+                    Avatar
+                  </LabelCom>
+                  <div className="absolute w-full">
+                    <ImageCropUploadAntCom
+                      name="imageUrl"
+                      onSetValue={setValue}
+                      errorMsg={errors.imageUrl?.message}
+                      editImage={image}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="imageUrl"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5 mt-20">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Save
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </div>
   );
 };

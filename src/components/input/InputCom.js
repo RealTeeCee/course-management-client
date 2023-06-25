@@ -8,7 +8,6 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 const InputCom = (props) => {
   const {
     register = () => {},
-    // onChange,
     control,
     name,
     type = "text",
@@ -42,7 +41,6 @@ const InputCom = (props) => {
           type={
             type === "password" ? (showPassword ? "text" : "password") : type
           }
-          // onChange={onChange}
           {...register(name)}
           {...fields}
           {...rest}

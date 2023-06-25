@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { axiosBearer } from "../../../api/axiosInstance";
 import { ButtonCom } from "../../../components/button";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { TableCom } from "../../../components/table";
@@ -16,7 +15,6 @@ import {
   CAPTION_EXT_VALID,
   MESSAGE_CAPTION_FILE_INVALID,
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_GENERAL_FAILED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
@@ -43,7 +41,6 @@ import {
   API_COURSE_URL,
   API_LESSON_URL,
   API_SECTION_URL,
-  IMG_BB_URL,
 } from "../../../constants/endpoint";
 import { SwitchAntCom } from "../../../components/ant";
 import ReactPlayer from "react-player";
@@ -59,7 +56,6 @@ const schemaValidation = yup.object().shape({
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
     .min(0, MESSAGE_NUMBER_POSITIVE),
-  // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
   status: yup.number().default(1),
   ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
   videoFile: yup
@@ -109,7 +105,6 @@ const AdminLessonListPage = () => {
   const [showVideo, setShowVideo] = useState(true);
 
   // const [selectedRows, setSelectedRows] = useState([]);
-  const [lessonId, setLessonId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { access_token } = getToken();
@@ -401,7 +396,6 @@ const AdminLessonListPage = () => {
         await axiosBearer.post(`${API_LESSON_URL}/${id}/video`, fd);
       }
       toast.success(`${res.data.message}`);
-      // getLessonsBySectionId();
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -482,7 +476,6 @@ const AdminLessonListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>

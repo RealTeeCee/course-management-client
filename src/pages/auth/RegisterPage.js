@@ -1,28 +1,27 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { ButtonCom, ButtonSocialCom } from "../../components/button";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { ButtonCom } from "../../components/button";
 import { CheckBoxCom } from "../../components/checkbox";
 import FormGroupCom from "../../components/common/FormGroupCom";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingFormH1Com } from "../../components/heading";
 import { InputCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
-import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { HeadingFormH1Com, HeadingFormH5Com } from "../../components/heading";
-import { IconFacebookCom, IconGmailCom } from "../../components/icon";
-import OAuth2Page from "./OAuth2Page";
 import {
   MAX_LENGTH_NAME,
   MAX_LENGTH_VARCHAR,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_POLICY_REQUIRED, 
+  MESSAGE_POLICY_REQUIRED,
 } from "../../constants/config";
-import { useDispatch } from "react-redux";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onRegister } from "../../store/auth/authSlice";
-import { toast } from "react-toastify";
-import GapYCom from "../../components/common/GapYCom";
+import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -64,44 +63,23 @@ const RegisterPage = () => {
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  // const handleRegister = async (values) => {
-  //   if (!acceptTerm) {
-  //     toast.warning(MESSAGE_POLICY_REQUIRED);
-  //     return;
-  //   }
-  //   setIsLoading(!isLoading);
-  //   dispatch(onRegister({ ...values, permissions: [] }));
-  //   setTimeout(() => {
-  //     reset();
-  //     setIsLoading(false);
-  //     navigate("/login");
-  //   }, 3000);
-  // };
-
-  // const handleRegister = async (values) => {
-  //   if (!acceptTerm) {
-  //     toast.warning(MESSAGE_POLICY_REQUIRED);
-  //     return;
-  //   }
-  //   setIsLoading(true);
-  //   try {
-  //     await dispatch(onRegister({ ...values, permissions: [] }));
-  //     toast.success("Registration successful!");
-  //     reset();
-  //     navigate("/login");
-  //   } catch (error) {
-  //     toast.error("Registration failed!");
-  //     setIsLoading(false);
-  //   }
-  // };
-  
   const handleRegister = async (values) => {
     if (!acceptTerm) {
       toast.warning(MESSAGE_POLICY_REQUIRED);
       return;
     }
-    dispatch(onRegister(values));
+    setIsLoading(true);
+    try {
+      await dispatch(onRegister({ ...values, permissions: [] }));
+      toast.success("Registration successful!");
+      reset();
+      navigate("/login");
+    } catch (error) {
+      toast.error("Registration failed!");
+      setIsLoading(false);
+    }
   };
+
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>

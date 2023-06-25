@@ -5,14 +5,12 @@ const initialState = {
   email: null,
   token: null,
   access_token: null,
-  oldPassword: null,
-  password: null,
-  confirmPassword: null,
   isLoading: false,
   isLoginSuccess: false,
   isRegisterSuccess: false,
   isResetPasswordSuccess: false,
   isUserChangePasswordSuccess: false,
+  isUserUpdateProfileSuccess: false,
   errorMessage: null,
 };
 const authSlice = createSlice({
@@ -89,7 +87,23 @@ const authSlice = createSlice({
     }),
     onUserChangePassword: (state, action) => ({
       ...state,
-      ...action.payload,
+      isUserChangePasswordSuccess: false,
+      isLoading: true,
+    }),
+    onUserChangePasswordSuccess: (state, action) => ({
+      ...state,
+      isUserChangePasswordSuccess: action.payload,
+      isLoading: false,
+    }),
+    onUserUpdateProfile: (state, action) => ({
+      ...state,
+      isUserUpdateProfileSuccess: false,
+      isLoading: true,
+    }),
+    onUserUpdateProfileSuccess: (state, action) => ({
+      ...state,
+      isUserUpdateProfileSuccess: action.payload,
+      isLoading: false,
     }),
   },
 });
@@ -112,6 +126,9 @@ export const {
   onResetPassword,
   onResetPasswordSuccess,
   onUserChangePassword,
+  onUserChangePasswordSuccess,
+  onUserUpdateProfile,
+  onUserUpdateProfileSuccess,
 } = authSlice.actions;
 // authReducer
 export default authSlice.reducer;
