@@ -106,10 +106,14 @@ const HomeTopbarMod = () => {
       <div className="flex items-center justify-between gap-x-5">
         {isLearnPage &&
           (progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>)}
-        <ButtonCom to="/my-courses" className="flex items-center">
-          <span className="text-sm font-medium">My Courses</span>
-        </ButtonCom>
-        <NotificationListPopup />
+        {user && (
+          <>
+            <ButtonCom to="/my-courses" className="flex items-center">
+              <span className="text-sm font-medium">My Courses</span>
+            </ButtonCom>
+            <NotificationListPopup />
+          </>
+        )}
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
             <div className="profile-nav-bridge absolute h-5 -bottom-2 w-full"></div>
