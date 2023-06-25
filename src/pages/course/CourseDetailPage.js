@@ -205,12 +205,16 @@ const CourseDetailPage = () => {
                 <div className="flex justify-between items-center text-sm mb-2">
                   <div className="flex gap-x-3">
                     <span className="">
-                      Sessions:{" "}
-                      <strong className="text-tw-light-pink">2</strong>
+                      Sections:{" "}
+                      <strong className="text-tw-light-pink">
+                        {learning?.sectionDto.length}
+                      </strong>
                     </span>
                     <span className="">
                       Lessions:{" "}
-                      <strong className="text-tw-light-pink">4</strong>
+                      <strong className="text-tw-light-pink">
+                        {learning?.lessonDto.length}
+                      </strong>
                     </span>
                     <span className="">
                       Timing:{" "}
@@ -296,7 +300,11 @@ const CourseDetailPage = () => {
                     <div className="flex items-center gap-x-2">
                       <IconLearnCom className="text-tw-info"></IconLearnCom>
                       <div className="flex-1">
-                        Total: <span className="font-medium">4</span> lessons
+                        Total:{" "}
+                        <span className="font-medium">
+                          {learning?.lessonDto.length}
+                        </span>{" "}
+                        lessons
                       </div>
                     </div>
                     <div className="flex items-center gap-x-2">

@@ -19,14 +19,10 @@ import {
 } from "./authRequests";
 import {
   onLoading,
-  onRegisterSuccess,
   onLoginSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
-  onLogin,
-  onUserChangePassword,
   onUserChangePasswordSuccess,
-  onUserUpdateProfileSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -161,13 +157,12 @@ function* handleOnUserChangePassword({ payload }) {
 function* handleOnUserUpdateProfile({ payload }) {
   try {
     const res = yield call(requestUserUpdateProfile, payload);
-    console.log("res: ", res);
-    // if (res.status === 200) {
-    //   toast.success("Save change successfully");
-    //   yield put(onUserUpdateProfileSuccess(true));
-    // } else {
-    //   toast.error(MESSAGE_GENERAL_FAILED);
-    // }
+    if (res.status === 200) {
+      yield call(handleOnGetUser, { payload: payload.access_token });
+      toast.success(res.data.message);
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
   } catch (error) {
     showMessageError(error);
   } finally {
