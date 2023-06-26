@@ -365,15 +365,17 @@ const CourseDetailPage = () => {
           {relatedCourse && relatedCourse.length > 0 ? (
             relatedCourse.map((course, index) => {
               if (index >= startIndex && index < endIndex) {
-                return (
-                  <CourseItemMod
-                    key={v4()}
-                    isPaid={false}
-                    isMyCourse={false}
-                    course={course}
-                    url={`/courses/${course?.slug}`}
-                  ></CourseItemMod>
-                );
+                if (course.id !== courseBySlug.id) {
+                  return (
+                    <CourseItemMod
+                      key={v4()}
+                      isPaid={false}
+                      isMyCourse={false}
+                      course={course}
+                      url={`/courses/${course?.slug}`}
+                    ></CourseItemMod>
+                  );
+                }
               }
               return null;
             })

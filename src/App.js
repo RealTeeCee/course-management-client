@@ -31,6 +31,12 @@ const AdminCourseListPage = lazy(() =>
 const AdminCreateCoursePage = lazy(() =>
   import("./pages/admin/course/AdminCreateCoursePage.js")
 );
+const AdminAuthorListPage = lazy(() =>
+  import("./pages/admin/course/author/AdminAuthorListPage.js")
+);
+const AdminCreateAuthorPage = lazy(() =>
+  import("./pages/admin/course/author/AdminCreateAuthorPage.js")
+);
 const AdminSectionListPage = lazy(() =>
   import("./pages/admin/section/AdminSectionListPage.js")
 );
@@ -244,15 +250,20 @@ function App() {
               ></CheckAuthPage>
             }
           >
-            <Route index element={<AdminPage></AdminPage>}></Route>
+            <Route index element={<AdminPage />}></Route>
             {/* Admin Courses */}
-            <Route
-              path="courses"
-              element={<AdminCourseListPage></AdminCourseListPage>}
-            ></Route>
+            <Route path="courses" element={<AdminCourseListPage />}></Route>
             <Route
               path="courses/create"
-              element={<AdminCreateCoursePage></AdminCreateCoursePage>}
+              element={<AdminCreateCoursePage />}
+            ></Route>
+            <Route
+              path="courses/authors"
+              element={<AdminAuthorListPage />}
+            ></Route>
+            <Route
+              path="courses/authors/create"
+              element={<AdminCreateAuthorPage />}
             ></Route>
 
             {/* Admin Sections */}
@@ -265,7 +276,6 @@ function App() {
               path="courses/:courseId/sections/create"
               element={<AdminCreateSectionPage></AdminCreateSectionPage>}
             ></Route>
-
             {/* Admin Lessons */}
             <Route
               path="courses/:courseId/sections/:sectionId/lessons"
@@ -275,7 +285,6 @@ function App() {
               path="courses/:courseId/sections/:sectionId/lessons/create"
               element={<AdminCreateLessonPage></AdminCreateLessonPage>}
             ></Route>
-
             {/* Admin Blogs */}
             <Route
               path="blogs"
