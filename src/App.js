@@ -8,10 +8,12 @@ import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
+import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -46,6 +48,10 @@ const AdminCreateLessonPage = lazy(() =>
 
 const AdminBlogListPage = lazy(() =>
   import("./pages/admin/blog/AdminBlogListPage.js")
+);
+
+const AdminUserListPage = lazy(() =>
+  import("./pages/admin/user/AdminUserListPage.js")
 );
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
@@ -196,13 +202,18 @@ function App() {
             element={<CheckoutPage></CheckoutPage>}
           ></Route>
           <Route
-            path="/profile/:userEmail"
-            element={<UserProfilePage></UserProfilePage>}
-          ></Route>
-          <Route
-            path="/profile/change-password"
-            element={<UserChangePasswordPage></UserChangePasswordPage>}
-          ></Route>
+            path="/profile"
+            element={<CheckUserLoginPage></CheckUserLoginPage>}
+          >
+            <Route
+              path=":userName"
+              element={<UserProfilePage></UserProfilePage>}
+            ></Route>
+            <Route
+              path="change-password"
+              element={<UserChangePasswordPage></UserChangePasswordPage>}
+            ></Route>
+          </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
             path="/blogs/:id"
@@ -216,7 +227,6 @@ function App() {
             path="/blogs/blogCreate"
             element={<BlogCreatePage></BlogCreatePage>}
           ></Route>
-
           <Route
             path="/payment/success"
             element={<PaymentSuccessPage></PaymentSuccessPage>}
@@ -274,6 +284,12 @@ function App() {
             <Route
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
+            ></Route>
+         
+          {/* Admin Users */}
+          <Route
+              path="users"
+              element={<AdminUserListPage></AdminUserListPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

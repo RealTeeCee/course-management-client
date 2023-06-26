@@ -2,9 +2,6 @@ import { addNewNotes, deleteNotes } from "./courseHelper";
 
 const { createSlice } = require("@reduxjs/toolkit");
 
-/**
- * *Slice*
- */
 const initialState = {
   isLoading: false,
   isLoadLearningStatus: false,
@@ -12,7 +9,6 @@ const initialState = {
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
-
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
   bestSellerCourse: [],
@@ -29,11 +25,9 @@ const initialState = {
     lessonDto: [], //All lesson of giving course
     videoDto: [], //All video of giving course
   },
-
   video: null, //onSelectedLesson(sectionId, lessonId) - CollapseAntCom.js -> filter learning.videoDto => videoDto.lessonId === lessonId
   tracking: null, // onGetTrackingLesson(enrollId, courseId) - courseHandlers.js -> select where tracked = TRUE
   progress: 0, //onLoadProgress(enrollId, courseId) - CollapseAntCom.js -> update where completed = TRUE
-
   notes: [], //onGetNote
   // posts: [], //onSavePost
   notifs: [],
@@ -92,7 +86,6 @@ const courseSlice = createSlice({
       ...state,
       freeCourse: action.payload,
     }),
-
     onBestSellerCourseLoading: (state, action) => ({
       ...state,
       errorMessage: null,
@@ -101,7 +94,6 @@ const courseSlice = createSlice({
       ...state,
       bestSellerCourse: action.payload,
     }),
-
     onRelatedCourseLoading: (state, action) => ({
       ...state,
       errorMessage: null,
@@ -110,7 +102,6 @@ const courseSlice = createSlice({
       ...state,
       relatedCourse: action.payload,
     }),
-
     onSelectedCourse: (state, action) => {
       const filteredCourse = state.data.filter(
         (course) => course.slug === action.payload

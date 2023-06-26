@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com } from "../../components/heading";
+import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
@@ -41,7 +41,7 @@ const CoursePage = () => {
         />
       </div>
       <GapYCom></GapYCom>
-      {data && (
+      {data && data.length > 0 ? (
         <>
           <CourseGridMod>
             {data.map((course, index) => {
@@ -59,14 +59,20 @@ const CoursePage = () => {
               return null;
             })}
           </CourseGridMod>
-          <Pagination
-            current={currentPage}
-            defaultPageSize={LIMIT_PAGE}
-            total={data?.length}
-            onChange={handleChangePage}
-            className="mt-[1rem] text-center"
-          />
+          {data.length > LIMIT_PAGE && (
+            <Pagination
+              current={currentPage}
+              defaultPageSize={LIMIT_PAGE}
+              total={data?.length}
+              onChange={handleChangePage}
+              className="mt-[1rem] text-center"
+            />
+          )}
         </>
+      ) : (
+        <HeadingH2Com className="text-black text-4xl text-center py-10">
+          No data
+        </HeadingH2Com>
       )}
     </>
   );

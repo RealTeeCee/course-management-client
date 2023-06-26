@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEdit } from "react-icons/fa";
 import { FcComments, FcLike } from "react-icons/fc";
 import ReactModal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,11 +29,8 @@ import {
 } from "../../constants/config";
 import { onUserUpdateProfile } from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
-import {
-  convertDateTime,
-  showMessageError,
-  sliceText,
-} from "../../utils/helper";
+import { getToken } from "../../utils/auth";
+import { convertDateTime, showMessageError, sliceText } from "../../utils/helper";
 import { axiosBearer } from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { AiOutlineEdit } from "react-icons/ai";
@@ -75,12 +71,11 @@ const UserProfilePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user } = useSelector((state) => state.auth);
+  const { user, isLoading } = useSelector((state) => state.auth);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState([]);
   const [notificationStatus, setNotificationStatus] = useState(
     user?.notificationStatus
@@ -111,11 +106,11 @@ const UserProfilePage = () => {
     if (user) {
       dispatch(onMyCourseLoading(user.id));
       resetValues();
+      if (isOpen) setIsOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
-  console.log(data);
-  console.log(user);
+
   const [coverImage, setCoverImage] = useState(Carousel_6);
 
   const handleCoverImageChange = (event) => {
@@ -134,14 +129,15 @@ const UserProfilePage = () => {
   };
 
   const handleSubmitForm = (values) => {
-    console.log("values: ", values);
-    const { id, email, first_name, last_name, imageUrl } = values;
+    const { id, first_name, last_name, imageUrl } = values;
+    const { access_token } = getToken();
     dispatch(
       onUserUpdateProfile({
         id,
         first_name,
         last_name,
         imageUrl,
+        access_token,
       })
     );
   };

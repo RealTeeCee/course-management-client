@@ -126,7 +126,7 @@ const CommentCom = ({
             {p.comments.map((c) => (
               <CommentChild
                 key={c.id}
-                image={c.imageUrl}
+                image={c.imageUrl} 
                 userName={c.userName}
                 role={c.role}
                 commentId={c.id}

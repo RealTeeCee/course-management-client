@@ -51,5 +51,10 @@ export const requestUserChangePassword = (data) => {
 };
 
 export const requestUserUpdateProfile = (data) => {
-  return axiosBearer.put(`/auth/user`, data);
+  return axiosInstance.put(`/auth/user`, data, {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${data.access_token ?? ""}`,
+    },
+  });
 };

@@ -55,7 +55,6 @@ import {
 } from "./courseSlice";
 
 /**
- * *** Saga ***
  * after declare a Saga, assign into rootSaga
  */
 export default function* courseSaga() {

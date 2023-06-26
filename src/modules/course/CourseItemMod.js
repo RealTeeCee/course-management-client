@@ -29,15 +29,21 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
           {!isPaid && (
             <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
               <div className="flex flex-col gap-y-1">
-                <h4 className="text-gray-600 text-base font-semibold line-through">
+                <h4
+                  className={`text-gray-600 text-base font-semibold ${
+                    course?.net_price > 0 ? "line-through" : ""
+                  }`}
+                >
                   ${course?.price}
                 </h4>
-                <span className="text-sm text-gray-400">
-                  Sale only{" "}
-                  <strong className="text-tw-light-pink">
-                    ${course?.net_price}
-                  </strong>
-                </span>
+                {course?.net_price > 0 && (
+                  <span className="text-sm text-gray-400">
+                    Sale only{" "}
+                    <strong className="text-tw-light-pink">
+                      ${course?.net_price}
+                    </strong>
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col gap-y-1">

@@ -53,9 +53,6 @@ import {
 } from "./courseSlice";
 import { toast } from "react-toastify";
 
-/**
- * *** Handler ***
- */
 function* handleOnMyCourseLoading(action) {
   try {
     const res = yield call(requestMyCourse, action.payload);

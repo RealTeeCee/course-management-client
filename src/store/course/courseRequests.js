@@ -1,8 +1,5 @@
 const { axiosBearer } = require("../../api/axiosInstance");
 
-/**
- * **Request**
- */
 export const requestMyCourse = (userId) => {
   return axiosBearer.get(`/course/my-course/${userId}`);
 };

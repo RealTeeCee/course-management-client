@@ -15,7 +15,11 @@ import {
   IconTrashCom,
 } from "../../../components/icon";
 import { TableCom } from "../../../components/table";
-import { API_COURSE_URL, API_TAG_URL } from "../../../constants/endpoint";
+import {
+  API_AUTHOR_URL,
+  API_COURSE_URL,
+  API_TAG_URL,
+} from "../../../constants/endpoint";
 import * as yup from "yup";
 import {
   categoryItems,
@@ -67,6 +71,7 @@ const schemaValidation = yup.object().shape({
   level: yup.number().default(0),
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  author_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
     .string()
@@ -131,9 +136,11 @@ const AdminCourseListPage = () => {
 
   /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
+  const [authorItems, setAuthorItems] = useState([]);
   const [image, setImage] = useState([]);
 
   const [categorySelected, setCategorySelected] = useState(null);
+  const [authorSelected, setAuthorSelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
   const [achievementSelected, setAchievementSelected] = useState([]);
   /********* END API State ********* */
@@ -280,10 +287,24 @@ const AdminCourseListPage = () => {
     }
   };
 
+  const getAuthors = async () => {
+    try {
+      const res = await axiosBearer.get(`${API_AUTHOR_URL}`);
+      const authors = res.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setAuthorItems(authors);
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
+
   // /********* Fetch API Area ********* */
   useEffect(() => {
     getCourses();
     getTags();
+    getAuthors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -297,6 +318,7 @@ const AdminCourseListPage = () => {
       setPrice(convertIntToStrMoney(res.data.price));
       setNetPrice(convertIntToStrMoney(res.data.net_price));
       setCategorySelected(res.data.category_id);
+      setAuthorSelected(res.data.author_id);
       setTagsSelected(res.data.tags.split(","));
       setAchievementSelected(res.data.achievements.split(","));
 
@@ -343,20 +365,7 @@ const AdminCourseListPage = () => {
 
   /********* Action Area ********* */
   const handleSubmitForm = async (values) => {
-    const {
-      id,
-      name,
-      status,
-      level,
-      category_id,
-      price,
-      net_price,
-      image,
-      tags,
-      duration,
-      achievements,
-      description,
-    } = values;
+    const { price, net_price } = values;
 
     // if (image === "" || image[0] === undefined) {
     //   const imageSelector = document.querySelector('input[name="image"]');
@@ -379,18 +388,9 @@ const AdminCourseListPage = () => {
         fd.append(
           "courseJson",
           JSON.stringify({
-            id,
-            name,
-            status,
-            level,
-            image,
-            category_id,
+            ...values,
             price: convertStrMoneyToInt(price),
             net_price: convertStrMoneyToInt(net_price),
-            tags,
-            duration,
-            achievements,
-            description,
           })
         );
 
@@ -444,10 +444,10 @@ const AdminCourseListPage = () => {
     }
   };
 
-  const handleChangeStatus = (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-  };
+  // const handleChangeStatus = (value) => {
+  //   setValue("status", value);
+  //   setError("status", { message: "" });
+  // };
 
   const handleChangeLevel = (value) => {
     setValue("level", value);
@@ -492,44 +492,47 @@ const AdminCourseListPage = () => {
       const dataBody = newCourses.find((course) => course.id === courseId);
 
       const {
-        id,
-        name,
-        status,
-        level,
-        image,
-        category_id,
-        price,
-        net_price,
+        // id,
+        // name,
+        // status,
+        // level,
+        // image,
+        // category_id,
+        // author_id,
+        // price,
+        // net_price,
+        // duration,
+        // enrollmentCount,
+        // description,
         tags,
-        duration,
-        enrollmentCount,
         achievements,
-        description,
       } = dataBody;
 
       const fd = new FormData();
       fd.append(
         "courseJson",
         JSON.stringify({
-          id,
-          name,
-          status,
-          level,
-          image,
-          category_id,
-          price,
-          net_price,
+          // id,
+          // name,
+          // status,
+          // level,
+          // image,
+          // category_id,
+          // author_id,
+          // price,
+          // net_price,
+          // duration,
+          // enrollmentCount,
+          // description,
+          ...dataBody,
           tags: tags
             .split(",")
             .map((tag) => tag.trim())
             .join(","),
-          duration,
-          enrollmentCount,
           achievements: achievements
             .split(",")
             .map((achievement) => achievement.trim())
             .join(","),
-          description,
         })
       );
 
@@ -578,6 +581,12 @@ const AdminCourseListPage = () => {
     setValue("category_id", value);
     setError("category_id", { message: "" });
     setCategorySelected(value);
+  };
+
+  const handleChangeAuthor = (value) => {
+    setValue("author_id", value);
+    setError("author_id", { message: "" });
+    setAuthorSelected(value);
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
@@ -696,7 +705,7 @@ const AdminCourseListPage = () => {
               </div> */}
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-10">
                   <LabelCom htmlFor="name" isRequired>
                     Course Name
                   </LabelCom>
@@ -708,43 +717,6 @@ const AdminCourseListPage = () => {
                     placeholder="Input Course Name"
                     errorMsg={errors.name?.message}
                   ></InputCom>
-                </div>
-                {/* <div className="col-sm-3">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
-                </div> */}
-                <div className="col-sm-4">
-                  <LabelCom htmlFor="level">Level</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={levelItems}
-                      onChange={handleChangeLevel}
-                      defaultValue={watch("level")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="level"
-                      register={register}
-                      defaultValue={watch("level")}
-                    ></InputCom>
-                  </div>
                 </div>
                 <div className="col-sm-2 relative">
                   <LabelCom htmlFor="image" isRequired>
@@ -851,6 +823,48 @@ const AdminCourseListPage = () => {
                   </div>
                 </div>
                 <div className="col-sm-4">
+                  <LabelCom htmlFor="author_id">Author</LabelCom>
+                  <div>
+                    <SelectSearchAntCom
+                      selectedValue={authorSelected}
+                      listItems={authorItems}
+                      onChange={handleChangeAuthor}
+                      className="w-full py-1"
+                      status={
+                        errors.author_id && errors.author_id.message && "error"
+                      }
+                      errorMsg={errors.author_id?.message}
+                      placeholder="Search authors"
+                    ></SelectSearchAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="author_id"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+                <div className="col-sm-4">
+                  <LabelCom htmlFor="level">Level</LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      listItems={levelItems}
+                      onChange={handleChangeLevel}
+                      defaultValue={watch("level")}
+                    ></SelectDefaultAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="level"
+                      register={register}
+                      defaultValue={watch("level")}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-6">
                   <LabelCom
                     htmlFor="tags"
                     isRequired
@@ -874,7 +888,7 @@ const AdminCourseListPage = () => {
                     register={register}
                   ></InputCom>
                 </div>
-                <div className="col-sm-4">
+                <div className="col-sm-6">
                   <LabelCom
                     htmlFor="achievements"
                     subText="'enter' every achievement"
@@ -941,7 +955,7 @@ const AdminCourseListPage = () => {
             </div>
             <div className="card-footer flex justify-end gap-x-5">
               <ButtonCom type="submit" isLoading={isLoading}>
-                Update 
+                Update
               </ButtonCom>
               {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
                 Reset

@@ -19,7 +19,12 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useParams } from "react-router-dom";
-import { ImageCropUploadAntCom, SelectDefaultAntCom, SelectSearchAntCom, SwitchAntCom } from "../../components/ant";
+import {
+  ImageCropUploadAntCom,
+  SelectDefaultAntCom,
+  SelectSearchAntCom,
+  SwitchAntCom,
+} from "../../components/ant";
 import { ButtonCom } from "../../components/button";
 import {
   IconDocumentCom,
@@ -53,7 +58,7 @@ const schemaValidation = yup.object().shape({
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED), 
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
@@ -183,7 +188,7 @@ const BlogListPage = () => {
     },
   ];
 
-   /********* API List Blog ********* */
+  /********* API List Blog ********* */
   //Get All Blog
   const getBlogs = async () => {
     try {
@@ -201,7 +206,9 @@ const BlogListPage = () => {
       try {
         if (user && user.id) {
           const response = await axiosBearer.get(`/blog/my-blog/${user.id}`);
-          const filteredBlogs = response.data.filter(blog => blog.user_id === user.id);
+          const filteredBlogs = response.data.filter(
+            (blog) => blog.user_id === user.id
+          );
           setBlogs(filteredBlogs);
           setIsLoading(false);
         }
@@ -210,17 +217,15 @@ const BlogListPage = () => {
         setIsLoading(false);
       }
     };
-  
+
     fetchBlogs();
   }, [user]);
-  
 
   const handleChangeCategory = (value) => {
     setValue("category_id", value);
     setError("category_id", { message: "" });
     setCategorySelected(value);
   };
-
 
   const clearSelectedRows = () => {
     setSelectedRows([]);
@@ -331,7 +336,7 @@ const BlogListPage = () => {
       const res = await axiosBearer.get(`blog/${blogId}`);
       reset(res.data);
       setCategorySelected(res.data.category_id);
-     
+
       const resImage = res.data.image;
       const imgObj = [
         {
@@ -353,6 +358,8 @@ const BlogListPage = () => {
     const status = values.status || 2;
     try {
       setIsLoading(!isLoading);
+      const test = { ...values, user_id, status, view_count: 0 };
+      console.log("test:",test);
       const res = await axiosBearer.put(`/blog`, {
         ...values,
         user_id,
@@ -361,7 +368,7 @@ const BlogListPage = () => {
       });
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getBlogs();
-      Navigate(`/admin/blogs`);
+      // Navigate(`/admin/blogs`);
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -484,7 +491,6 @@ const BlogListPage = () => {
               </div>
               <GapYCom className="mb-20"></GapYCom>
               <div className="row">
-                
                 <div className="col-sm-4">
                   <LabelCom htmlFor="category_id" isRequired>
                     Choose Category
@@ -537,7 +543,7 @@ const BlogListPage = () => {
             </div>
           </form>
         </div>
-      </ReactModal> 
+      </ReactModal>
     </>
   );
 };

@@ -1,43 +1,41 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { HeadingH1Com } from "../../../components/heading";
-import { InputCom } from "../../../components/input";
-import { LabelCom } from "../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as yup from "yup";
-import { ButtonCom } from "../../../components/button";
+import { axiosBearer } from "../../../api/axiosInstance";
 import {
   ImageCropUploadAntCom,
   SelectDefaultAntCom,
   SelectSearchAntCom,
   SelectTagAntCom,
 } from "../../../components/ant";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { ButtonCom } from "../../../components/button";
 import GapYCom from "../../../components/common/GapYCom";
-import { toast } from "react-toastify";
+import { HeadingH1Com } from "../../../components/heading";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
-  MESSAGE_GENERAL_FAILED,
+  categoryItems,
+  levelItems,
+  MAX_LENGTH_NAME,
   MESSAGE_FIELD_INVALID,
-  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_FIELD_MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MIN_LENGTH_NAME,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_GENERAL_FAILED,
+  MESSAGE_NET_PRICE_HIGHER_PRICE,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_FIELD_REQUIRED,
-  categoryItems,
-  MESSAGE_FIELD_MAX_LENGTH_NAME,
-  MAX_LENGTH_NAME,
+  MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
-  MESSAGE_FIELD_MIN_LENGTH_NAME,
-  statusItems,
-  levelItems,
-  MESSAGE_NET_PRICE_HIGHER_PRICE,
 } from "../../../constants/config";
-import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import { API_TAG_URL, IMG_BB_URL } from "../../../constants/endpoint";
+import { API_AUTHOR_URL, API_TAG_URL } from "../../../constants/endpoint";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
-import { useNavigate } from "react-router-dom";
-import { TextEditorQuillCom } from "../../../components/texteditor";
-import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -49,6 +47,7 @@ const schemaValidation = yup.object().shape({
   level: yup.number().default(0),
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  author_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
   tags: yup.string().required(MESSAGE_FIELD_REQUIRED),
   price: yup
     .string()
@@ -80,10 +79,12 @@ const AdminCreateCoursePage = () => {
   });
   /********* API State ********* */
   const [tagItems, setTagItems] = useState([]);
+  const [authorItems, setAuthorItems] = useState([]);
   /********* END API State ********* */
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [categorySelected, setCategorySelected] = useState(null);
+  const [authorSelected, setAuthorSelected] = useState(null);
   const [tagsSelected, setTagsSelected] = useState([]);
   const [achievementSelected, setAchievementSelected] = useState([]);
   const [description, setDescription] = useState("");
@@ -99,6 +100,7 @@ const AdminCreateCoursePage = () => {
     setNetPrice(0);
     reset();
     getTags();
+    getAuthors();
   };
 
   const handleSubmitForm = async (values) => {
@@ -167,9 +169,23 @@ const AdminCreateCoursePage = () => {
     }
   };
 
+  const getAuthors = async () => {
+    try {
+      const res = await axiosBearer.get(`${API_AUTHOR_URL}`);
+      const authors = res.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setAuthorItems(authors);
+    } catch (error) {
+      showMessageError(error);
+    }
+  };
+
   /********* Fetch API Area ********* */
   useEffect(() => {
     getTags();
+    getAuthors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /********* END Fetch API Area ********* */
@@ -179,6 +195,12 @@ const AdminCreateCoursePage = () => {
     setValue("category_id", value);
     setError("category_id", { message: "" });
     setCategorySelected(value);
+  };
+
+  const handleChangeAuthor = (value) => {
+    setValue("author_id", value);
+    setError("author_id", { message: "" });
+    setAuthorSelected(value);
   };
 
   // itemsArrs = ["PHP", "PROGRAMMING"]
@@ -253,11 +275,10 @@ const AdminCreateCoursePage = () => {
             <form
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
-              id="form-create"
             >
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-7">
+                  <div className="col-sm-10">
                     <LabelCom htmlFor="name" isRequired>
                       Course Name
                     </LabelCom>
@@ -269,45 +290,6 @@ const AdminCreateCoursePage = () => {
                       placeholder="Input Course Name"
                       errorMsg={errors.name?.message}
                     ></InputCom>
-                  </div>
-                  {/* <div className="col-sm-3">
-                    <LabelCom htmlFor="status">Status</LabelCom>
-                    <div>
-                      <SelectDefaultAntCom
-                        listItems={statusItems}
-                        onChange={handleChangeStatus}
-                        status={
-                          errors.status && errors.status.message && "error"
-                        }
-                        errorMsg={errors.status?.message}
-                        placeholder="Choose Status"
-                        defaultValue={0}
-                      ></SelectDefaultAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="status"
-                        register={register}
-                        defaultValue={1}
-                      ></InputCom>
-                    </div>
-                  </div> */}
-                  <div className="col-sm-3">
-                    <LabelCom htmlFor="level">Level</LabelCom>
-                    <div>
-                      <SelectDefaultAntCom
-                        listItems={levelItems}
-                        onChange={handleChangeLevel}
-                        defaultValue={0}
-                      ></SelectDefaultAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="level"
-                        register={register}
-                        defaultValue={0}
-                      ></InputCom>
-                    </div>
                   </div>
                   <div className="col-sm-2 relative">
                     <LabelCom htmlFor="image" isRequired>
@@ -335,22 +317,31 @@ const AdminCreateCoursePage = () => {
                       ></InputCom>
                     </div>
                   </div>
+                  {/* <div className="col-sm-3">
+                    <LabelCom htmlFor="status">Status</LabelCom>
+                    <div>
+                      <SelectDefaultAntCom
+                        listItems={statusItems}
+                        onChange={handleChangeStatus}
+                        status={
+                          errors.status && errors.status.message && "error"
+                        }
+                        errorMsg={errors.status?.message}
+                        placeholder="Choose Status"
+                        defaultValue={0}
+                      ></SelectDefaultAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="status"
+                        register={register}
+                        defaultValue={1}
+                      ></InputCom>
+                    </div>
+                  </div> */}
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  {/* <div className="col-sm-4">
-                    <LabelCom htmlFor="duration" subText="(Hour)">
-                      Estimate Duration
-                    </LabelCom>
-                    <InputCom
-                      type="number"
-                      control={control}
-                      name="duration"
-                      register={register}
-                      placeholder="Estimate Duration"
-                      errorMsg={errors.duration?.message}
-                    ></InputCom>
-                  </div> */}
                   <div className="col-sm-5">
                     <LabelCom htmlFor="price" subText="($)">
                       Price
@@ -402,7 +393,7 @@ const AdminCreateCoursePage = () => {
                           "error"
                         }
                         errorMsg={errors.category_id?.message}
-                        placeholder="Input category to search"
+                        placeholder="Search categories"
                       ></SelectSearchAntCom>
                       <InputCom
                         type="hidden"
@@ -413,6 +404,63 @@ const AdminCreateCoursePage = () => {
                     </div>
                   </div>
                   <div className="col-sm-4">
+                    <LabelCom htmlFor="author_id">Author</LabelCom>
+                    <div>
+                      <SelectSearchAntCom
+                        selectedValue={authorSelected}
+                        listItems={authorItems}
+                        onChange={handleChangeAuthor}
+                        className="w-full py-1"
+                        status={
+                          errors.author_id &&
+                          errors.author_id.message &&
+                          "error"
+                        }
+                        errorMsg={errors.author_id?.message}
+                        placeholder="Search authors"
+                      ></SelectSearchAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="author_id"
+                        register={register}
+                      ></InputCom>
+                    </div>
+                    {/* <div>
+                      <SelectDefaultAntCom
+                        listItems={authors}
+                        onChange={handleChangeLevel}
+                      ></SelectDefaultAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="level"
+                        register={register}
+                        defaultValue={0}
+                      ></InputCom>
+                    </div> */}
+                  </div>
+                  <div className="col-sm-4">
+                    <LabelCom htmlFor="level">Level</LabelCom>
+                    <div>
+                      <SelectDefaultAntCom
+                        listItems={levelItems}
+                        onChange={handleChangeLevel}
+                        defaultValue={0}
+                      ></SelectDefaultAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="level"
+                        register={register}
+                        defaultValue={0}
+                      ></InputCom>
+                    </div>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-6">
                     <LabelCom
                       htmlFor="tags"
                       isRequired
@@ -436,7 +484,7 @@ const AdminCreateCoursePage = () => {
                       register={register}
                     ></InputCom>
                   </div>
-                  <div className="col-sm-4">
+                  <div className="col-sm-6">
                     <LabelCom
                       htmlFor="achievements"
                       subText="'enter' every achievement"
@@ -465,26 +513,9 @@ const AdminCreateCoursePage = () => {
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
-                {/* <div className="checkbox p-0">
-                  <input
-                    id="dafault-checkbox"
-                    type="checkbox"
-                    data-bs-original-title=""
-                    title=""
-                  />
-                  <label className="mb-0" htmlFor="dafault-checkbox">
-                    Remember my preference
-                  </label>
-                </div> */}
                 <div className="row">
                   <div className="col-sm-12">
                     <LabelCom htmlFor="description">Description</LabelCom>
-                    {/* <TextAreaCom
-                        name="description"
-                        control={control}
-                        register={register}
-                        placeholder="Describe your course ..."
-                      ></TextAreaCom> */}
                     <TextEditorQuillCom
                       value={description}
                       onChange={(description) => {
