@@ -94,6 +94,10 @@ const AdminCourseListPage = () => {
   const dropdownItems = [
     {
       key: "1",
+      label: <Link to="/admin/courses/authors">Author</Link>,
+    },
+    {
+      key: "2",
       label: (
         <div
           rel="noopener noreferrer"
@@ -105,7 +109,7 @@ const AdminCourseListPage = () => {
       ),
     },
     {
-      key: "2",
+      key: "3",
       label: (
         <div
           rel="noopener noreferrer"
@@ -492,18 +496,18 @@ const AdminCourseListPage = () => {
       const dataBody = newCourses.find((course) => course.id === courseId);
 
       const {
-        // id,
-        // name,
-        // status,
-        // level,
-        // image,
-        // category_id,
-        // author_id,
-        // price,
-        // net_price,
-        // duration,
-        // enrollmentCount,
-        // description,
+        id,
+        name,
+        status,
+        level,
+        image,
+        category_id,
+        author_id,
+        price,
+        net_price,
+        duration,
+        enrollmentCount,
+        description,
         tags,
         achievements,
       } = dataBody;
@@ -512,19 +516,18 @@ const AdminCourseListPage = () => {
       fd.append(
         "courseJson",
         JSON.stringify({
-          // id,
-          // name,
-          // status,
-          // level,
-          // image,
-          // category_id,
-          // author_id,
-          // price,
-          // net_price,
-          // duration,
-          // enrollmentCount,
-          // description,
-          ...dataBody,
+          id,
+          name,
+          status,
+          level,
+          image,
+          category_id,
+          author_id,
+          price,
+          net_price,
+          duration,
+          enrollmentCount,
+          description,
           tags: tags
             .split(",")
             .map((tag) => tag.trim())
