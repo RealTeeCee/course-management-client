@@ -8,15 +8,28 @@ import { InputCom } from "../../../../components/input";
 import { LabelCom } from "../../../../components/label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { MESSAGE_FIELD_REQUIRED } from "../../../../constants/config";
+import {
+  MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MIN_LENGTH_NAME,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_UPLOAD_REQUIRED,
+  MIN_LENGTH_NAME,
+} from "../../../../constants/config";
 import { useNavigate } from "react-router-dom";
 import { ImageCropUploadAntCom } from "../../../../components/ant";
 import { axiosBearer } from "../../../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { showMessageError } from "../../../../utils/helper";
+import { API_AUTHOR_URL } from "../../../../constants/endpoint";
 
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
 });
 
 const AdminCreateAuthorPage = () => {
@@ -31,30 +44,25 @@ const AdminCreateAuthorPage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   /********* Get Course ID from API  ********* */
-//   const handleSubmitForm = async (values) => {
-//     console.log(values);
-//     try {
-//       setIsLoading(!isLoading);
-//       const res = await axiosBearer.post(
-//         `${API_COURSE_URL}/${courseId}/section`,
-//         {
-//           ...values,
-//           courseId,
-//         }
-//       );
-//       toast.success(`${res.data.message}`);
-//       navigate(`/admin/authors/authors`);
-//     } catch (error) {
-//       showMessageError(error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
+  const handleSubmitForm = async (values) => {
+    console.log(values);
+    try {
+      setIsLoading(!isLoading);
+      const res = await axiosBearer.post(`${API_AUTHOR_URL}`, {
+        ...values,
+      });
+      toast.success(`${res.data.message}`);
+      navigate(`/admin/authors/authors`);
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -72,7 +80,7 @@ const AdminCreateAuthorPage = () => {
             },
             {
               title: "Author",
-              slug: `/admin/authors/authors`,
+              slug: `/admin/courses/authors`,
             },
             {
               title: "Create",
@@ -89,10 +97,6 @@ const AdminCreateAuthorPage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
             >
-              {/* <div className="card-header">
-                  <h5>Form Create Course</h5>
-                  <span>Lorem ipsum dolor sit amet consectetur</span>
-                </div> */}
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-12 text-center">

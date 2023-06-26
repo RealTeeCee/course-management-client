@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { axiosBearer } from "../../../../api/axiosInstance";
 import { BreadcrumbCom } from "../../../../components/breadcrumb";
 import { ButtonCom } from "../../../../components/button";
@@ -8,6 +10,26 @@ import { HeadingH1Com } from "../../../../components/heading";
 import { IconEditCom, IconTrashCom } from "../../../../components/icon";
 import { TableCom } from "../../../../components/table";
 import { API_AUTHOR_URL } from "../../../../constants/endpoint";
+import { showMessageError } from "../../../../utils/helper";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MAX_LENGTH_NAME,
+  MESSAGE_FIELD_MIN_LENGTH_NAME,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_UPLOAD_REQUIRED,
+  MIN_LENGTH_NAME,
+} from "../../../../constants/config";
+
+const schemaValidation = yup.object().shape({
+  name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
+});
 
 const AdminAuthorListPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -90,7 +112,7 @@ const AdminAuthorListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              // handleDeleteSection({ sectionId: row.id, name: row.name });
+              handleDelete(row.id, row.name);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -99,6 +121,23 @@ const AdminAuthorListPage = () => {
       ),
     },
   ];
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
+  const resetValues = () => {
+    reset();
+  };
 
   /********* Library Function Area ********* */
   const handleRowSelection = (currentRowsSelected) => {
@@ -151,6 +190,32 @@ const AdminAuthorListPage = () => {
     });
     setFilterAuthor(result);
   }, [authors, search]);
+
+  // Delete one
+  const handleDelete = (id, name) => {
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete author: <span className="text-tw-danger">${name}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosBearer.delete(
+            `${API_AUTHOR_URL}?authorId=${id}`
+          );
+          getAuthors();
+          reset(res.data);
+          toast.success(res.data.message);
+        } catch (error) {
+          showMessageError(error);
+        }
+      }
+    });
+  };
   return (
     <>
       <div className="flex justify-between items-center">

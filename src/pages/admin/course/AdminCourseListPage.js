@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
@@ -20,6 +19,7 @@ import {
   API_COURSE_URL,
   API_TAG_URL,
 } from "../../../constants/endpoint";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   categoryItems,
@@ -250,7 +250,7 @@ const AdminCourseListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteCourse(row);
+              handleDelete(row);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -409,7 +409,7 @@ const AdminCourseListPage = () => {
     }
   };
   // Delete one
-  const handleDeleteCourse = ({ id, name }) => {
+  const handleDelete = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete course: <span className="text-tw-danger">${name}</span>`,
