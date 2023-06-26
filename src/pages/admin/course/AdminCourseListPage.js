@@ -304,14 +304,6 @@ const AdminCourseListPage = () => {
     }
   };
 
-  // /********* Fetch API Area ********* */
-  useEffect(() => {
-    getCourses();
-    getTags();
-    getAuthors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const getCourseById = async (courseId) => {
     try {
       const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
@@ -330,7 +322,7 @@ const AdminCourseListPage = () => {
       const imgObj = [
         {
           uid: v4(),
-          name: resImage.substring(resImage.lastIndexOf("/") + 1),
+          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
           status: "done",
           url: resImage,
         },
@@ -341,6 +333,13 @@ const AdminCourseListPage = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    getCourses();
+    getTags();
+    getAuthors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Search in Table
   useEffect(() => {
@@ -462,7 +461,7 @@ const AdminCourseListPage = () => {
   const handleRowSelection = (currentRowsSelected) => {
     setSelectedRows(currentRowsSelected.selectedRows);
   };
-
+  // Clear Selected after Mutiple Delete
   const clearSelectedRows = () => {
     setSelectedRows([]);
     setTableKey((prevKey) => prevKey + 1);

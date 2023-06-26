@@ -72,7 +72,7 @@ const UserProfilePage = () => {
     const imgObj = [
       {
         uid: v4(),
-        name: resImage.substring(resImage.lastIndexOf("/") + 1),
+        name: resImage?.substring(resImage.lastIndexOf("/") + 1),
         status: "done",
         url: resImage,
       },
