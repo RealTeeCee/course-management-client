@@ -15,6 +15,7 @@ import {
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
+  requestReadAllNotification,
   requestReadNotification,
   requestRelatedCourse,
   requestSaveLike,
@@ -42,6 +43,7 @@ import {
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
+  onReadAllNotificationSuccess,
   onReadNotificationSuccess,
   onRelatedCourseSuccess,
   onSaveNoteSuccess,
@@ -311,9 +313,18 @@ function* handleLoadNotification({ payload }) {
 function* handleReadNotification({ payload }) {
   try {
     const res = yield call(requestReadNotification, payload);
-    console.log(res.data);
     if (res.status === 200) {
       yield put(onReadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleReadAllNotification({ payload }) {
+  try {
+    const res = yield call(requestReadAllNotification, payload);
+    if (res.status === 200) {
+      yield put(onReadAllNotificationSuccess(res.data));
     }
   } catch (error) {
     console.log(error);
@@ -368,6 +379,7 @@ export {
   handleSaveLikeOfPost,
   handleLoadNotification,
   handleReadNotification,
+  handleReadAllNotification,
   handleUpdateUserRating,
   handleLoadCourseRating,
 };

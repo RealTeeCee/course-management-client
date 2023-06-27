@@ -60,11 +60,14 @@ export const requestDeleteReply = (commentId) => {
 export const requestSaveLike = (data) => {
   return axiosBearer.post(`/post/like`, data);
 };
-export const requestLoadNotification = (userId) => {
-  return axiosBearer.post(`/notification/${userId}`);
+export const requestLoadNotification = (userToId) => {
+  return axiosBearer.post(`/notification/${userToId}`);
 };
 export const requestReadNotification = (notifId) => {
   return axiosBearer.patch(`/notification/read/${notifId}`);
+};
+export const requestReadAllNotification = (userToId) => {
+  return axiosBearer.patch(`/notification/read-all/${userToId}`);
 };
 export const requestUpdateUserRating = (data) => {
   return axiosBearer.post(`/enrollment/rating`, data);

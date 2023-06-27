@@ -25,6 +25,7 @@ import {
   handleRemoveReplyInPost,
   handleUpdateUserRating,
   handleLoadCourseRating,
+  handleReadAllNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -41,6 +42,7 @@ import {
   onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
+  onReadAllNotification,
   onReadNotification,
   onRelatedCourseLoading,
   onRemoveReplyInPost,
@@ -82,6 +84,7 @@ export default function* courseSaga() {
     takeLatest(onSaveLikeOfPost.type, handleSaveLikeOfPost),
     takeLatest(onLoadNotification.type, handleLoadNotification),
     takeLatest(onReadNotification.type, handleReadNotification),
+    takeLatest(onReadAllNotification.type, handleReadAllNotification),
     takeLatest(onUpdateUserRating.type, handleUpdateUserRating),
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
   ]);

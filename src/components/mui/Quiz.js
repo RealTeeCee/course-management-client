@@ -171,26 +171,46 @@ function Quiz() {
     //Tạo array câu hỏi user nếu có rồi thì update lại câu trả lời nếu chưa có thể add mới câu trả lời vào array
     if (findAnswer) {
       setChooseAnswer([
-        ...chooseAnswer.map((answer) =>
-          answer.id === userAnswer.id
+        ...chooseAnswer.map((question) =>
+          question.id === userAnswer.id
             ? {
-                ...answer,
+                ...question,
                 userAnswerId: event.target.value,
               }
-            : answer
+            : question
         ),
       ]);
     } else {
       setChooseAnswer((prevAnswer) => [...prevAnswer, userAnswer]);
     }
 
-    // setChooseAnswer((prev) => ({
-    //     ...prev,
-    //     [event.target.name]:
-    //       event.target.type === "checkbox"
-    //         ? event.target.checked
-    //         : event.target.value,
-    //   }));
+    /*
+    const userAnswer = {
+      question: ...exam[activeStep].question,
+      answerId: event.target.value,
+    };
+
+    console.log(activeStep);
+    console.log(chooseAnswer);
+    const pickedAnswer = chooseAnswer.find(
+      (obj) => (obj.question.id = userAnswer.question.id)
+    );
+    console.log(pickedAnswer);
+    if (pickedAnswer) {
+      setChooseAnswer([
+        ...chooseAnswer.map((obj) =>
+          obj.question.id === userAnswer.question.id
+            ? {
+                ...obj,
+                answerId: event.target.value,
+              }
+            : obj
+        ),
+      ]);
+    } else {
+      setChooseAnswer((prevAnswer) => [...prevAnswer, userAnswer]);
+    }
+    */
   };
 
   return (
@@ -204,21 +224,19 @@ function Quiz() {
         }}
       >
         <Grid item sm={12} md={12} lg={12}>
-          <Typography>
-            <div className="flex items-center gap-x-2 justify-end">
-              <IconClockCom className="text-tw-primary"></IconClockCom>
-              Time limit:{" "}
-              <span
-                className="font-medium"
-                style={
-                  examTime === 0
-                    ? { color: "red", fontWeight: "bold" }
-                    : { fontWeight: "bold" }
-                }
-              >
-                {convertSecondToTime(examTime)}
-              </span>
-            </div>
+          <Typography className="flex items-center gap-x-2 justify-end">
+            <IconClockCom className="text-tw-primary"></IconClockCom>
+            Time limit:{" "}
+            <span
+              className="font-medium"
+              style={
+                examTime === 0
+                  ? { color: "red", fontWeight: "bold" }
+                  : { fontWeight: "bold" }
+              }
+            >
+              {convertSecondToTime(examTime)}
+            </span>
           </Typography>
         </Grid>
         <Grid item sm={12} md={12} lg={12} mt="20px" mb="20px">

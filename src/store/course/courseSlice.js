@@ -32,7 +32,7 @@ const initialState = {
   // posts: [], //onSavePost
   notifs: [],
   notifToastList: [],
-  isRead: false,
+
   updatedNotif: [],
   rating: 0,
   userRating: 0,
@@ -314,7 +314,12 @@ const courseSlice = createSlice({
     }),
     onReadNotificationSuccess: (state, action) => ({
       ...state,
-      isRead: true,
+    }),
+    onReadAllNotification: (state, action) => ({
+      ...state,
+    }),
+    onReadAllNotificationSuccess: (state, action) => ({
+      ...state,
     }),
     onRemoveFromToastList: (state, action) => {
       let newNotif = [action.payload];
@@ -393,6 +398,8 @@ export const {
   onAddNotification,
   onReadNotification,
   onReadNotificationSuccess,
+  onReadAllNotification,
+  onReadAllNotificationSuccess,
   onRemoveFromToastList,
   onRemoveReplyInPost,
   onUpdateUserRating,
