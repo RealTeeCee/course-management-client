@@ -16,104 +16,82 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { convertSecondToTime } from "../../utils/helper";
 import { IconClockCom } from "../icon";
+import { DialogConfirm } from ".";
 
-const images = [
-  {
-    label: "San Francisco – Oakland Bay Bridge, United States",
-    imgPath:
-      "https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-  {
-    label: "Bird",
-    imgPath:
-      "https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-  {
-    label: "Bali, Indonesia",
-    imgPath:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250",
-  },
-  {
-    label: "Goč, Serbia",
-    imgPath:
-      "https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60",
-  },
-];
+// const exam = [
+//   {
+//     limitTime: 10,
+//     question: {
+//       id: 1,
+//       description: "Which of the following is related to Spring Framework?",
+//       point: 2.5,
+//       partId: 1,
+//     },
+//     answers: [
+//       {
+//         id: 2,
+//         description: "Beans",
+//         questionId: 1,
+//         correct: false,
+//       },
+//       {
+//         id: 3,
+//         description: "IoC",
+//         questionId: 1,
+//         correct: false,
+//       },
+//       {
+//         id: 4,
+//         description: "All of these",
+//         questionId: 1,
+//         correct: true,
+//       },
+//       {
+//         id: 1,
+//         description: "Container",
+//         questionId: 1,
+//         correct: false,
+//       },
+//     ],
+//   },
+//   {
+//     limitTime: 10,
+//     question: {
+//       id: 2,
+//       description: "Which of the following is not the Spring supported DI?",
+//       point: 2.5,
+//       partId: 1,
+//     },
+//     answers: [
+//       {
+//         id: 6,
+//         description: "Setter-based",
+//         questionId: 2,
+//         correct: false,
+//       },
+//       {
+//         id: 8,
+//         description: "All of these",
+//         questionId: 2,
+//         correct: false,
+//       },
+//       {
+//         id: 5,
+//         description: "Constructor-based",
+//         questionId: 2,
+//         correct: false,
+//       },
+//       {
+//         id: 7,
+//         description: "Destructor-based",
+//         questionId: 2,
+//         correct: true,
+//       },
+//     ],
+//   },
+// ];
 
-const exam = [
-  {
-    limitTime: 10,
-    question: {
-      id: 1,
-      description: "Which of the following is related to Spring Framework?",
-      point: 2.5,
-      partId: 1,
-    },
-    answers: [
-      {
-        id: 2,
-        description: "Beans",
-        questionId: 1,
-        correct: false,
-      },
-      {
-        id: 3,
-        description: "IoC",
-        questionId: 1,
-        correct: false,
-      },
-      {
-        id: 4,
-        description: "All of these",
-        questionId: 1,
-        correct: true,
-      },
-      {
-        id: 1,
-        description: "Container",
-        questionId: 1,
-        correct: false,
-      },
-    ],
-  },
-  {
-    limitTime: 10,
-    question: {
-      id: 2,
-      description: "Which of the following is not the Spring supported DI?",
-      point: 2.5,
-      partId: 1,
-    },
-    answers: [
-      {
-        id: 6,
-        description: "Setter-based",
-        questionId: 2,
-        correct: false,
-      },
-      {
-        id: 8,
-        description: "All of these",
-        questionId: 2,
-        correct: false,
-      },
-      {
-        id: 5,
-        description: "Constructor-based",
-        questionId: 2,
-        correct: false,
-      },
-      {
-        id: 7,
-        description: "Destructor-based",
-        questionId: 2,
-        correct: true,
-      },
-    ],
-  },
-];
-
-function Quiz() {
+function Quiz({ exam = [] }) {
   const maxSteps = exam.length;
   const answerOptions = ["A", "B", "C", "D"];
 
@@ -123,6 +101,7 @@ function Quiz() {
   const [chooseAnswer, setChooseAnswer] = useState([]);
   const [examTime, setExamTime] = useState(exam[0].limitTime);
   const [timerId, setTimerId] = useState(exam[0].limitTime);
+  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     const examTimeId = setInterval(() => {
@@ -213,8 +192,25 @@ function Quiz() {
     */
   };
 
+  const handleSubmit = () => {
+    setShowDialog(true);
+  };
+
+  const handleConfirm = () => {
+    setShowDialog(false);
+  };
+
   return (
     <Grid container sx={{ marginTop: "30px" }}>
+      <DialogConfirm
+        open={showDialog}
+        onClose={() => setShowDialog(!showDialog)}
+        closeContent={"CANCEL"}
+        onConfirm={handleConfirm}
+        confirmContent={"APPLY"}
+        title={"Confirm Exam"}
+        content={"Do you want to submit your exam?"}
+      ></DialogConfirm>
       <Paper
         square
         elevation={0}
@@ -316,6 +312,16 @@ function Quiz() {
               </Button>
             }
           />
+        </Grid>
+        <Grid item xs={12} sm={12} md={12}>
+          <Button
+            fullWidth
+            disabled={chooseAnswer.length === 0}
+            onClick={handleSubmit}
+            variant="contained"
+          >
+            SUBMIT
+          </Button>
         </Grid>
       </Paper>
     </Grid>

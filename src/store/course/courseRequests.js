@@ -75,3 +75,6 @@ export const requestUpdateUserRating = (data) => {
 export const requestLoadCourseRating = (courseId) => {
   return axiosBearer.get(`/enrollment/rating/${courseId}`);
 };
+export const requestGenerateCourseExam = (data) => {
+  return axiosBearer.post(`/exam-result`, data);
+};

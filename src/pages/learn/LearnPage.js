@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 import ReactPlayer from "react-player/lazy";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TabsAntCom } from "../../components/ant";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
-import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
+import { DialogNextVideo } from "../../components/mui";
+import RatingList from "../../components/mui/RatingList";
 import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
@@ -16,6 +17,7 @@ import {
   selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
+  onGenerateCourseExam,
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
@@ -28,7 +30,6 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
-import RatingList from "../../components/mui/RatingList";
 
 const LearnPage = () => {
   const {
@@ -61,6 +62,7 @@ const LearnPage = () => {
   const isLoadLearningStatus = useSelector(selectIsLoadLearningStatus);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const player = useRef();
 
   const { access_token } = getToken();
@@ -221,6 +223,12 @@ const LearnPage = () => {
 
     setIsEnd(false);
   };
+
+  const handleInitialExam = () => {
+    dispatch(onGenerateCourseExam({ courseId, userId }));
+    navigate("/exam");
+  };
+
   const course = data.find((c) => c.id === courseId);
   const tabItems = [
     {
@@ -267,7 +275,7 @@ const LearnPage = () => {
         nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
         onClose={handleCloseDialog}
-        onNext={handleNexVideo}
+        onNext={isFinal ? handleInitialExam : handleNexVideo}
         isFinal={isFinal}
       ></DialogNextVideo>
       <div className="video-container">

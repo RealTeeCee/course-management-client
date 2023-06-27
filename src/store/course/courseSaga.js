@@ -26,6 +26,7 @@ import {
   handleUpdateUserRating,
   handleLoadCourseRating,
   handleReadAllNotification,
+  handleGenerateCourseExam,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -33,6 +34,7 @@ import {
   onDeleteNote,
   onDeletePost,
   onFreeCourseLoading,
+  onGenerateCourseExam,
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
@@ -87,5 +89,6 @@ export default function* courseSaga() {
     takeLatest(onReadAllNotification.type, handleReadAllNotification),
     takeLatest(onUpdateUserRating.type, handleUpdateUserRating),
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
+    takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
   ]);
 }
