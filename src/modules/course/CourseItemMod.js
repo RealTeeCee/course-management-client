@@ -30,14 +30,16 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
             <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
               <div className="flex flex-col gap-y-1">
                 <h4
-                  className={`text-gray-600 text-base font-semibold ${
+                  className={`${
+                    course?.price === 0 ? "text-tw-light-pink" : "text-gray-600"
+                  } text-base font-semibold ${
                     course?.net_price > 0 ? "line-through" : ""
                   }`}
                 >
-                  ${course?.price}
+                  {course?.price === 0 ? "Free" : `$${course?.price}`}
                 </h4>
                 {course?.net_price > 0 && (
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-400 ">
                     Sale only{" "}
                     <strong className="text-tw-light-pink">
                       ${course?.net_price}
@@ -47,10 +49,10 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
               </div>
 
               <div className="flex flex-col gap-y-1">
-                <h4 className="text-gray-600 text-base font-semibold">
+                <h4 className="text-gray-600 text-base font-semibold text-right">
                   {course?.enrollmentCount}
                 </h4>
-                <span className="text-sm text-gray-400">Total Purchased</span>
+                <span className="text-sm text-gray-400">Total Enrolled</span>
               </div>
             </div>
           )}
