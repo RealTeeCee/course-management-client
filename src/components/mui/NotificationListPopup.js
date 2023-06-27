@@ -4,17 +4,18 @@ import { IconBellCom } from "../icon";
 import NotificationList from "./NotificationList";
 import { useSelector } from "react-redux";
 import { selectAllCourseState } from "../../store/course/courseSelector";
+import { useLocation } from "react-router-dom";
 
 const NotificationListPopup = () => {
   const [showNotif, setShowNotif] = useState(false);
   const { notifs } = useSelector(selectAllCourseState);
   const isReadNotif = notifs.filter((n) => n.read !== true);
+  const location = useLocation();
 
   useEffect(() => {
-    if (isReadNotif.length === 0) {
-      setShowNotif(false);
-    }
-  }, [isReadNotif.length]);
+    setShowNotif(false);
+  }, [location]);
+
   return (
     <ul className="nav-menus">
       <li className="profile-nav onhover-dropdown p-0 me-0 relative">

@@ -13,6 +13,7 @@ import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import ExamPage from "./pages/exam/ExamPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -345,6 +346,10 @@ function App() {
           ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
+
+        {/* ********* Examination ********* */}
+        <Route path="/exam/:slug" element={<ExamPage></ExamPage>}></Route>
+        {/* ********* End Examination ********* */}
       </Routes>
     </Suspense>
   );
