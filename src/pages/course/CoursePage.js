@@ -50,7 +50,6 @@ const CoursePage = () => {
                   <CourseItemMod
                     key={v4()}
                     isPaid={false}
-                    isMyCourse={false}
                     course={course}
                     url={`/courses/${course?.slug}`}
                   ></CourseItemMod>

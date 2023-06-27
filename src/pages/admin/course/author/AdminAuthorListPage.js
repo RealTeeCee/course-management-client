@@ -228,7 +228,7 @@ const AdminAuthorListPage = () => {
             },
             {
               title: "Course",
-              slug: "/admin/authors",
+              slug: "/admin/courses",
             },
             {
               title: "Author",

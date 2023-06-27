@@ -1,12 +1,20 @@
 import React from "react";
 import { RatingMuiCom } from "../../components/mui";
+import { AVATAR_DEFAULT } from "../../constants/config";
+import PropTypes from "prop-types";
+import { withErrorBoundary } from "react-error-boundary";
+import ErrorCom from "../../components/common/ErrorCom";
 
-const CourseAuthorMod = ({ authorName = "", rating = 5 }) => {
+const CourseAuthorMod = ({
+  authorName = "",
+  image = AVATAR_DEFAULT,
+  rating = 5,
+}) => {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-x-3">
         <img
-          srcSet="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+          srcSet={image}
           className="w-8 h-8 rounded-full object-cover"
           alt="User Avatar"
         />
@@ -19,4 +27,11 @@ const CourseAuthorMod = ({ authorName = "", rating = 5 }) => {
   );
 };
 
-export default CourseAuthorMod;
+CourseAuthorMod.propTypes = {
+  authorName: PropTypes.string,
+  image: PropTypes.string,
+  rating: PropTypes.number,
+};
+export default withErrorBoundary(CourseAuthorMod, {
+  FallbackComponent: ErrorCom,
+});

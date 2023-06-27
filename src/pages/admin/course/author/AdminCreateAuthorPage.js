@@ -49,14 +49,13 @@ const AdminCreateAuthorPage = () => {
 
   /********* Get Course ID from API  ********* */
   const handleSubmitForm = async (values) => {
-    console.log(values);
     try {
       setIsLoading(!isLoading);
       const res = await axiosBearer.post(`${API_AUTHOR_URL}`, {
         ...values,
       });
       toast.success(`${res.data.message}`);
-      navigate(`/admin/authors/authors`);
+      navigate(`/admin/courses/authors`);
     } catch (error) {
       showMessageError(error);
     } finally {

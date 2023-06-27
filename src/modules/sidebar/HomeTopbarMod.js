@@ -128,7 +128,7 @@ const HomeTopbarMod = () => {
               />
               <div className="media-body flex-1">
                 <span className="text-tw-primary font-medium font-tw-third">
-                  {user ? sliceText(user.name, 10) : "Welcome"}
+                  {user ? sliceText(user.name, 12) : "Welcome"}
                 </span>
                 <p className="mb-0 font-roboto flex items-center gap-x-2">
                   {user ? user.role : "Guest"}

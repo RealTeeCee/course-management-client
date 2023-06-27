@@ -6,12 +6,16 @@ import { sliceText } from "../../utils/helper";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
-const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
+const CourseItemMod = ({
+  url = "/",
+  isPaid = false,
+  course,
+}) => {
   return (
     <div className="c-card course-item col-md-4 col-xl-3">
       <Link to={url} className="tw-transition-all hover:opacity-80">
         <div className="c-card-header h-[158px]">
-          <ImageCom srcSet={course?.image} alt={course?.name}></ImageCom>
+          <ImageCom srcSet={course?.image} alt={course?.slug}></ImageCom>
         </div>
         <div className="c-card-body py-[1rem]">
           <CategoryTagMod icon={<IconFolderCom />}>
@@ -24,10 +28,8 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
 
           <CourseDescMod>{sliceText(course?.description, 45)}</CourseDescMod>
 
-          {isMyCourse && <p>Progress: {course?.progress}%</p>}
-
-          {!isPaid && (
-            <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
+          <div className="c-meta flex items-start justify-between gap-x-5 mb-5">
+            {!isPaid ? (
               <div className="flex flex-col gap-y-1">
                 <h4
                   className={`${
@@ -47,18 +49,21 @@ const CourseItemMod = ({ url = "/", isPaid = false, isMyCourse, course }) => {
                   </span>
                 )}
               </div>
+            ) : (
+              <p>Progress: {course?.progress}%</p>
+            )}
 
-              <div className="flex flex-col gap-y-1">
-                <h4 className="text-gray-600 text-base font-semibold text-right">
-                  {course?.enrollmentCount}
-                </h4>
-                <span className="text-sm text-gray-400">Total Enrolled</span>
-              </div>
+            <div className="flex flex-col gap-y-1">
+              <h4 className="text-gray-600 text-base font-semibold text-right">
+                {course?.enrollmentCount}
+              </h4>
+              <span className="text-sm text-gray-400">Total Enrolled</span>
             </div>
-          )}
+          </div>
 
           <CourseAuthorMod
-            authorName="FPT Aptech"
+            authorName={course.author_name}
+            image={course.author_image}
             rating={course?.rating}
           ></CourseAuthorMod>
         </div>

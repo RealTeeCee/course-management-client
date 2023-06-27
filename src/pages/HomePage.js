@@ -20,7 +20,6 @@ import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 
 const HomePage = () => {
-  // const axiosPrivate = useAxiosPrivate();
   const dispatch = useDispatch();
   const {
     startIndex: startIndexBestSeller,
@@ -56,7 +55,7 @@ const HomePage = () => {
           className="!sticky top-0"
           autoplay
         >
-          {bestSellerCourse.slice(0, 4).map((c) => (
+          {bestSellerCourse?.slice(0, 4).map((c) => (
             <SwiperSlide key={c.id}>
               <div className="w-full h-[300px] rounded-lg relative">
                 <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
@@ -119,7 +118,7 @@ const HomePage = () => {
         </HeadingH2Com>
         <GapYCom className="mb-3"></GapYCom>
 
-        {bestSellerCourse && bestSellerCourse.length > 0 ? (
+        {bestSellerCourse?.length > 0 ? (
           <>
             <CourseGridMod>
               {bestSellerCourse.map((course, index) => {
@@ -138,17 +137,19 @@ const HomePage = () => {
                 return null;
               })}
             </CourseGridMod>
-            <Pagination
-              current={currentPageBestSeller}
-              defaultPageSize={4}
-              total={bestSellerCourse?.length}
-              onChange={handleChangePageBestSeller}
-              className="mt-[1rem] text-end"
-            />
+            {bestSellerCourse?.length > LIMIT_HOME_PAGE && (
+              <Pagination
+                current={currentPageBestSeller}
+                defaultPageSize={LIMIT_HOME_PAGE}
+                total={bestSellerCourse?.length}
+                onChange={handleChangePageBestSeller}
+                className="mt-[1rem] text-end"
+              />
+            )}
           </>
         ) : (
           <HeadingH2Com className="text-black text-4xl text-center py-10">
-            No data
+            Empty best selling courses
           </HeadingH2Com>
         )}
 
@@ -157,26 +158,34 @@ const HomePage = () => {
         <GapYCom className="mb-3"></GapYCom>
 
         <CourseGridMod>
-          {freeCourse.map((course, index) => {
-            if (index >= startIndexFreeCourse && index < endIndexFreeCourse) {
-              return (
-                <CourseItemMod
-                  key={v4()}
-                  url={`/courses/${course?.slug}`}
-                  course={course}
-                ></CourseItemMod>
-              );
-            }
-            return null;
-          })}
+          {freeCourse?.length > 0 ? (
+            freeCourse.map((course, index) => {
+              if (index >= startIndexFreeCourse && index < endIndexFreeCourse) {
+                return (
+                  <CourseItemMod
+                    key={v4()}
+                    url={`/courses/${course?.slug}`}
+                    course={course}
+                  ></CourseItemMod>
+                );
+              }
+              return null;
+            })
+          ) : (
+            <HeadingH2Com className="text-black text-4xl text-center py-10">
+              Empty free courses
+            </HeadingH2Com>
+          )}
         </CourseGridMod>
-        <Pagination
-          current={currentPageFreeCourse}
-          defaultPageSize={4}
-          total={freeCourse?.length}
-          onChange={handleChangePageFreeCourse}
-          className="mt-[1rem] text-end"
-        />
+        {freeCourse?.length > LIMIT_HOME_PAGE && (
+          <Pagination
+            current={currentPageFreeCourse}
+            defaultPageSize={LIMIT_HOME_PAGE}
+            total={freeCourse?.length}
+            onChange={handleChangePageFreeCourse}
+            className="mt-[1rem] text-end"
+          />
+        )}
       </div>
     </>
   );
