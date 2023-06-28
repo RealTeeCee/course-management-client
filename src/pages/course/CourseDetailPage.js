@@ -1,7 +1,7 @@
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
@@ -33,7 +33,6 @@ import {
   convertSecondToDiffForHumans,
   convertStrToSlug,
 } from "../../utils/helper";
-import ErrorPage from "../errors/ErrorPage";
 
 // const sectionItems = [
 //   {
@@ -80,11 +79,9 @@ const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const { learning, sectionId } = useSelector(selectAllCourseState);
-  const { courseId, enrollId, isEnrolled } = useSelector(
-    selectEnrollIdAndCourseId
-  );
-  const [enrollIdState, setEnrollIdState] = useState(0);
+  const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
 
   const relatedCourseLimitPage = 4;
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
@@ -109,15 +106,10 @@ const CourseDetailPage = () => {
   }, [user?.id, courseBySlug?.id]);
 
   useEffect(() => {
-    setEnrollIdState(enrollId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enrollId]);
-
-  useEffect(() => {
-    if (enrollIdState > 0 && isEnrolled) {
+    if (isEnrolled && user?.role === "USER")
       navigate(`/learn/${courseBySlug?.slug}`);
-    }
-  }, [enrollIdState, isEnrolled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnrolled]);
 
   const newRelatedCourse = relatedCourse.filter(
     (course) => course.id !== courseBySlug?.id

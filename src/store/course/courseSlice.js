@@ -99,7 +99,6 @@ const courseSlice = createSlice({
     }),
     onRelatedCourseLoading: (state, action) => ({
       ...state,
-      isEnrolled: false,
       errorMessage: null,
     }),
     onRelatedCourseSuccess: (state, action) => ({
@@ -178,19 +177,11 @@ const courseSlice = createSlice({
       isEnrolled: false,
       errorMessage: null,
     }),
-    onGetEnrollIdSuccess: (state, action) => {
-      if (action.payload > 0)
-        return {
-          ...state,
-          isEnrolled: true,
-          enrollId: action.payload,
-        };
-      return {
-        ...state,
-        isEnrolled: false,
-        enrollId: action.payload,
-      };
-    },
+    onGetEnrollIdSuccess: (state, action) => ({
+      ...state,
+      isEnrolled: action.payload > 0 ? true : false,
+      enrollId: action.payload,
+    }),
     onGetLearning: (state, action) => ({
       ...state,
       errorMessage: null,
