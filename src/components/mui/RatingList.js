@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from "react";
-import RatingMuiCom from "./RatingMuiCom";
 import { Grid, Rating, Stack, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import CircularProgress, {
-  circularProgressClasses,
-} from "@mui/material/CircularProgress";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
-import GapYCom from "../common/GapYCom";
+import { styled } from "@mui/material/styles";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../../store/auth/authSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onLoadCourseRating,
   onUpdateUserRating,
 } from "../../store/course/courseSlice";
-import { selectUser } from "../../store/auth/authSelector";
-import { selectAllCourseState } from "../../store/course/courseSelector";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,

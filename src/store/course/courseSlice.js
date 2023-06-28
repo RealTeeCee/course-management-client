@@ -37,6 +37,8 @@ const initialState = {
   rating: 0,
   userRating: 0,
   courseRating: [],
+  examination: [],
+  finishExam: null,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -164,7 +166,7 @@ const courseSlice = createSlice({
     onManualSelectedLessonSuccess: (state, action) => ({
       ...state,
       resumePoint: action.payload.resumePoint,
-      tracking: action.payload,
+      tracking: action.payload.lessonId === 0 ? null : action.payload,
       isReady: true,
       isReload: true,
       isSelectLessonManual: true,
@@ -213,6 +215,7 @@ const courseSlice = createSlice({
     }),
     onSaveTrackingVideoSuccess: (state, action) => ({
       ...state,
+      tracking: action.payload,
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
@@ -343,6 +346,20 @@ const courseSlice = createSlice({
       ...state,
       courseRating: action.payload,
     }),
+    onGenerateCourseExam: (state, action) => ({
+      ...state,
+    }),
+    onGenerateCourseExamSuccess: (state, action) => ({
+      ...state,
+      examination: action.payload,
+    }),
+    onFinishExam: (state, action) => ({
+      ...state,
+    }),
+    onFinishExamSuccess: (state, action) => ({
+      ...state,
+      finishExam: action.payload,
+    }),
   },
 });
 
@@ -406,6 +423,10 @@ export const {
   onUpdateUserRatingSuccess,
   onLoadCourseRating,
   onLoadCourseRatingSuccess,
+  onGenerateCourseExam,
+  onGenerateCourseExamSuccess,
+  onFinishExam,
+  onFinishExamSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
