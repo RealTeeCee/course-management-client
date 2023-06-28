@@ -78,3 +78,6 @@ export const requestLoadCourseRating = (courseId) => {
 export const requestGenerateCourseExam = (data) => {
   return axiosBearer.post(`/exam-result`, data);
 };
+export const requestFinishCourseExam = (data) => {
+  return axiosBearer.post(`/exam-result/finish-exam`, data);
+};

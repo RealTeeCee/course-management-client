@@ -7,6 +7,7 @@ import {
   requestDeletePost,
   requestDeleteReply,
   requestEnrollId,
+  requestFinishCourseExam,
   requestFreeCourse,
   requestGenerateCourseExam,
   requestLearning,
@@ -33,6 +34,7 @@ import {
   onCourseFailed,
   onCourseSuccess,
   onDeleteNoteSuccess,
+  onFinishExamSuccess,
   onFreeCourseSuccess,
   onGenerateCourseExamSuccess,
   onGetEnrollIdSuccess,
@@ -369,6 +371,18 @@ function* handleGenerateCourseExam({ payload }) {
     showMessageError(error);
   }
 }
+function* handleFinishExam({ payload }) {
+  try {
+    const res = yield call(requestFinishCourseExam, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onFinishExamSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
 
 export {
   handleLoadNote,
@@ -398,4 +412,5 @@ export {
   handleUpdateUserRating,
   handleLoadCourseRating,
   handleGenerateCourseExam,
+  handleFinishExam,
 };

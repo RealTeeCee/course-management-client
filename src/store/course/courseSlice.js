@@ -38,6 +38,7 @@ const initialState = {
   userRating: 0,
   courseRating: [],
   examination: [],
+  finishExam: null,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -351,6 +352,13 @@ const courseSlice = createSlice({
       ...state,
       examination: action.payload,
     }),
+    onFinishExam: (state, action) => ({
+      ...state,
+    }),
+    onFinishExamSuccess: (state, action) => ({
+      ...state,
+      finishExam: action.payload,
+    }),
   },
 });
 
@@ -416,6 +424,8 @@ export const {
   onLoadCourseRatingSuccess,
   onGenerateCourseExam,
   onGenerateCourseExamSuccess,
+  onFinishExam,
+  onFinishExamSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
