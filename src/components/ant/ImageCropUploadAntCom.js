@@ -2,10 +2,8 @@ import { Upload } from "antd";
 import ImgCrop from "antd-img-crop";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { MESSAGE_UPLOAD_IMAGE_FAILED } from "../../constants/config";
 import { IMG_BB_URL } from "../../constants/endpoint";
-import { showMessageError } from "../../utils/helper";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
@@ -18,6 +16,7 @@ const ImageCropUploadAntCom = ({
   children,
   editImage,
   aspect = 16 / 9,
+  isWidthFull = false,
   ...rest
 }) => {
   // const [fileList, setFileList] = useState([
@@ -86,6 +85,16 @@ const ImageCropUploadAntCom = ({
 
   return (
     <>
+      <style>
+        {`
+          .custom-upload .ant-upload-select {
+            width: 100% !important;
+          }
+          .custom-upload .ant-upload-list-item-container {
+            width: 100% !important;
+          }
+        `}
+      </style>
       <ImgCrop rotationSlider size="large" aspect={aspect}>
         <Upload
           customRequest={customUploadRequest}
@@ -94,7 +103,7 @@ const ImageCropUploadAntCom = ({
           onChange={onChange}
           onRemove={onRemove}
           onPreview={onPreview}
-          className="custom-upload block w-full"
+          className={`${isWidthFull && "custom-upload"}  block w-full`}
         >
           {fileList.length < 1 && "Drag & Drop or click to upload"}
         </Upload>

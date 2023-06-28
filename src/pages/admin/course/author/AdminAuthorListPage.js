@@ -378,7 +378,7 @@ const AdminAuthorListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-12">
+                <div className="col-sm-12 text-center">
                   <LabelCom htmlFor="image" isRequired>
                     Avatar
                   </LabelCom>
