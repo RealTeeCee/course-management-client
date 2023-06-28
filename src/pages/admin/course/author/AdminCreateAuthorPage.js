@@ -123,6 +123,7 @@ const AdminCreateAuthorPage = () => {
                         name="image"
                         onSetValue={setValue}
                         errorMsg={errors.image?.message}
+                        aspect={4 / 4}
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
