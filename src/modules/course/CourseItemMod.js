@@ -2,15 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IconFolderCom } from "../../components/icon";
 import { ImageCom } from "../../components/image";
-import { sliceText } from "../../utils/helper";
+import { convertIntToStrMoney, sliceText } from "../../utils/helper";
 import { CategoryTagMod } from "../category";
 import { CourseAuthorMod, CourseDescMod, CourseTitleMod } from "../course";
 
-const CourseItemMod = ({
-  url = "/",
-  isPaid = false,
-  course,
-}) => {
+const CourseItemMod = ({ url = "/", isPaid = false, course }) => {
   return (
     <div className="c-card course-item col-md-4 col-xl-3">
       <Link to={url} className="tw-transition-all hover:opacity-80">
@@ -38,13 +34,15 @@ const CourseItemMod = ({
                     course?.net_price > 0 ? "line-through" : ""
                   }`}
                 >
-                  {course?.price === 0 ? "Free" : `$${course?.price}`}
+                  {course?.price === 0
+                    ? "Free"
+                    : `$${convertIntToStrMoney(course?.price)}`}
                 </h4>
                 {course?.net_price > 0 && (
                   <span className="text-sm text-gray-400 ">
                     Sale only{" "}
                     <strong className="text-tw-light-pink">
-                      ${course?.net_price}
+                      ${convertIntToStrMoney(course?.net_price)}
                     </strong>
                   </span>
                 )}

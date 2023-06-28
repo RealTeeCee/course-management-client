@@ -9,6 +9,7 @@ const initialState = {
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
+  isEnrolled: false,
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
   bestSellerCourse: [],
@@ -32,7 +33,6 @@ const initialState = {
   // posts: [], //onSavePost
   notifs: [],
   notifToastList: [],
-
   updatedNotif: [],
   rating: 0,
   userRating: 0,
@@ -70,6 +70,7 @@ const courseSlice = createSlice({
     }),
     onCourseLoading: (state, action) => ({
       ...state,
+      isEnrolled: false,
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
@@ -173,10 +174,12 @@ const courseSlice = createSlice({
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
+      isEnrolled: false,
       errorMessage: null,
     }),
     onGetEnrollIdSuccess: (state, action) => ({
       ...state,
+      isEnrolled: action.payload > 0 ? true : false,
       enrollId: action.payload,
     }),
     onGetLearning: (state, action) => ({

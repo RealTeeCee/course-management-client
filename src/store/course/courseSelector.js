@@ -37,6 +37,7 @@ export const selectEnrollIdAndCourseId = createSelector(
   (courseSlice) => ({
     enrollId: courseSlice.enrollId,
     courseId: courseSlice.courseId,
+    isEnrolled: courseSlice.isEnrolled
   })
 );
 
