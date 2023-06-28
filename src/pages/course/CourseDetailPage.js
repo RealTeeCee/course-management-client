@@ -30,56 +30,50 @@ import {
   convertStrToSlug,
 } from "../../utils/helper";
 
-const sectionItems = [
-  {
-    id: 1,
-    name: "Introduce",
-  },
-  {
-    id: 2,
-    name: "How to install PHP",
-  },
-];
+// const sectionItems = [
+//   {
+//     id: 1,
+//     name: "Introduce",
+//   },
+//   {
+//     id: 2,
+//     name: "How to install PHP",
+//   },
+// ];
 
-const lessionItems = [
-  {
-    id: 1,
-    name: "What is PHP",
-    duration: 178,
-    sectionId: 1,
-  },
-  {
-    id: 2,
-    name: "What is Laravel",
-    duration: 358,
-    sectionId: 1,
-  },
-  {
-    id: 3,
-    name: "Install XamPP",
-    duration: 138,
-    sectionId: 2,
-  },
-  {
-    id: 4,
-    name: "Install phpMyAdmin",
-    duration: 378,
-    sectionId: 2,
-  },
-];
-
-// const sessionIds = sectionItems.map((item) => String(item.id));
-// const totalLession = 2;
+// const lessionItems = [
+//   {
+//     id: 1,
+//     name: "What is PHP",
+//     duration: 178,
+//     sectionId: 1,
+//   },
+//   {
+//     id: 2,
+//     name: "What is Laravel",
+//     duration: 358,
+//     sectionId: 1,
+//   },
+//   {
+//     id: 3,
+//     name: "Install XamPP",
+//     duration: 138,
+//     sectionId: 2,
+//   },
+//   {
+//     id: 4,
+//     name: "Install phpMyAdmin",
+//     duration: 378,
+//     sectionId: 2,
+//   },
+// ];
 
 const CourseDetailPage = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
-  // const [openKeys, setOpenKeys] = useState(["1"]);
-  // const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
   const { courseId, learning, sectionId } = useSelector(selectAllCourseState);
 
-  console.log("learning: ", learning);
   const relatedCourseLimitPage = 4;
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
     1,
@@ -89,7 +83,9 @@ const CourseDetailPage = () => {
   const { data, relatedCourse } = useSelector((state) => state.course);
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
-  console.log("courseBySlug: ", courseBySlug);
+  const newRelatedCourse = relatedCourse.filter(
+    (course) => course.id !== courseBySlug.id
+  );
 
   useEffect(() => {
     if (courseBySlug?.id) {
@@ -112,9 +108,7 @@ const CourseDetailPage = () => {
   );
 
   useEffect(() => {
-    if (sectionId) {
-      setOpenKeys(sectionId);
-    }
+    if (sectionId) setOpenKeys(sectionId);
   }, [sectionId]);
 
   const handleChangeCollapse = (keys) => {
@@ -126,15 +120,6 @@ const CourseDetailPage = () => {
       setIsOpen(false);
     }
   };
-
-  // const handleChangeCollapse = (keys) => {
-  //   setOpenKeys(keys);
-  //   if (keys.length === sectionItems.length) {
-  //     setIsOpen(true);
-  //   } else {
-  //     setIsOpen(false);
-  //   }
-  // };
 
   const handleToggleOpen = () => {
     setIsOpen(!isOpen);
@@ -240,13 +225,6 @@ const CourseDetailPage = () => {
                     {isOpen ? "Close all" : "Open All"}
                   </div>
                 </div>
-                {/* <CollapseAntCom
-                  isOpen={isOpen}
-                  onChange={handleChangeCollapse}
-                  openKeys={openKeys}
-                  parentItems={sectionItems}
-                  childItems={lessionItems}
-                ></CollapseAntCom> */}
                 <CollapseAntCom
                   isOpen={isOpen}
                   onChange={handleChangeCollapse}
@@ -356,25 +334,23 @@ const CourseDetailPage = () => {
         {/* Free Course */}
         <HeadingH2Com
           className="text-tw-primary"
-          number={relatedCourse && relatedCourse.length}
+          number={newRelatedCourse && newRelatedCourse.length}
         >
           Related Course
         </HeadingH2Com>
         <GapYCom></GapYCom>
         <CourseGridMod>
-          {relatedCourse && relatedCourse.length > 0 ? (
-            relatedCourse.map((course, index) => {
+          {newRelatedCourse && newRelatedCourse.length > 0 ? (
+            newRelatedCourse.map((course, index) => {
               if (index >= startIndex && index < endIndex) {
-                if (course.id !== courseBySlug.id) {
-                  return (
-                    <CourseItemMod
-                      key={v4()}
-                      isPaid={false}
-                      course={course}
-                      url={`/courses/${course?.slug}`}
-                    ></CourseItemMod>
-                  );
-                }
+                return (
+                  <CourseItemMod
+                    key={v4()}
+                    isPaid={false}
+                    course={course}
+                    url={`/courses/${course?.slug}`}
+                  ></CourseItemMod>
+                );
               }
               return null;
             })
@@ -384,11 +360,11 @@ const CourseDetailPage = () => {
             </HeadingH2Com>
           )}
         </CourseGridMod>
-        {relatedCourse.length > relatedCourseLimitPage && (
+        {newRelatedCourse.length > relatedCourseLimitPage && (
           <Pagination
             current={currentPage}
             defaultPageSize={relatedCourseLimitPage}
-            total={relatedCourse.length}
+            total={newRelatedCourse.length}
             onChange={handleChangePage}
             className="mt-[1rem] text-end"
           />

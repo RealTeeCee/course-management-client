@@ -19,7 +19,12 @@ const CourseAuthorMod = ({
           alt="User Avatar"
         />
         <p className="text-xs text-gray-400">
-          By <span className="text-gray-600 font-semibold">{authorName}</span>
+          {authorName && (
+            <>
+              By{" "}
+              <span className="text-gray-600 font-semibold">{authorName}</span>
+            </>
+          )}
         </p>
       </div>
       <RatingMuiCom defaultValue={rating} readOnly></RatingMuiCom>

@@ -6,7 +6,11 @@ import { v4 } from "uuid";
 import { ButtonCom } from "../components/button";
 import GapYCom from "../components/common/GapYCom";
 import { HeadingH2Com } from "../components/heading";
-import { categoryItems, LIMIT_HOME_PAGE } from "../constants/config";
+import {
+  categoryItems,
+  IMAGE_DEFAULT,
+  LIMIT_HOME_PAGE,
+} from "../constants/config";
 import usePagination from "../hooks/usePagination";
 import { CategoryGridMod, CategoryItemMod } from "../modules/category";
 import { CourseGridMod, CourseItemMod } from "../modules/course";
@@ -55,48 +59,66 @@ const HomePage = () => {
           className="!sticky top-0"
           autoplay
         >
-          {bestSellerCourse?.slice(0, 4).map((c) => (
-            <SwiperSlide key={c.id}>
+          {bestSellerCourse?.length > 0 ? (
+            bestSellerCourse?.slice(0, 4).map((c) => (
+              <SwiperSlide key={c.id}>
+                <div className="w-full h-[300px] rounded-lg relative">
+                  <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
+                  <img
+                    src={c.image}
+                    alt={c.category_name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <div className="absolute left-5 bottom-10 w-full text-white">
+                    <h2 className="font-bold text-3xl mb-[.75rem] w-[30rem]">
+                      {sliceText(c.name, 50)}
+                    </h2>
+                    <p className="mb-[.75rem] text-xl">
+                      Only{" "}
+                      <span className="text-tw-light-pink font-bold">
+                        ${c.net_price}
+                      </span>
+                    </p>
+                    <div className="flex items-center gap-x-3 mb-8">
+                      {c.tags
+                        .split(",")
+                        .slice(0, 3)
+                        .map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-4 py-2 border border-white rounded-md"
+                          >
+                            {tag.toUpperCase()}
+                          </span>
+                        ))}
+                    </div>
+                    <ButtonCom
+                      className="font-tw-secondary font-semibold"
+                      onClick={() => navigate(`/courses/${c.slug}`)}
+                    >
+                      See more
+                    </ButtonCom>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide>
               <div className="w-full h-[300px] rounded-lg relative">
                 <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
                 <img
-                  src={c.image}
-                  alt={c.category_name}
+                  src={IMAGE_DEFAULT}
+                  alt="Empty Slide"
                   className="w-full h-full object-cover rounded-lg"
                 />
-                <div className="absolute left-5 bottom-10 w-full text-white">
-                  <h2 className="font-bold text-3xl mb-[.75rem] w-[30rem]">
-                    {sliceText(c.name, 50)}
+                <div className="absolute left-5 bottom-1/2 w-full text-white">
+                  <h2 className="font-bold text-3xl w-[30rem]">
+                    Empty best selling courses
                   </h2>
-                  <p className="mb-[.75rem] text-xl">
-                    Only{" "}
-                    <span className="text-tw-light-pink font-bold">
-                      ${c.net_price}
-                    </span>
-                  </p>
-                  <div className="flex items-center gap-x-3 mb-8">
-                    {c.tags
-                      .split(",")
-                      .slice(0, 3)
-                      .map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-4 py-2 border border-white rounded-md"
-                        >
-                          {tag.toUpperCase()}
-                        </span>
-                      ))}
-                  </div>
-                  <ButtonCom
-                    className="font-tw-secondary font-semibold"
-                    onClick={() => navigate(`/courses/${c.slug}`)}
-                  >
-                    See more
-                  </ButtonCom>
                 </div>
               </div>
             </SwiperSlide>
-          ))}
+          )}
         </Swiper>
       </div>
 
