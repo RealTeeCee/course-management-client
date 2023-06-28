@@ -17,6 +17,7 @@ const ImageCropUploadAntCom = ({
   errorMsg = "",
   children,
   editImage,
+  aspect = 16 / 9,
   ...rest
 }) => {
   // const [fileList, setFileList] = useState([
@@ -85,7 +86,7 @@ const ImageCropUploadAntCom = ({
 
   return (
     <>
-      <ImgCrop rotationSlider>
+      <ImgCrop rotationSlider size="large" aspect={aspect}>
         <Upload
           customRequest={customUploadRequest}
           listType="picture-card"
@@ -109,6 +110,7 @@ ImageCropUploadAntCom.propTypes = {
   editImage: PropTypes.array, // editImage = []
   onSetValue: PropTypes.func,
   name: PropTypes.string,
+  aspect: PropTypes.oneOf([16 / 9, 3 / 2, 4 / 3, 2 / 1, 3 / 4, 4 / 4]),
   type: PropTypes.string,
   errorMsg: PropTypes.string,
   children: PropTypes.node,

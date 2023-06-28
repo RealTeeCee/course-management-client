@@ -6,8 +6,12 @@ import { axiosBearer } from "../../../../api/axiosInstance";
 import { BreadcrumbCom } from "../../../../components/breadcrumb";
 import { ButtonCom } from "../../../../components/button";
 import GapYCom from "../../../../components/common/GapYCom";
-import { HeadingH1Com } from "../../../../components/heading";
-import { IconEditCom, IconTrashCom } from "../../../../components/icon";
+import { HeadingFormH5Com, HeadingH1Com } from "../../../../components/heading";
+import {
+  IconEditCom,
+  IconRemoveCom,
+  IconTrashCom,
+} from "../../../../components/icon";
 import { TableCom } from "../../../../components/table";
 import { API_AUTHOR_URL } from "../../../../constants/endpoint";
 import { showMessageError } from "../../../../utils/helper";
@@ -21,6 +25,11 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../../constants/config";
+import { v4 } from "uuid";
+import { InputCom } from "../../../../components/input";
+import { LabelCom } from "../../../../components/label";
+import ReactModal from "react-modal";
+import { ImageCropUploadAntCom } from "../../../../components/ant";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -38,9 +47,11 @@ const AdminAuthorListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+
   const [authors, setAuthors] = useState([]);
   const [filterAuthor, setFilterAuthor] = useState([]);
   const [search, setSearch] = useState("");
+  const [image, setImage] = useState([]);
 
   // More Action Menu
   const dropdownItems = [
@@ -94,8 +105,7 @@ const AdminAuthorListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              // setIsFetching(true);
-              // handleEdit(row.id);
+              handleEdit(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -161,6 +171,27 @@ const AdminAuthorListPage = () => {
     }
   };
 
+  const getAuthorById = async (authorId) => {
+    try {
+      const res = await axiosBearer.get(`${API_AUTHOR_URL}/${authorId}`);
+      reset(res.data);
+
+      const resImage = res.data.image;
+      const imgObj = [
+        {
+          uid: v4(),
+          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
+          status: "done",
+          url: resImage,
+        },
+      ];
+
+      setImage(imgObj);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getAuthors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -216,6 +247,45 @@ const AdminAuthorListPage = () => {
       }
     });
   };
+
+  //********* Update Area *********
+  const handleEdit = async (authorId) => {
+    try {
+      setIsFetching(true);
+      await getAuthorById(authorId);
+      setIsOpen(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const handleSubmitForm = async (values) => {
+    try {
+      setIsLoading(!isLoading);
+      const res = await axiosBearer.post(`${API_AUTHOR_URL}`, values);
+      // Update sections State
+      setAuthors((prev) => {
+        const newData = prev.map((item) => {
+          if (item.id === values.id) {
+            return {
+              ...item,
+              ...values,
+            };
+          }
+          return item;
+        });
+        return newData;
+      });
+      toast.success(`${res.data.message}`);
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
+    }
+  };
   return (
     <>
       <div className="flex justify-between items-center">
@@ -258,6 +328,86 @@ const AdminAuthorListPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Edit */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Section</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitForm)}
+          >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Author hidden id"
+            ></InputCom>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="name" isRequired>
+                    Author Name
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="name"
+                    register={register}
+                    placeholder="Input author name"
+                    errorMsg={errors.name?.message}
+                    defaultValue={watch("name")}
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="image" isRequired>
+                    Avatar
+                  </LabelCom>
+                  <div className="w-full">
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                      editImage={image}
+                      aspect={4 / 4}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </>
   );
 };

@@ -316,7 +316,11 @@ const AdminCourseListPage = () => {
       setCategorySelected(res.data.category_id);
       setAuthorSelected(res.data.author_id);
       setTagsSelected(res.data.tags.split(","));
-      setAchievementSelected(res.data.achievements.split(","));
+      if (res.data.achievements !== "") {
+        setAchievementSelected(res.data.achievements.split(","));
+      } else {
+        setAchievementSelected([]);
+      }
 
       const resImage = res.data.image;
       const imgObj = [
@@ -531,10 +535,13 @@ const AdminCourseListPage = () => {
             .split(",")
             .map((tag) => tag.trim())
             .join(","),
-          achievements: achievements
-            .split(",")
-            .map((achievement) => achievement.trim())
-            .join(","),
+          achievements:
+            achievements !== null
+              ? achievements
+                  .split(",")
+                  .map((achievement) => achievement.trim())
+                  .join(",")
+              : "",
         })
       );
 
@@ -919,31 +926,9 @@ const AdminCourseListPage = () => {
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
-              {/* <div className="checkbox p-0">
-                  <input
-                    id="dafault-checkbox"
-                    type="checkbox"
-                    data-bs-original-title=""
-                    title=""
-                  />
-                  <label className="mb-0" htmlFor="dafault-checkbox">
-                    Remember my preference
-                  </label>
-                </div> */}
               <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="description">Description</LabelCom>
-                  {/* <ReactQuill
-                    modules={modules}
-                    theme="snow"
-                    value={description}
-                    onChange={(description) => {
-                      setValue("description", description);
-                      setDescription(description);
-                    }}
-                    placeholder="Describe your course ..."
-                    className="h-36"
-                  ></ReactQuill> */}
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
@@ -959,9 +944,6 @@ const AdminCourseListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
             </div>
           </form>
         </div>

@@ -359,6 +359,7 @@ const UserProfilePage = () => {
                       onSetValue={setValue}
                       errorMsg={errors.imageUrl?.message}
                       editImage={image}
+                      aspect={4 / 4}
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"

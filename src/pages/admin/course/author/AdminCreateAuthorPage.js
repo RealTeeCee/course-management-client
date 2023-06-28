@@ -114,11 +114,11 @@ const AdminCreateAuthorPage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  <div className="col-sm-6 offset-5 relative">
+                  <div className="col-sm-12 text-center">
                     <LabelCom htmlFor="image" isRequired>
                       Avatar
                     </LabelCom>
-                    <div className="absolute w-full">
+                    <div className="w-full">
                       <ImageCropUploadAntCom
                         name="image"
                         onSetValue={setValue}
