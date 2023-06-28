@@ -189,7 +189,7 @@ function* handleOnSaveTrackingVideo({ payload }) {
     const res = yield call(requestSaveTrackingVideo, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingVideoSuccess());
+      yield put(onSaveTrackingVideoSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);

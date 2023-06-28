@@ -166,7 +166,7 @@ const courseSlice = createSlice({
     onManualSelectedLessonSuccess: (state, action) => ({
       ...state,
       resumePoint: action.payload.resumePoint,
-      tracking: action.payload,
+      tracking: action.payload.lessonId === 0 ? null : action.payload,
       isReady: true,
       isReload: true,
       isSelectLessonManual: true,
@@ -215,6 +215,7 @@ const courseSlice = createSlice({
     }),
     onSaveTrackingVideoSuccess: (state, action) => ({
       ...state,
+      tracking: action.payload,
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
