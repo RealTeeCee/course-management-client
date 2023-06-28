@@ -22,9 +22,7 @@ export function convertStrMoneyToInt(strMoney) {
 
 // number: 1000000 - Output: 1,000,000
 export function convertIntToStrMoney(number) {
-  if (number === null) {
-    number = 0;
-  }
+  if (number === null || typeof number === "undefined") number = 0;
   const numberString = number.toString();
   const numberWithoutCommas = numberString.replace(/,/g, "");
   const formatter = new Intl.NumberFormat("en-US");
@@ -133,6 +131,7 @@ export function sliceText(text = "", maxLength = 50, loadMore = "...") {
 
 // str = "Graphic Design" - Output = "graphic-design"
 export function convertStrToSlug(str) {
+  if (typeof str === "undefined") return str;
   str = str.trim();
   str = str.toLowerCase();
   str = str.replace(/\s+/g, "-");

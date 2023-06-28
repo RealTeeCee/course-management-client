@@ -1,7 +1,7 @@
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
@@ -16,11 +16,15 @@ import {
   IconStarCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
-import { categoryItems } from "../../constants/config";
+import { categoryItems, NOT_FOUND_URL } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
-import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
+  selectAllCourseState,
+  selectEnrollIdAndCourseId,
+} from "../../store/course/courseSelector";
+import {
+  onGetEnrollId,
   onGetLearning,
   onRelatedCourseLoading,
 } from "../../store/course/courseSlice";
@@ -29,6 +33,7 @@ import {
   convertSecondToDiffForHumans,
   convertStrToSlug,
 } from "../../utils/helper";
+import ErrorPage from "../errors/ErrorPage";
 
 // const sectionItems = [
 //   {
@@ -70,9 +75,16 @@ import {
 
 const CourseDetailPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
-  const { courseId, learning, sectionId } = useSelector(selectAllCourseState);
+  const { user } = useSelector((state) => state.auth);
+  const { learning, sectionId } = useSelector(selectAllCourseState);
+  const { courseId, enrollId, isEnrolled } = useSelector(
+    selectEnrollIdAndCourseId
+  );
+  const [enrollIdState, setEnrollIdState] = useState(0);
 
   const relatedCourseLimitPage = 4;
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
@@ -83,8 +95,32 @@ const CourseDetailPage = () => {
   const { data, relatedCourse } = useSelector((state) => state.course);
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
+  if (!courseBySlug) {
+    navigate(NOT_FOUND_URL);
+  }
+
+  useEffect(() => {
+    if (user?.id && courseBySlug?.id) {
+      dispatch(
+        onGetEnrollId({ course_id: courseBySlug?.id, user_id: user?.id })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, courseBySlug?.id]);
+
+  useEffect(() => {
+    setEnrollIdState(enrollId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enrollId]);
+
+  useEffect(() => {
+    if (enrollIdState > 0 && isEnrolled) {
+      navigate(`/learn/${courseBySlug?.slug}`);
+    }
+  }, [enrollIdState, isEnrolled]);
+
   const newRelatedCourse = relatedCourse.filter(
-    (course) => course.id !== courseBySlug.id
+    (course) => course.id !== courseBySlug?.id
   );
 
   useEffect(() => {
@@ -138,7 +174,7 @@ const CourseDetailPage = () => {
         className="course-detail-banner bg-cover bg-no-repeat bg-center bg-opacity-40 text-white h-32 rounded-3xl flex items-center justify-center mb-5"
         style={{
           backgroundImage: `linear-gradient(180deg, rgba(54, 12, 46, 0) -1.75%, #000 90%),url(${
-            category.coverImage ?? category.image
+            category?.coverImage ?? category?.image
           })`,
         }}
       >

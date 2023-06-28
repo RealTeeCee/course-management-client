@@ -33,7 +33,11 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../constants/config";
-import { API_AUTHOR_URL, API_TAG_URL } from "../../../constants/endpoint";
+import {
+  API_AUTHOR_URL,
+  API_COURSE_URL,
+  API_TAG_URL,
+} from "../../../constants/endpoint";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 
@@ -137,7 +141,7 @@ const AdminCreateCoursePage = () => {
         //     "Content-type": "multipart/form-data",
         //   },
         // });
-        const res = await axiosBearer.post(`/course`, fd);
+        const res = await axiosBearer.post(API_COURSE_URL, fd);
         toast.success(`${res.data.message}`);
         resetValues();
         navigate("/admin/courses");

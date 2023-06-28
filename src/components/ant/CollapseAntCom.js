@@ -2,13 +2,11 @@ import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  selectAllCourseState
-} from "../../store/course/courseSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onManualSelectedLesson,
   onSaveTrackingLesson,
-  onSelectedLesson
+  onSelectedLesson,
 } from "../../store/course/courseSlice";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
 const { Panel } = Collapse;
