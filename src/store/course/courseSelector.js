@@ -27,6 +27,8 @@ export const selectAllCourseState = createSelector(
     rating: courseSlice.rating,
     userRating: courseSlice.userRating,
     courseRating: courseSlice.courseRating,
+    examination: courseSlice.examination,
+    finishExam: courseSlice.finishExam,
   })
 );
 

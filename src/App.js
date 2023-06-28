@@ -10,10 +10,10 @@ import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
-import ExamPage from "./pages/exam/ExamPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -348,7 +348,7 @@ function App() {
         {/* ********* END Authentication ********* */}
 
         {/* ********* Examination ********* */}
-        <Route path="/exam/:slug" element={<ExamPage></ExamPage>}></Route>
+        <Route path="/exam" element={<ExamPage></ExamPage>}></Route>
         {/* ********* End Examination ********* */}
       </Routes>
     </Suspense>
