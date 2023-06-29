@@ -92,9 +92,11 @@ const CourseDetailPage = () => {
   const { data, relatedCourse } = useSelector((state) => state.course);
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
-  if (!courseBySlug) {
-    navigate(NOT_FOUND_URL);
-  }
+
+  useEffect(() => {
+    if (!courseBySlug) navigate(NOT_FOUND_URL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug]);
 
   useEffect(() => {
     if (user?.id && courseBySlug?.id) {

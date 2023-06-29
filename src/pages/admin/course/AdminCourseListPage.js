@@ -637,7 +637,6 @@ const AdminCourseListPage = () => {
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Learning</HeadingH1Com>
-        {/* <ButtonBackCom></ButtonBackCom> */}
         <BreadcrumbCom
           items={[
             {
@@ -656,9 +655,6 @@ const AdminCourseListPage = () => {
         <div className="col-sm-12">
           <div className="card">
             <div className="card-header py-3">
-              {/* <HeadingH2Com className="text-tw-light-pink">
-                List Courses
-              </HeadingH2Com> */}
               <span>
                 <TableCom
                   tableKey={tableKey}

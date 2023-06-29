@@ -1,15 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import ButtonBackCom from "../../components/button/ButtonBackCom";
+import { Link, useLocation } from "react-router-dom";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 
 const PaymentSuccessPage = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const transactionId = searchParams.get("transactionId") ?? "";
+
   return (
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Payment</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Payment",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -36,7 +51,7 @@ const PaymentSuccessPage = () => {
                     Click & Learn this course now
                   </Link>
                 </p>
-                <p>Your Transaction ID: 267676GHERT105467</p>
+                <p>Your Transaction ID: {transactionId}</p>
               </div>
             </div>
           </div>
