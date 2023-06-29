@@ -22,6 +22,7 @@ import {
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../../constants/config";
@@ -30,6 +31,7 @@ import { InputCom } from "../../../../components/input";
 import { LabelCom } from "../../../../components/label";
 import ReactModal from "react-modal";
 import { ImageCropUploadAntCom } from "../../../../components/ant";
+import useExportExcel from "../../../../hooks/useExportExcel";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -53,6 +55,17 @@ const AdminAuthorListPage = () => {
   const [search, setSearch] = useState("");
   const [image, setImage] = useState([]);
 
+  const { handleExcelData } = useExportExcel("author");
+  const handleExport = () => {
+    const headers = ["No", "Author Name", "Avatar"];
+    const data = authors.map((item, index) => [
+      index + 1,
+      item.name,
+      item.image,
+    ]);
+    handleExcelData(headers, data);
+  };
+
   // More Action Menu
   const dropdownItems = [
     {
@@ -61,7 +74,7 @@ const AdminAuthorListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
+          onClick={handleExport}
         >
           Export
         </div>
@@ -73,9 +86,9 @@ const AdminAuthorListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-danger transition-all duration-300"
-          // onClick={() => handleDeleteMultipleRecords()}
+          onClick={() => handleBulkDelete()}
         >
-          Remove All
+          Bulk Delete
         </div>
       ),
     },
@@ -248,6 +261,44 @@ const AdminAuthorListPage = () => {
     });
   };
 
+  // Bulk Delete
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      toast.warning(MESSAGE_NO_ITEM_SELECTED);
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete <span className="text-tw-danger">${
+        selectedRows.length
+      } selected ${selectedRows.length > 1 ? "authors" : "author"}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const deletePromises = selectedRows.map((row) =>
+            axiosBearer.delete(`${API_AUTHOR_URL}?authorId=${row.id}`)
+          );
+          await Promise.all(deletePromises);
+          toast.success(
+            `Delete [${selectedRows.length}] ${
+              selectedRows.length > 1 ? "authors" : "author"
+            } success`
+          );
+        } catch (error) {
+          showMessageError(error);
+        } finally {
+          getAuthors();
+          clearSelectedRows();
+        }
+      }
+    });
+  };
+
   //********* Update Area *********
   const handleEdit = async (authorId) => {
     try {
@@ -322,6 +373,7 @@ const AdminAuthorListPage = () => {
                   search={search}
                   dropdownItems={dropdownItems}
                   setSearch={setSearch}
+                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
                 ></TableCom>
               </span>
             </div>

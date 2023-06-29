@@ -12,6 +12,7 @@ import {
   IconEyeCom,
   IconRemoveCom,
   IconTrashCom,
+  IconVideoCom,
 } from "../../../components/icon";
 import { TableCom } from "../../../components/table";
 import {
@@ -60,6 +61,7 @@ import { Link } from "react-router-dom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
+import useExportExcel from "../../../hooks/useExportExcel";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -90,37 +92,6 @@ const schemaValidation = yup.object().shape({
 });
 
 const AdminCourseListPage = () => {
-  // More Action Menu
-  const dropdownItems = [
-    {
-      key: "1",
-      label: <Link to="/admin/courses/authors">Author</Link>,
-    },
-    {
-      key: "2",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
-        >
-          Export
-        </div>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
-        >
-          Remove All
-        </div>
-      ),
-    },
-  ];
   const {
     control,
     register,
@@ -163,6 +134,46 @@ const AdminCourseListPage = () => {
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
   const [net_price, handleChangeNetPrice, setNetPrice] = useOnChange(0);
+
+  /********* Export Excel ********* */
+  const { handleExcelData } = useExportExcel("course");
+  const handleExport = () => {
+    const headers = [
+      "No",
+      "Course Name",
+      "Category",
+      "Level",
+      "Image",
+      "Status",
+      "Price",
+      "Duration",
+      "Author Name",
+      "Tags",
+      "Achievement",
+      "Total Enrolled",
+      "Rating",
+    ];
+    const data = courses.map((item, index) => [
+      index + 1,
+      item.name,
+      item.category_name,
+      item.level === 0 ? "Basic" : "Advance",
+      item.image,
+      item.status === 1 ? "Active" : "Inactive",
+      item.price === 0
+        ? "Free"
+        : item.net_price > 0
+        ? item.net_price
+        : item.price,
+      convertSecondToDiffForHumans(item.duration),
+      item.author_name,
+      item.tags,
+      item.achievements.trim(),
+      item.enrollmentCount,
+      item.rating,
+    ]);
+    handleExcelData(headers, data);
+  };
 
   /********* Fetch API Area ********* */
   const columns = [
@@ -226,6 +237,22 @@ const AdminCourseListPage = () => {
       sortable: true,
     },
     {
+      name: "Learning",
+      cell: (row) => (
+        <>
+          <ButtonCom
+            className="px-3 rounded-lg mr-2"
+            backgroundColor="gray"
+            onClick={() => {
+              window.open(`/learn/${row.slug}`, "_blank");
+            }}
+          >
+            <IconVideoCom className="w-5 text-black"></IconVideoCom>
+          </ButtonCom>
+        </>
+      ),
+    },
+    {
       name: "Action",
       cell: (row) => (
         <>
@@ -241,7 +268,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              window.open(`/learn/${row.slug}`, "_blank");
+              window.open(`/courses/${row.slug}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -256,6 +283,38 @@ const AdminCourseListPage = () => {
             <IconTrashCom className="w-5"></IconTrashCom>
           </ButtonCom>
         </>
+      ),
+    },
+  ];
+
+  // More Action Menu
+  const dropdownItems = [
+    {
+      key: "1",
+      label: <Link to="/admin/courses/authors">Author</Link>,
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-success transition-all duration-300"
+          onClick={handleExport}
+        >
+          Export
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleBulkDelete()}
+        >
+          Bulk Delete
+        </div>
       ),
     },
   ];
@@ -552,8 +611,8 @@ const AdminCourseListPage = () => {
       showMessageError(error);
     }
   };
-  // Muti Delete
-  const handleDeleteMultipleRecords = () => {
+  // Bulk Delete
+  const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
@@ -575,7 +634,11 @@ const AdminCourseListPage = () => {
             axiosBearer.delete(`${API_COURSE_URL}?courseId=${row.id}`)
           );
           await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} courses success`);
+          toast.success(
+            `Delete [${selectedRows.length}] ${
+              selectedRows.length > 1 ? "courses" : "course"
+            } success`
+          );
         } catch (error) {
           showMessageError(error);
         } finally {

@@ -267,7 +267,7 @@ const CourseDetailPage = () => {
             </div>
           </div>
           <div className="col-sm-5">
-            <div className="sticky top-0">
+            <div className="sticky top-0 pt-5">
               <div className="course-detail-image h-60">
                 <ImageCom
                   srcSet={courseBySlug?.image}

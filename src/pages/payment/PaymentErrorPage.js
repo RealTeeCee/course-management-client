@@ -16,6 +16,10 @@ const PaymentErrorPage = () => {
               slug: "/",
             },
             {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
               title: "Payment",
               isActive: true,
             },

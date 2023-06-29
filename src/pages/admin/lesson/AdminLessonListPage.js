@@ -15,6 +15,7 @@ import {
   CAPTION_EXT_VALID,
   MESSAGE_CAPTION_FILE_INVALID,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
@@ -47,6 +48,7 @@ import ReactPlayer from "react-player";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { getToken } from "../../../utils/auth";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
+import useExportExcel from "../../../hooks/useExportExcel";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -104,7 +106,8 @@ const AdminLessonListPage = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [showVideo, setShowVideo] = useState(true);
 
-  // const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { access_token } = getToken();
@@ -129,6 +132,29 @@ const AdminLessonListPage = () => {
     resolver: yupResolver(schemaValidation),
   });
   const { courseId, sectionId } = useParams();
+
+  const { handleExcelData } = useExportExcel("lesson");
+  const handleExport = () => {
+    const headers = [
+      "No",
+      "Lesson Name",
+      "Course",
+      "Section",
+      "Status",
+      "Ordered",
+      "Duration",
+    ];
+    const data = lessons.map((item, index) => [
+      index + 1,
+      item.name,
+      course?.name,
+      section?.name,
+      item.status === 1 ? "Active" : "InActive",
+      item.ordered,
+      convertSecondToDiffForHumans(item?.duration),
+    ]);
+    handleExcelData(headers, data);
+  };
 
   /********* Fetch data Area ********* */
   const columns = [
@@ -184,7 +210,7 @@ const AdminLessonListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteLesson({ lessonId: row.id, name: row.name });
+              handleDelete({ lessonId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -201,28 +227,28 @@ const AdminLessonListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
+          onClick={handleExport}
         >
           Export
         </div>
       ),
     },
-    // {
-    //   key: "2",
-    //   label: (
-    //     <div
-    //       rel="noopener noreferrer"
-    //       className="hover:text-tw-danger transition-all duration-300"
-    //       onClick={() => handleDeleteMultipleRecords()}
-    //     >
-    //       Remove all
-    //     </div>
-    //   ),
-    // },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleBulkDelete()}
+        >
+          Bulk Delete
+        </div>
+      ),
+    },
   ];
 
   /********* Delete One ********* */
-  const handleDeleteLesson = ({ lessonId, name }) => {
+  const handleDelete = ({ lessonId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete lesson: <span class="text-tw-danger">${name}</span>`,
@@ -235,7 +261,7 @@ const AdminLessonListPage = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosBearer.delete(
-            `/section/${sectionId}/lesson?lessonId=${lessonId}`
+            `${API_SECTION_URL}/${sectionId}/lesson?lessonId=${lessonId}`
           );
 
           getLessonsBySectionId();
@@ -243,6 +269,46 @@ const AdminLessonListPage = () => {
           toast.success(res.data.message);
         } catch (error) {
           showMessageError(error);
+        }
+      }
+    });
+  };
+
+  // Bulk Delete
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      toast.warning(MESSAGE_NO_ITEM_SELECTED);
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete <span className="text-tw-danger">${
+        selectedRows.length
+      } selected ${selectedRows.length > 1 ? "lessons" : "lesson"}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const deletePromises = selectedRows.map((row) =>
+            axiosBearer.delete(
+              `${API_SECTION_URL}/${sectionId}/lesson?lessonId=${row.id}`
+            )
+          );
+          await Promise.all(deletePromises);
+          toast.success(
+            `Delete [${selectedRows.length}] ${
+              selectedRows.length > 1 ? "lessons" : "lesson"
+            } success`
+          );
+        } catch (error) {
+          showMessageError(error);
+        } finally {
+          fetchingData();
+          clearSelectedRows();
         }
       }
     });
@@ -303,10 +369,24 @@ const AdminLessonListPage = () => {
     }
   };
 
+  const fetchingData = async () => {
+    try {
+      setIsFetching(true);
+      await getLessonsBySectionId();
+      await getCourseById();
+      await getSectionById();
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   useEffect(() => {
-    getLessonsBySectionId();
-    getCourseById();
-    getSectionById();
+    // getLessonsBySectionId();
+    // getCourseById();
+    // getSectionById();
+    fetchingData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /********** END Fetch data Area ************ */
@@ -433,6 +513,16 @@ const AdminLessonListPage = () => {
     }
   };
 
+  /********* Library Function Area ********* */
+  const handleRowSelection = (currentRowsSelected) => {
+    setSelectedRows(currentRowsSelected.selectedRows);
+  };
+  // Clear Selected after Mutiple Delete
+  const clearSelectedRows = () => {
+    setSelectedRows([]);
+    setTableKey((prevKey) => prevKey + 1);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -467,12 +557,13 @@ const AdminLessonListPage = () => {
                 <TableCom
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/sections/${sectionId}/lessons/create`}
-                  title={`Course: ${course.name}, Section: ${section.name}`}
+                  title={`Course: ${course?.name}, Section: ${section?.name}`}
                   columns={columns}
                   items={filterLesson}
                   search={search}
                   dropdownItems={dropdownItems}
                   setSearch={setSearch}
+                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
                 ></TableCom>
               </span>
             </div>
