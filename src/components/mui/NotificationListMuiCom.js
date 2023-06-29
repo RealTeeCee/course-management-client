@@ -16,7 +16,7 @@ import {
 import { convertSecondToDiffForHumans } from "../../utils/helper";
 import { HeadingH3Com } from "../heading";
 
-export default function NotificationList({ notifs }) {
+const NotificationListMuiCom = ({ notifs }) => {
   const dispatch = useDispatch();
   const userToId = useSelector(selectUserId);
   const handleReadNotification = (notifId) => {
@@ -169,4 +169,6 @@ export default function NotificationList({ notifs }) {
       </ListItem>
     </List>
   );
-}
+};
+
+export default NotificationListMuiCom;

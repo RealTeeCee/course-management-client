@@ -7,8 +7,7 @@ import { TabsAntCom } from "../../components/ant";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
-import { DialogNextVideo } from "../../components/mui";
-import RatingList from "../../components/mui/RatingList";
+import { DialogNextVideoMuiCom, RatingListMuiCom } from "../../components/mui";
 import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
@@ -265,7 +264,7 @@ const LearnPage = () => {
       // check điều kiện user rating xong thì thêm props readOnly
       children: (
         // <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
-        <RatingList></RatingList>
+        <RatingListMuiCom></RatingListMuiCom>
       ),
     },
     {
@@ -279,13 +278,13 @@ const LearnPage = () => {
     <LoadingCom></LoadingCom>
   ) : (
     <React.Fragment>
-      <DialogNextVideo
+      <DialogNextVideoMuiCom
         nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
         onClose={handleCloseDialog}
         onNext={isFinal ? handleInitialExam : handleNexVideo}
         isFinal={isFinal}
-      ></DialogNextVideo>
+      ></DialogNextVideoMuiCom>
       <div className="video-container">
         <div className="video-item">
           <ReactPlayer

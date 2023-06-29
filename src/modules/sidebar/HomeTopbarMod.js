@@ -9,7 +9,6 @@ import {
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import {
   AVATAR_DEFAULT,
   BASE_API_URL,
@@ -22,9 +21,12 @@ import {
   onCourseInitalState,
 } from "../../store/course/courseSlice";
 import HomeSearchMod from "../HomeSearchMod";
-import NotificationToastList from "../../components/mui/NotificationToastList";
 import IconRefreshCom from "../../components/icon/IconRefreshCom";
 import { sliceText } from "../../utils/helper";
+import {
+  NotificationListPopupMuiCom,
+  NotificationToastListMuiCom,
+} from "../../components/mui";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -85,7 +87,7 @@ const HomeTopbarMod = () => {
   // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
-      <NotificationToastList></NotificationToastList>
+      <NotificationToastListMuiCom></NotificationToastListMuiCom>
       <div>
         <Link to="/" className="inline-block">
           <img
@@ -112,7 +114,7 @@ const HomeTopbarMod = () => {
             <ButtonCom to="/my-courses" className="flex items-center">
               <span className="text-sm font-medium">My Courses</span>
             </ButtonCom>
-            <NotificationListPopup />
+            <NotificationListPopupMuiCom />
           </>
         )}
         <ul className="nav-menus">

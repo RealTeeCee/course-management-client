@@ -25,7 +25,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const RatingList = () => {
+const RatingListMuiCom = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const { courseId, rating, courseRating, userRating } =
@@ -142,4 +142,4 @@ const RatingList = () => {
   );
 };
 
-export default RatingList;
+export default RatingListMuiCom;

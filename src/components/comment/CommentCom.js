@@ -16,7 +16,7 @@ import {
 import { ButtonCom } from "../button";
 import GapYCom from "../common/GapYCom";
 import { IconTrashCom } from "../icon";
-import { DialogConfirm } from "../mui";
+import { DialogConfirmMuiCom } from "../mui";
 import { TextEditorQuillCom } from "../texteditor";
 
 const schemaValidation = yup.object().shape({
@@ -275,7 +275,7 @@ const CommentParent = ({
   };
   return (
     <li>
-      <DialogConfirm
+      <DialogConfirmMuiCom
         title="Warning"
         content="Do you want to delete this note?"
         confirmContent="Yes"
@@ -420,7 +420,7 @@ const CommentChild = ({
 
   return (
     <li>
-      <DialogConfirm
+      <DialogConfirmMuiCom
         title="Warning"
         content="Do you want to delete this note?"
         confirmContent="Yes"

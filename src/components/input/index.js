@@ -1,2 +1,2 @@
 export const { default: InputCom } = require("./InputCom");
-export const { default: InputReadOnly } = require("./InputReadOnly");
+export const { default: InputReadOnlyCom } = require("./InputReadOnlyCom");

@@ -1,7 +1,6 @@
 import React from "react";
-import Quiz from "../../components/mui/Quiz";
 import { Container } from "@mui/material";
-import { DialogConfirm } from "../../components/mui";
+import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
 import { useSelector } from "react-redux";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { useState } from "react";
@@ -18,7 +17,7 @@ const ExamPage = () => {
 
   return (
     <Container maxWidth="sm">
-      <DialogConfirm
+      <DialogConfirmMuiCom
         open={showDialog}
         onConfirm={handleConfirm}
         confirmContent={"START"}
@@ -30,9 +29,9 @@ const ExamPage = () => {
         content={`Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
       dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
       consectetur ac, vestibulum at eros.`}
-      ></DialogConfirm>
+      ></DialogConfirmMuiCom>
 
-      {!showDialog && <Quiz exam={examination} />}
+      {!showDialog && <QuizMuiCom exam={examination} />}
     </Container>
   );
 };

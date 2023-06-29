@@ -1,6 +1,6 @@
 import React from "react";
 
-const InputReadOnly = ({ name = "", ...rest }) => {
+const InputReadOnlyCom = ({ name = "", ...rest }) => {
   return (
     <div className="form-input position-relative">
       <input
@@ -14,4 +14,4 @@ const InputReadOnly = ({ name = "", ...rest }) => {
   );
 };
 
-export default InputReadOnly;
+export default InputReadOnlyCom;

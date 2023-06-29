@@ -5,7 +5,6 @@ import * as yup from "yup";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
-import { InputReadOnly } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import { TextAreaCom } from "../../components/textarea";
 
@@ -23,6 +22,7 @@ import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
 import { API_CHECKOUT_URL } from "../../constants/endpoint";
 import { axiosBearer } from "../../api/axiosInstance";
 import { toast } from "react-toastify";
+import { InputReadOnlyCom } from "../../components/input";
 
 const schemaValidation = yup.object().shape({
   payment_method: yup
@@ -110,7 +110,10 @@ const CheckoutPage = () => {
                 <div className="row">
                   <div className="col-sm-6">
                     <LabelCom htmlFor="first_name">First Name</LabelCom>
-                    <InputReadOnly name="first_name" value={user?.first_name} />
+                    <InputReadOnlyCom
+                      name="first_name"
+                      value={user?.first_name}
+                    />
                     {/* <InputCom
                       type="text"
                       control={control}
@@ -123,7 +126,10 @@ const CheckoutPage = () => {
                   </div>
                   <div className="col-sm-6">
                     <LabelCom htmlFor="last_name">Last Name</LabelCom>
-                    <InputReadOnly name="last_name" value={user?.last_name} />
+                    <InputReadOnlyCom
+                      name="last_name"
+                      value={user?.last_name}
+                    />
                     {/* <InputCom
                       type="text"
                       control={control}
@@ -152,7 +158,7 @@ const CheckoutPage = () => {
                   </div> */}
                   <div className="col-sm-12">
                     <LabelCom htmlFor="email">Email</LabelCom>
-                    <InputReadOnly name="email" value={user?.email} />
+                    <InputReadOnlyCom name="email" value={user?.email} />
                     {/* <InputCom
                       type="text"
                       control={control}

@@ -16,10 +16,10 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { DialogConfirm } from ".";
 import { onFinishExam } from "../../store/course/courseSlice";
 import { convertSecondToTime } from "../../utils/helper";
 import { IconClockCom } from "../icon";
+import { DialogConfirmMuiCom } from ".";
 
 // const exam = [
 //   {
@@ -94,7 +94,7 @@ import { IconClockCom } from "../icon";
 //   },
 // ];
 
-function Quiz({ exam = [] }) {
+function QuizMuiCom({ exam = [] }) {
   const maxSteps = exam.length;
   const answerOptions = ["A", "B", "C", "D"];
 
@@ -238,7 +238,7 @@ function Quiz({ exam = [] }) {
 
   return (
     <Grid container sx={{ marginTop: "30px" }}>
-      <DialogConfirm
+      <DialogConfirmMuiCom
         open={showDialog}
         onClose={() => setShowDialog(!showDialog)}
         closeContent={"CANCEL"}
@@ -246,7 +246,7 @@ function Quiz({ exam = [] }) {
         confirmContent={"APPLY"}
         title={"Confirm Exam"}
         content={"Do you want to submit your exam?"}
-      ></DialogConfirm>
+      ></DialogConfirmMuiCom>
       <Paper
         square
         elevation={0}
@@ -365,4 +365,4 @@ function Quiz({ exam = [] }) {
   );
 }
 
-export default Quiz;
+export default QuizMuiCom;

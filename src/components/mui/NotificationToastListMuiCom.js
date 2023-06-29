@@ -10,7 +10,7 @@ function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
 }
 
-export default function NotificationToastList() {
+const NotificationToastListMuiCom = () => {
   const dispatch = useDispatch();
   const { notifToastList } = useSelector(selectAllCourseState);
   const user = useSelector(selectUser);
@@ -84,4 +84,6 @@ export default function NotificationToastList() {
       message={newNotif?.content}
     />
   );
-}
+};
+
+export default NotificationToastListMuiCom;

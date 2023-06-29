@@ -6,7 +6,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const AlertDialog = ({ open, nextLesson, onClose, onNext, isFinal }) => {
+// AlertDialogold
+const DialogNextVideoMuiCom = ({ open, nextLesson, onClose, onNext, isFinal }) => {
   return (
     <div>
       <Dialog
@@ -37,4 +38,4 @@ const AlertDialog = ({ open, nextLesson, onClose, onNext, isFinal }) => {
   );
 };
 
-export default AlertDialog;
+export default DialogNextVideoMuiCom;

@@ -1,12 +1,12 @@
 import { Badge } from "antd";
 import React, { useEffect, useState } from "react";
 import { IconBellCom } from "../icon";
-import NotificationList from "./NotificationList";
 import { useSelector } from "react-redux";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { useLocation } from "react-router-dom";
+import { NotificationListMuiCom } from ".";
 
-const NotificationListPopup = () => {
+const NotificationListPopupMuiCom = () => {
   const [showNotif, setShowNotif] = useState(false);
   const { notifs } = useSelector(selectAllCourseState);
   const isReadNotif = notifs.filter((n) => n.read !== true);
@@ -38,7 +38,7 @@ const NotificationListPopup = () => {
               width: 360,
             }}
           >
-            <NotificationList notifs={notifs}></NotificationList>
+            <NotificationListMuiCom notifs={notifs}></NotificationListMuiCom>
           </ul>
         ) : null}
       </li>
@@ -46,4 +46,4 @@ const NotificationListPopup = () => {
   );
 };
 
-export default NotificationListPopup;
+export default NotificationListPopupMuiCom;
