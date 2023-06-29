@@ -767,13 +767,9 @@ const AdminCourseListPage = () => {
               placeholder="Course hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
-            {/* <div className="card-header">
-                <h5>Form Create Course</h5>
-                <span>Lorem ipsum dolor sit amet consectetur</span>
-              </div> */}
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-10">
+                <div className="col-sm-12 text-center">
                   <LabelCom htmlFor="name" isRequired>
                     Course Name
                   </LabelCom>
@@ -786,50 +782,10 @@ const AdminCourseListPage = () => {
                     errorMsg={errors.name?.message}
                   ></InputCom>
                 </div>
-                <div className="col-sm-2 relative">
-                  <LabelCom htmlFor="image" isRequired>
-                    Image
-                  </LabelCom>
-                  {/* <InputCom
-                      type="file"
-                      control={control}
-                      name="image"
-                      register={register}
-                      placeholder="Upload image"
-                      errorMsg={errors.image?.message}
-                    ></InputCom> */}
-                  <div className="absolute w-full">
-                    <ImageCropUploadAntCom
-                      name="image"
-                      onSetValue={setValue}
-                      errorMsg={errors.image?.message}
-                      editImage={image}
-                    ></ImageCropUploadAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="image"
-                      register={register}
-                    ></InputCom>
-                  </div>
-                </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                {/* <div className="col-sm-4">
-                  <LabelCom htmlFor="duration" subText="(Hour)">
-                    Estimate Duration
-                  </LabelCom>
-                  <InputCom
-                    type="text"
-                    control={control}
-                    name="duration"
-                    register={register}
-                    placeholder="Estimate Duration"
-                    errorMsg={errors.duration?.message}
-                  ></InputCom>
-                </div> */}
-                <div className="col-sm-5">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="price" subText="($)">
                     Price
                   </LabelCom>
@@ -845,7 +801,7 @@ const AdminCourseListPage = () => {
                     value={price}
                   ></InputCom>
                 </div>
-                <div className="col-sm-5">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="net_price" subText="($)">
                     Net Price
                   </LabelCom>
@@ -913,7 +869,7 @@ const AdminCourseListPage = () => {
                   </div>
                 </div>
                 <div className="col-sm-4">
-                  <LabelCom htmlFor="level">Level</LabelCom>
+                  <LabelCom htmlFor="level" className="pb-[11px]">Level</LabelCom>
                   <div>
                     <SelectDefaultAntCom
                       listItems={levelItems}
@@ -932,12 +888,11 @@ const AdminCourseListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-12 text-center">
                   <LabelCom
                     htmlFor="tags"
                     isRequired
                     subText="'enter' every tags"
-                    className="mb-1"
                   >
                     Tags
                   </LabelCom>
@@ -956,11 +911,11 @@ const AdminCourseListPage = () => {
                     register={register}
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="col-sm-12 text-center">
                   <LabelCom
                     htmlFor="achievements"
                     subText="'enter' every achievement"
-                    className="mb-1"
                   >
                     Achievement
                   </LabelCom>
@@ -986,7 +941,37 @@ const AdminCourseListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-12">
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  {/* <InputCom
+                      type="file"
+                      control={control}
+                      name="image"
+                      register={register}
+                      placeholder="Upload image"
+                      errorMsg={errors.image?.message}
+                    ></InputCom> */}
+                  <div>
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                      editImage={image}
+                      isWidthFull
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-sm-12 text-center">
                   <LabelCom htmlFor="description">Description</LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
@@ -994,6 +979,7 @@ const AdminCourseListPage = () => {
                       setValue("description", description);
                     }}
                     placeholder="Describe your course ..."
+                    className="h-[215px]"
                   ></TextEditorQuillCom>
                 </div>
               </div>

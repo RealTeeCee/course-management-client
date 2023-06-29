@@ -16,6 +16,7 @@ const TextEditorQuillCom = ({
   focus = false,
   placeholder = "Write your description...",
   className = "h-36",
+  isUploadImage = true,
 }) => {
   const ref = useRef(null);
 
@@ -25,16 +26,17 @@ const TextEditorQuillCom = ({
     }
   }, [focus]);
 
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
+  const modules = useMemo(() => {
+    const toolbar = [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote"],
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ];
+    if (isUploadImage) toolbar.push(["link", "image"]);
+    return {
+      toolbar,
       imageUploader: {
         upload: async (file) => {
           const fd = new FormData();
@@ -55,9 +57,8 @@ const TextEditorQuillCom = ({
           }
         },
       },
-    }),
-    []
-  );
+    };
+  }, [isUploadImage]);
   return (
     <ReactQuill
       ref={ref}
@@ -69,13 +70,14 @@ const TextEditorQuillCom = ({
       className={className}
     ></ReactQuill>
   );
-}; 
+};
 
 TextEditorQuillCom.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
   placeholder: PropTypes.string,
   className: PropTypes.string,
+  isUploadImage: PropTypes.bool,
 };
 
 export default withErrorBoundary(TextEditorQuillCom, {
