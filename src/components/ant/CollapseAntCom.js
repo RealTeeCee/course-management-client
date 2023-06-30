@@ -2,10 +2,7 @@ import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  selectAllCourseState,
-  selectLearningLessonLength,
-} from "../../store/course/courseSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onManualSelectedLesson,
   onSaveTrackingLesson,
@@ -24,7 +21,6 @@ const CollapseAntCom = ({
   childItems = [],
   isLearning = false,
 }) => {
-  // const location = useLocation();
   const navigate = useNavigate();
 
   const { enrollId, courseId, lessonId, tracking, isSelectLessonManual } =
@@ -32,7 +28,6 @@ const CollapseAntCom = ({
 
   const [lessionId, setLessionId] = useState(0);
   const [manualSelectLesson, setManualSelectLesson] = useState(false);
-  //  const lessionId = reqParams.get("id");
   const dispatch = useDispatch();
 
   const ids = parentItems.map((item) => String(item.id));
@@ -48,7 +43,6 @@ const CollapseAntCom = ({
         lessonId: child.id,
       })
     );
-    console.log(tracking?.id);
   };
 
   useEffect(() => {
@@ -85,7 +79,8 @@ const CollapseAntCom = ({
     <Collapse
       // defaultActiveKey={["1"]}
       // activeKey={isOpen ? ["1", "2", "3"] : openKeys}
-      defaultActiveKey={String(parentItems[0]?.id)}
+      // defaultActiveKey={String(parentItems[0]?.id)}
+      defaultActiveKey={[String(Array(parentItems[0]?.id))]}
       activeKey={isOpen ? ids : openKeys}
       // activeKey={openKeys}
       onChange={onChange}

@@ -9,7 +9,6 @@ import {
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import NotificationListPopup from "../../components/mui/NotificationListPopup";
 import {
   AVATAR_DEFAULT,
   BASE_API_URL,
@@ -22,9 +21,12 @@ import {
   onCourseInitalState,
 } from "../../store/course/courseSlice";
 import HomeSearchMod from "../HomeSearchMod";
-import NotificationToastList from "../../components/mui/NotificationToastList";
 import IconRefreshCom from "../../components/icon/IconRefreshCom";
 import { sliceText } from "../../utils/helper";
+import {
+  NotificationListPopupMuiCom,
+  NotificationToastListMuiCom,
+} from "../../components/mui";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -63,28 +65,29 @@ const HomeTopbarMod = () => {
   ];
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (user) {
-      let url = BASE_API_URL + "/push-notifications/" + user.id;
-      const sse = new EventSource(url);
+  // Ẩn notification tạm thời
+  // useEffect(() => {
+  //   if (user) {
+  //     let url = BASE_API_URL + "/push-notifications/" + user.id;
+  //     const sse = new EventSource(url);
 
-      sse.addEventListener("user-list-event", (event) => {
-        const data = JSON.parse(event.data);
-        dispatch(onAddNotification(data));
-      });
+  //     sse.addEventListener("user-list-event", (event) => {
+  //       const data = JSON.parse(event.data);
+  //       dispatch(onAddNotification(data));
+  //     });
 
-      sse.onerror = () => {
-        sse.close();
-      };
-      return () => {
-        sse.close();
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  //     sse.onerror = () => {
+  //       sse.close();
+  //     };
+  //     return () => {
+  //       sse.close();
+  //     };
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
-      <NotificationToastList></NotificationToastList>
+      <NotificationToastListMuiCom></NotificationToastListMuiCom>
       <div>
         <Link to="/" className="inline-block">
           <img
@@ -111,7 +114,7 @@ const HomeTopbarMod = () => {
             <ButtonCom to="/my-courses" className="flex items-center">
               <span className="text-sm font-medium">My Courses</span>
             </ButtonCom>
-            <NotificationListPopup />
+            <NotificationListPopupMuiCom />
           </>
         )}
         <ul className="nav-menus">
@@ -127,7 +130,7 @@ const HomeTopbarMod = () => {
               />
               <div className="media-body flex-1">
                 <span className="text-tw-primary font-medium font-tw-third">
-                  {user ? sliceText(user.name, 10) : "Welcome"}
+                  {user ? sliceText(user.name, 12) : "Welcome"}
                 </span>
                 <p className="mb-0 font-roboto flex items-center gap-x-2">
                   {user ? user.role : "Guest"}

@@ -87,7 +87,7 @@ const UserProfilePage = () => {
     const imgObj = [
       {
         uid: v4(),
-        name: resImage.substring(resImage.lastIndexOf("/") + 1),
+        name: resImage?.substring(resImage.lastIndexOf("/") + 1),
         status: "done",
         url: resImage,
       },
@@ -447,6 +447,7 @@ const UserProfilePage = () => {
                       onSetValue={setValue}
                       errorMsg={errors.imageUrl?.message}
                       editImage={image}
+                      aspect={4 / 4}
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"

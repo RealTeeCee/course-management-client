@@ -9,6 +9,7 @@ const initialState = {
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
+  isEnrolled: false,
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
   bestSellerCourse: [],
@@ -32,11 +33,12 @@ const initialState = {
   // posts: [], //onSavePost
   notifs: [],
   notifToastList: [],
-  isRead: false,
   updatedNotif: [],
   rating: 0,
   userRating: 0,
   courseRating: [],
+  examination: [],
+  finishExam: null,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -68,6 +70,7 @@ const courseSlice = createSlice({
     }),
     onCourseLoading: (state, action) => ({
       ...state,
+      isEnrolled: false,
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
@@ -164,17 +167,19 @@ const courseSlice = createSlice({
     onManualSelectedLessonSuccess: (state, action) => ({
       ...state,
       resumePoint: action.payload.resumePoint,
-      tracking: action.payload,
+      tracking: action.payload.lessonId === 0 ? null : action.payload,
       isReady: true,
       isReload: true,
       isSelectLessonManual: true,
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
+      isEnrolled: false,
       errorMessage: null,
     }),
     onGetEnrollIdSuccess: (state, action) => ({
       ...state,
+      isEnrolled: action.payload > 0 ? true : false,
       enrollId: action.payload,
     }),
     onGetLearning: (state, action) => ({
@@ -213,6 +218,7 @@ const courseSlice = createSlice({
     }),
     onSaveTrackingVideoSuccess: (state, action) => ({
       ...state,
+      tracking: action.payload,
     }),
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
@@ -314,7 +320,12 @@ const courseSlice = createSlice({
     }),
     onReadNotificationSuccess: (state, action) => ({
       ...state,
-      isRead: true,
+    }),
+    onReadAllNotification: (state, action) => ({
+      ...state,
+    }),
+    onReadAllNotificationSuccess: (state, action) => ({
+      ...state,
     }),
     onRemoveFromToastList: (state, action) => {
       let newNotif = [action.payload];
@@ -337,6 +348,20 @@ const courseSlice = createSlice({
     onLoadCourseRatingSuccess: (state, action) => ({
       ...state,
       courseRating: action.payload,
+    }),
+    onGenerateCourseExam: (state, action) => ({
+      ...state,
+    }),
+    onGenerateCourseExamSuccess: (state, action) => ({
+      ...state,
+      examination: action.payload,
+    }),
+    onFinishExam: (state, action) => ({
+      ...state,
+    }),
+    onFinishExamSuccess: (state, action) => ({
+      ...state,
+      finishExam: action.payload,
     }),
   },
 });
@@ -393,12 +418,18 @@ export const {
   onAddNotification,
   onReadNotification,
   onReadNotificationSuccess,
+  onReadAllNotification,
+  onReadAllNotificationSuccess,
   onRemoveFromToastList,
   onRemoveReplyInPost,
   onUpdateUserRating,
   onUpdateUserRatingSuccess,
   onLoadCourseRating,
   onLoadCourseRatingSuccess,
+  onGenerateCourseExam,
+  onGenerateCourseExamSuccess,
+  onFinishExam,
+  onFinishExamSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
@@ -11,8 +10,10 @@ import {
   IconBookCom,
   IconEditCom,
   IconEyeCom,
+  IconPartCom,
   IconRemoveCom,
   IconTrashCom,
+  IconVideoCom,
 } from "../../../components/icon";
 import { TableCom } from "../../../components/table";
 import {
@@ -20,6 +21,7 @@ import {
   API_COURSE_URL,
   API_TAG_URL,
 } from "../../../constants/endpoint";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   categoryItems,
@@ -60,6 +62,7 @@ import { Link } from "react-router-dom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
+import useExportExcel from "../../../hooks/useExportExcel";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -90,33 +93,6 @@ const schemaValidation = yup.object().shape({
 });
 
 const AdminCourseListPage = () => {
-  // More Action Menu
-  const dropdownItems = [
-    {
-      key: "1",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-success transition-all duration-300"
-          onClick={() => toast.info("Developing...")}
-        >
-          Export
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <div
-          rel="noopener noreferrer"
-          className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
-        >
-          Remove All
-        </div>
-      ),
-    },
-  ];
   const {
     control,
     register,
@@ -159,6 +135,46 @@ const AdminCourseListPage = () => {
   // Edit State
   const [price, handleChangePrice, setPrice] = useOnChange(0);
   const [net_price, handleChangeNetPrice, setNetPrice] = useOnChange(0);
+
+  /********* Export Excel ********* */
+  const { handleExcelData } = useExportExcel("course");
+  const handleExport = () => {
+    const headers = [
+      "No",
+      "Course Name",
+      "Category",
+      "Level",
+      "Image",
+      "Status",
+      "Price",
+      "Duration",
+      "Author Name",
+      "Tags",
+      "Achievement",
+      "Total Enrolled",
+      "Rating",
+    ];
+    const data = courses.map((item, index) => [
+      index + 1,
+      item.name,
+      item.category_name,
+      item.level === 0 ? "Basic" : "Advance",
+      item.image,
+      item.status === 1 ? "Active" : "Inactive",
+      item.price === 0
+        ? "Free"
+        : item.net_price > 0
+        ? item.net_price
+        : item.price,
+      convertSecondToDiffForHumans(item.duration),
+      item.author_name,
+      item.tags,
+      item.achievements.trim(),
+      item.enrollmentCount,
+      item.rating,
+    ]);
+    handleExcelData(headers, data);
+  };
 
   /********* Fetch API Area ********* */
   const columns = [
@@ -209,6 +225,18 @@ const AdminCourseListPage = () => {
       ),
     },
     {
+      name: "Part",
+      cell: (row) => (
+        <>
+          <Link to={`/admin/courses/${row.id}/parts`}>
+            <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
+              <IconPartCom className="w-5 text-black"></IconPartCom>
+            </ButtonCom>
+          </Link>
+        </>
+      ),
+    },
+    {
       name: "Price",
       selector: (row) =>
         row.net_price > 0
@@ -220,6 +248,22 @@ const AdminCourseListPage = () => {
       name: "Duration",
       selector: (row) => convertSecondToDiffForHumans(row.duration),
       sortable: true,
+    },
+    {
+      name: "Learning",
+      cell: (row) => (
+        <>
+          <ButtonCom
+            className="px-3 rounded-lg mr-2"
+            backgroundColor="gray"
+            onClick={() => {
+              window.open(`/learn/${row.slug}`, "_blank");
+            }}
+          >
+            <IconVideoCom className="w-5 text-black"></IconVideoCom>
+          </ButtonCom>
+        </>
+      ),
     },
     {
       name: "Action",
@@ -237,7 +281,7 @@ const AdminCourseListPage = () => {
           <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              window.open(`/learn/${row.slug}`, "_blank");
+              window.open(`/courses/${row.slug}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
@@ -246,12 +290,44 @@ const AdminCourseListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteCourse(row);
+              handleDelete(row);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
           </ButtonCom>
         </>
+      ),
+    },
+  ];
+
+  // More Action Menu
+  const dropdownItems = [
+    {
+      key: "1",
+      label: <Link to="/admin/courses/authors">Author</Link>,
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-success transition-all duration-300"
+          onClick={handleExport}
+        >
+          Export
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleBulkDelete()}
+        >
+          Bulk Delete
+        </div>
       ),
     },
   ];
@@ -300,14 +376,6 @@ const AdminCourseListPage = () => {
     }
   };
 
-  // /********* Fetch API Area ********* */
-  useEffect(() => {
-    getCourses();
-    getTags();
-    getAuthors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const getCourseById = async (courseId) => {
     try {
       const res = await axiosBearer.get(`${API_COURSE_URL}/${courseId}`);
@@ -320,13 +388,17 @@ const AdminCourseListPage = () => {
       setCategorySelected(res.data.category_id);
       setAuthorSelected(res.data.author_id);
       setTagsSelected(res.data.tags.split(","));
-      setAchievementSelected(res.data.achievements.split(","));
+      if (res.data.achievements !== "") {
+        setAchievementSelected(res.data.achievements.split(","));
+      } else {
+        setAchievementSelected([]);
+      }
 
       const resImage = res.data.image;
       const imgObj = [
         {
           uid: v4(),
-          name: resImage.substring(resImage.lastIndexOf("/") + 1),
+          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
           status: "done",
           url: resImage,
         },
@@ -337,6 +409,13 @@ const AdminCourseListPage = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    getCourses();
+    getTags();
+    getAuthors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Search in Table
   useEffect(() => {
@@ -406,7 +485,7 @@ const AdminCourseListPage = () => {
     }
   };
   // Delete one
-  const handleDeleteCourse = ({ id, name }) => {
+  const handleDelete = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete course: <span className="text-tw-danger">${name}</span>`,
@@ -458,7 +537,7 @@ const AdminCourseListPage = () => {
   const handleRowSelection = (currentRowsSelected) => {
     setSelectedRows(currentRowsSelected.selectedRows);
   };
-
+  // Clear Selected after Mutiple Delete
   const clearSelectedRows = () => {
     setSelectedRows([]);
     setTableKey((prevKey) => prevKey + 1);
@@ -492,18 +571,18 @@ const AdminCourseListPage = () => {
       const dataBody = newCourses.find((course) => course.id === courseId);
 
       const {
-        // id,
-        // name,
-        // status,
-        // level,
-        // image,
-        // category_id,
-        // author_id,
-        // price,
-        // net_price,
-        // duration,
-        // enrollmentCount,
-        // description,
+        id,
+        name,
+        status,
+        level,
+        image,
+        category_id,
+        author_id,
+        price,
+        net_price,
+        duration,
+        enrollmentCount,
+        description,
         tags,
         achievements,
       } = dataBody;
@@ -512,27 +591,29 @@ const AdminCourseListPage = () => {
       fd.append(
         "courseJson",
         JSON.stringify({
-          // id,
-          // name,
-          // status,
-          // level,
-          // image,
-          // category_id,
-          // author_id,
-          // price,
-          // net_price,
-          // duration,
-          // enrollmentCount,
-          // description,
-          ...dataBody,
+          id,
+          name,
+          status,
+          level,
+          image,
+          category_id,
+          author_id,
+          price,
+          net_price,
+          duration,
+          enrollmentCount,
+          description,
           tags: tags
             .split(",")
             .map((tag) => tag.trim())
             .join(","),
-          achievements: achievements
-            .split(",")
-            .map((achievement) => achievement.trim())
-            .join(","),
+          achievements:
+            achievements !== null
+              ? achievements
+                  .split(",")
+                  .map((achievement) => achievement.trim())
+                  .join(",")
+              : "",
         })
       );
 
@@ -543,8 +624,8 @@ const AdminCourseListPage = () => {
       showMessageError(error);
     }
   };
-  // Muti Delete
-  const handleDeleteMultipleRecords = () => {
+  // Bulk Delete
+  const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
@@ -566,7 +647,11 @@ const AdminCourseListPage = () => {
             axiosBearer.delete(`${API_COURSE_URL}?courseId=${row.id}`)
           );
           await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} courses success`);
+          toast.success(
+            `Delete [${selectedRows.length}] ${
+              selectedRows.length > 1 ? "courses" : "course"
+            } success`
+          );
         } catch (error) {
           showMessageError(error);
         } finally {
@@ -628,7 +713,6 @@ const AdminCourseListPage = () => {
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Learning</HeadingH1Com>
-        {/* <ButtonBackCom></ButtonBackCom> */}
         <BreadcrumbCom
           items={[
             {
@@ -647,9 +731,6 @@ const AdminCourseListPage = () => {
         <div className="col-sm-12">
           <div className="card">
             <div className="card-header py-3">
-              {/* <HeadingH2Com className="text-tw-light-pink">
-                List Courses
-              </HeadingH2Com> */}
               <span>
                 <TableCom
                   tableKey={tableKey}
@@ -699,13 +780,9 @@ const AdminCourseListPage = () => {
               placeholder="Course hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
-            {/* <div className="card-header">
-                <h5>Form Create Course</h5>
-                <span>Lorem ipsum dolor sit amet consectetur</span>
-              </div> */}
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-10">
+                <div className="col-sm-12 text-center">
                   <LabelCom htmlFor="name" isRequired>
                     Course Name
                   </LabelCom>
@@ -718,50 +795,10 @@ const AdminCourseListPage = () => {
                     errorMsg={errors.name?.message}
                   ></InputCom>
                 </div>
-                <div className="col-sm-2 relative">
-                  <LabelCom htmlFor="image" isRequired>
-                    Image
-                  </LabelCom>
-                  {/* <InputCom
-                      type="file"
-                      control={control}
-                      name="image"
-                      register={register}
-                      placeholder="Upload image"
-                      errorMsg={errors.image?.message}
-                    ></InputCom> */}
-                  <div className="absolute w-full">
-                    <ImageCropUploadAntCom
-                      name="image"
-                      onSetValue={setValue}
-                      errorMsg={errors.image?.message}
-                      editImage={image}
-                    ></ImageCropUploadAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="image"
-                      register={register}
-                    ></InputCom>
-                  </div>
-                </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                {/* <div className="col-sm-4">
-                  <LabelCom htmlFor="duration" subText="(Hour)">
-                    Estimate Duration
-                  </LabelCom>
-                  <InputCom
-                    type="text"
-                    control={control}
-                    name="duration"
-                    register={register}
-                    placeholder="Estimate Duration"
-                    errorMsg={errors.duration?.message}
-                  ></InputCom>
-                </div> */}
-                <div className="col-sm-5">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="price" subText="($)">
                     Price
                   </LabelCom>
@@ -777,7 +814,7 @@ const AdminCourseListPage = () => {
                     value={price}
                   ></InputCom>
                 </div>
-                <div className="col-sm-5">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="net_price" subText="($)">
                     Net Price
                   </LabelCom>
@@ -845,7 +882,9 @@ const AdminCourseListPage = () => {
                   </div>
                 </div>
                 <div className="col-sm-4">
-                  <LabelCom htmlFor="level">Level</LabelCom>
+                  <LabelCom htmlFor="level" className="pb-[11px]">
+                    Level
+                  </LabelCom>
                   <div>
                     <SelectDefaultAntCom
                       listItems={levelItems}
@@ -864,12 +903,11 @@ const AdminCourseListPage = () => {
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-12 text-center">
                   <LabelCom
                     htmlFor="tags"
                     isRequired
                     subText="'enter' every tags"
-                    className="mb-1"
                   >
                     Tags
                   </LabelCom>
@@ -888,11 +926,11 @@ const AdminCourseListPage = () => {
                     register={register}
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="col-sm-12 text-center">
                   <LabelCom
                     htmlFor="achievements"
                     subText="'enter' every achievement"
-                    className="mb-1"
                   >
                     Achievement
                   </LabelCom>
@@ -917,37 +955,46 @@ const AdminCourseListPage = () => {
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
-              {/* <div className="checkbox p-0">
-                  <input
-                    id="dafault-checkbox"
-                    type="checkbox"
-                    data-bs-original-title=""
-                    title=""
-                  />
-                  <label className="mb-0" htmlFor="dafault-checkbox">
-                    Remember my preference
-                  </label>
-                </div> */}
               <div className="row">
-                <div className="col-sm-12">
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  {/* <InputCom
+                      type="file"
+                      control={control}
+                      name="image"
+                      register={register}
+                      placeholder="Upload image"
+                      errorMsg={errors.image?.message}
+                    ></InputCom> */}
+                  <div>
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                      editImage={image}
+                      isWidthFull
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-sm-12 text-center">
                   <LabelCom htmlFor="description">Description</LabelCom>
-                  {/* <ReactQuill
-                    modules={modules}
-                    theme="snow"
-                    value={description}
-                    onChange={(description) => {
-                      setValue("description", description);
-                      setDescription(description);
-                    }}
-                    placeholder="Describe your course ..."
-                    className="h-36"
-                  ></ReactQuill> */}
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
                       setValue("description", description);
                     }}
                     placeholder="Describe your course ..."
+                    className="h-[215px]"
                   ></TextEditorQuillCom>
                 </div>
               </div>
@@ -957,9 +1004,6 @@ const AdminCourseListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
             </div>
           </form>
         </div>

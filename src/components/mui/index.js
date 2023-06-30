@@ -1,4 +1,19 @@
 export const { default: RatingMuiCom } = require("./RatingMuiCom");
 export const { default: SelectMuiCom } = require("./SelectMuiCom");
-export const { default: DialogNextVideo } = require("./DialogNextVideo");
-export const { default: DialogConfirm } = require("./DialogConfirm");
+export const {
+  default: DialogNextVideoMuiCom,
+} = require("./DialogNextVideoMuiCom");
+export const {
+  default: DialogConfirmMuiCom,
+} = require("./DialogConfirmMuiCom");
+export const {
+  default: NotificationListMuiCom,
+} = require("./NotificationListMuiCom");
+export const {
+  default: NotificationListPopupMuiCom,
+} = require("./NotificationListPopupMuiCom");
+export const {
+  default: NotificationToastListMuiCom,
+} = require("./NotificationToastListMuiCom");
+export const { default: QuizMuiCom } = require("./QuizMuiCom");
+export const { default: RatingListMuiCom } = require("./RatingListMuiCom");

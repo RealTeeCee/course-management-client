@@ -10,6 +10,7 @@ import LayoutLearning from "./layouts/LayoutLearn.js";
 import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
+import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
@@ -30,6 +31,12 @@ const AdminCourseListPage = lazy(() =>
 );
 const AdminCreateCoursePage = lazy(() =>
   import("./pages/admin/course/AdminCreateCoursePage.js")
+);
+const AdminAuthorListPage = lazy(() =>
+  import("./pages/admin/course/author/AdminAuthorListPage.js")
+);
+const AdminCreateAuthorPage = lazy(() =>
+  import("./pages/admin/course/author/AdminCreateAuthorPage.js")
 );
 const AdminSectionListPage = lazy(() =>
   import("./pages/admin/section/AdminSectionListPage.js")
@@ -248,15 +255,20 @@ function App() {
               ></CheckAuthPage>
             }
           >
-            <Route index element={<AdminPage></AdminPage>}></Route>
+            <Route index element={<AdminPage />}></Route>
             {/* Admin Courses */}
-            <Route
-              path="courses"
-              element={<AdminCourseListPage></AdminCourseListPage>}
-            ></Route>
+            <Route path="courses" element={<AdminCourseListPage />}></Route>
             <Route
               path="courses/create"
-              element={<AdminCreateCoursePage></AdminCreateCoursePage>}
+              element={<AdminCreateCoursePage />}
+            ></Route>
+            <Route
+              path="courses/authors"
+              element={<AdminAuthorListPage />}
+            ></Route>
+            <Route
+              path="courses/authors/create"
+              element={<AdminCreateAuthorPage />}
             ></Route>
 
             {/* Admin Sections */}
@@ -269,7 +281,6 @@ function App() {
               path="courses/:courseId/sections/create"
               element={<AdminCreateSectionPage></AdminCreateSectionPage>}
             ></Route>
-
             {/* Admin Lessons */}
             <Route
               path="courses/:courseId/sections/:sectionId/lessons"
@@ -279,7 +290,6 @@ function App() {
               path="courses/:courseId/sections/:sectionId/lessons/create"
               element={<AdminCreateLessonPage></AdminCreateLessonPage>}
             ></Route>
-
             {/* Admin Blogs */}
             <Route
               path="blogs"
@@ -347,6 +357,10 @@ function App() {
           ></Route>
         </Route>
         {/* ********* END Authentication ********* */}
+
+        {/* ********* Examination ********* */}
+        <Route path="/exam" element={<ExamPage></ExamPage>}></Route>
+        {/* ********* End Examination ********* */}
       </Routes>
     </Suspense>
   );

@@ -32,11 +32,7 @@ const CategoryDetailPage = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <HeadingH1Com
-          number={
-            coursesByCategorySlug && formatNumber(coursesByCategorySlug.length)
-          }
-        >
+        <HeadingH1Com number={formatNumber(coursesByCategorySlug?.length)}>
           {categoryDetail.label}
         </HeadingH1Com>
         <BreadcrumbCom
@@ -58,14 +54,13 @@ const CategoryDetailPage = () => {
       </div>
       <GapYCom></GapYCom>
       <CourseGridMod>
-        {coursesByCategorySlug && coursesByCategorySlug.length > 0 ? (
+        {coursesByCategorySlug?.length > 0 ? (
           coursesByCategorySlug.map((item, index) => {
             if (index >= startIndex && index < endIndex) {
               return (
                 <CourseItemMod
                   key={v4()}
                   isPaid={false}
-                  isMyCourse={false}
                   course={item}
                   url={`/courses/${item?.slug}`}
                 ></CourseItemMod>
@@ -79,11 +74,11 @@ const CategoryDetailPage = () => {
           </HeadingH2Com>
         )}
       </CourseGridMod>
-      {coursesByCategorySlug.length > LIMIT_PAGE && (
+      {coursesByCategorySlug?.length > LIMIT_PAGE && (
         <Pagination
           current={currentPage}
           defaultPageSize={LIMIT_PAGE}
-          total={data.length}
+          total={coursesByCategorySlug?.length}
           onChange={handleChangePage}
           className="mt-[1rem] text-center"
         />

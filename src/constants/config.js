@@ -4,6 +4,8 @@ export const BASE_DOMAIN_URL =
 export const BASE_API_URL =
   process.env.REACT_APP_API_URL ?? "http://localhost:8080";
 
+export const NOT_FOUND_URL = "/not-found";
+
 export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;

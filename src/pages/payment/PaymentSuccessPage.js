@@ -1,15 +1,60 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import ButtonBackCom from "../../components/button/ButtonBackCom";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { axiosBearer } from "../../api/axiosInstance";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
+import { API_CHECKOUT_URL } from "../../constants/endpoint";
 
 const PaymentSuccessPage = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const transactionId = searchParams.get("transactionId") ?? "";
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderDetail, setOrderDetail] = useState({});
+
+  useEffect(() => {
+    getPaymentDetailByTransactionId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getPaymentDetailByTransactionId = async () => {
+    try {
+      setIsLoading(!isLoading);
+      const res = await axiosBearer.get(
+        `${API_CHECKOUT_URL}/details/${transactionId}`
+      );
+
+      if (res.status === 200) setOrderDetail(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Payment</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Payment",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">
@@ -32,11 +77,14 @@ const PaymentSuccessPage = () => {
                 <HeadingH2Com>Thank You</HeadingH2Com>
                 <p className="text-xl">
                   Payment Is Successfully Processsed{" "}
-                  <Link to="/" className="text-tw-success">
+                  <Link
+                    to={`/learn/${orderDetail?.slug}`}
+                    className="text-tw-success"
+                  >
                     Click & Learn this course now
                   </Link>
                 </p>
-                <p>Your Transaction ID: 267676GHERT105467</p>
+                <p>Your Transaction ID: {transactionId}</p>
               </div>
             </div>
           </div>

@@ -25,13 +25,18 @@ import {
   handleRemoveReplyInPost,
   handleUpdateUserRating,
   handleLoadCourseRating,
+  handleReadAllNotification,
+  handleGenerateCourseExam,
+  handleFinishExam,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
   onCourseLoading,
   onDeleteNote,
   onDeletePost,
+  onFinishExam,
   onFreeCourseLoading,
+  onGenerateCourseExam,
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
@@ -41,6 +46,7 @@ import {
   onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
+  onReadAllNotification,
   onReadNotification,
   onRelatedCourseLoading,
   onRemoveReplyInPost,
@@ -82,7 +88,10 @@ export default function* courseSaga() {
     takeLatest(onSaveLikeOfPost.type, handleSaveLikeOfPost),
     takeLatest(onLoadNotification.type, handleLoadNotification),
     takeLatest(onReadNotification.type, handleReadNotification),
+    takeLatest(onReadAllNotification.type, handleReadAllNotification),
     takeLatest(onUpdateUserRating.type, handleUpdateUserRating),
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
+    takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
+    takeLatest(onFinishExam.type, handleFinishExam),
   ]);
 }

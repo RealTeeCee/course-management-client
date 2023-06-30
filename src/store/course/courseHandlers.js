@@ -7,7 +7,9 @@ import {
   requestDeletePost,
   requestDeleteReply,
   requestEnrollId,
+  requestFinishCourseExam,
   requestFreeCourse,
+  requestGenerateCourseExam,
   requestLearning,
   requestLoadCourseRating,
   requestLoadNote,
@@ -15,6 +17,7 @@ import {
   requestLoadProgress,
   requestLoadTracking,
   requestMyCourse,
+  requestReadAllNotification,
   requestReadNotification,
   requestRelatedCourse,
   requestSaveLike,
@@ -31,7 +34,9 @@ import {
   onCourseFailed,
   onCourseSuccess,
   onDeleteNoteSuccess,
+  onFinishExamSuccess,
   onFreeCourseSuccess,
+  onGenerateCourseExamSuccess,
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
@@ -42,6 +47,7 @@ import {
   onManualSelectedLessonSuccess,
   onMyCourseFailed,
   onMyCourseSuccess,
+  onReadAllNotificationSuccess,
   onReadNotificationSuccess,
   onRelatedCourseSuccess,
   onSaveNoteSuccess,
@@ -183,7 +189,7 @@ function* handleOnSaveTrackingVideo({ payload }) {
     const res = yield call(requestSaveTrackingVideo, payload);
 
     if (res.status === 200) {
-      yield put(onSaveTrackingVideoSuccess());
+      yield put(onSaveTrackingVideoSuccess(res.data));
     }
   } catch (error) {
     showMessageError(error);
@@ -311,9 +317,18 @@ function* handleLoadNotification({ payload }) {
 function* handleReadNotification({ payload }) {
   try {
     const res = yield call(requestReadNotification, payload);
-    console.log(res.data);
     if (res.status === 200) {
       yield put(onReadNotificationSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+function* handleReadAllNotification({ payload }) {
+  try {
+    const res = yield call(requestReadAllNotification, payload);
+    if (res.status === 200) {
+      yield put(onReadAllNotificationSuccess(res.data));
     }
   } catch (error) {
     console.log(error);
@@ -337,6 +352,31 @@ function* handleLoadCourseRating({ payload }) {
     const res = yield call(requestLoadCourseRating, payload);
     if (res.status === 200) {
       yield put(onLoadCourseRatingSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+
+function* handleGenerateCourseExam({ payload }) {
+  try {
+    const res = yield call(requestGenerateCourseExam, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onGenerateCourseExamSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+function* handleFinishExam({ payload }) {
+  try {
+    const res = yield call(requestFinishCourseExam, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onFinishExamSuccess(res.data));
     }
   } catch (error) {
     console.log(error);
@@ -368,6 +408,9 @@ export {
   handleSaveLikeOfPost,
   handleLoadNotification,
   handleReadNotification,
+  handleReadAllNotification,
   handleUpdateUserRating,
   handleLoadCourseRating,
+  handleGenerateCourseExam,
+  handleFinishExam,
 };
