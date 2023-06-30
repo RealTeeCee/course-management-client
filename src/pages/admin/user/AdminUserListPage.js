@@ -35,22 +35,11 @@ const schemaValidation = yup.object().shape({
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
-const userItems = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "In-Active",
-  },
-];
+
 const AdminUserListPage = () => {
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
-  const [categorySelected, setCategorySelected] = useState(null);
-  const [statusSelected, setStatusSelected] = useState(null);
 
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
@@ -58,11 +47,10 @@ const AdminUserListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [users, setusers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
-  const { user } = useSelector((state) => state.auth);
-  const user_status = user.status;
+
 
   /********* END API State ********* */
 
@@ -119,17 +107,12 @@ const AdminUserListPage = () => {
       width: "70px",
     },
     {
-      name: "Frist Name",
-      selector: (row) => row.first_name,
+      name: "Name",
+      selector: (row) => row.name,
       sortable: true,
-      width: "250px",
-    },
-    {
-      name: "Last Name",
-      selector: (row) => row.last_name,
-      sortable: true,
-      width: "150px",
-    },
+      width: "300px",
+    }
+    ,
     {
       name: "Email",
       selector: (row) => row.email,
@@ -137,20 +120,27 @@ const AdminUserListPage = () => {
       width: "200px",
     },
     {
+      name: "Verifile",
+      selector: (row) => (
+        row.verified ? "True" : "False"
+      ),
+      width: "100px",
+    },
+    {
       name: "Avatar",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.image_url}`} alt={row.name} />
+        <img width={50} height={50} src={`${row.imageUrl}`} alt={row.name} />
       ),
     },
     {
       name: "Status",
       selector: (row) => (
         <SwitchAntCom
-          defaultChecked={row.user_status === 1 ? true : false}
+          defaultChecked={row.status === 1 ? true : false}
           className={`${
-            row.user_status === 1 ? "" : "bg-tw-success hover:!bg-tw-dark"
+            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
           }`}
-          onChange={(isChecked) => handleChangeVerfified(row.id, isChecked)}
+          onChange={(isChecked) => handleChangeStatus(row.id, isChecked)}
         />
       ),
     },
@@ -183,7 +173,7 @@ const AdminUserListPage = () => {
     try {
       const res = await axiosBearer.get(`/auth/user/all`);
       console.log("data user", res.data);
-      setusers(res.data);
+      setUsers(res.data);
       setFilterUser(res.data);
     } catch (error) {
       console.log(error);
@@ -230,6 +220,7 @@ const AdminUserListPage = () => {
 
   /********* Delete one API ********* */
   const handleDeleteUser = ({ id, name }) => {
+    console.log("userId",id)
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete user: <span class="text-tw-danger">${name}</span>`,
@@ -241,7 +232,7 @@ const AdminUserListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosBearer.delete(`/auth/user`, { id });
+          const res = await axiosBearer.delete(`/auth/user?userId=${id}`);
           getUsers();
           reset(res.data);
           toast.success(res.data.message);
@@ -272,7 +263,7 @@ const AdminUserListPage = () => {
       if (result.isConfirmed) {
         try {
           const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/auth/user/${row.id}`)
+            axiosBearer.delete(`/auth/user?userId=${row.id}`)
           );
           await Promise.all(deletePromises);
           toast.success(`Delete ${selectedRows.length} users success`);
@@ -286,46 +277,26 @@ const AdminUserListPage = () => {
     });
   };
   /********* Update Status API ********* */
-  const handleChangeVerfified = async (userId, isChecked) => {
+  const handleChangeStatus = async (userId, isChecked) => {
     try {
       //update new status of user
-      const newUsers = users.map((userNew) =>
-      userNew.id === userId
-          ? { ...userNew, user_status: isChecked ? 1 : 0,}
-          : userNew
-      );
+      const newUsers = users.map((user) =>
+      user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
+    );
+    const updatedUser = newUsers.find((user) => user.id === userId);
 
-      const dataBody = newUsers.find((userNew) => userNew.id === userId);
-
-      const {
-        id,
-        email,
-        first_name,
-        last_name,
-        image_url,
-        name,
-        password,
-        is_verified,
-        provider,
-        provider_id,
-        role,
-        user_status,
-      } = dataBody;
-      const formData = {
-        id,
-        email,
-        first_name,
-        last_name,
-        image_url,
-        is_verified: is_verified||"True",
-        name,
-        password,
-        provider,
-        provider_id,
-        role,
-        user_status: user_status||user.id,
-      };
-      
+    const formData = {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
+      imageUrl: updatedUser.imageUrl,
+      name: updatedUser.name,
+      role: updatedUser.role,
+      status: updatedUser.status,
+      verified: updatedUser.verified,
+    };
+    
       await axiosBearer.put(`/auth/user`, formData);
       console.log("formData", formData);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);

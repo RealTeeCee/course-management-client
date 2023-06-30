@@ -30,10 +30,15 @@ import {
 import { onUserUpdateProfile } from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
-import { convertDateTime, showMessageError, sliceText } from "../../utils/helper";
+import {
+  convertDateTime,
+  showMessageError,
+  sliceText,
+} from "../../utils/helper";
 import { axiosBearer } from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { AiOutlineEdit } from "react-icons/ai";
+import { PiPasswordFill } from "react-icons/pi";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -48,17 +53,6 @@ const schemaValidation = yup.object().shape({
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
 });
 
-const statusNoti = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "InActive",
-  },
-];
-
 const UserProfilePage = () => {
   const {
     control,
@@ -71,7 +65,7 @@ const UserProfilePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user, isLoading, course } = useSelector((state) => state.auth);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
 
@@ -80,9 +74,9 @@ const UserProfilePage = () => {
   const [notificationStatus, setNotificationStatus] = useState(
     user?.notificationStatus
   );
-  const [notis, setNotis] = useState([]);
-  const [notiId, setNotiId] = useState("");
-  const [noti, setNoti] = useState(0);
+  const [notifs, setNotifs] = useState([]);
+  const [notifId, setNotifId] = useState("");
+  const [notif, setNotif] = useState(0);
 
   const resetValues = () => {
     reset();
@@ -149,51 +143,12 @@ const UserProfilePage = () => {
   };
 
   // ************** Edit Notification **************************
-  // const handleChangeSwitch = async (notiId, isChecked) => {
-  //   try {
-  //     const newNoti = notis.map((noti) =>
-  //       noti.id === notiId
-  //         ? {
-  //             ...noti,
-  //             status: isChecked ? 1 : 0,
-  //           }
-  //         : noti
-  //     );
-
-  //     const dataBody = newNoti.find((noti) => noti.id === notiId);
-
-  //     const {
-  //       id,
-  //       content,
-  //       is_delivered,
-  //       is_read,
-  //       notification_type,
-  //       user_from_id,
-  //       user_to_id,
-  //     } = dataBody;
-
-  //     const formData = {
-  //       id,
-  //       content,
-  //       is_delivered,
-  //       is_read,
-  //       notification_type,
-  //       user_from_id,
-  //       user_to_id,
-  //     };
-
-  //     await axiosBearer.patch(`/notification/read/${notiId}`, formData);
-  //     toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-  //     getNotification();
-  //   } catch (error) {
-  //     showMessageError(error);
-  //   }
-  // };
-
-  const handleChangeSwitch = async (notiId, isChecked) => {
+  const handleChangeSwitch = async (notifId, isChecked) => {
+    console.log("notifId", notifId);
+    console.log("isChecked", isChecked);
     try {
-      const updatedNotis = notis.map((noti) =>
-        noti.id === notiId
+      const newNoti = notifs.map((noti) =>
+        noti.id === notifId
           ? {
               ...noti,
               status: isChecked ? 1 : 0,
@@ -201,30 +156,33 @@ const UserProfilePage = () => {
           : noti
       );
 
-      const updatedNoti = updatedNotis.find((noti) => noti.id === notiId);
+      const dataBody = newNoti.find((noti) => noti.id === notifId);
+
+      const {
+        id: notifId,
+        progress,
+        comment,
+        rating,
+        notify,
+        user_id,
+        course_id,
+      } = dataBody;
 
       const formData = {
-        id: updatedNoti.id,
-        content: updatedNoti.content,
-        is_delivered: updatedNoti.is_delivered,
-        is_read: updatedNoti.is_read,
-        notification_type: isChecked ? 1 : 0,
-        user_from_id: updatedNoti.user_from_id,
-        user_to_id: updatedNoti.user_to_id,
+        id: notifId,
+        progress,
+        comment,
+        rating,
+        notify: isChecked ? "True" : "False",
+        user_id: user_id || user.id,
+        course_id: course_id || course.id,
       };
 
-      await axiosBearer.patch(`/notification/read/${notiId}`, formData);
+      await axiosBearer.put(`/enrollment/notif`, formData);
+      console.log("databody", dataBody);
+      console.log("formdata", formData);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getNotification();
-    } catch (error) {
-      showMessageError(error);
-    }
-  };
-  const getNotification = async () => {
-    try {
-      const response = await axiosBearer.get("/notification");
-      const { data } = response;
-      setNotis(data);
+      // getNotification();
     } catch (error) {
       showMessageError(error);
     }
@@ -320,50 +278,57 @@ const UserProfilePage = () => {
           {/* Start User profile */}
 
           {/* Start Setting */}
-          <div className="w-full shadow-fb bg-white rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <div className="text-xl font-bold text-fBlack">Setting</div>
-            </div>
-            <div className="shadow-fb rounded w-full bg-white p-4">
-              {/* <div className="border border-fGrey mt-6 mb-6 border-opacity-10" /> */}
-              <div className="mt-4 flex items-center">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-3">
-                    <button
-                      className="p-2 rounded-full bg-blue-500 hover:bg-blue-600"
-                      onClick={() => handleEdit()}
-                    >
-                      <AiOutlineEdit className="h-6 w-6 text-white" />
-                    </button>
-                  </div>
-                  <div className="col-span-9">
-                    <span className="block text-lg">Edit Profile</span>
-                    <span className="ml-2 italic">
-                      User can edit personal information 
-                    </span>
+          <div className="flex-row row-start-1 col-span-12 md:col-span-7 md:col-start-7 space-y-4 rounded-lg">
+            <div>
+              <div className="w-full shadow-fb rounded bg-white p-4">
+                <div className="flex justify-between items-center">
+                  <div className="text-xl font-bold text-fBlack">Setting</div>
+                </div>
+                <div className="flex items-center  mt-4 space-x-4">
+                  <button
+                    className="p-2 rounded-full bg-teal-500 hover:bg-teal-600"
+                    onClick={() => handleEdit()}
+                  >
+                    <AiOutlineEdit className="h-6 w-6 text-white " />
+                  </button>
+                  <div className="flex-1">
+                    <p className="font-bold">Edit Profile</p>
+                    <p className="text-gray-500 italic">Edit your personal information</p>
                   </div>
                 </div>
 
-              </div>
+                <div className="flex items-center  mt-4 space-x-4">
+                  <SwitchAntCom
+                    defaultChecked={notif.status === "true" ? true : false}
+                    className={`${
+                      notif.status === "true"
+                        ? ""
+                        : "bg-tw-danger hover:!bg-tw-orange"
+                    }`}
+                    onChange={(isChecked) =>
+                      handleChangeSwitch(notifId, isChecked)
+                    }
+                  />
 
-              <div className="mt-4 flex items-center">
-                <div className="grid grid-cols-12 style={{ justifyItems: 'center' }}">
-                  <div className="col-span-3 ">
-                    <SwitchAntCom
-                      defaultChecked={noti === 1 ? true : false}
-                      className={`${
-                        noti === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
-                      }`}
-                      onChange={(isChecked) =>
-                        handleChangeSwitch(notiId, isChecked)
-                      }
-                    />
+                  <div className="flex-1">
+                    <p className="font-bold">Receive notification</p>
+                    <p className="text-gray-500 italic">Active will received notifications from Course</p>
                   </div>
-                  <div className="col-span-9">
-                    <span className="block text-lg">Receive notification</span>
-                    <span className="ml-2 italic ">
-                      User receive notifications from Course
-                    </span>
+                </div>
+
+                <div className="flex items-center  mt-4 space-x-4">
+                <button
+                      className="p-2 rounded-full bg-rose-400 hover:bg-rose-500"
+                      onClick={() =>
+                        (window.location.href = "/profile/change-password")
+                      }
+                    >
+                      <PiPasswordFill className="h-6 w-6 text-white" />
+                    </button>
+
+                  <div className="flex-1">
+                    <p className="font-bold">Change Password</p>
+                    <p className="text-gray-500 italic">Change user's password</p>
                   </div>
                 </div>
               </div>
@@ -412,7 +377,7 @@ const UserProfilePage = () => {
           </div>
         </div>
       </div>
-     
+
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
