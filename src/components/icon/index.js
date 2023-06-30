@@ -31,3 +31,4 @@ export const { default: IconBookCom } = require("./IconBookCom");
 export const { default: IconDocumentCom } = require("./IconDocumentCom");
 export const { default: IconPlusCom } = require("./IconPlusCom");
 export const { default: IconStarCom } = require("./IconStarCom");
+export const { default: IconPartCom } = require("./IconPartCom");

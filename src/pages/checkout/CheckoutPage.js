@@ -22,6 +22,7 @@ import { MESSAGE_FIELD_REQUIRED, NOT_FOUND_URL } from "../../constants/config";
 import { API_CHECKOUT_URL } from "../../constants/endpoint";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   payment_method: yup
@@ -50,7 +51,7 @@ const CheckoutPage = () => {
   const courseBySlug = data.find((item, index) => item.slug === slug);
   useEffect(() => {
     if (!courseBySlug) navigate(NOT_FOUND_URL);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseBySlug]);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -87,7 +88,29 @@ const CheckoutPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Payment Details</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Checkout Page</HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Detail",
+              slug: `/courses/${slug ?? "not-found"}`,
+            },
+            {
+              title: "Checkout",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
       <GapYCom></GapYCom>
       <div className="card">
         <form onSubmit={handleSubmit(handleSubmitForm)}>

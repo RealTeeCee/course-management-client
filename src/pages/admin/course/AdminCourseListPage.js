@@ -10,6 +10,7 @@ import {
   IconBookCom,
   IconEditCom,
   IconEyeCom,
+  IconPartCom,
   IconRemoveCom,
   IconTrashCom,
   IconVideoCom,
@@ -218,6 +219,18 @@ const AdminCourseListPage = () => {
           <Link to={`/admin/courses/${row.id}/sections`}>
             <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
               <IconBookCom className="w-5 text-black"></IconBookCom>
+            </ButtonCom>
+          </Link>
+        </>
+      ),
+    },
+    {
+      name: "Part",
+      cell: (row) => (
+        <>
+          <Link to={`/admin/courses/${row.id}/parts`}>
+            <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
+              <IconPartCom className="w-5 text-black"></IconPartCom>
             </ButtonCom>
           </Link>
         </>
@@ -869,7 +882,9 @@ const AdminCourseListPage = () => {
                   </div>
                 </div>
                 <div className="col-sm-4">
-                  <LabelCom htmlFor="level" className="pb-[11px]">Level</LabelCom>
+                  <LabelCom htmlFor="level" className="pb-[11px]">
+                    Level
+                  </LabelCom>
                   <div>
                     <SelectDefaultAntCom
                       listItems={levelItems}
