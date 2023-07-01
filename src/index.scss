@@ -15,7 +15,6 @@
   button,
   [type="button"] {
     -webkit-appearance: button;
-    // background-color: red;
     background-image: none;
     color: black;
     border-color: #d9d9d9;
@@ -51,7 +50,6 @@
 
   // ******** SIDE BAR ********
   .sidebar {
-    // transition: transform 0.3s ease-out;
     @apply transition-all duration-300;
   }
 
@@ -63,10 +61,6 @@
     display: block !important;
     width: 100% !important;
   }
-
-  // .animate-slide-back {
-  //   transform: translateY(0);
-  // }
 
   // ******** END SIDE BAR ********
 }

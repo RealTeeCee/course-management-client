@@ -1,10 +1,10 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { axiosBearer } from "../../../api/axiosInstance";
 import { SwitchAntCom } from "../../../components/ant";
@@ -181,7 +181,7 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection({ sectionId: row.id, name: row.name });
+              handleDelete({ sectionId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -219,7 +219,7 @@ const AdminSectionListPage = () => {
   ];
 
   /********* Delete One ********* */
-  const handleDeleteSection = ({ sectionId, name }) => {
+  const handleDelete = ({ sectionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
