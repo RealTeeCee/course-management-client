@@ -71,25 +71,25 @@ function* handleOnSubcribeAuthor({ payload }) {
   }
 }
 
-// function* handleOnUnsubcribeAuthor({ payload }) {
-//   try {
-//     const res = yield call(requestSubcribeAuthor, payload);
-//     if (res.status === 200) {
-//       toast.success("Thank for you subcribe.");
-//       yield put(onUnsubcribeAuthorSuccess());
-//     } else {
-//       // toast.error(MESSAGE_GENERAL_FAILED);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     // showMessageError(error);
-//   }
-// }
+function* handleOnUnsubcribeAuthor({ payload }) {
+  try {
+    const res = yield call(requestSubcribeAuthor, payload);
+    if (res.status === 200) {
+      toast.success("Unsubcribe successfully.");
+      yield put(onUnsubcribeAuthorSuccess());
+    } else {
+      // toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    console.log(error);
+    // showMessageError(error);
+  }
+}
 
 export {
   handleOnLoadAuthorsPagination,
   handleOnLoadTop3Authors,
   handleOnLoadSubcribesByUserId,
   handleOnSubcribeAuthor,
-  // handleOnUnsubcribeAuthor,
+  handleOnUnsubcribeAuthor,
 };
