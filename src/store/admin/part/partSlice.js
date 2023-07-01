@@ -1,15 +1,13 @@
 const { createSlice } = require("@reduxjs/toolkit");
 
-const initialState = {
-  isLoading: false,
-  isPostPartSuccess: false,
-  isBulkDeleteSuccess: false,
-  errorMessage: null,
-  parts: [],
-};
 const partSlice = createSlice({
   name: "part",
-  initialState: { ...initialState },
+  initialState: {
+    isLoading: false,
+    isPostPartSuccess: false,
+    isBulkDeleteSuccess: false,
+    parts: [],
+  },
   reducers: {
     onLoading: (state, action) => ({
       ...state,
