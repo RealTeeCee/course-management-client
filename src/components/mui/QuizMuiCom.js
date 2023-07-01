@@ -232,7 +232,7 @@ function QuizMuiCom({ exam = [] }) {
     };
 
     dispatch(onFinishExam(examResult));
-    // navigate("/exam/finish");
+    navigate("/exam/finish");
     setShowDialog(false);
   };
 
@@ -249,7 +249,7 @@ function QuizMuiCom({ exam = [] }) {
       ></DialogConfirmMuiCom>
       <Paper
         square
-        elevation={0}
+        elevation={24}
         sx={{
           padding: "20px",
           width: "1000px",
@@ -276,9 +276,9 @@ function QuizMuiCom({ exam = [] }) {
             {
               <span
                 dangerouslySetInnerHTML={{
-                  __html: `<strong>${activeStep + 1}.</strong> ${
+                  __html: `<strong>${activeStep + 1}. ${
                     exam[activeStep].question.description
-                  }`,
+                  }</strong>`,
                 }}
               ></span>
             }
@@ -296,6 +296,7 @@ function QuizMuiCom({ exam = [] }) {
                     value={answer.id}
                     control={
                       <Radio
+                        color="secondary"
                         onChange={handleChooseAnswer}
                         name="chooseAnswer"
                         checked={answer.id === answerId}
@@ -325,8 +326,9 @@ function QuizMuiCom({ exam = [] }) {
                 size="small"
                 onClick={handleNext}
                 disabled={activeStep === maxSteps - 1}
+                variant="outlined"
+                color="secondary"
               >
-                Next
                 {theme.direction === "rtl" ? (
                   <KeyboardArrowLeft />
                 ) : (
@@ -339,13 +341,14 @@ function QuizMuiCom({ exam = [] }) {
                 size="small"
                 onClick={handleBack}
                 disabled={activeStep === 0}
+                variant="outlined"
+                color="secondary"
               >
                 {theme.direction === "rtl" ? (
                   <KeyboardArrowRight />
                 ) : (
                   <KeyboardArrowLeft />
                 )}
-                Back
               </Button>
             }
           />
@@ -356,6 +359,7 @@ function QuizMuiCom({ exam = [] }) {
             disabled={chooseAnswer.length === 0}
             onClick={handleSubmit}
             variant="contained"
+            color="secondary"
           >
             SUBMIT
           </Button>

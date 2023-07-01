@@ -14,6 +14,8 @@ import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import AuthorPage from "./pages/author/AuthorPage.js";
+import { onAuthorInitialState } from "./store/author/authorSlice.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -115,10 +117,10 @@ function App() {
     }
   }, [dispatch, navigate, user?.status]);
 
-  // useEffect(() => {
-  //   //   dispatch(onCourseInitalState());
-  //   dispatch(onAuthInitialState());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(onAuthorInitialState());
+    // dispatch(onAuthInitialState());
+  }, [dispatch]);
 
   // useEffect(() => {
   //   axiosBearer
@@ -241,6 +243,8 @@ function App() {
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
+          <Route path="/authors" element={<AuthorPage></AuthorPage>}></Route>
+
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"

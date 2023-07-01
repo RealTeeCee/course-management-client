@@ -371,6 +371,7 @@ function* handleGenerateCourseExam({ payload }) {
     showMessageError(error);
   }
 }
+
 function* handleFinishExam({ payload }) {
   try {
     const res = yield call(requestFinishCourseExam, payload);

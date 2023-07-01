@@ -119,6 +119,7 @@ const LearnPage = () => {
     if (played > 0.9) {
       setIsCompleted((prev) => prev + 1);
     }
+    setPlayedSeconds(playedSeconds);
   };
 
   const handleEnded = () => {

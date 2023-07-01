@@ -27,6 +27,8 @@ import {
   NotificationListPopupMuiCom,
   NotificationToastListMuiCom,
 } from "../../components/mui";
+import { onAuthorInitialState } from "../../store/author/authorSlice";
+import { onCategoryInitialState } from "../../store/category/categorySlice";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -162,7 +164,9 @@ const HomeTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
+                          dispatch(onCategoryInitialState());
                           dispatch(onCourseInitalState());
+                          dispatch(onAuthorInitialState());
                         },
                       }
                     : {};
