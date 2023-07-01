@@ -319,25 +319,7 @@ const AdminBlogListPage = () => {
         blog.id === blogId ? { ...blog, status: selectedStatus } : blog
       );
 
-<<<<<<< HEAD
       const dataBody = newBlogs.find((blog) => blog.id === blogId);
-=======
-  const getBlogById = async (blogId) => {
-    try {
-      const res = await axiosBearer.get(`blog/${blogId}`);
-      reset(res.data);
-      setCategorySelected(res.data.category_id);
-      setStatusSelected(res.data.status);
-      const resImage = res.data.image;
-      const imgObj = [
-        {
-          uid: v4(),
-          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
-          status: "done",
-          url: resImage,
-        },
-      ];
->>>>>>> cdaeee1b70e9cb6fea6aee9a50d8d8c8292cbb7b
 
       const {
         id,
@@ -369,6 +351,26 @@ const AdminBlogListPage = () => {
       showMessageError(error);
     }
   };
+
+
+  const getBlogById = async (blogId) => {
+    try {
+      const res = await axiosBearer.get(`blog/${blogId}`);
+      reset(res.data);
+      setCategorySelected(res.data.category_id);
+      setStatusSelected(res.data.status);
+      const resImage = res.data.image;
+      const imgObj = [
+        {
+          uid: v4(),
+          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
+          status: "done",
+          url: resImage,
+        },
+      ];  } catch (error) {
+        console.log(error);
+      }
+    };
 
   return (
     <>

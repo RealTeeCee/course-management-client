@@ -27,7 +27,10 @@ import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../constants/config";
-import { onUserUpdateProfile } from "../../store/auth/authSlice";
+import {
+  onUserUpdateNoti,
+  onUserUpdateProfile,
+} from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
 import {
@@ -66,17 +69,13 @@ const UserProfilePage = () => {
   });
 
   const { user, isLoading, course } = useSelector((state) => state.auth);
+  console.log("user: ", user);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
   const [image, setImage] = useState([]);
-  const [notificationStatus, setNotificationStatus] = useState(
-    user?.notificationStatus
-  );
-  const [notifs, setNotifs] = useState([]);
-  const [notifId, setNotifId] = useState("");
-  const [notif, setNotif] = useState(0);
+  // const [user, setUsers] = useState([]);
 
   const resetValues = () => {
     reset();
@@ -143,49 +142,17 @@ const UserProfilePage = () => {
   };
 
   // ************** Edit Notification **************************
-  const handleChangeSwitch = async (notifId, isChecked) => {
-    console.log("notifId", notifId);
+  const handleChangeSwitch = async (isChecked) => {
     console.log("isChecked", isChecked);
-    try {
-      const newNoti = notifs.map((noti) =>
-        noti.id === notifId
-          ? {
-              ...noti,
-              status: isChecked ? 1 : 0,
-            }
-          : noti
-      );
-
-      const dataBody = newNoti.find((noti) => noti.id === notifId);
-
-      const {
-        id: notifId,
-        progress,
-        comment,
-        rating,
-        notify,
-        user_id,
-        course_id,
-      } = dataBody;
-
-      const formData = {
-        id: notifId,
-        progress,
-        comment,
-        rating,
-        notify: isChecked ? "True" : "False",
-        user_id: user_id || user.id,
-        course_id: course_id || course.id,
-      };
-
-      await axiosBearer.put(`/enrollment/notif`, formData);
-      console.log("databody", dataBody);
-      console.log("formdata", formData);
-      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      // getNotification();
-    } catch (error) {
-      showMessageError(error);
-    }
+    const formData = {
+      id: user.id,
+      notify: isChecked ? 1 : 0,
+    };
+    console.log("formData", formData);
+    dispatch(onUserUpdateNoti(formData));
+    // await axiosBearer.put(`/auth/user/notify`, formData);
+    // toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+    // getUsers();
   };
 
   return (
@@ -293,42 +260,48 @@ const UserProfilePage = () => {
                   </button>
                   <div className="flex-1">
                     <p className="font-bold">Edit Profile</p>
-                    <p className="text-gray-500 italic">Edit your personal information</p>
+                    <p className="text-gray-500 italic">
+                      Edit your personal information
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center  mt-4 space-x-4">
                   <SwitchAntCom
-                    defaultChecked={notif.status === "true" ? true : false}
+                    defaultChecked={user.notify === 1 ? true : false}
                     className={`${
-                      notif.status === "true"
+                      user.notify === 1
                         ? ""
                         : "bg-tw-danger hover:!bg-tw-orange"
                     }`}
-                    onChange={(isChecked) =>
-                      handleChangeSwitch(notifId, isChecked)
-                    }
+                    onChange={(isChecked) => handleChangeSwitch(isChecked)}
+                    // textChecked="ok"
+                    // textUnChecked="none"
                   />
 
                   <div className="flex-1">
                     <p className="font-bold">Receive notification</p>
-                    <p className="text-gray-500 italic">Active will received notifications from Course</p>
+                    <p className="text-gray-500 italic">
+                      Active will received notifications from Course
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center  mt-4 space-x-4">
-                <button
-                      className="p-2 rounded-full bg-rose-400 hover:bg-rose-500"
-                      onClick={() =>
-                        (window.location.href = "/profile/change-password")
-                      }
-                    >
-                      <PiPasswordFill className="h-6 w-6 text-white" />
-                    </button>
+                  <button
+                    className="p-2 rounded-full bg-rose-400 hover:bg-rose-500"
+                    onClick={() =>
+                      (window.location.href = "/profile/change-password")
+                    }
+                  >
+                    <PiPasswordFill className="h-6 w-6 text-white" />
+                  </button>
 
                   <div className="flex-1">
                     <p className="font-bold">Change Password</p>
-                    <p className="text-gray-500 italic">Change user's password</p>
+                    <p className="text-gray-500 italic">
+                      Change user's password
+                    </p>
                   </div>
                 </div>
               </div>

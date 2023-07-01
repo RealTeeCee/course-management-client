@@ -158,13 +158,13 @@ const BlogDetailsPage = () => {
           </div>
         </section>
       ) : null}
-  
+      {user && id &(
         <section className="bg-gray-50 max-w-[1240px] mx-auto py-10 px-24 mt-10">
           <div>
             <CommentCom />
           </div>
         </section>
-    
+      )}
     </>
   );
 };

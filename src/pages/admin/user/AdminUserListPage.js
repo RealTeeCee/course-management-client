@@ -287,14 +287,10 @@ const AdminUserListPage = () => {
 
     const formData = {
       id: updatedUser.id,
-      email: updatedUser.email,
       first_name: updatedUser.first_name,
       last_name: updatedUser.last_name,
       imageUrl: updatedUser.imageUrl,
-      name: updatedUser.name,
-      role: updatedUser.role,
       status: updatedUser.status,
-      verified: updatedUser.verified,
     };
     
       await axiosBearer.put(`/auth/user`, formData);
