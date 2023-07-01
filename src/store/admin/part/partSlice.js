@@ -17,11 +17,11 @@ const partSlice = createSlice({
       ...state,
       isLoading: true,
       isPostPartSuccess: false,
-      isBulkDeleteSuccess: false,
     }),
     onGetPartsByCourseIdSuccess: (state, action) => ({
       ...state,
       isLoading: false,
+      isBulkDeleteSuccess: false,
       parts: action.payload,
     }),
     onPostPart: (state, action) => ({
@@ -41,6 +41,7 @@ const partSlice = createSlice({
     onBulkDeletePart: (state, action) => ({
       ...state,
       isLoading: true,
+      isBulkDeleteSuccess: false,
     }),
     onBulkDeletePartSuccess: (state, action) => ({
       ...state,

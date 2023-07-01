@@ -25,7 +25,7 @@ const schemaValidation = yup.object().shape({
   maxPoint: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(10, "This field must be greater than 10"),
+    .min(100, "This field must be greater than 100"),
   limitTime: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -37,6 +37,7 @@ const AdminCreatePartPage = () => {
     control,
     register,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm({
@@ -143,7 +144,8 @@ const AdminCreatePartPage = () => {
                       register={register}
                       placeholder="Input max point"
                       errorMsg={errors.maxPoint?.message}
-                      defaultValue={10}
+                      defaultValue={100}
+                      readOnly
                     ></InputCom>
                   </div>
 

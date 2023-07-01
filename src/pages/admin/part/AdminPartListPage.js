@@ -114,6 +114,7 @@ const AdminPartListPage = () => {
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBulkDeleteSuccess]);
 
   const {
@@ -318,7 +319,6 @@ const AdminPartListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        console.log("selectedRows: ", selectedRows);
         dispatch(onBulkDeletePart(selectedRows));
         // try {
         //   const deletePromises = selectedRows.map((row) =>
@@ -444,7 +444,7 @@ const AdminPartListPage = () => {
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
-                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
+                  onSelectedRowsChange={handleRowSelection} // selected Multiple
                 ></TableCom>
               </span>
             </div>
