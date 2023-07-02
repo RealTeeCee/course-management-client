@@ -2,7 +2,7 @@ import { takeLatest } from "redux-saga/effects";
 import {
   handleOnBulkDeleteQuestion,
   handleOnDeleteQuestion,
-  handleOnGetQuestionsByCourseId,
+  handleOnGetQuestionsByPartId,
   handleOnPostQuestion,
 } from "./questionHandlers";
 import {
@@ -13,7 +13,7 @@ import {
 } from "./questionSlice";
 
 export default function* questionSaga() {
-  yield takeLatest(onGetQuestionsByPartId.type, handleOnGetQuestionsByCourseId);
+  yield takeLatest(onGetQuestionsByPartId.type, handleOnGetQuestionsByPartId);
   yield takeLatest(onPostQuestion.type, handleOnPostQuestion);
   yield takeLatest(onDeleteQuestion.type, handleOnDeleteQuestion);
   yield takeLatest(onBulkDeleteQuestion.type, handleOnBulkDeleteQuestion);

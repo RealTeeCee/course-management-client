@@ -164,7 +164,9 @@ const AdminQuestionListPage = () => {
       name: "Answer",
       cell: (row) => (
         <>
-          <Link to={`/admin/courses/${row.id}/...`}>
+          <Link
+            to={`/admin/courses/${courseId}/parts/${partId}/questions/${row.id}/answers`}
+          >
             <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
               <IconAnswerCom className="text-tw-success" />
             </ButtonCom>
@@ -368,7 +370,7 @@ const AdminQuestionListPage = () => {
                 <TableCom
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/parts/${partId}/questions/create`}
-                  title={`Course: ${courseById?.name}, ${fakeName(
+                  title={`${sliceText(courseById?.name, 30)}, ${fakeName(
                     "PART",
                     partId
                   )}`}

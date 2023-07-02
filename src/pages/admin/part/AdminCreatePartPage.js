@@ -59,7 +59,7 @@ const AdminCreatePartPage = () => {
   const resetValues = () => {
     reset();
   };
-
+  // Nếu ko muốn chuyển trang sau khi create, hủy phần này
   useEffect(() => {
     if (isPostPartSuccess) navigate(`/admin/courses/${courseId}/parts`);
     // eslint-disable-next-line react-hooks/exhaustive-deps

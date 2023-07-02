@@ -6,23 +6,23 @@ const answerSlice = createSlice({
     isLoading: false,
     isPostAnswerSuccess: false,
     isBulkDeleteSuccess: false,
-    questions: [],
+    answers: [],
   },
   reducers: {
     onLoading: (state, action) => ({
       ...state,
       isLoading: action.payload,
     }),
-    onGetAnswersByPartId: (state, action) => ({
+    onGetAnswersByQuestionId: (state, action) => ({
       ...state,
       isLoading: true,
       isPostAnswerSuccess: false,
     }),
-    onGetAnswersByPartIdSuccess: (state, action) => ({
+    onGetAnswersByQuestionIdSuccess: (state, action) => ({
       ...state,
       isLoading: false,
       isBulkDeleteSuccess: false,
-      questions: action.payload,
+      answers: action.payload,
     }),
     onPostAnswer: (state, action) => ({
       ...state,
@@ -52,8 +52,8 @@ const answerSlice = createSlice({
 
 export const {
   onLoading,
-  onGetAnswersByPartId,
-  onGetAnswersByPartIdSuccess,
+  onGetAnswersByQuestionId,
+  onGetAnswersByQuestionIdSuccess,
   onPostAnswer,
   onPostAnswerSuccess,
   onDeleteAnswer,

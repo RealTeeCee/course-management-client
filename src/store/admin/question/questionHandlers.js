@@ -3,21 +3,18 @@ import { call, put } from "redux-saga/effects";
 import { MESSAGE_GENERAL_FAILED } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
 import {
-  requestDeleteQuestion,
-  requestGetQuestionsByCourseId,
-  requestPostQuestion,
+  requestDeleteQuestion, requestGetQuestionsByPartId,
+  requestPostQuestion
 } from "./questionRequests";
 import {
-  onBulkDeleteQuestionSuccess,
-  onPostQuestionSuccess,
-  onGetQuestionsByPartId,
+  onBulkDeleteQuestionSuccess, onGetQuestionsByPartId,
   onGetQuestionsByPartIdSuccess,
-  onLoading,
+  onLoading, onPostQuestionSuccess
 } from "./questionSlice";
 
-function* handleOnGetQuestionsByCourseId({ payload }) {
+function* handleOnGetQuestionsByPartId({ payload }) {
   try {
-    const res = yield call(requestGetQuestionsByCourseId, payload.partId);
+    const res = yield call(requestGetQuestionsByPartId, payload.partId);
     if (res.status === 200) yield put(onGetQuestionsByPartIdSuccess(res.data));
   } catch (error) {
     console.log(error);
@@ -81,8 +78,9 @@ function* handleOnBulkDeleteQuestion({ payload }) {
 }
 
 export {
-  handleOnGetQuestionsByCourseId,
+  handleOnGetQuestionsByPartId,
   handleOnPostQuestion,
   handleOnDeleteQuestion,
   handleOnBulkDeleteQuestion,
 };
+

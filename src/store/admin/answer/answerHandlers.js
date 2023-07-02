@@ -4,21 +4,22 @@ import { MESSAGE_GENERAL_FAILED } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
 import {
   requestDeleteAnswer,
-  requestGetAnswersByCourseId,
+  requestGetAnswersByQuestionId,
   requestPostAnswer,
 } from "./answerRequests";
 import {
   onBulkDeleteAnswerSuccess,
   onPostAnswerSuccess,
-  onGetAnswersByPartId,
-  onGetAnswersByPartIdSuccess,
+  onGetAnswersByQuestionId,
+  onGetAnswersByQuestionIdSuccess,
   onLoading,
 } from "./answerSlice";
 
-function* handleOnGetAnswersByCourseId({ payload }) {
+function* handleOnGetAnswersByQuestionId({ payload }) {
   try {
-    const res = yield call(requestGetAnswersByCourseId, payload.partId);
-    if (res.status === 200) yield put(onGetAnswersByPartIdSuccess(res.data));
+    const res = yield call(requestGetAnswersByQuestionId, payload.questionId);
+    if (res.status === 200)
+      yield put(onGetAnswersByQuestionIdSuccess(res.data));
   } catch (error) {
     console.log(error);
   }
@@ -42,8 +43,8 @@ function* handleOnDeleteAnswer({ payload }) {
     const res = yield call(requestDeleteAnswer, payload);
     if (res.data.type === "success") {
       yield put(
-        onGetAnswersByPartId({
-          partId: payload.partId,
+        onGetAnswersByQuestionId({
+          questionId: payload.questionId,
         })
       );
       toast.success(res.data.message);
@@ -73,15 +74,15 @@ function* handleOnBulkDeleteAnswer({ payload }) {
     showMessageError(error);
   } finally {
     yield put(
-      onGetAnswersByPartId({
-        partId: payload[0].partId,
+      onGetAnswersByQuestionId({
+        questionId: payload[0].questionId,
       })
     );
   }
 }
 
 export {
-  handleOnGetAnswersByCourseId,
+  handleOnGetAnswersByQuestionId,
   handleOnPostAnswer,
   handleOnDeleteAnswer,
   handleOnBulkDeleteAnswer,

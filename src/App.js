@@ -51,6 +51,13 @@ const AdminCreateQuestionPage = lazy(() =>
   import("./pages/admin/question/AdminCreateQuestionPage.js")
 );
 
+const AdminAnswerListPage = lazy(() =>
+  import("./pages/admin/answer/AdminAnswerListPage.js")
+);
+const AdminCreateAnswerPage = lazy(() =>
+  import("./pages/admin/answer/AdminCreateAnswerPage.js")
+);
+
 const AdminSectionListPage = lazy(() =>
   import("./pages/admin/section/AdminSectionListPage.js")
 );
@@ -290,7 +297,6 @@ function App() {
               element={<AdminCreatePartPage />}
             ></Route>
             {/* Admin Questions */}
-
             <Route
               path="courses/:courseId/parts/:partId/questions"
               element={<AdminQuestionListPage />}
@@ -298,6 +304,15 @@ function App() {
             <Route
               path="courses/:courseId/parts/:partId/questions/create"
               element={<AdminCreateQuestionPage />}
+            ></Route>
+            {/* Admin AdminAnswerListPage */}
+            <Route
+              path="courses/:courseId/parts/:partId/questions/:questionId/answers"
+              element={<AdminAnswerListPage />}
+            ></Route>
+            <Route
+              path="courses/:courseId/parts/:partId/questions/:questionId/answers/create"
+              element={<AdminCreateAnswerPage />}
             ></Route>
 
             {/* Admin Sections */}

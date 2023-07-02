@@ -1,6 +1,6 @@
 import { axiosBearer } from "../../../api/axiosInstance";
 
-export const requestGetQuestionsByCourseId = (partId) => {
+export const requestGetQuestionsByPartId = (partId) => {
   return axiosBearer.get(`/part/${partId}/question`);
 };
 
