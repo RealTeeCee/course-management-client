@@ -1,28 +1,28 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { ButtonCom } from "../../components/button";
-import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
-import { LabelCom } from "../../components/label";
-import { TextAreaCom } from "../../components/textarea";
-
 // **** Mui ****
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import * as yup from "yup";
+import { axiosBearer } from "../../api/axiosInstance";
+import { ButtonCom } from "../../components/button";
 import DividerCom from "../../components/common/DividerCom";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
+import { InputReadOnlyCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
+import { TextAreaCom } from "../../components/textarea";
 import { MESSAGE_FIELD_REQUIRED, NOT_FOUND_URL } from "../../constants/config";
+import { API_CHECKOUT_URL } from "../../constants/endpoint";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
-import { API_CHECKOUT_URL } from "../../constants/endpoint";
-import { axiosBearer } from "../../api/axiosInstance";
-import { toast } from "react-toastify";
-import { InputReadOnlyCom } from "../../components/input";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 
 const schemaValidation = yup.object().shape({
   payment_method: yup
@@ -51,20 +51,18 @@ const CheckoutPage = () => {
   const courseBySlug = data.find((item, index) => item.slug === slug);
   useEffect(() => {
     if (!courseBySlug) navigate(NOT_FOUND_URL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseBySlug]);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePaymentMethod = (e) => {
     const selectedPaymentMethod = e.target.value;
-    console.log("value: ", selectedPaymentMethod);
     setPaymentMethod(selectedPaymentMethod);
     setValue("payment_method", selectedPaymentMethod);
   };
 
   const handleSubmitForm = async (values) => {
-    //API Thiếu Description
-    console.log(values);
     try {
       setIsLoading(!isLoading);
       const res = await axiosBearer.post(API_CHECKOUT_URL, {
@@ -77,9 +75,10 @@ const CheckoutPage = () => {
         userId: user?.id,
         courseId: courseBySlug?.id,
         paymentType: values.payment_method,
+        userDescription: values.description,
       });
-      console.log("res: ", res);
-      toast.success(`${res.data.message}`);
+      if (res?.data?.statusCodeValue === 200)
+        window.location.href = res.data.body.payUrl;
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -89,7 +88,29 @@ const CheckoutPage = () => {
 
   return (
     <>
-      <HeadingH1Com>Payment Details</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Checkout Page</HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Detail",
+              slug: `/courses/${slug ?? "not-found"}`,
+            },
+            {
+              title: "Checkout",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
       <GapYCom></GapYCom>
       <div className="card">
         <form onSubmit={handleSubmit(handleSubmitForm)}>
@@ -234,7 +255,6 @@ const CheckoutPage = () => {
                     <div className="animate-chk">
                       <div className="row">
                         <div className="col">
-                          {/* Radio Group Checkout Online */}
                           <FormControl>
                             <LabelCom htmlFor="payment_method">
                               Payment Methods
@@ -242,7 +262,6 @@ const CheckoutPage = () => {
                             <RadioGroup
                               id="payment_method"
                               aria-labelledby="payment_method"
-                              // defaultValue="MOMO"
                               name="radio-buttons-group"
                               value={paymentMethod}
                             >
@@ -285,9 +304,6 @@ const CheckoutPage = () => {
             <ButtonCom type="submit" isLoading={isLoading}>
               Continue
             </ButtonCom>
-            {/* <ButtonCom backgroundColor="danger" type="reset">
-              Cancel
-            </ButtonCom> */}
           </div>
         </form>
       </div>

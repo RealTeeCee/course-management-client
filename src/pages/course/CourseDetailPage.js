@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
@@ -92,9 +93,11 @@ const CourseDetailPage = () => {
   const { data, relatedCourse } = useSelector((state) => state.course);
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
-  if (!courseBySlug) {
-    navigate(NOT_FOUND_URL);
-  }
+
+  useEffect(() => {
+    if (!courseBySlug) navigate(NOT_FOUND_URL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug]);
 
   useEffect(() => {
     if (user?.id && courseBySlug?.id) {
@@ -179,14 +182,36 @@ const CourseDetailPage = () => {
           </Link>
         </HeadingH2Com>
       </div>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com className="course-detail-title text-4xl">
+          {courseBySlug?.name}
+        </HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Detail",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
+      <GapYCom></GapYCom>
       <div className="course-detail-body">
         <div className="row">
           <div className="col-sm-7 relative">
             <div className="course-detail-header">
-              <HeadingH1Com className="course-detail-title !mb-3">
+              {/* <HeadingH1Com className="course-detail-title !mb-3">
                 {courseBySlug?.name}
               </HeadingH1Com>
-              <GapYCom></GapYCom>
+              <GapYCom></GapYCom> */}
               <div
                 className="course-detail-description"
                 dangerouslySetInnerHTML={{ __html: courseBySlug?.description }}
@@ -265,7 +290,7 @@ const CourseDetailPage = () => {
             </div>
           </div>
           <div className="col-sm-5">
-            <div className="sticky top-0">
+            <div className="sticky top-0 pt-3">
               <div className="course-detail-image h-60">
                 <ImageCom
                   srcSet={courseBySlug?.image}

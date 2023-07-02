@@ -62,7 +62,6 @@ const courseSlice = createSlice({
     onMyCourseSuccess: (state, action) => ({
       ...state,
       data: action.payload,
-      isReady: false,
     }),
     onMyCourseFailed: (state, action) => ({
       ...state,

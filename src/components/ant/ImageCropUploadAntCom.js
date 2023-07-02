@@ -120,6 +120,7 @@ ImageCropUploadAntCom.propTypes = {
   onSetValue: PropTypes.func,
   name: PropTypes.string,
   aspect: PropTypes.oneOf([16 / 9, 3 / 2, 4 / 3, 2 / 1, 3 / 4, 4 / 4]),
+  isWidthFull: PropTypes.bool,
   type: PropTypes.string,
   errorMsg: PropTypes.string,
   children: PropTypes.node,

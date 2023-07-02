@@ -280,6 +280,7 @@ const NoteCom = ({
               }}
               placeholder={placeholder}
               focus={isFocus}
+              isUploadImage={false}
             ></TextEditorQuillCom>
             <GapYCom className="mb-5"></GapYCom>
             <div>

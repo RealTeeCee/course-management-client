@@ -1,39 +1,37 @@
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import ReactModal from "react-modal";
+import { Link, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { axiosBearer } from "../../../api/axiosInstance";
+import { SwitchAntCom } from "../../../components/ant";
+import BreadcrumbCom from "../../../components/breadcrumb/BreadcrumbCom";
 import { ButtonCom } from "../../../components/button";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import GapYCom from "../../../components/common/GapYCom";
+import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
-import { TableCom } from "../../../components/table";
 import {
   IconDocumentCom,
   IconEditCom,
-  IconEyeCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
-import * as yup from "yup";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
+import { TableCom } from "../../../components/table";
 import {
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../../constants/config";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Link, useParams } from "react-router-dom";
-import ReactModal from "react-modal";
-import { LabelCom } from "../../../components/label";
-import { InputCom } from "../../../components/input";
-import { showMessageError } from "../../../utils/helper";
 import { API_COURSE_URL } from "../../../constants/endpoint";
-import { SwitchAntCom } from "../../../components/ant";
-import LoadingCom from "../../../components/common/LoadingCom";
-import * as XLSX from "xlsx";
-import useExcelExport from "../../../hooks/useExportExcel";
-import { axiosBearer } from "../../../api/axiosInstance";
-import BreadcrumbCom from "../../../components/breadcrumb/BreadcrumbCom";
+import useExportExcel from "../../../hooks/useExportExcel";
+import { showMessageError } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -51,6 +49,7 @@ const AdminSectionListPage = () => {
   /********* END API State ********* */
 
   /********* State ********* */
+  const [selectedRows, setSelectedRows] = useState([]);
   const [filterSection, setFilterSection] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -78,7 +77,7 @@ const AdminSectionListPage = () => {
   const { courseId } = useParams();
 
   /********* Export Excel ********* */
-  const { handleExcelData } = useExcelExport("section");
+  const { handleExcelData } = useExportExcel("section");
   const handleExport = () => {
     const headers = ["No", "Section Name", "Status", "Order"];
     const data = sections.map((section, index) => [
@@ -182,7 +181,7 @@ const AdminSectionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteSection({ sectionId: row.id, name: row.name });
+              handleDelete({ sectionId: row.id, name: row.name });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -205,22 +204,22 @@ const AdminSectionListPage = () => {
         </div>
       ),
     },
-    // {
-    //   key: "2",
-    //   label: (
-    //     <div
-    //       rel="noopener noreferrer"
-    //       className="hover:text-tw-danger transition-all duration-300"
-    //       onClick={() => handleDeleteMultipleRecords()}
-    //     >
-    //       Remove all
-    //     </div>
-    //   ),
-    // },
+    {
+      key: "2",
+      label: (
+        <div
+          rel="noopener noreferrer"
+          className="hover:text-tw-danger transition-all duration-300"
+          onClick={() => handleBulkDelete()}
+        >
+          Bulk Delete
+        </div>
+      ),
+    },
   ];
 
   /********* Delete One ********* */
-  const handleDeleteSection = ({ sectionId, name }) => {
+  const handleDelete = ({ sectionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete section: <span class="text-tw-danger">${name}</span>`,
@@ -246,6 +245,44 @@ const AdminSectionListPage = () => {
     });
   };
 
+  // Bulk Delete
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      toast.warning(MESSAGE_NO_ITEM_SELECTED);
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete <span className="text-tw-danger">${
+        selectedRows.length
+      } selected ${selectedRows.length > 1 ? "sections" : "section"}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const deletePromises = selectedRows.map((row) =>
+            axiosBearer.delete(
+              `${API_COURSE_URL}/${courseId}/section?sectionId=${row.id}`
+            )
+          );
+          await Promise.all(deletePromises);
+          toast.success(
+            `Delete [${selectedRows.length}] ${selectedRows.length} sections success`
+          );
+        } catch (error) {
+          showMessageError(error);
+        } finally {
+          fetchingData();
+          clearSelectedRows();
+        }
+      }
+    });
+  };
+
   /********** Fetch data Area ************ */
   /********* API List Section ********* */
   const getSectionsByCourseId = async () => {
@@ -253,7 +290,6 @@ const AdminSectionListPage = () => {
       const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section`
       );
-      console.log(res.data);
       setSections(res.data);
       setFilterSection(res.data);
     } catch (error) {
@@ -394,6 +430,16 @@ const AdminSectionListPage = () => {
     }
   };
 
+  /********* Library Function Area ********* */
+  const handleRowSelection = (currentRowsSelected) => {
+    setSelectedRows(currentRowsSelected.selectedRows);
+  };
+  // Clear Selected after Mutiple Delete
+  const clearSelectedRows = () => {
+    setSelectedRows([]);
+    setTableKey((prevKey) => prevKey + 1);
+  };
+
   return (
     <>
       {isFetching && <LoadingCom />}
@@ -431,6 +477,7 @@ const AdminSectionListPage = () => {
                   search={search}
                   dropdownItems={dropdownItems}
                   setSearch={setSearch}
+                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
                 ></TableCom>
               </span>
             </div>

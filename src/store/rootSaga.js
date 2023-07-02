@@ -1,4 +1,5 @@
 import { all, fork } from "redux-saga/effects";
+import partSaga from "./admin/part/partSaga";
 import authSaga from "./auth/authSaga";
 import authorSaga from "./author/authorSaga";
 import courseSaga from "./course/courseSaga";
@@ -10,5 +11,6 @@ export default function* rootSaga() {
     fork(authorSaga),
     fork(categorySaga),
     fork(courseSaga),
+    fork(partSaga),
   ]);
 }

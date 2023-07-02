@@ -39,6 +39,13 @@ const AdminAuthorListPage = lazy(() =>
 const AdminCreateAuthorPage = lazy(() =>
   import("./pages/admin/course/author/AdminCreateAuthorPage.js")
 );
+const AdminPartListPage = lazy(() =>
+  import("./pages/admin/part/AdminPartListPage.js")
+);
+const AdminCreatePartPage = lazy(() =>
+  import("./pages/admin/part/AdminCreatePartPage.js")
+);
+
 const AdminSectionListPage = lazy(() =>
   import("./pages/admin/section/AdminSectionListPage.js")
 );
@@ -268,6 +275,16 @@ function App() {
             <Route
               path="courses/authors/create"
               element={<AdminCreateAuthorPage />}
+            ></Route>
+
+            {/* Admin Parts */}
+            <Route
+              path="courses/:courseId/parts"
+              element={<AdminPartListPage />}
+            ></Route>
+            <Route
+              path="/admin/courses/:courseId/parts/create"
+              element={<AdminCreatePartPage />}
             ></Route>
 
             {/* Admin Sections */}
