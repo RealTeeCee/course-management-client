@@ -200,6 +200,23 @@ const AdminCourseListPage = () => {
         <img width={50} height={50} src={`${row.image}`} alt={row.name} />
       ),
     },
+    // {
+    //   name: "Status",
+    //   cell: (row) => (
+    //     <>
+    //       {row.status === 1 ? (
+    //         <ButtonCom onClick={() => {}} backgroundColor="success">
+    //           Active
+    //         </ButtonCom>
+    //       ) : (
+    //         <ButtonCom onClick={() => {}} backgroundColor="danger">
+    //           InActive
+    //         </ButtonCom>
+    //       )}
+    //     </>
+    //   ),
+    //   sortable: true,
+    // },
     {
       name: "Status",
       selector: (row) => (
