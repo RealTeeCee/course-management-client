@@ -122,5 +122,5 @@ export const {
   onUserChangePasswordSuccess,
   onUserUpdateProfile,
 } = authSlice.actions;
-// authReducer
+// reducer
 export default authSlice.reducer;

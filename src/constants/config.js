@@ -35,6 +35,8 @@ export const MESSAGE_EMAIL_INVALID =
 export const MESSAGE_CONFIRM_PASSWORD_INVALID =
   "Confirm password does not match with password";
 
+export const MESSAGE_READONLY = "This field is Read Only";
+
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
 

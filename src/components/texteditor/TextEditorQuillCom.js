@@ -11,8 +11,9 @@ import ImageUploader from "quill-image-uploader";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const TextEditorQuillCom = ({
-  value = "",
   onChange = (value) => {},
+  value = "",
+  errorMsg = "",
   focus = false,
   placeholder = "Write your description...",
   className = "h-36",
@@ -60,21 +61,35 @@ const TextEditorQuillCom = ({
     };
   }, [isUploadImage]);
   return (
-    <ReactQuill
-      ref={ref}
-      modules={modules}
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={className}
-    ></ReactQuill>
+    <>
+      <style>{`
+        .quill-error .ql-container {
+          border: red solid 1px !important;
+        }
+      `}</style>
+      <ReactQuill
+        ref={ref}
+        modules={modules}
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`break-all ${className} ${
+          errorMsg?.length > 0 && "quill-error"
+        }`}
+      ></ReactQuill>
+      {errorMsg?.length > 0 && (
+        <span className="text-tw-danger text-sm">{errorMsg}</span>
+      )}
+    </>
   );
 };
 
 TextEditorQuillCom.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
+  errorMsg: PropTypes.string,
+  focus: PropTypes.bool,
   placeholder: PropTypes.string,
   className: PropTypes.string,
   isUploadImage: PropTypes.bool,

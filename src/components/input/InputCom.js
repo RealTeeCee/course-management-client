@@ -34,6 +34,8 @@ const InputCom = (props) => {
         <input
           id={name}
           className={`form-control tw-transition-all placeholder:italic ${
+            rest.readOnly && "cursor-not-allowed"
+          } ${
             errorMsg &&
             errorMsg.length > 0 &&
             "is-invalid border-tw-danger text-tw-danger"

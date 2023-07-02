@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,8 +15,10 @@ import { LabelCom } from "../../../components/label";
 import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_READONLY,
 } from "../../../constants/config";
 import { onPostPart } from "../../../store/admin/part/partSlice";
+import { fakeName } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -47,7 +49,10 @@ const AdminCreatePartPage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-  const { isLoading, isPostPartSuccess } = useSelector((state) => state.part);
+  const { parts, isLoading, isPostPartSuccess } = useSelector(
+    (state) => state.part
+  );
+  console.log("parts:", parts);
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -104,34 +109,21 @@ const AdminCreatePartPage = () => {
           <div className="card">
             <form onSubmit={handleSubmit(handleSubmitForm)}>
               <div className="card-body">
-                {/* <div className="row">
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="name" isRequired>
-                      Part Name
-                    </LabelCom>
+                <div className="row">
+                  <div className="col-sm-6 offset-3 text-center">
+                    <LabelCom htmlFor="maxPoint">Part Name</LabelCom>
                     <InputCom
                       type="text"
                       control={control}
                       name="name"
                       register={register}
-                      placeholder="Input section name"
-                      errorMsg={errors.name?.message}
+                      placeholder={MESSAGE_READONLY}
+                      defaultValue={fakeName("Part", parts?.[0]?.id + 1)}
+                      readOnly
                     ></InputCom>
                   </div>
-
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="ordered">Ordered</LabelCom>
-                    <InputCom
-                      type="number"
-                      control={control}
-                      name="ordered"
-                      register={register}
-                      placeholder="Input section ordered"
-                      errorMsg={errors.ordered?.message}
-                      defaultValue={0}
-                    ></InputCom>
-                  </div>
-                </div> */}
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
                   <div className="col-sm-6">
                     <LabelCom htmlFor="maxPoint" isRequired>
@@ -142,7 +134,7 @@ const AdminCreatePartPage = () => {
                       control={control}
                       name="maxPoint"
                       register={register}
-                      placeholder="Input max point"
+                      placeholder={MESSAGE_READONLY}
                       errorMsg={errors.maxPoint?.message}
                       defaultValue={100}
                       readOnly
@@ -158,9 +150,10 @@ const AdminCreatePartPage = () => {
                       control={control}
                       name="limitTime"
                       register={register}
-                      placeholder="Input limit time"
+                      placeholder={MESSAGE_READONLY}
                       errorMsg={errors.limitTime?.message}
                       defaultValue={600}
+                      autoFocus
                     ></InputCom>
                   </div>
                 </div>
