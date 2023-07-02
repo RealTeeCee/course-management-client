@@ -1,10 +1,10 @@
-import React from "react";
 import { Container } from "@mui/material";
-import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
 import { selectAllCourseState } from "../../store/course/courseSelector";
-import { useState } from "react";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
+import { Navigate } from "react-router-dom";
 
 const ExamPage = () => {
   const { examination } = useSelector(selectAllCourseState);
@@ -15,7 +15,9 @@ const ExamPage = () => {
     setShowDialog(false);
   };
 
-  return (
+  return !examination || examination.length === 0 ? (
+    <Navigate to="/forbidden" />
+  ) : (
     <Container maxWidth="sm">
       <DialogConfirmMuiCom
         open={showDialog}

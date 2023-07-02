@@ -16,6 +16,8 @@ import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 import AuthorPage from "./pages/author/AuthorPage.js";
 import { onAuthorInitialState } from "./store/author/authorSlice.js";
+import UserAccomplishmentPage from "./pages/user/UserAccomplishmentPage.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -105,6 +107,7 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const { examination } = useSelector(selectAllCourseState);
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -224,6 +227,12 @@ function App() {
               path="change-password"
               element={<UserChangePasswordPage></UserChangePasswordPage>}
             ></Route>
+            <Route
+              path="accomplishments"
+              element={<UserAccomplishmentPage></UserAccomplishmentPage>}
+            >
+              <Route path="details"></Route>
+            </Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route

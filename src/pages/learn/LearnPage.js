@@ -29,6 +29,7 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
+import { toast } from "react-toastify";
 
 const LearnPage = () => {
   const {
@@ -44,6 +45,8 @@ const LearnPage = () => {
     isReload,
     learning,
     progress,
+    generateExamSuccess,
+    examination,
   } = useSelector(selectAllCourseState);
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -234,8 +237,19 @@ const LearnPage = () => {
 
   const handleInitialExam = () => {
     dispatch(onGenerateCourseExam({ courseId, userId }));
-    navigate("/exam");
   };
+
+  useEffect(() => {
+    if (generateExamSuccess && examination.length > 0) {
+      navigate("/exam");
+    } else if (generateExamSuccess && examination.length === 0) {
+      // dispatch(onSetGenerateExamSuccess)
+      toast.warning(
+        "Sorry for unconvenience. The examination is not available for this course."
+      );
+    }
+    setIsEnd(false);
+  }, [examination, generateExamSuccess, navigate]);
 
   const course = data.find((c) => c.id === courseId);
   const tabItems = [

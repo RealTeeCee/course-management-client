@@ -39,6 +39,7 @@ const initialState = {
   courseRating: [],
   examination: [],
   finishExam: null,
+  generateExamSuccess: false,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -53,11 +54,13 @@ const courseSlice = createSlice({
         errorMessage: null,
         isReload: action.payload,
         isLoadLearningStatus: false,
+        generateExamSuccess: false,
       };
     },
     onMyCourseLoading: (state, action) => ({
       ...state,
       errorMessage: null,
+      generateExamSuccess: false,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
@@ -115,10 +118,12 @@ const courseSlice = createSlice({
           courseId: filteredCourse[0].id,
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
+          generateExamSuccess: false,
         };
       }
       return {
         ...state,
+        generateExamSuccess: false,
       };
     },
     onSelectedLesson: (state, action) => {
@@ -350,10 +355,12 @@ const courseSlice = createSlice({
     }),
     onGenerateCourseExam: (state, action) => ({
       ...state,
+      generateExamSuccess: false,
     }),
     onGenerateCourseExamSuccess: (state, action) => ({
       ...state,
       examination: action.payload,
+      generateExamSuccess: true,
     }),
     onFinishExam: (state, action) => ({
       ...state,
@@ -361,6 +368,7 @@ const courseSlice = createSlice({
     onFinishExamSuccess: (state, action) => ({
       ...state,
       finishExam: action.payload,
+      generateExamSuccess: false,
     }),
   },
 });

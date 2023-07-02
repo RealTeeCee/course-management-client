@@ -14,89 +14,22 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { onFinishExam } from "../../store/course/courseSlice";
+import {
+  onCourseInitalState,
+  onFinishExam,
+} from "../../store/course/courseSlice";
 import { convertSecondToTime } from "../../utils/helper";
 import { IconClockCom } from "../icon";
 import { DialogConfirmMuiCom } from ".";
-
-// const exam = [
-//   {
-//     limitTime: 10,
-//     question: {
-//       id: 1,
-//       description: "Which of the following is related to Spring Framework?",
-//       point: 2.5,
-//       partId: 1,
-//     },
-//     answers: [
-//       {
-//         id: 2,
-//         description: "Beans",
-//         questionId: 1,
-//         correct: false,
-//       },
-//       {
-//         id: 3,
-//         description: "IoC",
-//         questionId: 1,
-//         correct: false,
-//       },
-//       {
-//         id: 4,
-//         description: "All of these",
-//         questionId: 1,
-//         correct: true,
-//       },
-//       {
-//         id: 1,
-//         description: "Container",
-//         questionId: 1,
-//         correct: false,
-//       },
-//     ],
-//   },
-//   {
-//     limitTime: 10,
-//     question: {
-//       id: 2,
-//       description: "Which of the following is not the Spring supported DI?",
-//       point: 2.5,
-//       partId: 1,
-//     },
-//     answers: [
-//       {
-//         id: 6,
-//         description: "Setter-based",
-//         questionId: 2,
-//         correct: false,
-//       },
-//       {
-//         id: 8,
-//         description: "All of these",
-//         questionId: 2,
-//         correct: false,
-//       },
-//       {
-//         id: 5,
-//         description: "Constructor-based",
-//         questionId: 2,
-//         correct: false,
-//       },
-//       {
-//         id: 7,
-//         description: "Destructor-based",
-//         questionId: 2,
-//         correct: true,
-//       },
-//     ],
-//   },
-// ];
+import { selectAllCourseState } from "../../store/course/courseSelector";
+import moment from "moment/moment";
 
 function QuizMuiCom({ exam = [] }) {
   const maxSteps = exam.length;
   const answerOptions = ["A", "B", "C", "D"];
+  const { finishExam } = useSelector(selectAllCourseState);
 
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -107,6 +40,7 @@ function QuizMuiCom({ exam = [] }) {
   const [examTime, setExamTime] = useState(exam[0].limitTime);
   const [timerId, setTimerId] = useState(exam[0].limitTime);
   const [showDialog, setShowDialog] = useState(false);
+  const [timeUpDialog, setTimeUpDialog] = useState(false);
   const [answerId, setAnswerId] = useState(0);
 
   useEffect(() => {
@@ -121,15 +55,11 @@ function QuizMuiCom({ exam = [] }) {
   useEffect(() => {
     if (examTime === 0) {
       clearInterval(timerId);
+      setTimeUpDialog(true);
     }
   }, [examTime, timerId]);
 
-  useEffect(() => {
-    console.log(
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-      chooseAnswer
-    );
-  }, [chooseAnswer]);
+  useEffect(() => {}, [chooseAnswer]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -148,9 +78,6 @@ function QuizMuiCom({ exam = [] }) {
       setAnswerId(currentAns.userAnswerId);
     }
   }, [activeStep, chooseAnswer, exam]);
-  const handleStepChange = (step) => {
-    setActiveStep(step);
-  };
 
   const handleChooseAnswer = (event) => {
     const correctAnswer = exam[activeStep].answers.find(
@@ -163,8 +90,6 @@ function QuizMuiCom({ exam = [] }) {
       answerId: correctAnswer.id,
       userAnswerId: Number(event.target.value),
     };
-
-    console.log(userAnswer);
 
     const findAnswer = chooseAnswer.find((ex) => ex.id === userAnswer.id);
 
@@ -184,43 +109,13 @@ function QuizMuiCom({ exam = [] }) {
     } else {
       setChooseAnswer((prevAnswer) => [...prevAnswer, userAnswer]);
     }
-
-    /*
-    const userAnswer = {
-      question: ...exam[activeStep].question,
-      answerId: event.target.value,
-    };
-
-    console.log(activeStep);
-    console.log(chooseAnswer);
-    const pickedAnswer = chooseAnswer.find(
-      (obj) => (obj.question.id = userAnswer.question.id)
-    );
-    console.log(pickedAnswer);
-    if (pickedAnswer) {
-      setChooseAnswer([
-        ...chooseAnswer.map((obj) =>
-          obj.question.id === userAnswer.question.id
-            ? {
-                ...obj,
-                answerId: event.target.value,
-              }
-            : obj
-        ),
-      ]);
-    } else {
-      setChooseAnswer((prevAnswer) => [...prevAnswer, userAnswer]);
-    }
-    */
   };
 
   const handleSubmit = () => {
     setShowDialog(true);
   };
 
-  const handleConfirm = () => {
-    clearInterval(timerId);
-
+  const CompleteExamination = () => {
     const totalExamTime = exam[activeStep].limitTime - examTime;
 
     const examResult = {
@@ -232,8 +127,21 @@ function QuizMuiCom({ exam = [] }) {
     };
 
     dispatch(onFinishExam(examResult));
-    navigate("/exam/finish");
+  };
+
+  const handleConfirm = () => {
+    clearInterval(timerId);
+    CompleteExamination();
     setShowDialog(false);
+    setTimeUpDialog(false);
+  };
+
+  const handleNavigate = () => {
+    dispatch(onCourseInitalState());
+    if (finishExam && finishExam.grade !== "FAIL") {
+      return navigate("/profile/accomplishments");
+    }
+    return navigate("/");
   };
 
   return (
@@ -247,6 +155,13 @@ function QuizMuiCom({ exam = [] }) {
         title={"Confirm Exam"}
         content={"Do you want to submit your exam?"}
       ></DialogConfirmMuiCom>
+      <DialogConfirmMuiCom
+        open={timeUpDialog}
+        onConfirm={handleConfirm}
+        confirmContent={"OK"}
+        title={"Time up!"}
+        content={"Please click OK to see your examination result."}
+      ></DialogConfirmMuiCom>
       <Paper
         square
         elevation={24}
@@ -255,115 +170,140 @@ function QuizMuiCom({ exam = [] }) {
           width: "1000px",
         }}
       >
-        <Grid item sm={12} md={12} lg={12}>
-          <Typography className="flex items-center gap-x-2 justify-end">
-            <IconClockCom className="text-tw-primary"></IconClockCom>
-            Time limit:{" "}
-            <span
-              className="font-medium"
-              style={
-                examTime === 0
-                  ? { color: "red", fontWeight: "bold" }
-                  : { fontWeight: "bold" }
-              }
-            >
-              {convertSecondToTime(examTime)}
-            </span>
-          </Typography>
-        </Grid>
-        <Grid item sm={12} md={12} lg={12} mt="20px" mb="20px">
-          <Typography>
-            {
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: `<strong>${activeStep + 1}. ${
-                    exam[activeStep].question.description
-                  }</strong>`,
-                }}
-              ></span>
-            }
-          </Typography>
-        </Grid>
-        <Grid item sm={12} md={12} lg={12}>
-          <FormControl>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-            >
-              {exam[activeStep].answers.map((answer, i) => (
-                <React.Fragment key={answer.id}>
-                  <FormControlLabel
-                    value={answer.id}
-                    control={
-                      <Radio
-                        color="secondary"
-                        onChange={handleChooseAnswer}
-                        name="chooseAnswer"
-                        checked={answer.id === answerId}
+        {finishExam ? (
+          <div>
+            <p>Total time: {finishExam.totalExamTime}</p>
+            <p>Your correct answer: {finishExam.correctAnswer}</p>
+            <p>Total point: {finishExam.totalPoint}</p>
+            <p>Grade: {finishExam.grade}</p>
+            <p>
+              Finished at:{" "}
+              {moment(finishExam.created_at).format("YYYY/MM/DD HH:mm:ss")}
+            </p>
+            <p>
+              {finishExam && finishExam.grade !== "FAIL" ? (
+                <Button onClick={handleNavigate}>View your certificate</Button>
+              ) : (
+                <p>
+                  Good luck next time.
+                  <Button onClick={handleNavigate}>Learn more!</Button>{" "}
+                </p>
+              )}
+            </p>
+          </div>
+        ) : (
+          <React.Fragment>
+            <Grid item sm={12} md={12} lg={12}>
+              <Typography className="flex items-center gap-x-2 justify-end">
+                <IconClockCom className="text-tw-primary"></IconClockCom>
+                Time limit:{" "}
+                <span
+                  className="font-medium"
+                  style={
+                    examTime === 0
+                      ? { color: "red", fontWeight: "bold" }
+                      : { fontWeight: "bold" }
+                  }
+                >
+                  {convertSecondToTime(examTime)}
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item sm={12} md={12} lg={12} mt="20px" mb="20px">
+              <Typography>
+                {
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: `<strong>${activeStep + 1}. ${
+                        exam[activeStep].question.description
+                      }</strong>`,
+                    }}
+                  ></span>
+                }
+              </Typography>
+            </Grid>
+            <Grid item sm={12} md={12} lg={12}>
+              <FormControl>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="radio-buttons-group"
+                >
+                  {exam[activeStep].answers.map((answer, i) => (
+                    <React.Fragment key={answer.id}>
+                      <FormControlLabel
+                        value={answer.id}
+                        control={
+                          <Radio
+                            color="secondary"
+                            onChange={handleChooseAnswer}
+                            name="chooseAnswer"
+                            checked={answer.id === answerId}
+                          />
+                        }
+                        label={
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: `<strong>${answerOptions[i]}.</strong> ${answer.description}`,
+                            }}
+                          />
+                        }
                       />
-                    }
-                    label={
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: `<strong>${answerOptions[i]}.</strong> ${answer.description}`,
-                        }}
-                      />
-                    }
-                  />
-                </React.Fragment>
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-        <Grid item sm={12} md={12} lg={12}>
-          <MobileStepper
-            steps={maxSteps}
-            position="static"
-            activeStep={activeStep}
-            variant="text"
-            nextButton={
+                    </React.Fragment>
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+            <Grid item sm={12} md={12} lg={12}>
+              <MobileStepper
+                steps={maxSteps}
+                position="static"
+                activeStep={activeStep}
+                variant="text"
+                nextButton={
+                  <Button
+                    size="small"
+                    onClick={handleNext}
+                    disabled={activeStep === maxSteps - 1}
+                    variant="outlined"
+                    color="secondary"
+                  >
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowLeft />
+                    ) : (
+                      <KeyboardArrowRight />
+                    )}
+                  </Button>
+                }
+                backButton={
+                  <Button
+                    size="small"
+                    onClick={handleBack}
+                    disabled={activeStep === 0}
+                    variant="outlined"
+                    color="secondary"
+                  >
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowRight />
+                    ) : (
+                      <KeyboardArrowLeft />
+                    )}
+                  </Button>
+                }
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={12}>
               <Button
-                size="small"
-                onClick={handleNext}
-                disabled={activeStep === maxSteps - 1}
-                variant="outlined"
+                fullWidth
+                disabled={chooseAnswer.length === 0}
+                onClick={handleSubmit}
+                variant="contained"
                 color="secondary"
               >
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowLeft />
-                ) : (
-                  <KeyboardArrowRight />
-                )}
+                SUBMIT
               </Button>
-            }
-            backButton={
-              <Button
-                size="small"
-                onClick={handleBack}
-                disabled={activeStep === 0}
-                variant="outlined"
-                color="secondary"
-              >
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowRight />
-                ) : (
-                  <KeyboardArrowLeft />
-                )}
-              </Button>
-            }
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={12}>
-          <Button
-            fullWidth
-            disabled={chooseAnswer.length === 0}
-            onClick={handleSubmit}
-            variant="contained"
-            color="secondary"
-          >
-            SUBMIT
-          </Button>
-        </Grid>
+            </Grid>
+          </React.Fragment>
+        )}
       </Paper>
     </Grid>
   );
