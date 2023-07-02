@@ -144,11 +144,15 @@ const UserProfilePage = () => {
   // ************** Edit Notification **************************
   const handleChangeSwitch = async (isChecked) => {
     console.log("isChecked", isChecked);
+    const { access_token } = getToken();
     const formData = {
       id: user.id,
       notify: isChecked ? 1 : 0,
+      access_token,
     };
+    
     console.log("formData", formData);
+    console.log("access_token",access_token);
     dispatch(onUserUpdateNoti(formData));
     // await axiosBearer.put(`/auth/user/notify`, formData);
     // toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
@@ -268,9 +272,9 @@ const UserProfilePage = () => {
 
                 <div className="flex items-center  mt-4 space-x-4">
                   <SwitchAntCom
-                    defaultChecked={user.notify === 1 ? true : false}
+                    defaultChecked={user.notify ? true : false}
                     className={`${
-                      user.notify === 1
+                      user.notify
                         ? ""
                         : "bg-tw-danger hover:!bg-tw-orange"
                     }`}
