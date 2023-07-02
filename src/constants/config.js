@@ -69,6 +69,8 @@ export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
 export const MESSAGE_NET_PRICE_HIGHER_PRICE =
   "The sale price is not allowed to be higher than the original price";
+export const MESSAGE_POINT_EXCEED_MAX =
+  "The question point cannot exceed the max point";
 
 // Data Static List
 export const categoryItems = [

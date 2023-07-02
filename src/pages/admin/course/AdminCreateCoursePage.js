@@ -280,6 +280,10 @@ const AdminCreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
             >
+              {/* <div className="card-header">
+                <h5>Form Create Course</h5>
+                <span>Lorem ipsum dolor sit amet consectetur</span>
+              </div> */}
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-5">

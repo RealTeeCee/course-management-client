@@ -8,26 +8,26 @@ import { useNavigate } from "react-router-dom/dist";
 import * as yup from "yup";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
+import CardHeaderCom from "../../../components/common/card/CardHeaderCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
+import { IconCheckCom } from "../../../components/icon";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_NUMBER_REQUIRED,
-  MESSAGE_READONLY,
-  NOT_FOUND_URL,
+  MESSAGE_NUMBER_POSITIVE, NOT_FOUND_URL
 } from "../../../constants/config";
 import { onPostQuestion } from "../../../store/admin/question/questionSlice";
-import { fakeName } from "../../../utils/helper";
+import { convertSecondToDiffForHumans } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   point: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(1, "This field must be greater than 1"),
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .matches(/^\d+(\.\d+)?$/, MESSAGE_NUMBER_POSITIVE),
   description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
@@ -81,6 +81,9 @@ const AdminCreateQuestionPage = () => {
   };
 
   /********* Library Function Area ********* */
+  // Check isFinish a Part
+  const isFinish =
+    partById?.maxPoint - totalCurrentQuestionsPoint === 0 ? true : false;
 
   return (
     <>
@@ -116,49 +119,25 @@ const AdminCreateQuestionPage = () => {
         <div className="col-sm-12">
           <div className="card">
             <form onSubmit={handleSubmit(handleSubmitForm)}>
+              <CardHeaderCom
+                title={`Part ${partId}`}
+                subText={`MaxPoint: ${
+                  partById?.maxPoint
+                }, Duration: ${convertSecondToDiffForHumans(
+                  partById?.limitTime
+                )}`}
+                className="text-center text-tw-light-pink font-bold"
+              />
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-3">
-                    <div className="col-sm-12">
-                      <LabelCom htmlFor="point">Question Name</LabelCom>
-                      <InputCom
-                        type="text"
-                        control={control}
-                        name="name"
-                        register={register}
-                        placeholder={MESSAGE_READONLY}
-                        defaultValue={fakeName("Question", parts?.[0]?.id + 1)}
-                        readOnly
-                      ></InputCom>
-                    </div>
-                    <GapYCom className="mb-3" />
-                    <div className="col-sm-12">
-                      <LabelCom
-                        htmlFor="point"
-                        subText={`max = ${partById?.maxPoint}, current = ${
-                          totalCurrentQuestionsPoint ?? 0
-                        }`}
-                        isRequired
-                      >
-                        Point
-                      </LabelCom>
-                      <InputCom
-                        type="number"
-                        control={control}
-                        name="point"
-                        register={register}
-                        placeholder={`Still remaining ${
-                          partById?.maxPoint - totalCurrentQuestionsPoint
-                        } point to finish this part`}
-                        errorMsg={errors.point?.message}
-                      ></InputCom>
-                    </div>
-                  </div>
                   <div className="col-sm-9">
                     <div className="col-sm-12 text-center">
-                      <LabelCom htmlFor="description">Description</LabelCom>
+                      <LabelCom htmlFor="description" isRequired>
+                        Quiz
+                      </LabelCom>
                       <TextEditorQuillCom
                         value={description}
+                        readOnly={isFinish}
                         onChange={(description) => {
                           if (description === "<p><br></p>") {
                             setValue("description", "");
@@ -173,17 +152,59 @@ const AdminCreateQuestionPage = () => {
                             setDescription(description);
                           }
                         }}
-                        placeholder="Write your question ..."
+                        placeholder="Write your quiz ..."
                         errorMsg={errors.description?.message}
                       ></TextEditorQuillCom>
+                    </div>
+                  </div>
+                  <div className="col-sm-3">
+                    {/* <div className="col-sm-12">
+                      <LabelCom htmlFor="name">Question Name</LabelCom>
+                      <InputCom
+                        type="text"
+                        control={control}
+                        name="name"
+                        register={register}
+                        placeholder={MESSAGE_READONLY}
+                        defaultValue={fakeName("QUIZ", parts?.[0]?.id + 1)}
+                        readOnly
+                      ></InputCom>
+                    </div>
+                    <GapYCom className="mb-3" /> */}
+                    <div className="col-sm-12">
+                      <LabelCom
+                        htmlFor="point"
+                        subText={`max = ${partById?.maxPoint}, current = ${
+                          totalCurrentQuestionsPoint ?? 0
+                        }`}
+                        isRequired
+                      >
+                        Point
+                      </LabelCom>
+                      <InputCom
+                        type="text"
+                        control={control}
+                        name="point"
+                        register={register}
+                        placeholder={`Still remaining ${
+                          partById?.maxPoint - totalCurrentQuestionsPoint
+                        } point to finish this part`}
+                        errorMsg={errors.point?.message}
+                        readOnly={isFinish}
+                      ></InputCom>
                     </div>
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
-                <ButtonCom type="submit" isLoading={isLoading}>
-                  Create
+                <ButtonCom
+                  type={isFinish ? "button" : "submit"}
+                  isLoading={isLoading}
+                  backgroundColor={isFinish ? "finish" : "primary"}
+                  icon={isFinish ? <IconCheckCom /> : ""}
+                >
+                  {isFinish ? "Finish" : "Create"}
                 </ButtonCom>
               </div>
             </form>

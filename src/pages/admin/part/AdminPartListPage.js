@@ -157,8 +157,8 @@ const AdminPartListPage = () => {
       width: "70px",
     },
     {
-      name: "Part Name",
-      selector: (row) => fakeName("Part", row.id),
+      name: "Part Code",
+      selector: (row) => fakeName("PART", row.id),
       sortable: true,
     },
     {
@@ -227,7 +227,7 @@ const AdminPartListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDelete({ partId: row.id, name: fakeName("Part", row.id) });
+              handleDelete({ partId: row.id, name: fakeName("PART", row.id) });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -282,16 +282,6 @@ const AdminPartListPage = () => {
             partId,
           })
         );
-        // try {
-        //   const res = await axiosBearer.delete(
-        //     `${API_COURSE_URL}/${courseId}/section?sectionId=${sectionId}`
-        //   );
-        //   getSectionsByCourseId();
-        //   reset(res.data);
-        //   toast.success(res.data.message);
-        // } catch (error) {
-        //   showMessageError(error);
-        // }
       }
     });
   };
@@ -360,12 +350,12 @@ const AdminPartListPage = () => {
     const part = getPartById(values.id);
     console.log("currentPart:", values);
     console.log("prevPart:", part);
-    // dispatch(
-    //   onPostPart({
-    //     ...values,
-    //     courseId: parseInt(courseId),
-    //   })
-    // );
+    dispatch(
+      onPostPart({
+        ...values,
+        courseId: parseInt(courseId),
+      })
+    );
   };
 
   const handleChangeStatus = (part) => {
@@ -463,14 +453,14 @@ const AdminPartListPage = () => {
             <div className="card-body">
               <div className="row">
                 <div className="col-sm-6 offset-3 text-center">
-                  <LabelCom htmlFor="maxPoint">Part Name</LabelCom>
+                  <LabelCom htmlFor="maxPoint">Part Code</LabelCom>
                   <InputCom
                     type="text"
                     control={control}
-                    name="name"
+                    name="code"
                     register={register}
                     placeholder={MESSAGE_READONLY}
-                    defaultValue={fakeName("Part", watch("id"))}
+                    defaultValue={fakeName("PART", watch("id"))}
                     readOnly
                   ></InputCom>
                 </div>

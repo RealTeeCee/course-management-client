@@ -18,6 +18,7 @@ const TextEditorQuillCom = ({
   placeholder = "Write your description...",
   className = "h-36",
   isUploadImage = true,
+  ...rest
 }) => {
   const ref = useRef(null);
 
@@ -63,8 +64,11 @@ const TextEditorQuillCom = ({
   return (
     <>
       <style>{`
-        .quill-error .ql-container {
+        .ql-error .ql-container {
           border: red solid 1px !important;
+        }
+        .ql-read-only .ql-container {
+          background: #e9ecef !important;
         }
       `}</style>
       <ReactQuill
@@ -75,8 +79,9 @@ const TextEditorQuillCom = ({
         onChange={onChange}
         placeholder={placeholder}
         className={`break-all ${className} ${
-          errorMsg?.length > 0 && "quill-error"
-        }`}
+          errorMsg?.length > 0 && "ql-error"
+        } ${rest.readOnly && "ql-read-only"}`}
+        {...rest}
       ></ReactQuill>
       {errorMsg?.length > 0 && (
         <span className="text-tw-danger text-sm">{errorMsg}</span>

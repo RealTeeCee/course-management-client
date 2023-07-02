@@ -4,9 +4,12 @@ import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import * as yup from "yup";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
+import CardHeaderCom from "../../../components/common/card/CardHeaderCom";
 import GapYCom from "../../../components/common/GapYCom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
@@ -19,31 +22,37 @@ import {
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TableCom } from "../../../components/table";
-import { NOT_FOUND_URL } from "../../../constants/config";
-import { onGetQuestionsByPartId } from "../../../store/admin/question/questionSlice";
-import { fakeName, sliceText } from "../../../utils/helper";
+import { TextEditorQuillCom } from "../../../components/texteditor";
+import {
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_NO_ITEM_SELECTED,
+  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_POINT_EXCEED_MAX,
+  MESSAGE_READONLY,
+  NOT_FOUND_URL,
+} from "../../../constants/config";
+import {
+  onBulkDeleteQuestion,
+  onDeleteQuestion,
+  onGetQuestionsByPartId,
+  onPostQuestion,
+} from "../../../store/admin/question/questionSlice";
+import {
+  convertSecondToDiffForHumans,
+  fakeName,
+  showMessageError,
+  sliceText,
+} from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
-  // maxPoint: yup
-  //   .number(MESSAGE_FIELD_REQUIRED)
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(100, "This field must be greater than 100"),
-  // limitTime: yup
-  //   .number(MESSAGE_FIELD_REQUIRED)
-  //   .typeError(MESSAGE_NUMBER_REQUIRED)
-  //   .min(600, "This field must be greater than 600"),
+  point: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .matches(/^\d+(\.\d+)?$/, MESSAGE_NUMBER_POSITIVE),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const AdminQuestionListPage = () => {
-  /********* State ********* */
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [filterPart, setFilterPart] = useState([]);
-  const [search, setSearch] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [tableKey, setTableKey] = useState(0);
-
-  const [isFetching, setIsFetching] = useState(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { courseId, partId } = useParams();
@@ -55,6 +64,22 @@ const AdminQuestionListPage = () => {
 
   const { questions, isLoading, isBulkDeleteSuccess, isPostQuestionSuccess } =
     useSelector((state) => state.question);
+  const totalCurrentQuestionsPoint = questions.reduce(
+    (acc, current) => acc + current.point,
+    0
+  );
+
+  /********* State ********* */
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [filterPart, setFilterPart] = useState([]);
+  const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [tableKey, setTableKey] = useState(0);
+  const [description, setDescription] = useState("");
+  const [questionByIdPoint, setQuestionByIdPoint] = useState(0);
+
+  const [isFetching, setIsFetching] = useState(false);
+
   // Fetch Data
   useEffect(() => {
     dispatch(onGetQuestionsByPartId({ partId }));
@@ -101,11 +126,18 @@ const AdminQuestionListPage = () => {
     }
   }, [questions, search]);
 
+  useEffect(() => {
+    if (isBulkDeleteSuccess) clearSelectedRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBulkDeleteSuccess]);
+
   const {
     control,
     register,
     handleSubmit,
     reset,
+    setValue,
+    setError,
     watch,
     formState: { errors },
   } = useForm({
@@ -119,8 +151,8 @@ const AdminQuestionListPage = () => {
       width: "70px",
     },
     {
-      name: "Question Name",
-      selector: (row) => fakeName("Question", row.id),
+      name: "Quiz code",
+      selector: (row) => fakeName("QUIZ", row.id),
       sortable: true,
     },
     {
@@ -141,7 +173,7 @@ const AdminQuestionListPage = () => {
       ),
     },
     {
-      name: "Description",
+      name: "Quiz",
       selector: (row) => sliceText(row.description),
       sortable: true,
     },
@@ -153,7 +185,7 @@ const AdminQuestionListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              //   handleEdit(row.id);
+              handleEdit(row.id);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
@@ -162,7 +194,10 @@ const AdminQuestionListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              //   handleDelete({ partId: row.id, name: `Part ${row.id}` });
+              handleDelete({
+                questionId: row.id,
+                name: fakeName("QUIZ", row.id),
+              });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -191,7 +226,7 @@ const AdminQuestionListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-danger transition-all duration-300"
-          //   onClick={() => handleBulkDelete()}
+          onClick={() => handleBulkDelete()}
         >
           Bulk Delete
         </div>
@@ -199,9 +234,90 @@ const AdminQuestionListPage = () => {
     },
   ];
 
-  //Edit
+  /********* Delete One ********* */
+  const handleDelete = ({ questionId, name }) => {
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete quiz: <span class="text-tw-danger">${name}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          onDeleteQuestion({
+            partId: parseInt(partId),
+            questionId,
+          })
+        );
+      }
+    });
+  };
+
+  // Bulk Delete
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      toast.warning(MESSAGE_NO_ITEM_SELECTED);
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You will delete <span className="text-tw-danger">${
+        selectedRows.length
+      } selected ${selectedRows.length > 1 ? "quizzes" : "quiz"}</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#7366ff",
+      cancelButtonColor: "#dc3545",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        dispatch(onBulkDeleteQuestion(selectedRows));
+      }
+    });
+  };
+
+  ///********* Update Area *********
+  const getQuestionById = (questionId, action = "n/a") => {
+    setIsFetching(true);
+    const item = questions.find((item) => item.id === questionId);
+    switch (action) {
+      case "fetch":
+        typeof item !== "undefined" ? reset(item) : showMessageError("No data");
+        break;
+      default:
+        break;
+    }
+    setIsFetching(false);
+
+    setQuestionByIdPoint(totalCurrentQuestionsPoint - item.point);
+    return typeof item !== "undefined" ? item : showMessageError("No data");
+  };
+
+  const handleEdit = (questionId) => {
+    setIsOpen(true);
+    getQuestionById(questionId, "fetch");
+  };
+
   const handleSubmitForm = (values) => {
-    console.log(values);
+    const point = parseFloat(values.point);
+    const currentPoint =
+      totalCurrentQuestionsPoint > 0
+        ? questionByIdPoint
+        : partById?.maxPoint - questionByIdPoint;
+    if (partById?.maxPoint - currentPoint < point) {
+      toast.error(MESSAGE_POINT_EXCEED_MAX);
+      return;
+    }
+    dispatch(
+      onPostQuestion({
+        ...values,
+        point,
+        partId: parseInt(partId),
+      })
+    );
   };
 
   /********* Library Function Area ********* */
@@ -213,6 +329,10 @@ const AdminQuestionListPage = () => {
     setSelectedRows([]);
     setTableKey((prevKey) => prevKey + 1);
   };
+
+  // Check isFinish a Part
+  const isFinish =
+    partById?.maxPoint - totalCurrentQuestionsPoint === 0 ? true : false;
   return (
     <>
       {(isLoading || isFetching) && <LoadingCom />}
@@ -249,7 +369,7 @@ const AdminQuestionListPage = () => {
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/parts/${partId}/questions/create`}
                   title={`Course: ${courseById?.name}, ${fakeName(
-                    "Part",
+                    "PART",
                     partId
                   )}`}
                   columns={columns}
@@ -274,7 +394,9 @@ const AdminQuestionListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Part</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">
+            Edit Question
+          </HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -289,53 +411,81 @@ const AdminQuestionListPage = () => {
               control={control}
               name="id"
               register={register}
-              placeholder="Part hidden id"
+              placeholder="Question hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
+            <CardHeaderCom
+              title={fakeName("PART", partId)}
+              subText={`MaxPoint: ${
+                partById?.maxPoint
+              }, Duration: ${convertSecondToDiffForHumans(
+                partById?.limitTime
+              )}`}
+              className="text-center text-tw-light-pink font-bold"
+            />
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6 offset-3 text-center">
-                  <LabelCom htmlFor="maxPoint">Part Name</LabelCom>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="maxPoint">Quiz Code</LabelCom>
                   <InputCom
                     type="text"
                     control={control}
-                    name="name"
+                    name="code"
                     register={register}
-                    placeholder="Input max point"
-                    defaultValue={`Part ${watch("id")}`} // Fake Name
+                    placeholder={MESSAGE_READONLY}
+                    defaultValue={fakeName("QUIZ", watch("id"))}
                     readOnly
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom
+                    htmlFor="point"
+                    subText={`max = ${partById?.maxPoint}, other Quiz = ${
+                      totalCurrentQuestionsPoint > 0
+                        ? questionByIdPoint
+                        : partById?.maxPoint - questionByIdPoint
+                    }`}
+                    isRequired
+                  >
+                    Point
+                  </LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="point"
+                    register={register}
+                    placeholder="Edit point"
+                    errorMsg={errors.point?.message}
+                    value={watch("point")}
                   ></InputCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="maxPoint" isRequired>
-                    Max Point
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="description" isRequired>
+                    Quiz
                   </LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="maxPoint"
-                    register={register}
-                    placeholder="Input max point"
-                    errorMsg={errors.maxPoint?.message}
-                    value={watch("maxPoint")}
-                    readOnly
-                  ></InputCom>
-                </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="limitTime" subText="(second)" isRequired>
-                    Limit Time
-                  </LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="limitTime"
-                    register={register}
-                    placeholder="Input limit time"
-                    errorMsg={errors.limitTime?.message}
-                  ></InputCom>
+                  <TextEditorQuillCom
+                    value={watch("description")}
+                    onChange={(description) => {
+                      if (description === "<p><br></p>") {
+                        setValue("description", "");
+                        setDescription("");
+                        setError("description", {
+                          type: "required",
+                          message: MESSAGE_FIELD_REQUIRED,
+                        });
+                      } else {
+                        setValue("description", description);
+                        setError("description", null);
+                        setDescription(description);
+                      }
+                    }}
+                    placeholder="Write your quiz ..."
+                    errorMsg={errors.description?.message}
+                  ></TextEditorQuillCom>
+                  <GapYCom></GapYCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>

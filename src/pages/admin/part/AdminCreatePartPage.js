@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +18,6 @@ import {
   MESSAGE_READONLY,
 } from "../../../constants/config";
 import { onPostPart } from "../../../store/admin/part/partSlice";
-import { fakeName } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
@@ -27,7 +26,7 @@ const schemaValidation = yup.object().shape({
   maxPoint: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(100, "This field must be greater than 100"),
+    .min(0, "This field must be greater than 0"),
   limitTime: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -109,7 +108,7 @@ const AdminCreatePartPage = () => {
           <div className="card">
             <form onSubmit={handleSubmit(handleSubmitForm)}>
               <div className="card-body">
-                <div className="row">
+                {/* <div className="row">
                   <div className="col-sm-6 offset-3 text-center">
                     <LabelCom htmlFor="maxPoint">Part Name</LabelCom>
                     <InputCom
@@ -118,12 +117,12 @@ const AdminCreatePartPage = () => {
                       name="name"
                       register={register}
                       placeholder={MESSAGE_READONLY}
-                      defaultValue={fakeName("Part", parts?.[0]?.id + 1)}
+                      defaultValue={fakeName("PART", parts?.[0]?.id + 1)}
                       readOnly
                     ></InputCom>
                   </div>
                 </div>
-                <GapYCom className="mb-3"></GapYCom>
+                <GapYCom className="mb-3"></GapYCom> */}
                 <div className="row">
                   <div className="col-sm-6">
                     <LabelCom htmlFor="maxPoint" isRequired>
@@ -134,10 +133,10 @@ const AdminCreatePartPage = () => {
                       control={control}
                       name="maxPoint"
                       register={register}
-                      placeholder={MESSAGE_READONLY}
+                      placeholder="Input max point"
                       errorMsg={errors.maxPoint?.message}
-                      defaultValue={100}
-                      readOnly
+                      // defaultValue={100}
+                      // readOnly
                     ></InputCom>
                   </div>
 
