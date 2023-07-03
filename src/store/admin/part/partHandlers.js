@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 import { MESSAGE_GENERAL_FAILED } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
-import { requestPostQuestion } from "../question/questionRequests";
 import {
   requestPostPart,
   requestDeletePart,
@@ -27,27 +25,12 @@ function* handleOnGetPartsByCourseId({ payload }) {
 }
 
 function* handleOnPostPart({ payload }) {
-  console.log("handle: ", payload);
-  yield put(onLoading(false));
+  console.log("ok call");
   try {
-    if (payload.type === "resetPoint") {
-      for (const item of payload.questionsByPartId) {
-        const data = {
-          ...item,
-          point: 0.1,
-        };
-        console.log(data);
-        try {
-          yield call(requestPostQuestion, data);
-        } catch (error) {
-        }
-      }
-    } else {
-      // const res = yield call(requestPostPart, payload);
-      // if (res.data.type === "success") {
-      //   toast.success(res.data.message);
-      //   yield put(onPostPartSuccess(true));
-      // }
+    const res = yield call(requestPostPart, payload);
+    if (res.data.type === "success") {
+      toast.success(res.data.message);
+      yield put(onPostPartSuccess(true));
     }
   } catch (error) {
     yield put(onLoading(false));

@@ -7,7 +7,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import * as yup from "yup";
-import { axiosBearer } from "../../../api/axiosInstance";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
 import GapYCom from "../../../components/common/GapYCom";
@@ -347,22 +346,9 @@ const AdminPartListPage = () => {
     getPartById(partId, "fetch");
   };
 
-  const getQuestionsByPartId = async (partId) => {
-    try {
-      const res = await axiosBearer.get(`/part/${partId}/question`);
-      console.log("res:", res.data);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSubmitForm = (values) => {
-    console.log(values);
     const part = getPartById(values.id);
-    console.log("currentPart:", values);
-    console.log("prevPart:", part);
-    if (values.maxPoint > part.maxPoint) {
+    if (part.maxPoint < values.maxPoint) {
       Swal.fire({
         title: `<span class="text-tw-danger">${fakeName(
           "PART",
@@ -379,17 +365,10 @@ const AdminPartListPage = () => {
         confirmButtonText: "Yes, please continue",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          // call reset all questionPoint
-          // Nếu admin say yes, lấy toàn bộ id câu hỏi theo partId gửi qua redux tính tiếp...
-          // call Api
-          const questionsByPartId = await getQuestionsByPartId(values.id);
-
           dispatch(
             onPostPart({
               ...values,
               courseId: parseInt(courseId),
-              type: "resetPoint",
-              questionsByPartId,
             })
           );
         }
