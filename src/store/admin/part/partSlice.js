@@ -60,5 +60,5 @@ export const {
   onBulkDeletePart,
   onBulkDeletePartSuccess,
 } = partSlice.actions;
-// authReducer
+// reducer
 export default partSlice.reducer;

@@ -1,28 +1,27 @@
+import { yupResolver } from "@hookform/resolvers/yup";
+import jwt_decode from "jwt-decode";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { HeadingFormH1Com } from "../../components/heading";
-import FormGroupCom from "../../components/common/FormGroupCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
 import { ButtonCom } from "../../components/button";
-import { useDispatch, useSelector } from "react-redux";
+import { CheckBoxCom } from "../../components/checkbox";
+import FormGroupCom from "../../components/common/FormGroupCom";
+import { HeadingFormH1Com } from "../../components/heading";
+import { InputCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
 import {
   MESSAGE_CONFIRM_PASSWORD_INVALID,
   MESSAGE_FIELD_REQUIRED,
 } from "../../constants/config";
+import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import {
   onLogin,
   onResetPassword,
   onResetPasswordSuccess,
 } from "../../store/auth/authSlice";
-import { toast } from "react-toastify";
-import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { setRememberPassword } from "../../utils/auth";
-import jwt_decode from "jwt-decode";
-import { CheckBoxCom } from "../../components/checkbox";
+import { setRememberUser } from "../../utils/auth";
 
 const schemaValidation = yup.object().shape({
   password: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -61,7 +60,7 @@ const ResetPasswordPage = () => {
     if (isResetPasswordSuccess) {
       const { password } = getValues();
       const email = jwt_decode(token)?.sub;
-      if (isRemember) setRememberPassword(email, password);
+      if (isRemember) setRememberUser(email, password);
       dispatch(onLogin({ email, password }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -39,6 +39,8 @@ export const MESSAGE_EMAIL_INVALID =
 export const MESSAGE_CONFIRM_PASSWORD_INVALID =
   "Confirm password does not match with password";
 
+export const MESSAGE_READONLY = "This field is Read Only";
+
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
 
@@ -71,6 +73,10 @@ export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
 export const MESSAGE_NET_PRICE_HIGHER_PRICE =
   "The sale price is not allowed to be higher than the original price";
+export const MESSAGE_POINT_EXCEED_MAX =
+  "The question point cannot exceed the max point";
+
+export const MESSAGE_MAINTENANCE = "Sorry, This function is currently under maintenance !";
 
 // Data Static List
 export const categoryItems = [

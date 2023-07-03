@@ -126,5 +126,5 @@ export const {
   onUserUpdateProfile,
   onUserUpdateNoti,
 } = authSlice.actions;
-// authReducer
+// reducer
 export default authSlice.reducer;

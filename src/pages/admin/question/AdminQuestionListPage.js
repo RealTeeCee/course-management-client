@@ -9,33 +9,36 @@ import Swal from "sweetalert2";
 import * as yup from "yup";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
+import CardHeaderCom from "../../../components/common/card/CardHeaderCom";
 import GapYCom from "../../../components/common/GapYCom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
+  IconAnswerCom,
+  IconCheckCom,
   IconEditCom,
-  IconQuestionCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TableCom } from "../../../components/table";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_GENERAL_FAILED,
   MESSAGE_MAINTENANCE,
   MESSAGE_NO_ITEM_SELECTED,
-  MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_NUMBER_POSITIVE,
+  MESSAGE_POINT_EXCEED_MAX,
   MESSAGE_READONLY,
   NOT_FOUND_URL,
 } from "../../../constants/config";
 import {
-  onBulkDeletePart,
-  onDeletePart,
-  onGetPartsByCourseId,
-  onPostPart,
-} from "../../../store/admin/part/partSlice";
+  onBulkDeleteQuestion,
+  onDeleteQuestion,
+  onGetQuestionsByPartId,
+  onPostQuestion,
+} from "../../../store/admin/question/questionSlice";
 import {
   convertSecondToDiffForHumans,
   fakeName,
@@ -44,48 +47,55 @@ import {
 } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
-  maxPoint: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(0, "This field must be greater than 0"),
-  limitTime: yup
-    .number(MESSAGE_FIELD_REQUIRED)
-    .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(600, "This field must be greater than 600"),
+  point: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .matches(/^\d+(\.\d+)?$/, MESSAGE_NUMBER_POSITIVE),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-const AdminPartListPage = () => {
+const AdminQuestionListPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { courseId, partId } = useParams();
+  const { data } = useSelector((state) => state.course);
+  const { parts } = useSelector((state) => state.part);
+  const courseById = data?.find((item) => item.id === parseInt(courseId));
+  const partById = parts?.find((item) => item.id === parseInt(partId));
+  if (!courseById || !partById) navigate(NOT_FOUND_URL);
+
+  const { questions, isLoading, isBulkDeleteSuccess, isPostQuestionSuccess } =
+    useSelector((state) => state.question);
+
+  const totalCurrentQuestionsPoint = questions.reduce(
+    (acc, current) => acc + current.point,
+    0
+  );
+
   /********* State ********* */
   const [selectedRows, setSelectedRows] = useState([]);
   const [filterItem, setFilterItem] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
+  const [description, setDescription] = useState("");
+  const [questionByIdPoint, setQuestionByIdPoint] = useState(0);
 
   const [isFetching, setIsFetching] = useState(false);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { courseId } = useParams();
-  const { data } = useSelector((state) => state.course);
-  const courseById = data?.find((item) => item.id === parseInt(courseId));
-  if (!courseById) navigate(NOT_FOUND_URL);
-
-  const { parts, isLoading, isBulkDeleteSuccess, isPostPartSuccess } =
-    useSelector((state) => state.part);
   // Fetch Data
   useEffect(() => {
-    dispatch(onGetPartsByCourseId({ courseId }));
-    if (isPostPartSuccess && isOpen) setIsOpen(false);
+    dispatch(onGetQuestionsByPartId({ partId }));
+    if (isPostQuestionSuccess && isOpen) setIsOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPostPartSuccess]);
+  }, [isPostQuestionSuccess]);
 
   // Search in Table if using Redux
   useEffect(() => {
     if (search) {
-      if (!parts) return;
+      if (!questions) return;
 
-      const result = parts.filter((item) => {
+      const result = questions.filter((item) => {
         const keys = Object.keys(item);
         // Return all items if search is empty
         if (!search) return true;
@@ -114,10 +124,15 @@ const AdminPartListPage = () => {
 
       setFilterItem(result);
     } else {
-      // Default, setPart for search
-      if (parts) setFilterItem(parts);
+      // Default, setItem for search
+      if (questions) {
+        const sortedQuestions = [...questions].sort(
+          (a, b) => Number(a.fullAnswer) - Number(b.fullAnswer)
+        );
+        setFilterItem(sortedQuestions);
+      }
     }
-  }, [parts, search]);
+  }, [questions, search]);
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
@@ -128,24 +143,13 @@ const AdminPartListPage = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
+    setError,
     watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
-
-  /********* Export Excel ********* */
-  //   const { handleExcelData } = useExportExcel("part");
-  //   const handleExport = () => {
-  //     const headers = ["No", "Section Name", "Status", "Order"];
-  //     const data = sections.map((section, index) => [
-  //       index + 1,
-  //       section.name,
-  //       section.status === 1 ? "Active" : "Inactive",
-  //       section.ordered,
-  //     ]);
-  //     handleExcelData(headers, data);
-  //   };
 
   const columns = [
     {
@@ -154,59 +158,46 @@ const AdminPartListPage = () => {
       width: "70px",
     },
     {
-      name: "Part Code",
-      selector: (row) => fakeName("PART", row.id),
+      name: "Quiz code",
+      selector: (row) => fakeName("QUIZ", row.id),
       sortable: true,
     },
     {
-      name: "Max Point",
-      selector: (row) => row.maxPoint,
+      name: "Quiz",
+      selector: (row) => sliceText(row.description),
       sortable: true,
     },
     {
-      name: "Status",
+      name: "Answer",
       cell: (row) => (
         <>
-          {row.status === 1 ? (
-            <ButtonCom
-              onClick={() => handleChangeStatus(row)}
-              backgroundColor="success"
-            >
-              Active
-            </ButtonCom>
-          ) : (
-            <ButtonCom
-              onClick={() => handleChangeStatus(row)}
-              backgroundColor="danger"
-            >
-              InActive
-            </ButtonCom>
-          )}
-        </>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Question",
-      cell: (row) => (
-        <>
-          <Link to={`/admin/courses/${courseId}/parts/${row.id}/questions`}>
+          <Link
+            to={`/admin/courses/${courseId}/parts/${partId}/questions/${row.id}/answers`}
+          >
             <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
-              <IconQuestionCom className="text-tw-danger" />
+              <IconAnswerCom className="text-tw-success" />
             </ButtonCom>
           </Link>
         </>
       ),
     },
     {
-      name: "Limit Time",
-      selector: (row) => convertSecondToDiffForHumans(row.limitTime),
+      name: "Finish",
+      cell: (row) => (
+        <>
+          {row.fullAnswer ? (
+            <IconCheckCom className="text-tw-success" />
+          ) : (
+            <IconRemoveCom className="text-tw-danger" />
+          )}
+        </>
+      ),
     },
-    // {
-    //   name: "Order",
-    //   selector: (row) => row.ordered,
-    //   sortable: true,
-    // },
+    {
+      name: "Point",
+      selector: (row) => row.point,
+      sortable: true,
+    },
     {
       name: "Actions",
       cell: (row) => (
@@ -224,7 +215,10 @@ const AdminPartListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDelete({ partId: row.id, name: fakeName("PART", row.id) });
+              handleDelete({
+                questionId: row.id,
+                name: fakeName("QUIZ", row.id),
+              });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -263,10 +257,10 @@ const AdminPartListPage = () => {
   ];
 
   /********* Delete One ********* */
-  const handleDelete = ({ partId, name }) => {
+  const handleDelete = ({ questionId, name }) => {
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete part: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete quiz: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -275,9 +269,9 @@ const AdminPartListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         dispatch(
-          onDeletePart({
-            courseId: parseInt(courseId),
-            partId,
+          onDeleteQuestion({
+            partId: parseInt(partId),
+            questionId,
           })
         );
       }
@@ -294,7 +288,7 @@ const AdminPartListPage = () => {
       title: "Are you sure?",
       html: `You will delete <span className="text-tw-danger">${
         selectedRows.length
-      } selected ${selectedRows.length > 1 ? "parts" : "part"}</span>`,
+      } selected ${selectedRows.length > 1 ? "quizzes" : "quiz"}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -302,90 +296,48 @@ const AdminPartListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        dispatch(onBulkDeletePart(selectedRows));
-        // try {
-        //   const deletePromises = selectedRows.map((row) =>
-        //     axiosBearer.delete(`${API_COURSE_URL}?courseId=${row.id}`)
-        //   );
-        //   await Promise.all(deletePromises);
-        //   toast.success(
-        //     `Delete [${selectedRows.length}] ${
-        //       selectedRows.length > 1 ? "parts" : "part"
-        //     } success`
-        //   );
-        // } catch (error) {
-        //   showMessageError(error);
-        // } finally {
-        //   getCourses();
-        //   clearSelectedRows();
-        // }
+        dispatch(onBulkDeleteQuestion(selectedRows));
       }
     });
   };
 
   ///********* Update Area *********
-  const getPartById = (partId, action = "n/a") => {
+  const getQuestionById = (questionId, action = "n/a") => {
     setIsFetching(true);
-    const part = parts.find((item) => item.id === partId);
+    const item = questions.find((item) => item.id === questionId);
     switch (action) {
       case "fetch":
-        typeof part !== "undefined" ? reset(part) : showMessageError("No data");
+        typeof item !== "undefined" ? reset(item) : showMessageError("No data");
         break;
       default:
         break;
     }
     setIsFetching(false);
-    return typeof part !== "undefined" ? part : showMessageError("No data");
+
+    setQuestionByIdPoint(totalCurrentQuestionsPoint - item.point);
+    return typeof item !== "undefined" ? item : showMessageError("No data");
   };
 
-  const handleEdit = (partId) => {
+  const handleEdit = (questionId) => {
     setIsOpen(true);
-    getPartById(partId, "fetch");
+    getQuestionById(questionId, "fetch");
   };
 
   const handleSubmitForm = (values) => {
-    const part = getPartById(values.id);
-    if (part.maxPoint < values.maxPoint) {
-      Swal.fire({
-        title: `<span class="text-tw-danger">${fakeName(
-          "PART",
-          part?.id
-        )}</span> is active Part!`,
-        html: `If you change the max point of active Part, the point of all quizzes in <span class="text-tw-danger">${fakeName(
-          "PART",
-          part?.id
-        )}</span> will be reset`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#7366ff",
-        cancelButtonColor: "#dc3545",
-        confirmButtonText: "Yes, please continue",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          dispatch(
-            onPostPart({
-              ...values,
-              courseId: parseInt(courseId),
-            })
-          );
-        }
-      });
-    } else {
-      dispatch(
-        onPostPart({
-          ...values,
-          courseId: parseInt(courseId),
-        })
-      );
+    const point = parseFloat(values.point);
+    const currentPoint =
+      totalCurrentQuestionsPoint > 0
+        ? questionByIdPoint
+        : partById?.maxPoint - questionByIdPoint;
+    if (partById?.maxPoint - currentPoint < point) {
+      toast.error(MESSAGE_POINT_EXCEED_MAX);
+      return;
     }
-  };
-
-  const handleChangeStatus = (part) => {
     dispatch(
-      onPostPart({
-        ...part,
-        status: part.status === 1 ? 0 : 1,
-        courseId: parseInt(courseId),
+      onPostQuestion({
+        ...values,
+        point,
+        partId: parseInt(partId),
       })
     );
   };
@@ -399,11 +351,15 @@ const AdminPartListPage = () => {
     setSelectedRows([]);
     setTableKey((prevKey) => prevKey + 1);
   };
+
+  // Check isFinish a Part
+  const isFinish =
+    partById?.maxPoint - totalCurrentQuestionsPoint === 0 ? true : false;
   return (
     <>
       {(isLoading || isFetching) && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Part</HeadingH1Com>
+        <HeadingH1Com>Admin Question</HeadingH1Com>
         <BreadcrumbCom
           items={[
             {
@@ -414,9 +370,12 @@ const AdminPartListPage = () => {
               title: "Course",
               slug: "/admin/courses",
             },
-
             {
               title: "Part",
+              slug: `/admin/courses/${courseId}/parts`,
+            },
+            {
+              title: "Question",
               isActive: true,
             },
           ]}
@@ -430,8 +389,12 @@ const AdminPartListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  urlCreate={`/admin/courses/${courseId}/parts/create`}
-                  title={`Course: ${sliceText(courseById?.name, 30)}`}
+                  urlCreate={`/admin/courses/${courseId}/parts/${partId}/questions/create`}
+                  classNameBtnCreate={isFinish ? "hidden" : ""}
+                  title={`${sliceText(courseById?.name, 30)}, ${fakeName(
+                    "PART",
+                    partId
+                  )}`}
                   columns={columns}
                   items={filterItem}
                   search={search}
@@ -454,7 +417,9 @@ const AdminPartListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Part</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">
+            Edit Question
+          </HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -469,52 +434,81 @@ const AdminPartListPage = () => {
               control={control}
               name="id"
               register={register}
-              placeholder="Part hidden id"
+              placeholder="Question hidden id"
               errorMsg={errors.id?.message}
             ></InputCom>
+            <CardHeaderCom
+              title={fakeName("PART", partId)}
+              subText={`MaxPoint: ${
+                partById?.maxPoint
+              }, Duration: ${convertSecondToDiffForHumans(
+                partById?.limitTime
+              )}`}
+              className="text-center text-tw-light-pink font-bold"
+            />
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6 offset-3 text-center">
-                  <LabelCom htmlFor="maxPoint">Part Code</LabelCom>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="maxPoint">Quiz Code</LabelCom>
                   <InputCom
                     type="text"
                     control={control}
                     name="code"
                     register={register}
                     placeholder={MESSAGE_READONLY}
-                    defaultValue={fakeName("PART", watch("id"))}
+                    defaultValue={fakeName("QUIZ", watch("id"))}
                     readOnly
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom
+                    htmlFor="point"
+                    subText={`max = ${partById?.maxPoint}, other Quiz = ${
+                      totalCurrentQuestionsPoint > 0
+                        ? questionByIdPoint
+                        : partById?.maxPoint - questionByIdPoint
+                    }`}
+                    isRequired
+                  >
+                    Point
+                  </LabelCom>
+                  <InputCom
+                    type="number"
+                    control={control}
+                    name="point"
+                    register={register}
+                    placeholder="Edit point"
+                    errorMsg={errors.point?.message}
+                    value={watch("point")}
                   ></InputCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="maxPoint" isRequired>
-                    Max Point
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="description" isRequired>
+                    Quiz
                   </LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="maxPoint"
-                    register={register}
-                    placeholder="Input max point"
-                    errorMsg={errors.maxPoint?.message}
-                    value={watch("maxPoint")}
-                  ></InputCom>
-                </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="limitTime" subText="(second)" isRequired>
-                    Limit Time
-                  </LabelCom>
-                  <InputCom
-                    type="number"
-                    control={control}
-                    name="limitTime"
-                    register={register}
-                    placeholder="Input limit time"
-                    errorMsg={errors.limitTime?.message}
-                  ></InputCom>
+                  <TextEditorQuillCom
+                    value={watch("description")}
+                    onChange={(description) => {
+                      if (description === "<p><br></p>") {
+                        setValue("description", "");
+                        setDescription("");
+                        setError("description", {
+                          type: "required",
+                          message: MESSAGE_FIELD_REQUIRED,
+                        });
+                      } else {
+                        setValue("description", description);
+                        setError("description", null);
+                        setDescription(description);
+                      }
+                    }}
+                    placeholder="Write your quiz ..."
+                    errorMsg={errors.description?.message}
+                  ></TextEditorQuillCom>
+                  <GapYCom></GapYCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
@@ -531,4 +525,4 @@ const AdminPartListPage = () => {
   );
 };
 
-export default AdminPartListPage;
+export default AdminQuestionListPage;
