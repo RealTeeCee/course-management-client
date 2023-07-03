@@ -15,6 +15,7 @@ import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
+
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 const ForgetPasswordPage = lazy(() =>
@@ -61,6 +62,10 @@ const AdminCreateLessonPage = lazy(() =>
 
 const AdminBlogListPage = lazy(() =>
   import("./pages/admin/blog/AdminBlogListPage.js")
+);
+
+const AdminUserListPage = lazy(() =>
+  import("./pages/admin/user/AdminUserListPage.js")
 );
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
@@ -306,6 +311,12 @@ function App() {
             <Route
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
+            ></Route>
+         
+          {/* Admin Users */}
+          <Route
+              path="users"
+              element={<AdminUserListPage></AdminUserListPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { v4 } from "uuid";
 import * as yup from "yup";
 import Carousel_6 from "../../assets/blog_image/Carousel_6.jpg";
-import { ImageCropUploadAntCom } from "../../components/ant";
+import { ImageCropUploadAntCom, SwitchAntCom } from "../../components/ant";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingFormH5Com } from "../../components/heading";
@@ -25,11 +25,23 @@ import {
   AVATAR_DEFAULT,
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../constants/config";
-import { onUserUpdateProfile } from "../../store/auth/authSlice";
+import {
+  onUserUpdateNoti,
+  onUserUpdateProfile,
+} from "../../store/auth/authSlice";
 import { onMyCourseLoading } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
-import { convertDateTime, sliceText } from "../../utils/helper";
+import {
+  convertDateTime,
+  showMessageError,
+  sliceText,
+} from "../../utils/helper";
+import { axiosBearer } from "../../api/axiosInstance";
+import { toast } from "react-toastify";
+import { AiOutlineEdit } from "react-icons/ai";
+import { PiPasswordFill } from "react-icons/pi";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -56,12 +68,14 @@ const UserProfilePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user, isLoading } = useSelector((state) => state.auth);
+  const { user, isLoading, course } = useSelector((state) => state.auth);
+  console.log("user: ", user);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
   const [image, setImage] = useState([]);
+  // const [user, setUsers] = useState([]);
 
   const resetValues = () => {
     reset();
@@ -127,6 +141,24 @@ const UserProfilePage = () => {
     resetValues();
   };
 
+  // ************** Edit Notification **************************
+  const handleChangeSwitch = async (isChecked) => {
+    console.log("isChecked", isChecked);
+    const { access_token } = getToken();
+    const formData = {
+      id: user.id,
+      notify: isChecked ? 1 : 0,
+      access_token,
+    };
+
+    console.log("formData", formData);
+    console.log("access_token", access_token);
+    dispatch(onUserUpdateNoti(formData));
+    // await axiosBearer.put(`/auth/user/notify`, formData);
+    // toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+    // getUsers();
+  };
+
   return (
     <div className="mx-auto py-6 px-4">
       <div className="relative h-96 rounded-b flex justify-center rounded-lg">
@@ -188,12 +220,12 @@ const UserProfilePage = () => {
           <div className="shadow-fb  w-full bg-white p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="text-xl font-bold text-fBlack">My Profile</div>
-              <button
+              {/* <button
                 className="transition-all duration-300 text-tw-primary hover:opacity-60"
                 onClick={() => handleEdit()}
               >
                 Edit
-              </button>
+              </button> */}
             </div>
             <div className="mt-4 flex items-center">
               <IconUserCom></IconUserCom>
@@ -216,38 +248,73 @@ const UserProfilePage = () => {
           </div>
           {/* Start User profile */}
 
-          {/* Start Activity */}
-          <div className="w-full shadow-fb bg-white rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <div className="text-xl font-bold text-fBlack">Activity</div>
-            </div>
-            <div className="shadow-fb rounded w-full bg-white p-4">
-              <div className="mt-4 flex items-center">
-                <img
-                  src="https://petdep.net/wp-content/uploads/2022/11/gia-meo-anh-long-dai-.jpg"
-                  alt="img"
-                  className="h-10 w-10 rounded-full"
-                />
-                <span className="ml-2">FPT Aptech </span>
-                <FcLike />
-                <span className="ml-2">Hung Nguyen's post</span>
-              </div>
+          {/* Start Setting */}
+          <div className="flex-row row-start-1 col-span-12 md:col-span-7 md:col-start-7 space-y-4 rounded-lg">
+            <div>
+              <div className="w-full shadow-fb rounded bg-white p-4">
+                <div className="flex justify-between items-center">
+                  <div className="text-xl font-bold text-fBlack">Setting</div>
+                </div>
+                <div className="flex items-center  mt-4 space-x-4">
+                  <button
+                    className="p-2.5 rounded-full bg-teal-500 hover:bg-teal-600"
+                    onClick={() => handleEdit()}
+                  >
+                    <AiOutlineEdit className="h-6 w-6 text-white " />
+                  </button>
+                  <div className="flex-1">
+                    <p className="font-bold">Edit Profile</p>
+                    <p className="text-gray-500 italic">
+                      Edit your personal information
+                    </p>
+                  </div>
+                </div>
 
-              <div className="border border-fGrey mt-6 mb-6 border-opacity-10" />
-              <div className="mt-4 flex items-center">
-                <img
-                  src="https://petdep.net/wp-content/uploads/2022/11/gia-meo-anh-long-dai-.jpg"
-                  alt="img"
-                  className="h-10 w-10 rounded-full"
-                />
-                <span className="ml-2">FPT Aptech </span>
-                <FcComments />
-                <span className="ml-2">Duy Truong's post</span>
+                <div className="flex items-center  mt-4 space-x-4">
+                  <div className="flex items-center">
+                    {" "}
+                    {/* Container */}
+                    <SwitchAntCom
+                      defaultChecked={user.notify ? true : false}
+                      className={`${
+                        user.notify ? "" : "bg-tw-danger hover:!bg-tw-orange"
+                      }`}
+                      onChange={(isChecked) => handleChangeSwitch(isChecked)}
+                      textChecked="on"
+                      textUnChecked="off"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="font-bold">Receive notification</p>
+                    <p className="text-gray-500 italic">
+                      Active will received notifications from Course
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center  mt-4 space-x-4">
+                  <button
+                    className="p-2.5 rounded-full bg-rose-400 hover:bg-rose-500"
+                    onClick={() =>
+                      (window.location.href = "/profile/change-password")
+                    }
+                  >
+                    <PiPasswordFill className="h-6 w-6 text-white" />
+                  </button>
+
+                  <div className="flex-1">
+                    <p className="font-bold">Change Password</p>
+                    <p className="text-gray-500 italic">
+                      Change user's password
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        {/* End Activity */}
+        {/* End Setting */}
 
         {/* Start Courses attended*/}
         <div className="flex-row row-start-1 col-span-12 md:col-span-7 md:col-start-7 space-y-4 rounded-lg">

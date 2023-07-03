@@ -1,29 +1,72 @@
 import React, { useState } from "react";
-import { BsPencilSquare } from "react-icons/bs";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { blog } from "../../assets/blog_data/data";
-import { HeadingH2Com } from "../../components/heading";
 import { axiosBearer } from "../../api/axiosInstance";
-import Carousel_4 from "../../assets/blog_image/Carousel_4.jpg";
 import { FaEye } from "react-icons/fa";
 import ButtonBackCom from "../../components/button/ButtonBackCom";
 import moment from "moment/moment";
-import { create } from "lodash";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
+import {
+  COOKIE_EXPIRED_BLOG_DAYS,
+  COOKIE_VIEW_COUNT_KEY,
+} from "../../constants/config";
+import CommentCom from "../../components/comment/CommentCom";
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
   const [blogs, setBlogs] = useState(null);
   const { user } = useSelector((state) => state.auth);
-  const [viewCount, setViewCount] = useState(0);// Lưu trữ số lượt truy cập
+  const [viewCount, setViewCount] = useState(0);
+ 
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await updateViewCount(); // Call updateViewCount to update new view_count
+        const response = await axiosBearer.get(`/blog/${id}`);
+        console.log("response",response);
+        setBlogs({
+          name: response.data.name,
+          description: response.data.description,
+          image: response.data.image,
+          view_count: response.data.view_count,
+          created_at: response.data.created_at
+            ? moment(response.data.created_at).format("DD/MM/YYYY")
+            : "", // Format the date
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    fetchData();
+  }, [id]);
+
+  const updateViewCount = async () => {
+    try {
+      await axiosBearer.put(`/blog/view-count/${id}`, {
+        view_count: viewCount + 1,
+      });
+      setViewCount((prevCount) => prevCount + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //------------------
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
+  //       const cookieViewCount = Cookies.get(`${COOKIE_VIEW_COUNT_KEY}_${id}`);
+  //       if (cookieViewCount) {
+  //         setViewCount(Number(cookieViewCount));
+  //       } else {
+  //         await updateViewCount();
+  //       }
+
   //       const response = await axiosBearer.get(`/blog/${id}`);
   //       console.log(response);
   //       setBlogs({
@@ -43,33 +86,21 @@ const BlogDetailsPage = () => {
   //   fetchData();
   // }, [id]);
 
-  const fetchData = async () => {
-    try {
-      const response = await axiosBearer.get(`/blog/${id}`);
-      console.log(response);
-      const blogData = {
-        name: response.data.name,
-        description: response.data.description,
-        image: response.data.image,
-        view_count: response.data.view_count,
-        created_at: response.data.created_at
-          ? moment(response.data.created_at).format("DD/MM/YYYY")
-          : "",
-      };
-      setBlogs(blogData);
-  
-      // Increase view count
-      const updatedViewCount = blogData.view_count + 1;
-      setViewCount(updatedViewCount);
-      console.log("count",updatedViewCount)
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  fetchData();
-  
-  
+  // const updateViewCount = async () => {
+  //   if (!isViewCountUpdated) {
+  //     try {
+  //       await axiosBearer.put(`/blog/view-count/${id}`, { view_count: viewCount + 1 });
+  //       setViewCount(prevCount => prevCount + 1);
+  //       Cookies.set(`${COOKIE_VIEW_COUNT_KEY}_blogId=${id}`, viewCount + 1, {
+  //         expires: COOKIE_EXPIRED_BLOG_DAYS,
+  //       });
+  //       setIsViewCountUpdated(true);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
+
   return (
     <>
       {blogs ? (
@@ -101,7 +132,9 @@ const BlogDetailsPage = () => {
               <h1 className="text-3xl font-medium">{blogs.name}</h1>
               <h3 className="my-5 text-lg capitalize leading-7">
                 {/* {ReactHtmlParser(blogs.description)} */}
-                <div dangerouslySetInnerHTML={{ __html: blogs.description }}></div>
+                <div
+                  dangerouslySetInnerHTML={{ __html: blogs.description }}
+                ></div>
               </h3>
               <div className="flex justify-between items-center">
                 {user && user.role === "ADMIN" ? (
@@ -125,6 +158,7 @@ const BlogDetailsPage = () => {
           </div>
         </section>
       ) : null}
+      
     </>
   );
 };

@@ -58,3 +58,7 @@ export const requestUserUpdateProfile = (data) => {
     },
   });
 };
+
+export const requestUserUpdateNoti = (data) => {
+  return axiosBearer.put(`/auth/user/notify`, data);
+};
