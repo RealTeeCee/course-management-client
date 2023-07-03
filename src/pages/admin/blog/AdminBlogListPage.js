@@ -169,9 +169,13 @@ const AdminBlogListPage = () => {
           name="status"
           defaultValue={row.status}
           options={statusItems}
-          style={{
-            backgroundColor: row.status === 1 ? "green" : row.status === 2 ? "red" : "yellow",
-          }}
+          className={`${
+            row.status
+            === 1 ? "!bg-tw-success" : row.status === 2 ? "!bg-tw-primary" : "bg-tw-danger"
+          }`}
+          // style={{
+          //   backgroundColor: row.status === 1 ? "green" : row.status === 2 ? "red" : "yellow",
+          // }}
           onChange={(selectedStatus) =>
             handleChangeStatus(row.id, selectedStatus)
           }

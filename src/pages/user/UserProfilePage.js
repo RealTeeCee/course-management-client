@@ -150,9 +150,9 @@ const UserProfilePage = () => {
       notify: isChecked ? 1 : 0,
       access_token,
     };
-    
+
     console.log("formData", formData);
-    console.log("access_token",access_token);
+    console.log("access_token", access_token);
     dispatch(onUserUpdateNoti(formData));
     // await axiosBearer.put(`/auth/user/notify`, formData);
     // toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
@@ -257,7 +257,7 @@ const UserProfilePage = () => {
                 </div>
                 <div className="flex items-center  mt-4 space-x-4">
                   <button
-                    className="p-2 rounded-full bg-teal-500 hover:bg-teal-600"
+                    className="p-2.5 rounded-full bg-teal-500 hover:bg-teal-600"
                     onClick={() => handleEdit()}
                   >
                     <AiOutlineEdit className="h-6 w-6 text-white " />
@@ -271,17 +271,19 @@ const UserProfilePage = () => {
                 </div>
 
                 <div className="flex items-center  mt-4 space-x-4">
-                  <SwitchAntCom
-                    defaultChecked={user.notify ? true : false}
-                    className={`${
-                      user.notify
-                        ? ""
-                        : "bg-tw-danger hover:!bg-tw-orange"
-                    }`}
-                    onChange={(isChecked) => handleChangeSwitch(isChecked)}
-                    // textChecked="ok"
-                    // textUnChecked="none"
-                  />
+                  <div className="flex items-center">
+                    {" "}
+                    {/* Container */}
+                    <SwitchAntCom
+                      defaultChecked={user.notify ? true : false}
+                      className={`${
+                        user.notify ? "" : "bg-tw-danger hover:!bg-tw-orange"
+                      }`}
+                      onChange={(isChecked) => handleChangeSwitch(isChecked)}
+                      textChecked="on"
+                      textUnChecked="off"
+                    />
+                  </div>
 
                   <div className="flex-1">
                     <p className="font-bold">Receive notification</p>
@@ -293,7 +295,7 @@ const UserProfilePage = () => {
 
                 <div className="flex items-center  mt-4 space-x-4">
                   <button
-                    className="p-2 rounded-full bg-rose-400 hover:bg-rose-500"
+                    className="p-2.5 rounded-full bg-rose-400 hover:bg-rose-500"
                     onClick={() =>
                       (window.location.href = "/profile/change-password")
                     }

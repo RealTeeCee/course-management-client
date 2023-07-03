@@ -10,8 +10,8 @@ const objBlogCookies = {
 export const setBlogViewCount = (blogId, view_count) => {
   if (view_count) {
     const viewCountObj = {
-      blogId: blogId,
-      view_count: view_count,
+      blogId,
+      view_count,
     };
     Cookies.set(COOKIE_VIEW_COUNT_KEY, JSON.stringify(viewCountObj), {
       ...objBlogCookies,

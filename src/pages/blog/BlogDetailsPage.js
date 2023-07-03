@@ -20,14 +20,14 @@ const BlogDetailsPage = () => {
   const [blogs, setBlogs] = useState(null);
   const { user } = useSelector((state) => state.auth);
   const [viewCount, setViewCount] = useState(0);
-  const [isViewCountUpdated, setIsViewCountUpdated] = useState(false);
+ 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         await updateViewCount(); // Call updateViewCount to update new view_count
         const response = await axiosBearer.get(`/blog/${id}`);
-        console.log(response);
+        console.log("response",response);
         setBlogs({
           name: response.data.name,
           description: response.data.description,
@@ -158,13 +158,7 @@ const BlogDetailsPage = () => {
           </div>
         </section>
       ) : null}
-      {user && id &(
-        <section className="bg-gray-50 max-w-[1240px] mx-auto py-10 px-24 mt-10">
-          <div>
-            <CommentCom />
-          </div>
-        </section>
-      )}
+      
     </>
   );
 };

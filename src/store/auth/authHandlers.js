@@ -172,13 +172,12 @@ function* handleOnUserUpdateProfile({ payload }) {
 }
 
 function* handleOnUserUpdateNoti({ payload }) {
-  console.log("payload", payload);
   try {
     const res = yield call(requestUserUpdateNoti, payload);
     console.log("res: ", res);
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
-      console.log("access_token in authHandler", payload.access_token);
+
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
