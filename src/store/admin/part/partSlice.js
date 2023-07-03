@@ -7,6 +7,8 @@ const partSlice = createSlice({
     isPostPartSuccess: false,
     isBulkDeleteSuccess: false,
     parts: [],
+    type: null,
+    questionsByPartId: [],
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -24,15 +26,22 @@ const partSlice = createSlice({
       isBulkDeleteSuccess: false,
       parts: action.payload,
     }),
-    onPostPart: (state, action) => ({
-      ...state,
-      isLoading: true,
-      isPostPartSuccess: false,
-    }),
+    onPostPart: (state, action) => {
+      console.log("onPostPart action:", action);
+      return {
+        ...state,
+        isLoading: true,
+        isPostPartSuccess: false,
+        type: action.payload.type,
+        questionsByPartId: action.payload.questionsByPartId,
+      };
+    },
     onPostPartSuccess: (state, action) => ({
       ...state,
       isLoading: false,
       isPostPartSuccess: action.payload,
+      type: null,
+      questionsByPartId: [],
     }),
     onDeletePart: (state, action) => ({
       ...state,

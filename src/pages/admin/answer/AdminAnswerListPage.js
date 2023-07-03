@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import * as yup from "yup";
+import { CheckBoxAntCom } from "../../../components/ant";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
 import CardHeaderCom from "../../../components/common/card/CardHeaderCom";
@@ -14,7 +15,6 @@ import GapYCom from "../../../components/common/GapYCom";
 import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
-  IconAnswerCom,
   IconCheckCom,
   IconEditCom,
   IconRemoveCom,
@@ -23,32 +23,23 @@ import {
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TableCom } from "../../../components/table";
-import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_READONLY,
   NOT_FOUND_URL,
 } from "../../../constants/config";
+import useOnChangeCheckBox from "../../../hooks/useOnChangeCheckBox";
 import {
   onBulkDeleteAnswer,
   onDeleteAnswer,
   onGetAnswersByQuestionId,
   onPostAnswer,
 } from "../../../store/admin/answer/answerSlice";
-import {
-  convertSecondToDiffForHumans,
-  fakeName,
-  showMessageError,
-  sliceText,
-} from "../../../utils/helper";
+import { fakeName, showMessageError, sliceText } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
-  // point: yup
-  //   .string()
-  //   .required(MESSAGE_FIELD_REQUIRED)
-  //   .matches(/^\d+(\.\d+)?$/, MESSAGE_NUMBER_POSITIVE),
-  // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const AdminAnswerListPage = () => {
@@ -136,12 +127,13 @@ const AdminAnswerListPage = () => {
     handleSubmit,
     reset,
     setValue,
-    setError,
     watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+
+  const [, handleChangeCorrect] = useOnChangeCheckBox(setValue, "correct");
 
   const columns = [
     {
@@ -187,7 +179,7 @@ const AdminAnswerListPage = () => {
             backgroundColor="danger"
             onClick={() => {
               handleDelete({
-                questionId: row.id,
+                answerId: row.id,
                 name: fakeName("ANSWER", row.id),
               });
             }}
@@ -227,7 +219,7 @@ const AdminAnswerListPage = () => {
   ];
 
   /********* Delete One ********* */
-  const handleDelete = ({ questionId, name }) => {
+  const handleDelete = ({ answerId, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete quiz: <span class="text-tw-danger">${name}</span>`,
@@ -240,8 +232,8 @@ const AdminAnswerListPage = () => {
       if (result.isConfirmed) {
         dispatch(
           onDeleteAnswer({
-            partId: parseInt(partId),
-            questionId,
+            questionId: parseInt(questionId),
+            answerId,
           })
         );
       }
@@ -272,42 +264,32 @@ const AdminAnswerListPage = () => {
   };
 
   ///********* Update Area *********
-  const getQuestionById = (questionId, action = "n/a") => {
+  const getAnswerById = (answerId, action = "n/a") => {
     setIsFetching(true);
-    const item = questions.find((item) => item.id === questionId);
+    const item = answers.find((item) => item.id === answerId);
     switch (action) {
       case "fetch":
         typeof item !== "undefined" ? reset(item) : showMessageError("No data");
+        setValue("correct", item?.correct ?? false);
         break;
       default:
         break;
     }
     setIsFetching(false);
 
-    // setQuestionByIdPoint(totalCurrentQuestionsPoint - item.point);
     return typeof item !== "undefined" ? item : showMessageError("No data");
   };
 
-  const handleEdit = (questionId) => {
+  const handleEdit = (answerId) => {
     setIsOpen(true);
-    getQuestionById(questionId, "fetch");
+    getAnswerById(answerId, "fetch");
   };
 
   const handleSubmitForm = (values) => {
-    // const point = parseFloat(values.point);
-    // const currentPoint =
-    //   totalCurrentQuestionsPoint > 0
-    //     ? questionByIdPoint
-    //     : partById?.maxPoint - questionByIdPoint;
-    // if (partById?.maxPoint - currentPoint < point) {
-    //   toast.error(MESSAGE_POINT_EXCEED_MAX);
-    //   return;
-    // }
     dispatch(
       onPostAnswer({
         ...values,
-        // point,
-        partId: parseInt(partId),
+        questionId: parseInt(questionId),
       })
     );
   };
@@ -322,9 +304,6 @@ const AdminAnswerListPage = () => {
     setTableKey((prevKey) => prevKey + 1);
   };
 
-  // Check isFinish a Part
-  // const isFinish =
-  //   partById?.maxPoint - totalCurrentQuestionsPoint === 0 ? true : false;
   return (
     <>
       {(isLoading || isFetching) && <LoadingCom />}
@@ -364,6 +343,7 @@ const AdminAnswerListPage = () => {
                 <TableCom
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/parts/${partId}/questions/${questionId}/answers/create`}
+                  classNameBtnCreate={`${answers?.length >= 4 && "hidden"}`}
                   title={`${sliceText(courseById?.name, 30)}, ${fakeName(
                     "PART",
                     partId
@@ -390,7 +370,7 @@ const AdminAnswerListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit ANSWER</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Answer</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -409,17 +389,13 @@ const AdminAnswerListPage = () => {
               errorMsg={errors.id?.message}
             ></InputCom>
             <CardHeaderCom
-              title={fakeName("PART", partId)}
-              subText={`MaxPoint: ${
-                partById?.maxPoint
-              }, Duration: ${convertSecondToDiffForHumans(
-                partById?.limitTime
-              )}`}
+              title={fakeName("QUIZ", questionId)}
+              subText={sliceText(questionById?.description, 200)}
               className="text-center text-tw-light-pink font-bold"
             />
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-6">
+                <div className="col-sm-3">
                   <LabelCom htmlFor="maxPoint">Answer Code</LabelCom>
                   <InputCom
                     type="text"
@@ -431,47 +407,26 @@ const AdminAnswerListPage = () => {
                     readOnly
                   ></InputCom>
                 </div>
-                <div className="col-sm-6">
-                  <LabelCom htmlFor="point" subText={`none`} isRequired>
-                    Point
-                  </LabelCom>
+                <div className="col-sm-9">
+                  <div className="flex items-center justify-between">
+                    <LabelCom htmlFor="description" isRequired>
+                      Answer
+                    </LabelCom>
+                    <CheckBoxAntCom
+                      onChange={handleChangeCorrect}
+                      isChecked={watch("correct")}
+                    >
+                      Correct
+                    </CheckBoxAntCom>
+                  </div>
                   <InputCom
-                    type="number"
+                    type="text"
                     control={control}
-                    name="point"
+                    name="description"
                     register={register}
-                    placeholder="Edit point"
-                    errorMsg={errors.point?.message}
-                    value={watch("point")}
-                  ></InputCom>
-                </div>
-              </div>
-              <GapYCom className="mb-3"></GapYCom>
-              <div className="row">
-                <div className="col-sm-12 text-center">
-                  <LabelCom htmlFor="description" isRequired>
-                    Quiz
-                  </LabelCom>
-                  <TextEditorQuillCom
-                    value={watch("description")}
-                    onChange={(description) => {
-                      if (description === "<p><br></p>") {
-                        setValue("description", "");
-                        setDescription("");
-                        setError("description", {
-                          type: "required",
-                          message: MESSAGE_FIELD_REQUIRED,
-                        });
-                      } else {
-                        setValue("description", description);
-                        setError("description", null);
-                        setDescription(description);
-                      }
-                    }}
-                    placeholder="Write your quiz ..."
+                    placeholder="Input answer"
                     errorMsg={errors.description?.message}
-                  ></TextEditorQuillCom>
-                  <GapYCom></GapYCom>
+                  ></InputCom>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { convertIntToStrMoney } from "../utils/helper";
 
-// After time will OnChange value
 export default function useOnChange(initialValue = null) {
   const [value, setValue] = useState(initialValue);
   const handleOnChange = (e) => {

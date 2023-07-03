@@ -15,6 +15,7 @@ const TableCom = ({
   dropdownItems = [],
   tableKey = 0,
   onSelectedRowsChange = () => {},
+  classNameBtnCreate = "",
   ...rest
 }) => {
   const { search, setSearch } = rest;
@@ -35,7 +36,7 @@ const TableCom = ({
         <div key="table-actions" className="flex items-center gap-x-2 z-10">
           <DropdownAntCom items={dropdownItems}></DropdownAntCom>
           {urlCreate && (
-            <Link to={urlCreate} key={urlCreate}>
+            <Link to={urlCreate} key={urlCreate} className={classNameBtnCreate}>
               <ButtonCom
                 className="text-white text-center px-3 text-sm"
                 backgroundColor="info"
@@ -67,6 +68,7 @@ TableCom.propTypes = {
   columns: PropTypes.array,
   dropdownItems: PropTypes.array,
   items: PropTypes.array.isRequired,
+  classNameBtnCreate: PropTypes.string,
 };
 export default withErrorBoundary(TableCom, {
   FallbackComponent: ErrorCom,

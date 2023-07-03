@@ -12,19 +12,20 @@ import { ButtonCom } from "../../../components/button";
 import CardHeaderCom from "../../../components/common/card/CardHeaderCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
+import { IconCheckCom } from "../../../components/icon";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
-import { NOT_FOUND_URL } from "../../../constants/config";
+import {
+  MESSAGE_FIELD_REQUIRED,
+  NOT_FOUND_URL,
+} from "../../../constants/config";
+import useOnChangeCheckBox from "../../../hooks/useOnChangeCheckBox";
 import { onPostAnswer } from "../../../store/admin/answer/answerSlice";
 import { fakeName, sliceText } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  // point: yup
-  //   .string()
-  //   .required(MESSAGE_FIELD_REQUIRED)
-  //   .matches(/^\d+(\.\d+)?$/, MESSAGE_NUMBER_POSITIVE),
-  // description: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  description: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const AdminCreateAnswerPage = () => {
@@ -33,8 +34,7 @@ const AdminCreateAnswerPage = () => {
     register,
     handleSubmit,
     setValue,
-    setError,
-    reset,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -47,22 +47,27 @@ const AdminCreateAnswerPage = () => {
   const { data } = useSelector((state) => state.course);
   const { parts } = useSelector((state) => state.part);
   const { questions, isLoading } = useSelector((state) => state.question);
+  const { answers } = useSelector((state) => state.answer);
   const { isPostAnswerSuccess } = useSelector((state) => state.answer);
+  useEffect(() => {
+    answers?.length > 0
+      ? setValue("correct", false)
+      : setValue("correct", true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const courseById = data?.find((item) => item.id === parseInt(courseId));
   const partById = parts?.find((item) => item.id === parseInt(partId));
   const questionById = questions?.find(
     (item) => item.id === parseInt(questionId)
   );
-  const [isCorrect, setIsCorrect] = useState(false);
-
-  if (!courseById || !partById || !questionById) navigate(NOT_FOUND_URL);
-  const totalCurrentQuestionsPoint = questions.reduce(
-    (acc, current) => acc + current.point,
-    0
+  const [isCorrect, handleChangeCorrect] = useOnChangeCheckBox(
+    setValue,
+    "correct",
+    answers?.length > 0 ? false : true
   );
 
-  const [description, setDescription] = useState("");
+  if (!courseById || !partById || !questionById) navigate(NOT_FOUND_URL);
 
   useEffect(() => {
     if (isPostAnswerSuccess)
@@ -84,12 +89,7 @@ const AdminCreateAnswerPage = () => {
     );
   };
 
-  /********* Library Function Area ********* */
-  const handleChangeCorrect = (e) => {
-    setIsCorrect(e.target.checked);
-    setValue("correct", e.target.checked);
-  };
-
+  const isFinish = answers?.length >= 4 ? true : false;
   return (
     <>
       <div className="flex justify-between items-center">
@@ -152,7 +152,14 @@ const AdminCreateAnswerPage = () => {
                       control={control}
                       name="description"
                       register={register}
-                      placeholder="Input answer"
+                      placeholder={
+                        isFinish
+                          ? "This quiz have enough answers already"
+                          : answers?.length > 0
+                          ? "Input the wrong answer"
+                          : "Input the correct answer"
+                      }
+                      readOnly={isFinish}
                       errorMsg={errors.description?.message}
                     ></InputCom>
                     {/* <TextEditorQuillCom
@@ -180,8 +187,16 @@ const AdminCreateAnswerPage = () => {
                 <GapYCom className="mb-3"></GapYCom>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
-                <ButtonCom type="submit" isLoading={isLoading}>
+                {/* <ButtonCom type="submit" isLoading={isLoading} >
                   Create
+                </ButtonCom> */}
+                <ButtonCom
+                  type={isFinish ? "button" : "submit"}
+                  isLoading={isLoading}
+                  backgroundColor={isFinish ? "finish" : "primary"}
+                  icon={isFinish ? <IconCheckCom /> : ""}
+                >
+                  {isFinish ? "Finish" : "Create"}
                 </ButtonCom>
               </div>
             </form>

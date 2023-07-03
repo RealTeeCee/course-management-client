@@ -15,6 +15,7 @@ import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
   IconAnswerCom,
+  IconCheckCom,
   IconEditCom,
   IconRemoveCom,
   IconTrashCom,
@@ -64,6 +65,8 @@ const AdminQuestionListPage = () => {
 
   const { questions, isLoading, isBulkDeleteSuccess, isPostQuestionSuccess } =
     useSelector((state) => state.question);
+  const { answers } = useSelector((state) => state.answer);
+  console.log(answers);
   const totalCurrentQuestionsPoint = questions.reduce(
     (acc, current) => acc + current.point,
     0
@@ -156,8 +159,8 @@ const AdminQuestionListPage = () => {
       sortable: true,
     },
     {
-      name: "Point",
-      selector: (row) => row.point,
+      name: "Quiz",
+      selector: (row) => sliceText(row.description),
       sortable: true,
     },
     {
@@ -175,8 +178,21 @@ const AdminQuestionListPage = () => {
       ),
     },
     {
-      name: "Quiz",
-      selector: (row) => sliceText(row.description),
+      name: "Finish",
+      cell: (row) => (
+        <>
+          {row.isFullAnswer === 1 ? (
+            <IconCheckCom className="text-tw-success" />
+          ) : (
+            <IconRemoveCom className="text-tw-danger" />
+          )}
+        </>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Point",
+      selector: (row) => row.point,
       sortable: true,
     },
     {
@@ -370,6 +386,7 @@ const AdminQuestionListPage = () => {
                 <TableCom
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/parts/${partId}/questions/create`}
+                  classNameBtnCreate={isFinish ? "hidden" : ""}
                   title={`${sliceText(courseById?.name, 30)}, ${fakeName(
                     "PART",
                     partId
