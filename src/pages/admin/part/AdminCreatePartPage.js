@@ -48,10 +48,10 @@ const AdminCreatePartPage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-  const { parts, isLoading, isPostPartSuccess } = useSelector(
+  const { isLoading, isPostPartSuccess } = useSelector(
     (state) => state.part
   );
-  console.log("parts:", parts);
+
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -135,8 +135,6 @@ const AdminCreatePartPage = () => {
                       register={register}
                       placeholder="Input max point"
                       errorMsg={errors.maxPoint?.message}
-                      // defaultValue={100}
-                      // readOnly
                     ></InputCom>
                   </div>
 

@@ -15,6 +15,7 @@ import {
   requestRegister,
   requestResetPassword,
   requestUserChangePassword,
+  requestUserUpdateNoti,
   requestUserUpdateProfile,
 } from "./authRequests";
 import {
@@ -170,6 +171,22 @@ function* handleOnUserUpdateProfile({ payload }) {
   }
 }
 
+function* handleOnUserUpdateNoti({ payload }) {
+  try {
+    const res = yield call(requestUserUpdateNoti, payload);
+    console.log("res: ", res);
+    if (res.status === 200) {
+      yield call(handleOnGetUser, { payload: payload.access_token });
+
+      toast.success(res.data.message);
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+
 export {
   handleOnRegister,
   handleOnLogin,
@@ -180,4 +197,5 @@ export {
   handleOnResetPassword,
   handleOnUserChangePassword,
   handleOnUserUpdateProfile,
+  handleOnUserUpdateNoti,
 };

@@ -211,7 +211,7 @@ const BlogPage = () => {
 
       {/**** Body Blog ****/}
       <div className="max-w-[1240px] mx-auto py-6 px-4 text-center">
-        <HeadingFormH1Com>MY BLOG</HeadingFormH1Com>
+        <HeadingFormH1Com>LASTEST BLOG</HeadingFormH1Com>
         <h2 className="py-4">
           <div>
             We’ve got everything you need to deliver flexible and effective

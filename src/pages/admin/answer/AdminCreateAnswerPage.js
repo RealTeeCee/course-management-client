@@ -34,7 +34,6 @@ const AdminCreateAnswerPage = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -79,7 +78,6 @@ const AdminCreateAnswerPage = () => {
 
   /********* Get Course ID from API  ********* */
   const handleSubmitForm = (values) => {
-    console.log(values);
     dispatch(
       onPostAnswer({
         ...values,

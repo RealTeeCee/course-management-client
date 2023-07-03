@@ -1,15 +1,9 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  ImageCropUploadAntCom,
-  SelectDefaultAntCom,
-  SelectSearchAntCom,
-  SwitchAntCom,
-} from "../../../components/ant";
-import { axiosBearer } from "../../../api/axiosInstance";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import * as yup from "yup";
 import {
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_MAX_LENGTH_NAME,
@@ -19,33 +13,18 @@ import {
   MESSAGE_UPDATE_STATUS_SUCCESS,
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
-  categoryItems,
 } from "../../../constants/config";
+import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
+import { ButtonCom } from "../../../components/button";
+import { IconTrashCom } from "../../../components/icon";
+import { axiosBearer } from "../../../api/axiosInstance";
+import Swal from "sweetalert2";
 import { showMessageError } from "../../../utils/helper";
 import LoadingCom from "../../../components/common/LoadingCom";
-import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
+import { HeadingH1Com } from "../../../components/heading";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
 import GapYCom from "../../../components/common/GapYCom";
 import { TableCom } from "../../../components/table";
-import { blog } from "../../../assets/blog_data/data";
-import ButtonCom from "../../../components/button/ButtonCom";
-import {
-  IconEditCom,
-  IconEyeCom,
-  IconRemoveCom,
-  IconTrashCom,
-} from "../../../components/icon";
-import { Link } from "@mui/material";
-import Swal from "sweetalert2";
-import { v4 } from "uuid";
-import ReactModal from "react-modal";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { InputCom } from "../../../components/input";
-import { LabelCom } from "../../../components/label";
-import { TextEditorQuillCom } from "../../../components/texteditor";
-import { BreadcrumbCom } from "../../../components/breadcrumb";
-
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -57,26 +36,10 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-const statusItems = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "InActive",
-  },
-  {
-    value: 2,
-    label: "Proccessing",
-  },
-];
-const AdminBlogListPage = () => {
+const AdminUserListPage = () => {
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
-  const [categorySelected, setCategorySelected] = useState(null);
-  const [statusSelected, setStatusSelected] = useState(null);
 
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
@@ -84,11 +47,10 @@ const AdminBlogListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [blogs, setBlogs] = useState([]);
-  const [filterBlog, setFilterBlog] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
-  const { user } = useSelector((state) => state.auth);
-  const user_id = user.id;
+
 
   /********* END API State ********* */
 
@@ -145,44 +107,48 @@ const AdminBlogListPage = () => {
       width: "70px",
     },
     {
-      name: "Blog Name",
+      name: "Name",
       selector: (row) => row.name,
       sortable: true,
-      width: "250px",
-    },
+      width: "300px",
+    }
+    ,
     {
-      name: "Category",
-      selector: (row) => row.category_name,
+      name: "Email",
+      selector: (row) => row.email,
       sortable: true,
+      width: "200px",
     },
     {
-      name: "Image",
+      name: "Verifile",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+        row.verified ? "True" : "False"
+      ),
+      width: "100px",
+    },
+    {
+      name: "Avatar",
+      selector: (row) => (
+        <img width={50} height={50} src={`${row.imageUrl}`} alt={row.name} />
       ),
     },
     {
       name: "Status",
       selector: (row) => (
-        <SelectDefaultAntCom
-          control={control}
-          name="status"
-          defaultValue={row.status}
-          options={statusItems}
+        <SwitchAntCom
+          defaultChecked={row.status === 1 ? true : false}
           className={`${
-            row.status
-            === 1 ? "!bg-tw-success" : row.status === 2 ? "!bg-tw-primary" : "bg-tw-danger"
+            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
           }`}
-          // style={{
-          //   backgroundColor: row.status === 1 ? "green" : row.status === 2 ? "red" : "yellow",
-          // }}
-          onChange={(selectedStatus) =>
-            handleChangeStatus(row.id, selectedStatus)
-          }
+          onChange={(isChecked) => handleChangeStatus(row.id, isChecked)}
         />
       ),
     },
-    
+    {
+      name: "Role",
+      selector: (row) => row.role,
+      width: "150px",
+    },
     {
       name: "Action",
       cell: (row) => (
@@ -191,7 +157,7 @@ const AdminBlogListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteBlog(row);
+              handleDeleteUser(row);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -202,27 +168,21 @@ const AdminBlogListPage = () => {
   ];
 
   /********* Call API ********* */
-  //Get All Blog
-  const getBlogs = async () => {
+  //Get All user
+  const getUsers = async () => {
     try {
-      const res = await axiosBearer.get(`/blog/blogs`);
-      console.log(res.data);
-      setBlogs(res.data);
-      setFilterBlog(res.data);
+      const res = await axiosBearer.get(`/auth/user/all`);
+      console.log("data user", res.data);
+      setUsers(res.data);
+      setFilterUser(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getBlogs();
+    getUsers();
   }, []);
-
-  const handleChangeCategory = (value) => {
-    setValue("category_id", value);
-    setError("category_id", { message: "" });
-    setCategorySelected(value);
-  };
 
   const clearSelectedRows = () => {
     setSelectedRows([]);
@@ -235,11 +195,11 @@ const AdminBlogListPage = () => {
 
   /********* Search ********* */
   useEffect(() => {
-    const result = blogs.filter((blog) => {
-      const keys = Object.keys(blog);
+    const result = users.filter((user) => {
+      const keys = Object.keys(user);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        const value = blog[key];
+        const value = user[key];
         if (
           typeof value === "string" &&
           value.toLowerCase().includes(search.toLowerCase())
@@ -255,14 +215,15 @@ const AdminBlogListPage = () => {
       }
       return false;
     });
-    setFilterBlog(result);
-  }, [blogs, search]);
+    setFilterUser(result);
+  }, [users, search]);
 
   /********* Delete one API ********* */
-  const handleDeleteBlog = ({ id, name }) => {
+  const handleDeleteUser = ({ id, name }) => {
+    console.log("userId",id)
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete user: <span class="text-tw-danger">${name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -271,8 +232,8 @@ const AdminBlogListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosBearer.delete(`/blog/${id}`);
-          getBlogs();
+          const res = await axiosBearer.delete(`/auth/user?userId=${id}`);
+          getUsers();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -292,7 +253,7 @@ const AdminBlogListPage = () => {
       title: "Are you sure?",
       html: `You will delete <span class="text-tw-danger">${
         selectedRows.length
-      } selected ${selectedRows.length > 1 ? "blogs" : "blog"}</span>`,
+      } selected ${selectedRows.length > 1 ? "users" : "user"}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -302,85 +263,50 @@ const AdminBlogListPage = () => {
       if (result.isConfirmed) {
         try {
           const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/blog/${row.id}`)
+            axiosBearer.delete(`/auth/user?userId=${row.id}`)
           );
           await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} blogs success`);
+          toast.success(`Delete ${selectedRows.length} users success`);
         } catch (error) {
           showMessageError(error);
         } finally {
-          getBlogs();
+          getUsers();
           clearSelectedRows();
         }
       }
     });
   };
   /********* Update Status API ********* */
-  const handleChangeStatus = async (blogId, selectedStatus) => {
+  const handleChangeStatus = async (userId, isChecked) => {
     try {
-      //update new status of blog
-      const newBlogs = blogs.map((blog) =>
-        blog.id === blogId ? { ...blog, status: selectedStatus } : blog
-      );
+      //update new status of user
+      const newUsers = users.map((user) =>
+      user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
+    );
+    const updatedUser = newUsers.find((user) => user.id === userId);
 
-      const dataBody = newBlogs.find((blog) => blog.id === blogId);
-
-      const {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count = 0,
-        user_id = user.id,
-        description,
-      } = dataBody;
-      console.log("value", dataBody);
-      const formData = {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count: view_count || 0,
-        user_id: user_id || user.id,
-        description,
-      };
+    const formData = {
+      id: updatedUser.id,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
+      imageUrl: updatedUser.imageUrl,
+      status: updatedUser.status,
+    };
+    
+      await axiosBearer.put(`/auth/user`, formData);
       console.log("formData", formData);
-      await axiosBearer.put(`/blog`, formData);
-
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getBlogs();
+      getUsers();
     } catch (error) {
       showMessageError(error);
     }
   };
 
-
-  const getBlogById = async (blogId) => {
-    try {
-      const res = await axiosBearer.get(`blog/${blogId}`);
-      reset(res.data);
-      setCategorySelected(res.data.category_id);
-      setStatusSelected(res.data.status);
-      const resImage = res.data.image;
-      const imgObj = [
-        {
-          uid: v4(),
-          name: resImage?.substring(resImage.lastIndexOf("/") + 1),
-          status: "done",
-          url: resImage,
-        },
-      ];  } catch (error) {
-        console.log(error);
-      }
-    };
-
   return (
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Blogs</HeadingH1Com>
+        <HeadingH1Com>Management Users</HeadingH1Com>
         <BreadcrumbCom
           items={[
             {
@@ -388,7 +314,7 @@ const AdminBlogListPage = () => {
               slug: "/admin",
             },
             {
-              title: "Blog",
+              title: "User",
               isActive: true,
             },
           ]}
@@ -402,9 +328,9 @@ const AdminBlogListPage = () => {
               <span>
                 <TableCom
                   tableKey={tableKey}
-                  title="List Blogs"
+                  title="List Users"
                   columns={columns}
-                  items={filterBlog}
+                  items={filterUser}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
@@ -416,8 +342,7 @@ const AdminBlogListPage = () => {
           </div>
         </div>
       </div>
-
     </>
   );
 };
-export default AdminBlogListPage;
+export default AdminUserListPage;

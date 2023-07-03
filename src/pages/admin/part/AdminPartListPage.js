@@ -57,7 +57,7 @@ const schemaValidation = yup.object().shape({
 const AdminPartListPage = () => {
   /********* State ********* */
   const [selectedRows, setSelectedRows] = useState([]);
-  const [filterPart, setFilterPart] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
@@ -79,10 +79,6 @@ const AdminPartListPage = () => {
     if (isPostPartSuccess && isOpen) setIsOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostPartSuccess]);
-
-  // useEffect(() => {
-  //   if (parts) setFilterPart(parts);
-  // }, [parts]);
 
   // Search in Table if using Redux
   useEffect(() => {
@@ -116,16 +112,15 @@ const AdminPartListPage = () => {
         return false;
       });
 
-      setFilterPart(result);
+      setFilterItem(result);
     } else {
       // Default, setPart for search
-      if (parts) setFilterPart(parts);
+      if (parts) setFilterItem(parts);
     }
   }, [parts, search]);
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBulkDeleteSuccess]);
 
   const {
@@ -438,7 +433,7 @@ const AdminPartListPage = () => {
                   urlCreate={`/admin/courses/${courseId}/parts/create`}
                   title={`Course: ${sliceText(courseById?.name, 30)}`}
                   columns={columns}
-                  items={filterPart}
+                  items={filterItem}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}

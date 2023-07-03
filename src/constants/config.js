@@ -9,7 +9,11 @@ export const NOT_FOUND_URL = "/not-found";
 export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
+export const COOKIE_VIEW_COUNT_KEY = `${APP_KEY_NAME}_view_count`; // New constant for the view count cookie
+// export const COOKIE_EXPIRED_BLOG_DAYS = 1;
+// export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; 
 
+ 
 export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;

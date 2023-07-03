@@ -7,10 +7,10 @@ import {
   COOKIE_REFRESH_TOKEN_KEY,
 } from "../constants/config";
 
-const objCookies = {
+export const objCookies = {
   expires: COOKIE_EXPIRED_DAYS,
   domain: process.env.REACT_APP_COOKIE_DOMAIN,
-};
+}; 
 
 export const setToken = (access_token, refresh_token) => {
   if (access_token && refresh_token) {
@@ -109,3 +109,5 @@ export const getRememberUser = () => {
     password: "",
   };
 };
+
+

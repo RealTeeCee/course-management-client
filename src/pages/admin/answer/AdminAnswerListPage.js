@@ -63,7 +63,7 @@ const AdminAnswerListPage = () => {
 
   /********* State ********* */
   const [selectedRows, setSelectedRows] = useState([]);
-  const [filterPart, setFilterPart] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
@@ -110,10 +110,10 @@ const AdminAnswerListPage = () => {
         return false;
       });
 
-      setFilterPart(result);
+      setFilterItem(result);
     } else {
       // Default, setPart for search
-      if (answers) setFilterPart(answers);
+      if (answers) setFilterItem(answers);
     }
   }, [answers, search]);
 
@@ -351,7 +351,7 @@ const AdminAnswerListPage = () => {
                     partId
                   )}, ${fakeName("QUIZ", questionId)}`}
                   columns={columns}
-                  items={filterPart}
+                  items={filterItem}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}

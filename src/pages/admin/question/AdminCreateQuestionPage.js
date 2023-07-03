@@ -38,7 +38,6 @@ const AdminCreateQuestionPage = () => {
     handleSubmit,
     setValue,
     setError,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),

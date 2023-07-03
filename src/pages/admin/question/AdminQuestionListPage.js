@@ -66,8 +66,7 @@ const AdminQuestionListPage = () => {
 
   const { questions, isLoading, isBulkDeleteSuccess, isPostQuestionSuccess } =
     useSelector((state) => state.question);
-  const { answers } = useSelector((state) => state.answer);
-  console.log(answers);
+
   const totalCurrentQuestionsPoint = questions.reduce(
     (acc, current) => acc + current.point,
     0
@@ -75,7 +74,7 @@ const AdminQuestionListPage = () => {
 
   /********* State ********* */
   const [selectedRows, setSelectedRows] = useState([]);
-  const [filterPart, setFilterPart] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
@@ -123,16 +122,20 @@ const AdminQuestionListPage = () => {
         return false;
       });
 
-      setFilterPart(result);
+      setFilterItem(result);
     } else {
-      // Default, setPart for search
-      if (questions) setFilterPart(questions);
+      // Default, setItem for search
+      if (questions) {
+        const sortedQuestions = [...questions].sort(
+          (a, b) => Number(a.fullAnswer) - Number(b.fullAnswer)
+        );
+        setFilterItem(sortedQuestions);
+      }
     }
   }, [questions, search]);
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBulkDeleteSuccess]);
 
   const {
@@ -182,14 +185,13 @@ const AdminQuestionListPage = () => {
       name: "Finish",
       cell: (row) => (
         <>
-          {row.isFullAnswer === 1 ? (
+          {row.fullAnswer ? (
             <IconCheckCom className="text-tw-success" />
           ) : (
             <IconRemoveCom className="text-tw-danger" />
           )}
         </>
       ),
-      sortable: true,
     },
     {
       name: "Point",
@@ -394,7 +396,7 @@ const AdminQuestionListPage = () => {
                     partId
                   )}`}
                   columns={columns}
-                  items={filterPart}
+                  items={filterItem}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
