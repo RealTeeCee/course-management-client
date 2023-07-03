@@ -26,6 +26,7 @@ import { TableCom } from "../../../components/table";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_MAINTENANCE,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_POSITIVE,
   MESSAGE_POINT_EXCEED_MAX,
@@ -233,6 +234,7 @@ const AdminQuestionListPage = () => {
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
           // onClick={handleExport}
+          onClick={() => toast.info(MESSAGE_MAINTENANCE)}
         >
           Export
         </div>

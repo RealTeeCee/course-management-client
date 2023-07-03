@@ -72,6 +72,8 @@ export const MESSAGE_NET_PRICE_HIGHER_PRICE =
 export const MESSAGE_POINT_EXCEED_MAX =
   "The question point cannot exceed the max point";
 
+export const MESSAGE_MAINTENANCE = "Sorry, This function is currently under maintenance !";
+
 // Data Static List
 export const categoryItems = [
   {

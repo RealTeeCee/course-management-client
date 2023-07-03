@@ -24,6 +24,7 @@ import { TableCom } from "../../../components/table";
 import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_GENERAL_FAILED,
+  MESSAGE_MAINTENANCE,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_REQUIRED,
   MESSAGE_READONLY,
@@ -246,6 +247,7 @@ const AdminPartListPage = () => {
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
           // onClick={handleExport}
+          onClick={() => toast.info(MESSAGE_MAINTENANCE)}
         >
           Export
         </div>
