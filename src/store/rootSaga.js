@@ -4,6 +4,7 @@ import partSaga from "./admin/part/partSaga";
 import questionSaga from "./admin/question/questionSaga";
 import authSaga from "./auth/authSaga";
 import courseSaga from "./course/courseSaga";
+import userSaga from "./user/userSaga";
 
 export default function* rootSaga() {
   yield all([
@@ -12,5 +13,6 @@ export default function* rootSaga() {
     fork(partSaga),
     fork(questionSaga),
     fork(answerSaga),
+    fork(userSaga),
   ]);
 }

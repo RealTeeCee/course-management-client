@@ -3,6 +3,7 @@ import courseReducer from "./course/courseSlice";
 import partReducer from "./admin/part/partSlice";
 import questionReducer from "./admin/question/questionSlice";
 import answerReducer from "./admin/answer/answerSlice";
+import userReducer from "./user/userSlice";
 
 const { combineReducers } = require("@reduxjs/toolkit");
 
@@ -12,4 +13,5 @@ export const rootReducer = combineReducers({
   part: partReducer,
   question: questionReducer,
   answer: answerReducer,
+  user: userReducer,
 });

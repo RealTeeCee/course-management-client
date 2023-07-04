@@ -14,3 +14,4 @@ export const { default: SwitchAntCom } = require("./SwitchAntCom");
 export const { default: TabsAntCom } = require("./TabsAntCom");
 export const { default: CheckBoxAntCom } = require("./CheckBoxAntCom");
 export const { default: ProgressAntCom } = require("./ProgressAntCom");
+export const { default: SpinAntCom } = require("./SpinAntCom");

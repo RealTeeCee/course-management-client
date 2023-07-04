@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { ProgressAntCom } from "../../components/ant";
+import { SelectDefaultAntCom, SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
@@ -11,7 +12,17 @@ import {
   IconLearnCom,
   IconUserCom,
 } from "../../components/icon";
-import { convertIntToStrMoney, formatNumber } from "../../utils/helper";
+import { ImageCom } from "../../components/image";
+import { sortItems } from "../../constants/config";
+import useShowMore from "../../hooks/useShowMore";
+import { onGetUsers, onUpdateUser } from "../../store/user/userSlice";
+import {
+  convertDateTime,
+  convertIntToStrMoney,
+  convertSecondToDiffForHumans,
+  formatNumber,
+  sliceText,
+} from "../../utils/helper";
 
 const adminMenuItems = [
   {
@@ -35,6 +46,94 @@ const adminMenuItems = [
 ];
 
 const AdminDashboardPage = () => {
+  const dispatch = useDispatch();
+  const [order, setOrder] = useState("DESC");
+  const { users, isUpdateUserSuccess, isUserLoading } = useSelector(
+    (state) => state.user
+  );
+  const [sortUsers, setSortUsers] = useState([]);
+  console.log("users:", users);
+  const handleChangeSortUser = (value) => {
+    setOrder(value);
+  };
+
+  useEffect(() => {
+    dispatch(onGetUsers());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdateUserSuccess]);
+
+  // Handle Sort Users
+  useEffect(() => {
+    // After fetching, sort users by status
+    if (users) {
+      const filters = [...users].sort((a, b) => {
+        const compareStatus = Number(a.status) - Number(b.status);
+        if (compareStatus !== 0) return compareStatus;
+
+        return order === "ASC"
+          ? new Date(a.created_at) - new Date(b.created_at)
+          : new Date(b.created_at) - new Date(a.created_at);
+      });
+      setSortUsers(filters);
+    }
+  }, [users, order]);
+
+  const { showItems, isRemain, handleShowMore } = useShowMore(sortUsers);
+
+  const RowUserItem = ({ item }) => {
+    const handleClickStatus = (userId, isActive) => {
+      //update new status of user
+      const data = users.find((item) => item.id === userId);
+
+      dispatch(
+        onUpdateUser({
+          ...data,
+          status: isActive === 1 ? 0 : 1,
+        })
+      );
+    };
+
+    return (
+      <tr>
+        <td>
+          <div className="w-10 bg-tw-light">
+            <ImageCom
+              srcSet={item?.imageUrl}
+              alt={item?.name}
+              className="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          {item?.status === 0 && <div className="status-circle bg-primary" />}
+        </td>
+        <td className="img-content-box">
+          <span className="d-block">{sliceText(item?.name, 10)}</span>
+          <span className="font-roboto">
+            {convertDateTime(item?.created_at, false)}
+          </span>
+        </td>
+        <td>
+          <p className="m-0 font-primary">25 Jul</p>
+        </td>
+        <td
+          className="text-end"
+          onClick={() => handleClickStatus(item?.id, item?.status)}
+        >
+          {item?.status === 1 ? (
+            <div className="button btn btn-primary">
+              Done
+              <i className="fa fa-check-circle ms-2" />
+            </div>
+          ) : (
+            <div className="button btn btn-danger">
+              Not approve
+              <i className="fa fa-clock-o ms-2" />
+            </div>
+          )}
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -112,90 +211,43 @@ const AdminDashboardPage = () => {
               <div className="card">
                 <div className="card-header card-no-border">
                   <div className="header-top">
-                    <h5 className="m-0">Blog</h5>
+                    <h5 className="m-0">User</h5>
                     <div className="card-header-right-icon">
-                      <div className="dropdown">
-                        <button
-                          className="btn dropdown-toggle"
-                          id="dropdownMenuButton"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
-                          Today
-                        </button>
-                        <div
-                          className="dropdown-menu dropdown-menu-end"
-                          aria-labelledby="dropdownMenuButton"
-                          style={{}}
-                        >
-                          <a className="dropdown-item" href="#">
-                            Today
-                          </a>
-                          <a className="dropdown-item" href="#">
-                            Tomorrow
-                          </a>
-                          <a className="dropdown-item" href="#">
-                            Yesterday
-                          </a>
-                        </div>
+                      <div>
+                        <SelectDefaultAntCom
+                          listItems={sortItems}
+                          defaultValue={"DESC"}
+                          value={order}
+                          onChange={handleChangeSortUser}
+                          className="custom-dropdown"
+                        ></SelectDefaultAntCom>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="card-body pt-0">
-                  <div className="appointment-table table-responsive">
-                    <table className="table table-bordernone">
-                      <tbody>
-                        <tr>
-                          <td>
-                            <img
-                              className="img-fluid img-40 rounded-circle mb-3"
-                              src="https://i.ibb.co/PZ1mLcR/1ccad4bd825948071148.jpg"
-                              alt="img description"
-                            />
-                            <div className="status-circle bg-primary" />
-                          </td>
-                          <td className="img-content-box">
-                            <span className="d-block">Venter Loren</span>
-                            <span className="font-roboto">Now</span>
-                          </td>
-                          <td>
-                            <p className="m-0 font-primary">28 Sept</p>
-                          </td>
-                          <td className="text-end">
-                            <div className="button btn btn-primary">
-                              Done
-                              <i className="fa fa-check-circle ms-2" />
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <img
-                              className="img-fluid img-40 rounded-circle"
-                              src="https://i.ibb.co/PZ1mLcR/1ccad4bd825948071148.jpg"
-                              alt="img description"
-                            />
-                            <div className="status-circle bg-primary" />
-                          </td>
-                          <td className="img-content-box">
-                            <span className="d-block">John Loren</span>
-                            <span className="font-roboto">11:00</span>
-                          </td>
-                          <td>
-                            <p className="m-0 font-primary">22 Sept</p>
-                          </td>
-                          <td className="text-end">
-                            <div className="button btn btn-danger">
-                              Pending
-                              <i className="fa fa-clock-o ms-2" />
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  {isUserLoading ? (
+                    <SpinAntCom loadingText={"Loading ..."} />
+                  ) : (
+                    <div className="appointment-table table-responsive">
+                      <table className="table table-bordernone">
+                        <tbody>
+                          {showItems?.length > 0 &&
+                            showItems.map((item) => (
+                              <RowUserItem item={item} key={item?.id} />
+                            ))}
+                        </tbody>
+                      </table>
+                      {isRemain && (
+                        <ButtonCom
+                          className="w-full mt-2"
+                          onClick={handleShowMore}
+                        >
+                          Show more
+                        </ButtonCom>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
