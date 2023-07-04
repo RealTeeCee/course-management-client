@@ -40,6 +40,8 @@ const initialState = {
   examination: [],
   finishExam: null,
   generateExamSuccess: false,
+  retakeExam: null,
+  accomplishments: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -370,6 +372,20 @@ const courseSlice = createSlice({
       finishExam: action.payload,
       generateExamSuccess: false,
     }),
+    onRetakeExam: (state, action) => ({
+      ...state,
+    }),
+    onRetakeExamSuccess: (state, action) => ({
+      ...state,
+      retakeExam: action.payload,
+    }),
+    onLoadAccomplishmentsExam: (state, action) => ({
+      ...state,
+    }),
+    onLoadAccomplishmentsExamSuccess: (state, action) => ({
+      ...state,
+      accomplishments: action.payload,
+    }),
   },
 });
 
@@ -437,6 +453,10 @@ export const {
   onGenerateCourseExamSuccess,
   onFinishExam,
   onFinishExamSuccess,
+  onRetakeExam,
+  onRetakeExamSuccess,
+  onLoadAccomplishmentsExam,
+  onLoadAccomplishmentsExamSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

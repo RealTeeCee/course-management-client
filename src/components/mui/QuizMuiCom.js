@@ -20,7 +20,10 @@ import {
   onCourseInitalState,
   onFinishExam,
 } from "../../store/course/courseSlice";
-import { convertSecondToTime } from "../../utils/helper";
+import {
+  convertSecondToDiffForHumans,
+  convertSecondToTime,
+} from "../../utils/helper";
 import { IconClockCom } from "../icon";
 import { DialogConfirmMuiCom } from ".";
 import { selectAllCourseState } from "../../store/course/courseSelector";
@@ -172,7 +175,10 @@ function QuizMuiCom({ exam = [] }) {
       >
         {finishExam ? (
           <div>
-            <p>Total time: {finishExam.totalExamTime}</p>
+            <p>
+              Total time:{" "}
+              {convertSecondToDiffForHumans(finishExam.totalExamTime)}
+            </p>
             <p>Your correct answer: {finishExam.correctAnswer}</p>
             <p>Total point: {finishExam.totalPoint}</p>
             <p>Grade: {finishExam.grade}</p>

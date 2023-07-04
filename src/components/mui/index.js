@@ -21,3 +21,9 @@ export const { default: StyledBadgeMuiCom } = require("./StyleBadgeMuiCom");
 export const {
   default: CircularProgressMuiCom,
 } = require("./CircularProgressMuiCom");
+export const {
+  default: RankingAuthorsCardMuiCom,
+} = require("./RankingAuthorsCardMuiCom");
+export const {
+  default: RankingAuthorsBadgeMuiCom,
+} = require("./RankingAuthorsBadgeMuiCom");

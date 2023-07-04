@@ -1,15 +1,40 @@
 import { ButtonBase, Container, Grid, Paper, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import accomplishmentImage from "../../assets/images/accomplishment.jpg";
 import { HeadingFormH1Com, HeadingH3Com } from "../../components/heading";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { onLoadAccomplishmentsExam } from "../../store/course/courseSlice";
+import { selectUser } from "../../store/auth/authSelector";
+import { selectAllCourseState } from "../../store/course/courseSelector";
+
+const colorMap = {
+  FAIL: "#FF4136", // red
+  AVERAGE: "#FF851B", // orange
+  GOOD: "#2ECC40", // green
+  EXCELLENT: "#0074D9", // blue
+};
 
 const UserAccomplishmentPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectUser);
+  const { finishExam, accomplishments } = useSelector(selectAllCourseState);
 
-  const handleClick = () => {};
+  const accomplishmentsWithColor = accomplishments.map((a) => {
+    const color = colorMap[a.grade];
+    return { ...a, color };
+  });
+
+  const handleClick = () => {
+    console.log();
+  };
+
+  console.log(user.id);
+  useEffect(() => {
+    if (user && user.id > 0)
+      dispatch(onLoadAccomplishmentsExam({ userId: user.id }));
+  }, [dispatch, finishExam, user]);
 
   return (
     <Container>
@@ -29,120 +54,124 @@ const UserAccomplishmentPage = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={12} mt={10}>
           <HeadingH3Com>Course Accomplished</HeadingH3Com>
-          <Paper
-            square
-            elevation={5}
-            sx={{
-              padding: "20px",
-              width: "100%",
-              mt: "20px",
-            }}
-          >
-            <Grid container xs={12} sm={12} md={12} sx={{ margin: "10px" }}>
-              <Grid
-                container
-                item
-                justifyItems="center"
-                alignItems="center"
-                spacing={2}
+          {accomplishments.length > 0 ? (
+            accomplishments.map((acc) => (
+              <Paper
+                key={acc.courseId}
+                square
+                elevation={5}
+                sx={{
+                  padding: "20px",
+                  width: "100%",
+                  mt: "20px",
+                }}
               >
-                <Grid item xs={12} sm={12} md={2}>
-                  <ButtonBase>
-                    <img
-                      src="https://i.ibb.co/XphQ2PC/284601068-113074531414219-1330789727702240346-n.jpg"
-                      alt="Lỗi"
-                      style={{
-                        width: "180px",
-                        height: "80px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </ButtonBase>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  sx={{ margin: "10px" }}
+                >
+                  <Grid
+                    container
+                    item
+                    justifyItems="center"
+                    alignItems="center"
+                    spacing={2}
+                  >
+                    <Grid item xs={12} sm={12} md={2}>
+                      <ButtonBase
+                        sx={{
+                          transition: "transform 0.2s ease-out",
+                          "&:hover": {
+                            transform: "scale(1.1)",
+                          },
+                        }}
+                      >
+                        <img
+                          src={acc.courseImage}
+                          alt="Lỗi"
+                          style={{
+                            width: "180px",
+                            height: "90px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </ButtonBase>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={10}>
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          color: "darkblue",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                        }}
+                      >
+                        {acc.courseName}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          color: "darkblue",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                        }}
+                      >
+                        Accomplished at{" "}
+                        <strong
+                          style={{
+                            background:
+                              "linear-gradient(0deg, rgba(101,121,220,1) 20%, rgba(100,235,191,1) 60%, rgba(231,138,254,1) 90%)",
+                            "-webkit-background-clip": "text",
+                            "-webkit-text-fill-color": "transparent",
+                            backgroundClip: "text",
+                            textFillColor: "transparent",
+                            textShadow: "none",
+                            fontSize: "25px",
+                            fontWeight: "1000",
+                          }}
+                        >
+                          ClicknLearn
+                        </strong>
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          color: "darkblue",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                        }}
+                      >
+                        Grade Achieve:{" "}
+                        {accomplishmentsWithColor.map((a) => (
+                          <strong key={a.grade} style={{ color: a.color }}>
+                            {a.grade}
+                          </strong>
+                        ))}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={12} md={10}>
-                  <HeadingH3Com>Course 1</HeadingH3Com>
-                  <HeadingH3Com>ClicknLearn</HeadingH3Com>
-                  <HeadingH3Com>Grade Achieve: EXCELLENT</HeadingH3Com>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Paper>
-          <Paper
-            square
-            elevation={5}
-            sx={{
-              padding: "20px",
-              width: "100%",
-              mt: "20px",
-            }}
-          >
-            <Grid container xs={12} sm={12} md={12} sx={{ margin: "10px" }}>
-              <Grid
-                container
-                item
-                justifyItems="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={12} sm={12} md={2}>
-                  <ButtonBase>
-                    <img
-                      src="https://i.ibb.co/XphQ2PC/284601068-113074531414219-1330789727702240346-n.jpg"
-                      alt="Lỗi"
-                      style={{
-                        width: "180px",
-                        height: "80px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </ButtonBase>
-                </Grid>
-                <Grid item xs={12} sm={12} md={10}>
-                  <HeadingH3Com>Course 1</HeadingH3Com>
-                  <HeadingH3Com>ClicknLearn</HeadingH3Com>
-                  <HeadingH3Com>Grade Achieve: EXCELLENT</HeadingH3Com>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Paper>
-          <Paper
-            square
-            elevation={5}
-            sx={{
-              padding: "20px",
-              width: "100%",
-              mt: "20px",
-            }}
-          >
-            <Grid container xs={12} sm={12} md={12} sx={{ margin: "10px" }}>
-              <Grid
-                container
-                item
-                justifyItems="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={12} sm={12} md={2}>
-                  <ButtonBase onClick={handleClick}>
-                    <img
-                      src="https://i.ibb.co/XphQ2PC/284601068-113074531414219-1330789727702240346-n.jpg"
-                      alt="Lỗi"
-                      style={{
-                        width: "180px",
-                        height: "80px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </ButtonBase>
-                </Grid>
-                <Grid item xs={12} sm={12} md={10}>
-                  <HeadingH3Com>Course 1</HeadingH3Com>
-                  <HeadingH3Com>ClicknLearn</HeadingH3Com>
-                  <HeadingH3Com>Grade Achieve: EXCELLENT</HeadingH3Com>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Paper>
+              </Paper>
+            ))
+          ) : (
+            <Paper
+              square
+              elevation={5}
+              sx={{
+                padding: "20px",
+                width: "100%",
+                mt: "20px",
+              }}
+            >
+              <HeadingH3Com className="text-black text-4xl text-center py-10">
+                None accomplishments.
+              </HeadingH3Com>
+            </Paper>
+          )}
         </Grid>
       </Grid>
     </Container>

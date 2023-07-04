@@ -11,6 +11,7 @@ import {
   requestFreeCourse,
   requestGenerateCourseExam,
   requestLearning,
+  requestLoadAccomplishmentsExam,
   requestLoadCourseRating,
   requestLoadNote,
   requestLoadNotification,
@@ -20,6 +21,7 @@ import {
   requestReadAllNotification,
   requestReadNotification,
   requestRelatedCourse,
+  requestRetakeCourseExam,
   requestSaveLike,
   requestSaveNote,
   requestSavePost,
@@ -40,6 +42,7 @@ import {
   onGetEnrollIdSuccess,
   onGetLearningSuccess,
   onGetTrackingLessonSuccess,
+  onLoadAccomplishmentsExamSuccess,
   onLoadCourseRatingSuccess,
   onLoadNoteSuccess,
   onLoadNotificationSuccess,
@@ -50,6 +53,7 @@ import {
   onReadAllNotificationSuccess,
   onReadNotificationSuccess,
   onRelatedCourseSuccess,
+  onRetakeExamSuccess,
   onSaveNoteSuccess,
   onSavePostSuccess,
   onSaveReplyToPostSuccess,
@@ -384,6 +388,30 @@ function* handleFinishExam({ payload }) {
     showMessageError(error);
   }
 }
+function* handleRetakeExam({ payload }) {
+  try {
+    const res = yield call(requestRetakeCourseExam, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onRetakeExamSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+function* handleLoadAccomplishmentsExam({ payload }) {
+  try {
+    const res = yield call(requestLoadAccomplishmentsExam, payload);
+    console.log(res.data);
+    if (res.status === 200) {
+      yield put(onLoadAccomplishmentsExamSuccess(res.data));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
 
 export {
   handleLoadNote,
@@ -414,4 +442,6 @@ export {
   handleLoadCourseRating,
   handleGenerateCourseExam,
   handleFinishExam,
+  handleRetakeExam,
+  handleLoadAccomplishmentsExam,
 };

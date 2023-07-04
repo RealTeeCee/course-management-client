@@ -28,6 +28,8 @@ import {
   handleReadAllNotification,
   handleGenerateCourseExam,
   handleFinishExam,
+  handleRetakeExam,
+  handleLoadAccomplishmentsExam,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -40,6 +42,7 @@ import {
   onGetEnrollId,
   onGetLearning,
   onGetTrackingLesson,
+  onLoadAccomplishmentsExam,
   onLoadCourseRating,
   onLoadNote,
   onLoadNotification,
@@ -50,6 +53,7 @@ import {
   onReadNotification,
   onRelatedCourseLoading,
   onRemoveReplyInPost,
+  onRetakeExam,
   onSaveLikeOfPost,
   onSaveNote,
   onSavePost,
@@ -93,5 +97,7 @@ export default function* courseSaga() {
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
     takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
     takeLatest(onFinishExam.type, handleFinishExam),
+    takeLatest(onRetakeExam.type, handleRetakeExam),
+    takeLatest(onLoadAccomplishmentsExam.type, handleLoadAccomplishmentsExam),
   ]);
 }

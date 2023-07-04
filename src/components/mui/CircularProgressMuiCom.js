@@ -11,6 +11,7 @@ function CircularProgressMuiCom(props) {
         size="35px"
         {...props}
         thickness={5}
+        sx={{ filter: "drop-shadow(1px 1px 1px #fff)" }}
       />
       <Box
         sx={{

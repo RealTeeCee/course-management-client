@@ -30,6 +30,8 @@ import {
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
 import { toast } from "react-toastify";
+import { Button } from "@mui/material";
+import ExamResultMuiCom from "../../components/mui/ExamResultMuiCom";
 
 const LearnPage = () => {
   const {
@@ -286,6 +288,11 @@ const LearnPage = () => {
       key: "4",
       label: `Comment`,
       children: <CommentCom />,
+    },
+    {
+      key: "5",
+      label: `Examination`,
+      children: <ExamResultMuiCom />,
     },
   ];
 

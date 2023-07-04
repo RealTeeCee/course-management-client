@@ -1,12 +1,7 @@
 import { SearchOutlined } from "@ant-design/icons";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import {
   Avatar,
   Button,
-  Card,
-  CardActions,
-  CardContent,
   Container,
   FormControl,
   Grid,
@@ -22,23 +17,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authorImage from "../../assets/images/author.jpg";
 import { HeadingFormH1Com } from "../../components/heading";
-import { StyledBadgeMuiCom } from "../../components/mui";
+import RankingAuthorsCardMuiCom from "../../components/mui/RankingAuthorsCardMuiCom";
+import { selectUser } from "../../store/auth/authSelector";
 import { selectAllAuthorsState } from "../../store/author/authorSelector";
 import {
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,
   onLoadTop3Authors,
-  onSubcribeAuthor,
-  onUnsubcribeAuthor,
 } from "../../store/author/authorSlice";
 import { selectAllCategoriesState } from "../../store/category/categorySelector";
 import { onLoadCategories } from "../../store/category/categorySlice";
-import { selectUser, selectUserId } from "../../store/auth/authSelector";
 
 const AuthorPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { pagiAuthor, top3, subcribes } = useSelector(selectAllAuthorsState);
+  const { pagiAuthor, top3 } = useSelector(selectAllAuthorsState);
   const { categories } = useSelector(selectAllCategoriesState);
   const user = useSelector(selectUser);
 
@@ -73,6 +66,8 @@ const AuthorPage = () => {
     dispatch(onLoadTop3Authors());
     dispatch(onLoadCategories());
   }, [dispatch]);
+
+  console.log("TOP3[1]", top3);
 
   useEffect(() => {
     if (user && user.id > 0) {
@@ -110,36 +105,6 @@ const AuthorPage = () => {
     }
   };
 
-  const handleSubcribe = (author) => {
-    if (user && user.id > 0) {
-      dispatch(
-        onSubcribeAuthor({
-          authorId: author.id,
-          authorName: author.name,
-          created_at: new Date(),
-          id: Math.floor(Math.random() * 1000) + 1000,
-          image: author.image,
-          userId: user.id,
-        })
-      );
-    } else {
-      navigate("/login");
-    }
-  };
-
-  const handleUnsubcribe = (author) => {
-    dispatch(
-      onUnsubcribeAuthor({
-        authorId: author.id,
-        authorName: author.name,
-        created_at: new Date(),
-        id: Math.floor(Math.random() * 1000) + 1000,
-        image: author.image,
-        userId: user.id,
-      })
-    );
-  };
-
   return (
     <Container>
       <Grid container>
@@ -159,86 +124,25 @@ const AuthorPage = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={12} mt={10}>
           <Grid container spacing={1} justifyContent="center">
-            {top3.map((t3) => (
-              <Grid key={t3.id} item xs={12} sm={12} md={4}>
-                <Card
-                  elevation={12}
-                  sx={{
-                    maxWidth: 345,
-                    background: "linear-gradient(to right, #8e2de2, #4a00e0);",
-                    transition: "0.2s",
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                    },
-                  }}
-                >
-                  <Typography
-                    variant="p"
-                    align="center"
-                    sx={{ display: "flex", justifyContent: "center" }}
-                    mt="15px"
-                  >
-                    <StyledBadgeMuiCom
-                      overlap="circular"
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                      variant="dot"
-                    >
-                      <Avatar
-                        alt={t3.name}
-                        src={t3.image}
-                        sx={{ width: 120, height: 120 }}
-                      />
-                    </StyledBadgeMuiCom>
-                  </Typography>
-
-                  <CardContent>
-                    <Typography
-                      gutterBottom
-                      variant="h5"
-                      component="div"
-                      sx={{
-                        color: "whitesmoke",
-                        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
-                      }}
-                    >
-                      {t3.name !== null ? t3.name : "Unknown"}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "whitesmoke" }}>
-                      {t3.title !== null ? t3.title : "None Title"}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    {subcribes.length > 0 &&
-                    subcribes.find((s) => s.authorId === t3.id) !==
-                      undefined ? (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="info"
-                        onClick={() => handleUnsubcribe(t3)}
-                      >
-                        Unsubcribe
-                        <NotificationsOffIcon
-                          sx={{ ml: "5px", fontSize: "20px" }}
-                        />
-                      </Button>
-                    ) : (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleSubcribe(t3)}
-                      >
-                        Subcribe
-                        <NotificationsNoneIcon
-                          sx={{ ml: "5px", fontSize: "20px" }}
-                        />
-                      </Button>
-                    )}
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
+            <Grid item xs={12} sm={12} md={4}>
+              {/* Display the top 2 author */}
+              <RankingAuthorsCardMuiCom
+                top3={top3.length > 0 && top3[1]}
+                rank={2}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={4}>
+              <RankingAuthorsCardMuiCom
+                top3={top3.length > 0 && top3[0]}
+                rank={1}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={4}>
+              <RankingAuthorsCardMuiCom
+                top3={top3.length > 0 && top3[2]}
+                rank={3}
+              />
+            </Grid>
           </Grid>
         </Grid>
 
