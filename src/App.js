@@ -25,7 +25,7 @@ const ResetPasswordPage = lazy(() =>
   import("./pages/auth/ResetPasswordPage.js")
 );
 
-const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
+const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage.js"));
 const AdminCourseListPage = lazy(() =>
   import("./pages/admin/course/AdminCourseListPage.js")
 );
@@ -276,7 +276,7 @@ function App() {
               ></CheckAuthPage>
             }
           >
-            <Route index element={<AdminPage />}></Route>
+            <Route index element={<AdminDashboardPage />}></Route>
             {/* Admin Courses */}
             <Route path="courses" element={<AdminCourseListPage />}></Route>
             <Route

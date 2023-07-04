@@ -4,17 +4,16 @@ const IconArrowUpCom = ({ className = "" }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
       viewBox="0 0 24 24"
-      strokeWidth="1.5"
+      fill="none"
       stroke="currentColor"
-      className={`w-6 h-6 ${className}`}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`feather feather-chevrons-up w-6 h-6 ${className}`}
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5"
-      />
+      <polyline points="17 11 12 6 7 11" />
+      <polyline points="17 18 12 13 7 18" />
     </svg>
   );
 };
