@@ -325,10 +325,7 @@ const AdminQuestionListPage = () => {
 
   const handleSubmitForm = (values) => {
     const point = parseFloat(values.point);
-    const currentPoint =
-      totalCurrentQuestionsPoint > 0
-        ? questionByIdPoint
-        : partById?.maxPoint - questionByIdPoint;
+    const currentPoint = totalCurrentQuestionsPoint > 0 ? questionByIdPoint : 0;
     if (partById?.maxPoint - currentPoint < point) {
       toast.error(MESSAGE_POINT_EXCEED_MAX);
       return;
@@ -464,9 +461,7 @@ const AdminQuestionListPage = () => {
                   <LabelCom
                     htmlFor="point"
                     subText={`max = ${partById?.maxPoint}, other Quiz = ${
-                      totalCurrentQuestionsPoint > 0
-                        ? questionByIdPoint
-                        : partById?.maxPoint - questionByIdPoint
+                      totalCurrentQuestionsPoint > 0 ? questionByIdPoint : 0
                     }`}
                     isRequired
                   >
