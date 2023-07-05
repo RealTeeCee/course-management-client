@@ -5,6 +5,5 @@ export const requestGetUsers = () => {
 };
 
 export const requestUpdateUser = (data) => {
-  console.log("req:", data);
   return axiosBearer.put(`/auth/user`, data);
 };

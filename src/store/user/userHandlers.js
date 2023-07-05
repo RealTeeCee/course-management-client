@@ -16,13 +16,12 @@ function* handleOnGetUsers() {
 function* handleOnUpdateUser({ payload }) {
   try {
     const res = yield call(requestUpdateUser, payload);
-    console.log("res:", res);
     if (res.data.type === "success") {
       toast.success(res.data.message);
       yield put(onUpdateUserSuccess(true));
     }
   } catch (error) {
-    console.log(error);
+    showMessageError(error);
   }
 }
 

@@ -4,22 +4,22 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     users: [],
-    isUserLoading: false,
+    isLoading: false,
     isUpdateUserSuccess: false,
   },
   reducers: {
     onGetUsers: (state, action) => ({
       ...state,
-      isUserLoading: true,
+      isLoading: true,
     }),
     onGetUsersSuccess: (state, action) => ({
       ...state,
       users: action.payload,
-      isUserLoading: false,
+      isLoading: false,
     }),
     onUpdateUser: (state, action) => ({
       ...state,
-      isUserLoading: true,
+      isLoading: true,
       isUpdateUserSuccess: false,
     }),
     onUpdateUserSuccess: (state, action) => ({
