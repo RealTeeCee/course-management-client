@@ -40,7 +40,16 @@ const initialState = {
   examination: [],
   finishExam: null,
   generateExamSuccess: false,
-  retakeExam: null,
+  countdown: -1,
+  retakeExam: {
+    examSession: 0,
+    correctAnswer: "",
+    totalExamTime: 0,
+    totalPoint: 0,
+    grade: null,
+    created_at: null,
+    passed: false,
+  },
   accomplishments: [],
 };
 const courseSlice = createSlice({
@@ -118,6 +127,7 @@ const courseSlice = createSlice({
         return {
           ...state,
           courseId: filteredCourse[0].id,
+          progress: filteredCourse[0].progress,
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
           generateExamSuccess: false,
@@ -386,6 +396,10 @@ const courseSlice = createSlice({
       ...state,
       accomplishments: action.payload,
     }),
+    onCountdown: (state, action) => ({
+      ...state,
+      countdown: state.countdown === 0 ? 0 : action.payload,
+    }),
   },
 });
 
@@ -457,6 +471,7 @@ export const {
   onRetakeExamSuccess,
   onLoadAccomplishmentsExam,
   onLoadAccomplishmentsExamSuccess,
+  onCountdown,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

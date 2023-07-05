@@ -24,59 +24,43 @@ const ExamResultMuiCom = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { retakeExam, courseId, finishExam, generateExamSuccess, examination } =
-    useSelector(selectAllCourseState);
+  const {
+    retakeExam,
+    courseId,
+    finishExam,
+    generateExamSuccess,
+    examination,
+    countdown,
+  } = useSelector(selectAllCourseState);
   const user = useSelector(selectUser);
 
-  const colorGrade =
-    retakeExam && retakeExam.grade ? colorMap[retakeExam.grade] : null;
-
-  const countDown =
-    retakeExam && retakeExam?.created_at === null
-      ? 0
-      : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) +
-        60 -
-        Math.floor(Date.now() / 1000);
+  const colorGrade = retakeExam.grade ? colorMap[retakeExam.grade] : null;
 
   const [canExam, setCanExam] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [countDownTime, setCountDownTime] = useState(
-    countDown === 0 ? 1 : countDown
-  );
-  const [timerId, setTimerId] = useState(countDown);
+  // const [countdown, setCountDownTime] = useState(1);
 
-  console.log(countDown);
-  console.log(countDownTime);
-  // : isNaN(countDown) ? countDown :
+  // console.log(countdown);
+
   useEffect(() => {
-    if (retakeExam && retakeExam.grade && retakeExam.grade !== "FAIL") {
+    if (retakeExam.grade && retakeExam.grade !== "FAIL") {
       setCanExam(false);
     }
   }, [retakeExam]);
 
-  useEffect(() => {
-    if (countDown > 0) {
-      const countDownTimeId = setInterval(() => {
-        setCountDownTime((prev) => {
-          if (isNaN(prev)) prev = countDown;
-          const updatedCount = prev - 1;
-          if (updatedCount === 0) {
-            clearInterval(countDownTimeId);
-          }
-          return updatedCount;
-        });
-      }, 1000);
+  // useEffect(() => {
+  //   const countDown =
+  //     retakeExam?.created_at === null
+  //       ? 0
+  //       : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) +
+  //         60 -
+  //         Math.floor(Date.now() / 1000);
 
-      setTimerId(countDownTimeId);
-      return () => clearInterval(countDownTimeId);
-    }
-  }, [countDown]);
-
-  useEffect(() => {
-    if (countDownTime === 0) {
-      clearInterval(timerId);
-    }
-  }, [countDownTime, timerId]);
+  //   const interval = setInterval(() => {
+  //     setCountDownTime(countDown - 1);
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // });
 
   useEffect(() => {
     dispatch(onRetakeExam({ userId: user.id, courseId }));
@@ -101,18 +85,18 @@ const ExamResultMuiCom = () => {
   }, [examination, generateExamSuccess, navigate]);
 
   const handleCanExam = () => {
-    if (retakeExam && retakeExam.passed) {
+    if (retakeExam.passed) {
       return navigate("/profile/accomplishments");
     }
-    console.log(countDownTime);
-    if (countDownTime <= 1 || isNaN(countDownTime)) {
+    console.log(countdown);
+    if (countdown <= 1 || isNaN(countdown)) {
       setCanExam(true);
       setShowDialog(true);
     }
   };
 
   const handleWaitCountDown = () => {
-    if (countDownTime <= 1 || isNaN(countDownTime)) {
+    if (countdown <= 1 || isNaN(countdown)) {
       setCanExam(true);
       setShowDialog(true);
     }
@@ -150,53 +134,48 @@ const ExamResultMuiCom = () => {
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Exam session:{" "}
-          {retakeExam && retakeExam.examSession
-            ? retakeExam.examSession
-            : "None"}
+          {retakeExam.examSession ? retakeExam.examSession : "None"}
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Correct Answer:{" "}
-          {retakeExam && retakeExam.correctAnswer
-            ? retakeExam.correctAnswer
-            : "None"}
+          {retakeExam.correctAnswer ? retakeExam.correctAnswer : "None"}
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Total Time:{" "}
-          {retakeExam && retakeExam.totalExamTime
+          {retakeExam.totalExamTime
             ? convertSecondToDiffForHumans(retakeExam.totalExamTime)
             : "None"}
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
-          Total Point:{" "}
-          {retakeExam && retakeExam.totalPoint ? retakeExam.totalPoint : "None"}
+          Total Point: {retakeExam.totalPoint ? retakeExam.totalPoint : "None"}
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Grade:{" "}
           <strong style={{ color: colorGrade == null ? "#333" : colorGrade }}>
-            {retakeExam && retakeExam.grade ? retakeExam.grade : "None"}
+            {retakeExam.grade ? retakeExam.grade : "None"}
           </strong>
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Finished at:{" "}
-          {retakeExam && retakeExam.created_at
+          {retakeExam.created_at
             ? moment(retakeExam?.created_at).format("YYYY/MM/DD HH:mm:ss")
             : "None"}
         </Typography>
       </Paper>
       <div style={{ marginTop: "20px" }}>
-        {canExam || countDownTime === 1 || (retakeExam && retakeExam.passed) ? (
+        {canExam || countdown === 0 || retakeExam.passed ? (
           <Button
             onClick={handleCanExam}
             variant="contained"
             color="secondary"
             size="large"
           >
-            {retakeExam && retakeExam.passed ? "View Certificate" : "EXAM NOW"}
+            {retakeExam.passed ? "View Certificate" : "EXAM NOW"}
           </Button>
         ) : (
           <Button
@@ -204,18 +183,12 @@ const ExamResultMuiCom = () => {
             variant="contained"
             color={"secondary"}
             disabled={
-              retakeExam &&
-              retakeExam.grade &&
-              retakeExam.grade === "FAIL" &&
-              countDownTime > 1
+              retakeExam.grade && retakeExam.grade === "FAIL" && countdown > 0
             }
             size="large"
           >
-            {retakeExam &&
-            retakeExam.grade &&
-            retakeExam.grade === "FAIL" &&
-            countDownTime > 1
-              ? `PLEASE RETURN AFTER ${convertSecondToDiffForHumans(countDown)}`
+            {retakeExam.grade && retakeExam.grade === "FAIL" && countdown > 0
+              ? `PLEASE RETURN AFTER ${convertSecondToDiffForHumans(countdown)}`
               : "EXAM NOW"}
           </Button>
         )}

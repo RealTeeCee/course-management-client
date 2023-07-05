@@ -1,6 +1,7 @@
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import {
   Avatar,
-  Badge,
   Button,
   Card,
   CardActions,
@@ -8,19 +9,16 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
-import StyledBadgeMuiCom from "./StyleBadgeMuiCom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAllCourseState } from "../../store/course/courseSelector";
 import { useNavigate } from "react-router-dom";
+import { RankingAuthorsBadgeMuiCom } from ".";
+import { selectUser } from "../../store/auth/authSelector";
+import { selectAllAuthorsState } from "../../store/author/authorSelector";
 import {
   onSubcribeAuthor,
   onUnsubcribeAuthor,
 } from "../../store/author/authorSlice";
-import { selectUser } from "../../store/auth/authSelector";
-import { selectAllAuthorsState } from "../../store/author/authorSelector";
-import { RankingAuthorsBadgeMuiCom } from ".";
+import StyledBadgeMuiCom from "./StyleBadgeMuiCom";
 
 const RankingAuthorsCardMuiCom = ({ top3, rank }) => {
   const dispatch = useDispatch();
@@ -58,6 +56,10 @@ const RankingAuthorsCardMuiCom = ({ top3, rank }) => {
     );
   };
 
+  const handleClickAuthor = (authorId) => {
+    return navigate(`/authors/${authorId}`);
+  };
+
   return (
     <React.Fragment>
       <Card
@@ -83,11 +85,24 @@ const RankingAuthorsCardMuiCom = ({ top3, rank }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar
-                alt={top3.name}
-                src={top3.image}
-                sx={{ width: 120, height: 120 }}
-              />
+              <Button
+                sx={{
+                  borderRadius: "50%",
+                  boxShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(0deg, rgba(101,121,220,1) 20%, rgba(100,235,191,1) 60%, rgba(231,138,254,1) 90%)",
+                    opacity: 1.1,
+                  },
+                }}
+                onClick={() => handleClickAuthor(top3.id)}
+              >
+                <Avatar
+                  alt={top3.name}
+                  src={top3.image}
+                  sx={{ width: 120, height: 120 }}
+                />
+              </Button>
             </StyledBadgeMuiCom>
           </RankingAuthorsBadgeMuiCom>
         </Typography>

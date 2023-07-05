@@ -28,10 +28,11 @@ import { onCourseInitalState } from "../../store/course/courseSlice";
 import { sliceText } from "../../utils/helper";
 import HomeSearchMod from "../HomeSearchMod";
 import { Button } from "@mui/material";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
-  const { progress } = useSelector((state) => state.course);
+  const { progress } = useSelector(selectAllCourseState);
 
   const location = useLocation();
   const isLearnPage = location.pathname.startsWith("/learn");

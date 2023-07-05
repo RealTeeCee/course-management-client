@@ -26,8 +26,8 @@ const UserAccomplishmentPage = () => {
     return { ...a, color };
   });
 
-  const handleClick = () => {
-    console.log();
+  const handleClickAccomplishment = (certificateUID) => {
+    return navigate(`/profile/accomplishments/verify/${certificateUID}`);
   };
 
   console.log(user.id);
@@ -56,106 +56,111 @@ const UserAccomplishmentPage = () => {
           <HeadingH3Com>Course Accomplished</HeadingH3Com>
           {accomplishments.length > 0 ? (
             accomplishments.map((acc) => (
-              <Paper
-                key={acc.courseId}
-                square
-                elevation={5}
-                sx={{
-                  padding: "20px",
-                  width: "100%",
-                  mt: "20px",
-                }}
-              >
-                <Grid
-                  item
-                  container
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  sx={{ margin: "10px" }}
+              <Grid key={acc.courseId} item xs={12} sm={12} md={6}>
+                <Paper
+                  square
+                  elevation={5}
+                  sx={{
+                    padding: "20px",
+                    width: "100%",
+                    mt: "20px",
+                    borderRadius: "10px",
+                  }}
                 >
                   <Grid
-                    container
                     item
-                    justifyItems="center"
-                    alignItems="center"
-                    spacing={2}
+                    container
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    sx={{ margin: "10px" }}
                   >
-                    <Grid item xs={12} sm={12} md={2}>
-                      <ButtonBase
-                        sx={{
-                          transition: "transform 0.2s ease-out",
-                          "&:hover": {
-                            transform: "scale(1.1)",
-                          },
-                        }}
-                      >
-                        <img
-                          src={acc.courseImage}
-                          alt="Lỗi"
-                          style={{
-                            width: "180px",
-                            height: "90px",
-                            objectFit: "cover",
+                    <Grid
+                      container
+                      item
+                      justifyItems="center"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <Grid item xs={12} sm={12} md={2}>
+                        <ButtonBase
+                          sx={{
+                            transition: "transform 0.2s ease-out",
+                            "&:hover": {
+                              transform: "scale(1.1)",
+                            },
                           }}
-                        />
-                      </ButtonBase>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={10}>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{
-                          color: "darkblue",
-                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
-                        }}
-                      >
-                        {acc.courseName}
-                      </Typography>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{
-                          color: "darkblue",
-                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
-                        }}
-                      >
-                        Accomplished at{" "}
-                        <strong
-                          style={{
-                            background:
-                              "linear-gradient(0deg, rgba(101,121,220,1) 20%, rgba(100,235,191,1) 60%, rgba(231,138,254,1) 90%)",
-                            "-webkit-background-clip": "text",
-                            "-webkit-text-fill-color": "transparent",
-                            backgroundClip: "text",
-                            textFillColor: "transparent",
-                            textShadow: "none",
-                            fontSize: "25px",
-                            fontWeight: "1000",
+                          onClick={() =>
+                            handleClickAccomplishment(acc.certificateUID)
+                          }
+                        >
+                          <img
+                            src={acc.courseImage}
+                            alt="Lỗi"
+                            style={{
+                              width: "180px",
+                              height: "90px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </ButtonBase>
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={10}>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{
+                            color: "darkblue",
+                            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
                           }}
                         >
-                          ClicknLearn
-                        </strong>
-                      </Typography>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{
-                          color: "darkblue",
-                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
-                        }}
-                      >
-                        Grade Achieve:{" "}
-                        {accomplishmentsWithColor.map((a) => (
-                          <strong key={a.grade} style={{ color: a.color }}>
-                            {a.grade}
+                          {acc.courseName}
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{
+                            color: "darkblue",
+                            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                          }}
+                        >
+                          Accomplished at{" "}
+                          <strong
+                            style={{
+                              background:
+                                "linear-gradient(0deg, rgba(101,121,220,1) 20%, rgba(100,235,191,1) 60%, rgba(231,138,254,1) 90%)",
+                              WebkitBackgroundClip: "text",
+                              WebkitTextFillColor: "transparent",
+                              backgroundClip: "text",
+                              textFillColor: "transparent",
+                              textShadow: "none",
+                              fontSize: "25px",
+                              fontWeight: "1000",
+                            }}
+                          >
+                            ClicknLearn
                           </strong>
-                        ))}
-                      </Typography>
+                        </Typography>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{
+                            color: "darkblue",
+                            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                          }}
+                        >
+                          Grade Achieve:{" "}
+                          {accomplishmentsWithColor.map((a) => (
+                            <strong key={a.grade} style={{ color: a.color }}>
+                              {a.grade}
+                            </strong>
+                          ))}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Paper>
+                </Paper>
+              </Grid>
             ))
           ) : (
             <Paper
@@ -165,6 +170,7 @@ const UserAccomplishmentPage = () => {
                 padding: "20px",
                 width: "100%",
                 mt: "20px",
+                borderRadius: "10px",
               }}
             >
               <HeadingH3Com className="text-black text-4xl text-center py-10">

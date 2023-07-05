@@ -14,13 +14,14 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import authorImage from "../../assets/images/author.jpg";
 import { HeadingFormH1Com } from "../../components/heading";
 import RankingAuthorsCardMuiCom from "../../components/mui/RankingAuthorsCardMuiCom";
 import { selectUser } from "../../store/auth/authSelector";
 import { selectAllAuthorsState } from "../../store/author/authorSelector";
 import {
+  onAuthorInitialState,
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,
   onLoadTop3Authors,
@@ -47,6 +48,12 @@ const AuthorPage = () => {
 
   const [filter, setFilter] = useState(false);
   const [isSubcribed, setIsSubcribed] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatch(onAuthorInitialState());
+  }, [dispatch, location]);
 
   // useEffect(() => {
   //   console.log(searchValue);
@@ -93,6 +100,10 @@ const AuthorPage = () => {
     dispatch(onLoadAuthorsPagination({ ...searchValue, isFilter: filter }));
   };
 
+  const handleClickAuthor = (authorId) => {
+    return navigate(`/authors/${authorId}`);
+  };
+
   const handleLoadMore = () => {
     console.log(searchValue);
     if (pagiAuthor) {
@@ -126,6 +137,7 @@ const AuthorPage = () => {
           <Grid container spacing={1} justifyContent="center">
             <Grid item xs={12} sm={12} md={4}>
               {/* Display the top 2 author */}
+
               <RankingAuthorsCardMuiCom
                 top3={top3.length > 0 && top3[1]}
                 rank={2}
@@ -226,11 +238,24 @@ const AuthorPage = () => {
               <Grid key={a.id} item xs={12} sm={12} md={3}>
                 <Grid container direction="column" alignItems="center">
                   <Grid item xs={12} sm={12} md={12}>
-                    <Avatar
-                      alt={a.name}
-                      src={a.image}
-                      sx={{ width: 120, height: 120 }}
-                    />
+                    <Button
+                      sx={{
+                        borderRadius: "50%",
+                        boxShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+                        "&:hover": {
+                          background:
+                            "linear-gradient(0deg, rgba(101,121,220,1) 20%, rgba(100,235,191,1) 60%, rgba(231,138,254,1) 90%)",
+                          opacity: 1.1,
+                        },
+                      }}
+                      onClick={() => handleClickAuthor(a.id)}
+                    >
+                      <Avatar
+                        alt={a.name}
+                        src={a.image}
+                        sx={{ width: 120, height: 120 }}
+                      />
+                    </Button>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12}>
                     <Typography

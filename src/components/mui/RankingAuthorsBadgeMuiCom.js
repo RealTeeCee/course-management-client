@@ -1,6 +1,5 @@
 import Badge from "@mui/material/Badge";
 import React from "react";
-import { red, blue, orange } from "@mui/material/colors";
 
 const myColor = {
   MVP: "error",
@@ -24,9 +23,6 @@ const RankingAuthorsBadgeMuiCom = ({ children, top3, rank }) => {
   const badgeContent = getBadgeContent(rank - 1);
   const myStyle = myColor[badgeContent];
 
-  console.log(myStyle);
-
-  console.log(badgeContent);
   return (
     <React.Fragment>
       <Badge
@@ -41,6 +37,7 @@ const RankingAuthorsBadgeMuiCom = ({ children, top3, rank }) => {
             fontSize: badgeContent === "MVP" ? "24px" : "18px", // set the font size of the badge content
             fontWeight: badgeContent === "MVP" ? 900 : 600, // set the font weight of the badge content
             lineHeight: 1.2,
+            boxShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
             textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
             "&::after": {
               position: "absolute",

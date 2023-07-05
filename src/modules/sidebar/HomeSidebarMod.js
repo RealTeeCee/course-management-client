@@ -26,8 +26,8 @@ const sidebarItems = [
   },
   {
     icon: <IconMapCom className="mx-auto" />,
-    title: "Route",
-    url: "/routes",
+    title: "Author",
+    url: "/authors",
   },
   {
     icon: <IconCategoryCom className="mx-auto" />,

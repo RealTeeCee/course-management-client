@@ -16,6 +16,7 @@ import {
   selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
+  onCountdown,
   onGenerateCourseExam,
   onGetEnrollId,
   onGetLearning,
@@ -24,6 +25,7 @@ import {
   onMyCourseLoading,
   onReady,
   onReload,
+  onRetakeExam,
   onSaveTrackingVideo,
   onSelectedCourse,
   onUpdateCompletedVideo,
@@ -49,6 +51,8 @@ const LearnPage = () => {
     progress,
     generateExamSuccess,
     examination,
+    retakeExam,
+    countdown,
   } = useSelector(selectAllCourseState);
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -58,6 +62,7 @@ const LearnPage = () => {
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
+  // const [readyExam, setReadyExam] = useState(false);
 
   const { slug } = useParams();
 
@@ -85,6 +90,7 @@ const LearnPage = () => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
       dispatch(onGetLearning(courseId));
+      dispatch(onRetakeExam({ userId: userId, courseId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, userId]);
@@ -116,6 +122,21 @@ const LearnPage = () => {
     setIsCompleted(0);
   }, [lessonId]);
 
+  useEffect(() => {
+    const countDown =
+      retakeExam?.created_at === null
+        ? 0
+        : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) +
+          60 -
+          Math.floor(Date.now() / 1000);
+
+    const interval = setInterval(() => {
+      if (countDown > 0) {
+        dispatch(onCountdown(countDown - 1));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);
   };
@@ -130,7 +151,19 @@ const LearnPage = () => {
   const handleEnded = () => {
     console.log("onSaveTrackingVideo - handleEnded");
     if (progress === 100) {
-      setIsFinal(true);
+      // const countDown =
+      //   retakeExam && retakeExam.created_at === null
+      //     ? 0
+      //     : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) + 60;
+      // const now = Math.floor(Date.now() / 1000);
+
+      // console.log(countDown);
+
+      if ((retakeExam && retakeExam.created_at === null) || countdown === 0) {
+        setIsFinal(true);
+      } else {
+        setIsFinal(false);
+      }
     }
     nextLesson =
       learning.lessonDto[
@@ -289,11 +322,13 @@ const LearnPage = () => {
       label: `Comment`,
       children: <CommentCom />,
     },
-    {
-      key: "5",
-      label: `Examination`,
-      children: <ExamResultMuiCom />,
-    },
+    progress === 100
+      ? {
+          key: "5",
+          label: `Examination`,
+          children: <ExamResultMuiCom />,
+        }
+      : "",
   ];
 
   return isLoading ? (

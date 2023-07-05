@@ -29,10 +29,20 @@ import { DialogConfirmMuiCom } from ".";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import moment from "moment/moment";
 
+const colorMap = {
+  FAIL: "#FF4136", // red
+  AVERAGE: "#FF851B", // orange
+  GOOD: "#2ECC40", // green
+  EXCELLENT: "#0074D9", // blue
+};
+
 function QuizMuiCom({ exam = [] }) {
+  const { finishExam } = useSelector(selectAllCourseState);
+
   const maxSteps = exam.length;
   const answerOptions = ["A", "B", "C", "D"];
-  const { finishExam } = useSelector(selectAllCourseState);
+  const colorGrade =
+    finishExam && finishExam.grade ? colorMap[finishExam.grade] : null;
 
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -144,7 +154,7 @@ function QuizMuiCom({ exam = [] }) {
     if (finishExam && finishExam.grade !== "FAIL") {
       return navigate("/profile/accomplishments");
     }
-    return navigate("/");
+    return navigate(-2);
   };
 
   return (
@@ -181,12 +191,19 @@ function QuizMuiCom({ exam = [] }) {
             </p>
             <p>Your correct answer: {finishExam.correctAnswer}</p>
             <p>Total point: {finishExam.totalPoint}</p>
-            <p>Grade: {finishExam.grade}</p>
+            <p>
+              Grade:{" "}
+              <strong
+                style={{ color: colorGrade == null ? "#333" : colorGrade }}
+              >
+                {finishExam.grade ? finishExam.grade : "None"}
+              </strong>
+            </p>
             <p>
               Finished at:{" "}
               {moment(finishExam.created_at).format("YYYY/MM/DD HH:mm:ss")}
             </p>
-            <p>
+            <div>
               {finishExam && finishExam.grade !== "FAIL" ? (
                 <Button onClick={handleNavigate}>View your certificate</Button>
               ) : (
@@ -195,7 +212,7 @@ function QuizMuiCom({ exam = [] }) {
                   <Button onClick={handleNavigate}>Learn more!</Button>{" "}
                 </p>
               )}
-            </p>
+            </div>
           </div>
         ) : (
           <React.Fragment>

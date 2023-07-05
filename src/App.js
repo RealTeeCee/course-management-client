@@ -18,7 +18,8 @@ import AuthorPage from "./pages/author/AuthorPage.js";
 import { onAuthorInitialState } from "./store/author/authorSlice.js";
 import UserAccomplishmentPage from "./pages/user/UserAccomplishmentPage.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
-
+import AuthorDetailsPage from "./pages/author/AuthorDetailsPage.js";
+import UserCertificationPage from "./pages/user/UserCertificationPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -249,9 +250,11 @@ function App() {
             <Route
               path="accomplishments"
               element={<UserAccomplishmentPage></UserAccomplishmentPage>}
-            >
-              <Route path="details"></Route>
-            </Route>
+            ></Route>
+            <Route
+              path="accomplishments/verify/:certificateUID"
+              element={<UserCertificationPage></UserCertificationPage>}
+            ></Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
@@ -279,6 +282,10 @@ function App() {
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
           <Route path="/authors" element={<AuthorPage></AuthorPage>}></Route>
+          <Route
+            path="/authors/:id"
+            element={<AuthorDetailsPage></AuthorDetailsPage>}
+          ></Route>
 
           {/* ********* ADMIN ********* */}
           <Route
@@ -357,9 +364,9 @@ function App() {
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
-         
-          {/* Admin Users */}
-          <Route
+
+            {/* Admin Users */}
+            <Route
               path="users"
               element={<AdminUserListPage></AdminUserListPage>}
             ></Route>
