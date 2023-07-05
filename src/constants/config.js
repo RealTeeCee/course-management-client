@@ -1,4 +1,4 @@
-export const APP_KEY_NAME = "click_and_learn";
+export const APP_KEY_NAME = "click_and_learn"; 
 export const BASE_DOMAIN_URL =
   process.env.REACT_APP_DOMAIN_URL ?? "http://localhost:3000";
 export const BASE_API_URL =
@@ -11,7 +11,7 @@ export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
 export const COOKIE_VIEW_COUNT_KEY = `${APP_KEY_NAME}_view_count`; // New constant for the view count cookie
 // export const COOKIE_EXPIRED_BLOG_DAYS = 1;
-// export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; 
+export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; 
 
  
 export const MIN_LENGTH_NAME = 3;
