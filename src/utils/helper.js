@@ -148,3 +148,8 @@ export function convertStrToSlug(str) {
 
   return str;
 }
+
+// title = "Part", and number = "1"
+export function fakeName(title, number, divider = "#") {
+  return `${title}${divider}${number}`;
+}

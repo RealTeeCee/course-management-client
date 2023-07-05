@@ -19,6 +19,7 @@ import { onAuthorInitialState } from "./store/author/authorSlice.js";
 import UserAccomplishmentPage from "./pages/user/UserAccomplishmentPage.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
 
+
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 const ForgetPasswordPage = lazy(() =>
@@ -48,6 +49,20 @@ const AdminCreatePartPage = lazy(() =>
   import("./pages/admin/part/AdminCreatePartPage.js")
 );
 
+const AdminQuestionListPage = lazy(() =>
+  import("./pages/admin/question/AdminQuestionListPage.js")
+);
+const AdminCreateQuestionPage = lazy(() =>
+  import("./pages/admin/question/AdminCreateQuestionPage.js")
+);
+
+const AdminAnswerListPage = lazy(() =>
+  import("./pages/admin/answer/AdminAnswerListPage.js")
+);
+const AdminCreateAnswerPage = lazy(() =>
+  import("./pages/admin/answer/AdminCreateAnswerPage.js")
+);
+
 const AdminSectionListPage = lazy(() =>
   import("./pages/admin/section/AdminSectionListPage.js")
 );
@@ -65,6 +80,10 @@ const AdminCreateLessonPage = lazy(() =>
 
 const AdminBlogListPage = lazy(() =>
   import("./pages/admin/blog/AdminBlogListPage.js")
+);
+
+const AdminUserListPage = lazy(() =>
+  import("./pages/admin/user/AdminUserListPage.js")
 );
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
@@ -295,6 +314,24 @@ function App() {
               path="/admin/courses/:courseId/parts/create"
               element={<AdminCreatePartPage />}
             ></Route>
+            {/* Admin Questions */}
+            <Route
+              path="courses/:courseId/parts/:partId/questions"
+              element={<AdminQuestionListPage />}
+            ></Route>
+            <Route
+              path="courses/:courseId/parts/:partId/questions/create"
+              element={<AdminCreateQuestionPage />}
+            ></Route>
+            {/* Admin AdminAnswerListPage */}
+            <Route
+              path="courses/:courseId/parts/:partId/questions/:questionId/answers"
+              element={<AdminAnswerListPage />}
+            ></Route>
+            <Route
+              path="courses/:courseId/parts/:partId/questions/:questionId/answers/create"
+              element={<AdminCreateAnswerPage />}
+            ></Route>
 
             {/* Admin Sections */}
             <Route
@@ -319,6 +356,12 @@ function App() {
             <Route
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
+            ></Route>
+         
+          {/* Admin Users */}
+          <Route
+              path="users"
+              element={<AdminUserListPage></AdminUserListPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

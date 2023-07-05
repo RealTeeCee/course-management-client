@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import CryptoJS from "crypto-js";
 import {
   APP_KEY_NAME,
   COOKIE_ACCESS_TOKEN_KEY,
@@ -6,10 +7,10 @@ import {
   COOKIE_REFRESH_TOKEN_KEY,
 } from "../constants/config";
 
-const objCookies = {
+export const objCookies = {
   expires: COOKIE_EXPIRED_DAYS,
   domain: process.env.REACT_APP_COOKIE_DOMAIN,
-};
+}; 
 
 export const setToken = (access_token, refresh_token) => {
   if (access_token && refresh_token) {
@@ -62,7 +63,51 @@ export const removeToken = () => {
   }
 };
 
-// save Cookie remember password
-export const setRememberPassword = (email, password) => {
-  Cookies.set(`${APP_KEY_NAME}__${email}`, password);
+export const setRememberUser = (email, password) => {
+  const encryptedEmail = CryptoJS.AES.encrypt(
+    email,
+    process.env.REACT_APP_COOKIE_HASH_KEY ?? "ricpham_250293"
+  ).toString();
+  const encryptedPassword = CryptoJS.AES.encrypt(
+    password,
+    process.env.REACT_APP_COOKIE_HASH_KEY ?? "ricpham_250293"
+  ).toString();
+
+  const expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 1);
+
+  Cookies.set(
+    `${APP_KEY_NAME}_remember`,
+    `${encryptedEmail}|||${encryptedPassword}`,
+    {
+      ...objCookies,
+      expires,
+    }
+  );
 };
+
+export const getRememberUser = () => {
+  const cookieValue = Cookies.get(`${APP_KEY_NAME}_remember`);
+
+  if (cookieValue) {
+    const [encryptedEmail, encryptedPassword] = cookieValue.split("|||");
+
+    const email = CryptoJS.AES.decrypt(
+      encryptedEmail,
+      process.env.REACT_APP_COOKIE_HASH_KEY ?? "ricpham_250293"
+    ).toString(CryptoJS.enc.Utf8);
+    const password = CryptoJS.AES.decrypt(
+      encryptedPassword,
+      process.env.REACT_APP_COOKIE_HASH_KEY ?? "ricpham_250293"
+    ).toString(CryptoJS.enc.Utf8);
+
+    return { email, password };
+  }
+
+  return {
+    email: "",
+    password: "",
+  };
+};
+
+

@@ -33,3 +33,6 @@ export const { default: IconPlusCom } = require("./IconPlusCom");
 export const { default: IconStarCom } = require("./IconStarCom");
 export const { default: IconPartCom } = require("./IconPartCom");
 export const { default: IconCertificateCom } = require("./IconCertificateCom");
+export const { default: IconQuestionCom } = require("./IconQuestionCom");
+export const { default: IconAnswerCom } = require("./IconAnswerCom");
+export const { default: IconArrowUpCom } = require("./IconArrowUpCom");

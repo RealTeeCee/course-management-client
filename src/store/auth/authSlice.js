@@ -98,6 +98,9 @@ const authSlice = createSlice({
       ...state,
       isLoading: true,
     }),
+    onUserUpdateNoti: (state,action) => ({
+      ...state,
+    }),
   },
 });
 
@@ -121,6 +124,7 @@ export const {
   onUserChangePassword,
   onUserChangePasswordSuccess,
   onUserUpdateProfile,
+  onUserUpdateNoti,
 } = authSlice.actions;
-// authReducer
+// reducer
 export default authSlice.reducer;

@@ -9,7 +9,11 @@ export const NOT_FOUND_URL = "/not-found";
 export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
+export const COOKIE_VIEW_COUNT_KEY = `${APP_KEY_NAME}_view_count`; // New constant for the view count cookie
+// export const COOKIE_EXPIRED_BLOG_DAYS = 1;
+// export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; 
 
+ 
 export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
@@ -34,6 +38,8 @@ export const MESSAGE_EMAIL_INVALID =
   "Invalid email! Correct: example@domain.com";
 export const MESSAGE_CONFIRM_PASSWORD_INVALID =
   "Confirm password does not match with password";
+
+export const MESSAGE_READONLY = "This field is Read Only";
 
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
@@ -67,6 +73,10 @@ export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
 export const MESSAGE_NET_PRICE_HIGHER_PRICE =
   "The sale price is not allowed to be higher than the original price";
+export const MESSAGE_POINT_EXCEED_MAX =
+  "The question point cannot exceed the max point";
+
+export const MESSAGE_MAINTENANCE = "Sorry, This function is currently under maintenance !";
 
 // Data Static List
 export const categoryItems = [

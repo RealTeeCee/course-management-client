@@ -22,7 +22,7 @@ import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onLogin } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
 import { toast } from "react-toastify";
-import { setRememberPassword } from "../../utils/auth";
+import { getRememberUser, setRememberUser } from "../../utils/auth";
 
 const schemaValidation = yup.object().shape({
   email: yup
@@ -38,6 +38,7 @@ const LoginPage = () => {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -60,11 +61,19 @@ const LoginPage = () => {
     dispatch(onLogin(values));
   };
 
+  const { email, password } = getRememberUser();
+
+  useEffect(() => {
+    setValue("email", email);
+    setValue("password", password);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (isLoginSuccess) {
       if (isRemember) {
         const { email, password } = getValues();
-        setRememberPassword(email, password);
+        setRememberUser(email, password);
       }
       navigate("/");
     } else {

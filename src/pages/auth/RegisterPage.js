@@ -63,21 +63,29 @@ const RegisterPage = () => {
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  const handleRegister = async (values) => {
+  // const handleRegister = async (values) => {
+  //   if (!acceptTerm) {
+  //     toast.warning(MESSAGE_POLICY_REQUIRED);
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   try {
+  //     await dispatch(onRegister({ ...values, permissions: [] }));
+  //     toast.success("Registration successful!");
+  //     reset();
+  //     navigate("/login");
+  //   } catch (error) {
+  //     toast.error("Registration failed!");
+  //     setIsLoading(false);
+  //   }
+  // };
+  const handleRegister = (values) => {
     if (!acceptTerm) {
-      toast.warning(MESSAGE_POLICY_REQUIRED);
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await dispatch(onRegister({ ...values, permissions: [] }));
-      toast.success("Registration successful!");
-      reset();
-      navigate("/login");
-    } catch (error) {
-      toast.error("Registration failed!");
-      setIsLoading(false);
-    }
+          toast.warning(MESSAGE_POLICY_REQUIRED);
+          return;
+        }
+    dispatch(onRegister(values));
+    navigate("/login");
   };
 
   return (

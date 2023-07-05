@@ -14,6 +14,7 @@ const InputCom = (props) => {
     errorMsg = "",
     children,
     defaultValue = "",
+    readOnly = false,
     ...rest
   } = props;
 
@@ -34,6 +35,8 @@ const InputCom = (props) => {
         <input
           id={name}
           className={`form-control tw-transition-all placeholder:italic ${
+            readOnly && "cursor-not-allowed"
+          } ${
             errorMsg &&
             errorMsg.length > 0 &&
             "is-invalid border-tw-danger text-tw-danger"
@@ -41,6 +44,7 @@ const InputCom = (props) => {
           type={
             type === "password" ? (showPassword ? "text" : "password") : type
           }
+          readOnly={readOnly ? true : undefined}
           {...register(name)}
           {...fields}
           {...rest}
@@ -68,6 +72,7 @@ InputCom.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string,
   errorMsg: PropTypes.string,
+  readOnly: PropTypes.bool,
   children: PropTypes.node,
 };
 export default withErrorBoundary(InputCom, {

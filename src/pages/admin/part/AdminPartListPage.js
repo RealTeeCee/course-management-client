@@ -3,11 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import * as yup from "yup";
-import { SwitchAntCom } from "../../../components/ant";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
 import GapYCom from "../../../components/common/GapYCom";
@@ -15,6 +14,7 @@ import LoadingCom from "../../../components/common/LoadingCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
   IconEditCom,
+  IconQuestionCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../components/icon";
@@ -23,25 +23,31 @@ import { LabelCom } from "../../../components/label";
 import { TableCom } from "../../../components/table";
 import {
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_GENERAL_FAILED,
+  MESSAGE_MAINTENANCE,
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_READONLY,
+  NOT_FOUND_URL,
 } from "../../../constants/config";
 import {
   onBulkDeletePart,
-  onPostPart,
   onDeletePart,
   onGetPartsByCourseId,
+  onPostPart,
 } from "../../../store/admin/part/partSlice";
 import {
   convertSecondToDiffForHumans,
+  fakeName,
   showMessageError,
+  sliceText,
 } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   maxPoint: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(10, "This field must be greater than 10"),
+    .min(0, "This field must be greater than 0"),
   limitTime: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -51,7 +57,7 @@ const schemaValidation = yup.object().shape({
 const AdminPartListPage = () => {
   /********* State ********* */
   const [selectedRows, setSelectedRows] = useState([]);
-  const [filterPart, setFilterPart] = useState([]);
+  const [filterItem, setFilterItem] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
@@ -59,7 +65,12 @@ const AdminPartListPage = () => {
   const [isFetching, setIsFetching] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { courseId } = useParams();
+  const { data } = useSelector((state) => state.course);
+  const courseById = data?.find((item) => item.id === parseInt(courseId));
+  if (!courseById) navigate(NOT_FOUND_URL);
+
   const { parts, isLoading, isBulkDeleteSuccess, isPostPartSuccess } =
     useSelector((state) => state.part);
   // Fetch Data
@@ -68,10 +79,6 @@ const AdminPartListPage = () => {
     if (isPostPartSuccess && isOpen) setIsOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostPartSuccess]);
-
-  // useEffect(() => {
-  //   if (parts) setFilterPart(parts);
-  // }, [parts]);
 
   // Search in Table if using Redux
   useEffect(() => {
@@ -105,16 +112,15 @@ const AdminPartListPage = () => {
         return false;
       });
 
-      setFilterPart(result);
+      setFilterItem(result);
     } else {
       // Default, setPart for search
-      if (parts) setFilterPart(parts);
+      if (parts) setFilterItem(parts);
     }
   }, [parts, search]);
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBulkDeleteSuccess]);
 
   const {
@@ -148,18 +154,14 @@ const AdminPartListPage = () => {
       width: "70px",
     },
     {
-      name: "Part Name",
-      selector: (row) => `Part ${row.id}`,
+      name: "Part Code",
+      selector: (row) => fakeName("PART", row.id),
       sortable: true,
     },
     {
       name: "Max Point",
       selector: (row) => row.maxPoint,
       sortable: true,
-    },
-    {
-      name: "Limit Time",
-      selector: (row) => convertSecondToDiffForHumans(row.limitTime),
     },
     {
       name: "Status",
@@ -184,24 +186,22 @@ const AdminPartListPage = () => {
       ),
       sortable: true,
     },
-    // {
-    //   name: "Lessons",
-    //   cell: (row) => (
-    //     <>
-    //       <Link to={`/admin/courses/${courseId}/sections/${row.id}/lessons`}>
-    //         <ButtonCom
-    //           className="px-3 rounded-lg mr-2"
-    //           backgroundColor="gray"
-    //           onClick={() => {
-    //             // alert(`Update Course id: ${row.id}`);
-    //           }}
-    //         >
-    //           <IconDocumentCom className="w-5 text-black"></IconDocumentCom>
-    //         </ButtonCom>
-    //       </Link>
-    //     </>
-    //   ),
-    // },
+    {
+      name: "Question",
+      cell: (row) => (
+        <>
+          <Link to={`/admin/courses/${courseId}/parts/${row.id}/questions`}>
+            <ButtonCom className="px-3 rounded-lg mr-2" backgroundColor="gray">
+              <IconQuestionCom className="text-tw-danger" />
+            </ButtonCom>
+          </Link>
+        </>
+      ),
+    },
+    {
+      name: "Limit Time",
+      selector: (row) => convertSecondToDiffForHumans(row.limitTime),
+    },
     // {
     //   name: "Order",
     //   selector: (row) => row.ordered,
@@ -220,19 +220,11 @@ const AdminPartListPage = () => {
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
-          {/* <ButtonCom
-            className="px-3 rounded-lg mr-2"
-            onClick={() => {
-              alert(`View Section id: ${row.id}`);
-            }}
-          >
-            <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom> */}
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDelete({ partId: row.id, name: `Part ${row.id}` });
+              handleDelete({ partId: row.id, name: fakeName("PART", row.id) });
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -249,7 +241,8 @@ const AdminPartListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-success transition-all duration-300"
-          //   onClick={handleExport}
+          // onClick={handleExport}
+          onClick={() => toast.info(MESSAGE_MAINTENANCE)}
         >
           Export
         </div>
@@ -287,16 +280,6 @@ const AdminPartListPage = () => {
             partId,
           })
         );
-        // try {
-        //   const res = await axiosBearer.delete(
-        //     `${API_COURSE_URL}/${courseId}/section?sectionId=${sectionId}`
-        //   );
-        //   getSectionsByCourseId();
-        //   reset(res.data);
-        //   toast.success(res.data.message);
-        // } catch (error) {
-        //   showMessageError(error);
-        // }
       }
     });
   };
@@ -341,50 +324,57 @@ const AdminPartListPage = () => {
   };
 
   ///********* Update Area *********
-  const getPartById = (partId) => {
+  const getPartById = (partId, action = "n/a") => {
     setIsFetching(true);
     const part = parts.find((item) => item.id === partId);
-    if (part) {
-      reset(part);
-    } else {
-      showMessageError("No data");
+    switch (action) {
+      case "fetch":
+        typeof part !== "undefined" ? reset(part) : showMessageError("No data");
+        break;
+      default:
+        break;
     }
     setIsFetching(false);
+    return typeof part !== "undefined" ? part : showMessageError("No data");
   };
 
   const handleEdit = (partId) => {
     setIsOpen(true);
-    getPartById(partId);
+    getPartById(partId, "fetch");
   };
 
   const handleSubmitForm = (values) => {
-    dispatch(
-      onPostPart({
-        ...values,
-        courseId: parseInt(courseId),
-      })
-    );
-    // const { price, net_price } = values;
-    // try {
-    //   setIsLoading(!isLoading);
-    //   let fd = new FormData();
-    //   fd.append(
-    //     "courseJson",
-    //     JSON.stringify({
-    //       ...values,
-    //       price: convertStrMoneyToInt(price),
-    //       net_price: convertStrMoneyToInt(net_price),
-    //     })
-    //   );
-    //   const res = await axiosBearer.put(`/course`, fd);
-    //   getCourses();
-    //   toast.success(`${res.data.message}`);
-    //   setIsOpen(false);
-    // } catch (error) {
-    //   showMessageError(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    const part = getPartById(values.id);
+    if (part.maxPoint > values.maxPoint) {
+      Swal.fire({
+        title: `The <span class="text-tw-danger">Max Point</span> are being reduced!`,
+        html: `If you reduced the max point of this Part, the point of all quizzes in <span class="text-tw-danger">${fakeName(
+          "PART",
+          part?.id
+        )}</span> will be reset to 0`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7366ff",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, please continue",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          dispatch(
+            onPostPart({
+              ...values,
+              courseId: parseInt(courseId),
+            })
+          );
+        }
+      });
+    } else {
+      dispatch(
+        onPostPart({
+          ...values,
+          courseId: parseInt(courseId),
+        })
+      );
+    }
   };
 
   const handleChangeStatus = (part) => {
@@ -438,9 +428,9 @@ const AdminPartListPage = () => {
                 <TableCom
                   tableKey={tableKey}
                   urlCreate={`/admin/courses/${courseId}/parts/create`}
-                  title="List Parts"
+                  title={`Course: ${sliceText(courseById?.name, 30)}`}
                   columns={columns}
-                  items={filterPart}
+                  items={filterItem}
                   search={search}
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
@@ -481,16 +471,31 @@ const AdminPartListPage = () => {
             ></InputCom>
             <div className="card-body">
               <div className="row">
+                <div className="col-sm-6 offset-3 text-center">
+                  <LabelCom htmlFor="maxPoint">Part Code</LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="code"
+                    register={register}
+                    placeholder={MESSAGE_READONLY}
+                    defaultValue={fakeName("PART", watch("id"))}
+                    readOnly
+                  ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
                 <div className="col-sm-6">
                   <LabelCom htmlFor="maxPoint" isRequired>
                     Max Point
                   </LabelCom>
                   <InputCom
-                    type="text"
+                    type="number"
                     control={control}
                     name="maxPoint"
                     register={register}
-                    placeholder="Input Price"
+                    placeholder="Input max point"
                     errorMsg={errors.maxPoint?.message}
                     value={watch("maxPoint")}
                   ></InputCom>
@@ -500,11 +505,11 @@ const AdminPartListPage = () => {
                     Limit Time
                   </LabelCom>
                   <InputCom
-                    type="text"
+                    type="number"
                     control={control}
                     name="limitTime"
                     register={register}
-                    placeholder="Input Net Price"
+                    placeholder="Input limit time"
                     errorMsg={errors.limitTime?.message}
                   ></InputCom>
                 </div>

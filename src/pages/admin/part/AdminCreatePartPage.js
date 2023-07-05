@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import { LabelCom } from "../../../components/label";
 import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_READONLY,
 } from "../../../constants/config";
 import { onPostPart } from "../../../store/admin/part/partSlice";
 
@@ -25,7 +26,7 @@ const schemaValidation = yup.object().shape({
   maxPoint: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
-    .min(100, "This field must be greater than 100"),
+    .min(0, "This field must be greater than 0"),
   limitTime: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)
@@ -47,7 +48,10 @@ const AdminCreatePartPage = () => {
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
-  const { isLoading, isPostPartSuccess } = useSelector((state) => state.part);
+  const { isLoading, isPostPartSuccess } = useSelector(
+    (state) => state.part
+  );
+
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +59,7 @@ const AdminCreatePartPage = () => {
   const resetValues = () => {
     reset();
   };
-
+  // Nếu ko muốn chuyển trang sau khi create, hủy phần này
   useEffect(() => {
     if (isPostPartSuccess) navigate(`/admin/courses/${courseId}/parts`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,33 +109,20 @@ const AdminCreatePartPage = () => {
             <form onSubmit={handleSubmit(handleSubmitForm)}>
               <div className="card-body">
                 {/* <div className="row">
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="name" isRequired>
-                      Part Name
-                    </LabelCom>
+                  <div className="col-sm-6 offset-3 text-center">
+                    <LabelCom htmlFor="maxPoint">Part Name</LabelCom>
                     <InputCom
                       type="text"
                       control={control}
                       name="name"
                       register={register}
-                      placeholder="Input section name"
-                      errorMsg={errors.name?.message}
+                      placeholder={MESSAGE_READONLY}
+                      defaultValue={fakeName("PART", parts?.[0]?.id + 1)}
+                      readOnly
                     ></InputCom>
                   </div>
-
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="ordered">Ordered</LabelCom>
-                    <InputCom
-                      type="number"
-                      control={control}
-                      name="ordered"
-                      register={register}
-                      placeholder="Input section ordered"
-                      errorMsg={errors.ordered?.message}
-                      defaultValue={0}
-                    ></InputCom>
-                  </div>
-                </div> */}
+                </div>
+                <GapYCom className="mb-3"></GapYCom> */}
                 <div className="row">
                   <div className="col-sm-6">
                     <LabelCom htmlFor="maxPoint" isRequired>
@@ -144,8 +135,6 @@ const AdminCreatePartPage = () => {
                       register={register}
                       placeholder="Input max point"
                       errorMsg={errors.maxPoint?.message}
-                      defaultValue={100}
-                      readOnly
                     ></InputCom>
                   </div>
 
@@ -158,9 +147,10 @@ const AdminCreatePartPage = () => {
                       control={control}
                       name="limitTime"
                       register={register}
-                      placeholder="Input limit time"
+                      placeholder={MESSAGE_READONLY}
                       errorMsg={errors.limitTime?.message}
                       defaultValue={600}
+                      autoFocus
                     ></InputCom>
                   </div>
                 </div>
