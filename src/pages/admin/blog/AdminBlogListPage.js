@@ -20,6 +20,7 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   categoryItems,
+  statusBlogItems,
 } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
 import LoadingCom from "../../../components/common/LoadingCom";
@@ -40,7 +41,6 @@ import Swal from "sweetalert2";
 import { v4 } from "uuid";
 import ReactModal from "react-modal";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
@@ -57,20 +57,7 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-const statusItems = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "InActive",
-  },
-  {
-    value: 2,
-    label: "Proccessing",
-  },
-];
+
 const AdminBlogListPage = () => {
   /********* State ********* */
   //API State
@@ -158,6 +145,7 @@ const AdminBlogListPage = () => {
     {
       name: "Image",
       selector: (row) => (
+        
         <img width={50} height={50} src={`${row.image}`} alt={row.name} />
       ),
     },
@@ -168,10 +156,10 @@ const AdminBlogListPage = () => {
           control={control}
           name="status"
           defaultValue={row.status}
-          options={statusItems}
-          className={`${
+          options={statusBlogItems}
+          defaultClassName={`${
             row.status
-            === 1 ? "!bg-tw-success" : row.status === 2 ? "!bg-tw-primary" : "bg-tw-danger"
+            === 1 ? "bg-tw-success" : row.status === 2 ? "bg-tw-danger" : "bg-tw-warning"
           }`}
           // style={{
           //   backgroundColor: row.status === 1 ? "green" : row.status === 2 ? "red" : "yellow",

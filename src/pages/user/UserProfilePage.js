@@ -275,7 +275,7 @@ const UserProfilePage = () => {
                     {" "}
                     {/* Container */}
                     <SwitchAntCom
-                      defaultChecked={user.notify ? true : false}
+                      defaultChecked={user.notify ? true : false} 
                       className={`${
                         user.notify ? "" : "bg-tw-danger hover:!bg-tw-orange"
                       }`}

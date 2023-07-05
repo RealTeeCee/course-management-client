@@ -28,6 +28,7 @@ import {
   handleReadAllNotification,
   handleGenerateCourseExam,
   handleFinishExam,
+  handleAllNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -58,11 +59,12 @@ import {
   onSaveTrackingVideo,
   onUpdateCompletedVideo,
   onUpdateUserRating,
+  onAllNotification,
 } from "./courseSlice";
 
 /**
  * after declare a Saga, assign into rootSaga
- */
+ */ 
 export default function* courseSaga() {
   yield all([
     takeLatest(onMyCourseLoading.type, handleOnMyCourseLoading),
@@ -93,5 +95,6 @@ export default function* courseSaga() {
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
     takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
     takeLatest(onFinishExam.type, handleFinishExam),
+    takeLatest(onAllNotification.type,handleAllNotification),
   ]);
 }

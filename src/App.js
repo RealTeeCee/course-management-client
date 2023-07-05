@@ -15,7 +15,6 @@ import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
-
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
 const ForgetPasswordPage = lazy(() =>
@@ -101,6 +100,9 @@ const PaymentSuccessPage = lazy(() =>
 );
 const PaymentErrorPage = lazy(() =>
   import("./pages/payment/PaymentErrorPage.js")
+);
+const NotificationListPage = lazy(() =>
+  import("./pages/notification/NotificationListPage.js")
 );
 
 Modal.setAppElement("#root");
@@ -253,6 +255,15 @@ function App() {
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
+          
+
+        
+        <Route
+            path="/notification"
+            element={<NotificationListPage></NotificationListPage>}
+          ></Route>
+        
+     
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"
@@ -312,9 +323,9 @@ function App() {
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
-         
-          {/* Admin Users */}
-          <Route
+
+            {/* Admin Users */}
+            <Route
               path="users"
               element={<AdminUserListPage></AdminUserListPage>}
             ></Route>
@@ -378,6 +389,7 @@ function App() {
         {/* ********* Examination ********* */}
         <Route path="/exam" element={<ExamPage></ExamPage>}></Route>
         {/* ********* End Examination ********* */}
+
       </Routes>
     </Suspense>
   );

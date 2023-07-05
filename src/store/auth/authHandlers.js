@@ -170,7 +170,7 @@ function* handleOnUserUpdateProfile({ payload }) {
     yield put(onLoading(false));
   }
 }
-
+ 
 function* handleOnUserUpdateNoti({ payload }) {
   try {
     const res = yield call(requestUserUpdateNoti, payload);

@@ -56,9 +56,9 @@ export const requestUserUpdateProfile = (data) => {
       "Content-type": "application/json",
       Authorization: `Bearer ${data.access_token ?? ""}`,
     },
-  });
+  }); 
 };
 
 export const requestUserUpdateNoti = (data) => {
-  return axiosBearer.put(`/auth/user/notify`, data);
+  return axiosBearer.put(`/auth/user/notify`, data); 
 };

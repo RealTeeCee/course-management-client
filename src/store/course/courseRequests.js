@@ -81,3 +81,7 @@ export const requestGenerateCourseExam = (data) => {
 export const requestFinishCourseExam = (data) => {
   return axiosBearer.post(`/exam-result/finish-exam`, data);
 };
+export const requestAllNotification = (userToId) => {
+  console.log("req: UserToId",userToId);
+  return axiosBearer.get(`/notification/${userToId}`);
+};
