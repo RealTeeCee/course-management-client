@@ -13,10 +13,14 @@ import {
   IconUserCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
-import { AVATAR_DEFAULT, sortItems } from "../../constants/config";
+import {
+  AVATAR_DEFAULT,
+  categoryItems,
+  sortItems,
+} from "../../constants/config";
 import useShowMore from "../../hooks/useShowMore";
-import { onCourseLoading } from "../../store/course/courseSlice";
-import { onGetUsers, onUpdateUser } from "../../store/user/userSlice";
+import { onGetCourses } from "../../store/admin/course/courseSlice";
+import { onGetUsers, onUpdateUser } from "../../store/admin/user/userSlice";
 import {
   convertDateTime,
   convertIntToStrMoney,
@@ -48,18 +52,18 @@ const adminMenuItems = [
 const AdminDashboardPage = () => {
   const dispatch = useDispatch();
   const [orderUser, setOrderUser] = useState("DESC");
-  const [orderCourse, setOrderCourse] = useState("DESC");
+  const [orderCourse, setOrderCourse] = useState(1);
   const {
     users,
     isUpdateUserSuccess,
     isLoading: isUserLoading,
   } = useSelector((state) => state.user);
-  const { data, isLoading: isCourseLoading } = useSelector(
-    (state) => state.course
+
+  const { courses, isLoading: isCourseLoading } = useSelector(
+    (state) => state.adminCourse
   );
   const [sortUsers, setSortUsers] = useState([]);
   const [sortCourses, setSortCourses] = useState([]);
-  console.log("sortCourses:", sortCourses);
 
   const handleChangeSortUser = (value) => {
     setOrderUser(value);
@@ -71,7 +75,7 @@ const AdminDashboardPage = () => {
 
   useEffect(() => {
     dispatch(onGetUsers());
-    dispatch(onCourseLoading());
+    dispatch(onGetCourses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateUserSuccess]);
 
@@ -89,15 +93,28 @@ const AdminDashboardPage = () => {
       });
       setSortUsers(filterUsers);
     }
+  }, [users, orderUser]);
 
-    if (data) {
-      const filterCourses = [...data].sort(
-        (a, b) => Number(a.status) - Number(b.status)
-      );
+  // Sort Course
+  useEffect(() => {
+    // After fetching, sort Course by status and category ID
+    if (courses) {
+      const filterCourses = [...courses].sort((a, b) => {
+        const compareStatus = Number(a.status) - Number(b.status);
+        if (compareStatus !== 0) return compareStatus;
+
+        if (orderCourse === a.category_id) {
+          return -1; // Sort a before b
+        } else if (orderCourse === b.category_id) {
+          return 1; // Sort b before a
+        }
+
+        return 0; // Preserve the existing order
+      });
+
       setSortCourses(filterCourses);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [users, data]);
+  }, [courses, orderCourse]);
 
   const { showItems, isRemain, handleShowMore } = useShowMore(sortUsers);
   const {
@@ -132,7 +149,7 @@ const AdminDashboardPage = () => {
           {item?.status === 0 && <div className="status-circle bg-primary" />}
         </td>
         <td className="img-content-box">
-          <span className="d-block">{sliceText(item?.name, 10)}</span>
+          <span className="d-block">{sliceText(item?.name, 9)}</span>
           <span className="font-roboto">{item?.role}</span>
         </td>
         <td>
@@ -161,17 +178,17 @@ const AdminDashboardPage = () => {
   };
 
   const RowCourseItem = ({ item }) => {
-    // const handleClickStatus = (userId, isActive) => {
-    //   //update new status of user
-    //   const data = users.find((item) => item.id === userId);
+    const handleClickStatus = (courseId, isActive) => {
+      //update new status of Course
+      const data = users.find((item) => item.id === courseId);
 
-    //   dispatch(
-    //     onUpdateUser({
-    //       ...data,
-    //       status: isActive === 1 ? 0 : 1,
-    //     })
-    //   );
-    // };
+      // dispatch(
+      //   onUpdateUser({
+      //     ...data,
+      //     status: isActive === 1 ? 0 : 1,
+      //   })
+      // );
+    };
 
     return (
       <tr>
@@ -180,7 +197,7 @@ const AdminDashboardPage = () => {
             <ImageCom
               srcSet={item?.image ?? AVATAR_DEFAULT}
               alt={item?.slug}
-              className="w-full h-full object-cover rounded-full"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
           {item?.status === 0 && <div className="status-circle bg-primary" />}
@@ -191,17 +208,16 @@ const AdminDashboardPage = () => {
         </td>
         <td>
           <p className="m-0 text-tw-primary">
-            {/* {convertDateTime(item?.created_at, false)} */}
-            ${item?.price === 0
+            {item?.price === 0
               ? "Free"
               : item?.net_price > 0
-              ? convertIntToStrMoney(item?.net_price)
-              : convertIntToStrMoney(item?.price)}
+              ? `$${convertIntToStrMoney(item?.net_price)}`
+              : `$${convertIntToStrMoney(item?.price)}`}
           </p>
         </td>
         <td
           className="text-end"
-          // onClick={() => handleClickStatus(item?.id, item?.status)}
+          onClick={() => handleClickStatus(item?.id, item?.status)}
         >
           {item?.status === 1 ? (
             <div className="button btn btn-success">
@@ -344,9 +360,53 @@ const AdminDashboardPage = () => {
                     <div className="card-header-right-icon">
                       <div>
                         <SelectDefaultAntCom
-                          listItems={sortItems}
-                          defaultValue={"DESC"}
-                          value={orderUser}
+                          listItems={categoryItems}
+                          defaultValue={categoryItems[0].label}
+                          value={orderCourse}
+                          onChange={handleChangeSortCourse}
+                          className="custom-dropdown"
+                        ></SelectDefaultAntCom>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="card-body pt-0">
+                  {isCourseLoading ? (
+                    <SpinAntCom loadingText={"Loading ..."} />
+                  ) : (
+                    <div className="appointment-table table-responsive">
+                      <table className="table table-bordernone">
+                        <tbody>
+                          {showCourseItems?.length > 0 &&
+                            showCourseItems.map((item) => (
+                              <RowCourseItem item={item} key={item?.id} />
+                            ))}
+                        </tbody>
+                      </table>
+                      {isCourseRemain && (
+                        <ButtonCom
+                          className="w-full mt-2"
+                          onClick={handleShowMoreCourse}
+                        >
+                          Show more
+                        </ButtonCom>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-12 appointment">
+              <div className="card">
+                <div className="card-header card-no-border">
+                  <div className="header-top">
+                    <h5 className="m-0">Blog</h5>
+                    <div className="card-header-right-icon">
+                      <div>
+                        <SelectDefaultAntCom
+                          listItems={categoryItems}
+                          defaultValue={categoryItems[0].label}
+                          value={orderCourse}
                           onChange={handleChangeSortCourse}
                           className="custom-dropdown"
                         ></SelectDefaultAntCom>
@@ -384,8 +444,8 @@ const AdminDashboardPage = () => {
         </div>
         <div className="col-sm-1 p-0">
           <div className="sticky top-0">
-            <div className="card">
-              <div className="card-header 2xl:!py-5 !bg-tw-light-pink">
+            <div className="card bg-tw-dark">
+              <div className="card-header 2xl:!py-5 !bg-tw-primary shadow-primary">
                 <HeadingH2Com className="text-white text-center flex justify-center">
                   <IconAdminCom />
                 </HeadingH2Com>

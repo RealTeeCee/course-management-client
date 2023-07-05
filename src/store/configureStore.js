@@ -11,7 +11,15 @@ const sagaMiddleware = createSagaMiddleware();
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "course", "part", "question", "answer", "user"],
+  whitelist: [
+    "auth",
+    "course",
+    "part",
+    "question",
+    "answer",
+    "user",
+    "adminCourse",
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
