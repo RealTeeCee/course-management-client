@@ -178,11 +178,11 @@ const AdminCourseListPage = () => {
 
   /********* Fetch API Area ********* */
   const columns = [
-    {
-      name: "No",
-      selector: (row, i) => ++i,
-      width: "70px",
-    },
+    // {
+    //   name: "No",
+    //   selector: (row, i) => ++i,
+    //   width: "60px",
+    // },
     {
       name: "Course Name",
       selector: (row) => row.name,
@@ -193,12 +193,14 @@ const AdminCourseListPage = () => {
       name: "Category",
       selector: (row) => row.category_name,
       sortable: true,
+      width: "150px",
     },
     {
       name: "Image",
       selector: (row) => (
         <img width={50} height={50} src={`${row.image}`} alt={row.name} />
       ),
+      width: "80px",
     },
     // {
     //   name: "Status",
@@ -228,6 +230,7 @@ const AdminCourseListPage = () => {
           onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
         />
       ),
+      width: "80px",
     },
     {
       name: "Section",
@@ -240,6 +243,7 @@ const AdminCourseListPage = () => {
           </Link>
         </>
       ),
+      width: "85px",
     },
     {
       name: "Part",
@@ -252,19 +256,7 @@ const AdminCourseListPage = () => {
           </Link>
         </>
       ),
-    },
-    {
-      name: "Price",
-      selector: (row) =>
-        row.net_price > 0
-          ? `$${convertIntToStrMoney(row.net_price)}`
-          : `$${convertIntToStrMoney(row.price)}`,
-      sortable: true,
-    },
-    {
-      name: "Duration",
-      selector: (row) => convertSecondToDiffForHumans(row.duration),
-      sortable: true,
+      width: "80px",
     },
     {
       name: "Learning",
@@ -281,6 +273,22 @@ const AdminCourseListPage = () => {
           </ButtonCom>
         </>
       ),
+      width: "100px",
+    },
+    {
+      name: "$$",
+      selector: (row) =>
+        row.net_price > 0
+          ? `$${convertIntToStrMoney(row.net_price)}`
+          : `$${convertIntToStrMoney(row.price)}`,
+      sortable: true,
+      width: "80px",
+    },
+    {
+      name: "Duration",
+      selector: (row) => convertSecondToDiffForHumans(row.duration),
+      sortable: true,
+      width: "150px",
     },
     {
       name: "Action",
@@ -314,6 +322,7 @@ const AdminCourseListPage = () => {
           </ButtonCom>
         </>
       ),
+      width: "100px",
     },
   ];
 
@@ -717,7 +726,15 @@ const AdminCourseListPage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
-    const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
+    const strReplace = itemsArrs
+      .filter((item, index) => {
+        if (item.includes(",")) {
+          toast.error("Achievements not accept the Comma !");
+          return false;
+        }
+        return true;
+      })
+      .map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
     setValue("achievements", itemsString);
@@ -744,26 +761,18 @@ const AdminCourseListPage = () => {
         />
       </div>
       <GapYCom></GapYCom>
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="card">
-            <div className="card-header py-3">
-              <span>
-                <TableCom
-                  tableKey={tableKey}
-                  urlCreate="/admin/courses/create"
-                  title="List Courses"
-                  columns={columns}
-                  items={filterCourse}
-                  search={search}
-                  setSearch={setSearch}
-                  dropdownItems={dropdownItems}
-                  onSelectedRowsChange={handleRowSelection} // selected Mutilple
-                ></TableCom>
-              </span>
-            </div>
-          </div>
-        </div>
+      <div className="card p-3 bg-white">
+        <TableCom
+          tableKey={tableKey}
+          urlCreate="/admin/courses/create"
+          title="List Courses"
+          columns={columns}
+          items={filterCourse}
+          search={search}
+          setSearch={setSearch}
+          dropdownItems={dropdownItems}
+          onSelectedRowsChange={handleRowSelection} // selected Mutilple
+        ></TableCom>
       </div>
 
       {/* Modal Edit */}

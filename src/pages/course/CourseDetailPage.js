@@ -80,7 +80,7 @@ const CourseDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
   const { user } = useSelector((state) => state.auth);
-  console.log(user);
+
   const { learning, sectionId } = useSelector(selectAllCourseState);
   const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
 

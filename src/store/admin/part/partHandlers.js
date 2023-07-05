@@ -25,6 +25,7 @@ function* handleOnGetPartsByCourseId({ payload }) {
 }
 
 function* handleOnPostPart({ payload }) {
+  console.log("ok call");
   try {
     const res = yield call(requestPostPart, payload);
     if (res.data.type === "success") {

@@ -213,7 +213,7 @@ const AdminCreateCoursePage = () => {
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
-      toast.error("Invalid tag! Only accept: - for special character");
+      toast.error("Invalid tag! Only accept: - for case special character");
       setValue("tags", "");
       setError("tags", { message: MESSAGE_FIELD_INVALID });
       return;
@@ -233,7 +233,15 @@ const AdminCreateCoursePage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
-    const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
+    const strReplace = itemsArrs
+      .filter((item, index) => {
+        if (item.includes(",")) {
+          toast.error("Achievements not accept the Comma !");
+          return false;
+        }
+        return true;
+      })
+      .map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
     setValue("achievements", itemsString);
@@ -280,6 +288,10 @@ const AdminCreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
             >
+              {/* <div className="card-header">
+                <h5>Form Create Course</h5>
+                <span>Lorem ipsum dolor sit amet consectetur</span>
+              </div> */}
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-5">
