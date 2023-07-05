@@ -98,7 +98,7 @@ const authSlice = createSlice({
       ...state,
       isLoading: true,
     }),
-    onUserUpdateNoti: (state,action) => ({
+    onUserUpdateNoti: (state, action) => ({
       ...state,
     }),
   },

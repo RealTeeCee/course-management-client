@@ -8,6 +8,10 @@ const courseSlice = createSlice({
     isUpdateCourseSuccess: false,
   },
   reducers: {
+    onLoading: (state, action) => ({
+      ...state,
+      isLoading: action.payload,
+    }),
     onGetCourses: (state, action) => ({
       ...state,
       isLoading: true,
@@ -30,6 +34,7 @@ const courseSlice = createSlice({
 });
 
 export const {
+  onLoading,
   onGetCourses,
   onGetCoursesSuccess,
   onUpdateCourse,

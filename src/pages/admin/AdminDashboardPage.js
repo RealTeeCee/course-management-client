@@ -12,21 +12,15 @@ import {
   IconLearnCom,
   IconUserCom,
 } from "../../components/icon";
-import { ImageCom } from "../../components/image";
-import {
-  AVATAR_DEFAULT,
-  categoryItems,
-  sortItems,
-} from "../../constants/config";
+import { RowCourseItem, RowUserItem } from "../../components/table/dashboard";
+import { categoryItems, sortItems } from "../../constants/config";
 import useShowMore from "../../hooks/useShowMore";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
-import { onGetUsers, onUpdateUser } from "../../store/admin/user/userSlice";
 import {
-  convertDateTime,
-  convertIntToStrMoney,
-  formatNumber,
-  sliceText,
-} from "../../utils/helper";
+  onGetUsers,
+  onGetUsersRegisteredToday,
+} from "../../store/admin/user/userSlice";
+import { convertIntToStrMoney, formatNumber } from "../../utils/helper";
 
 const adminMenuItems = [
   {
@@ -53,15 +47,19 @@ const AdminDashboardPage = () => {
   const dispatch = useDispatch();
   const [orderUser, setOrderUser] = useState("DESC");
   const [orderCourse, setOrderCourse] = useState(1);
+  const [orderBlog, setOrderBlog] = useState("DESC");
   const {
     users,
+    usersRegisteredToday,
     isUpdateUserSuccess,
     isLoading: isUserLoading,
   } = useSelector((state) => state.user);
 
-  const { courses, isLoading: isCourseLoading } = useSelector(
-    (state) => state.adminCourse
-  );
+  const {
+    courses,
+    isLoading: isCourseLoading,
+    isUpdateCourseSuccess,
+  } = useSelector((state) => state.adminCourse);
   const [sortUsers, setSortUsers] = useState([]);
   const [sortCourses, setSortCourses] = useState([]);
 
@@ -73,11 +71,25 @@ const AdminDashboardPage = () => {
     setOrderCourse(value);
   };
 
+  const handleChangeSortBlog = (value) => {
+    setOrderBlog(value);
+  };
+
   useEffect(() => {
     dispatch(onGetUsers());
-    dispatch(onGetCourses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateUserSuccess]);
+
+  useEffect(() => {
+    dispatch(onGetCourses());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdateCourseSuccess]);
+
+  useEffect(() => {
+    dispatch(onGetUsersRegisteredToday());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  console.log("usersRegisteredToday:", usersRegisteredToday);
 
   // Handle Sort Users
   useEffect(() => {
@@ -123,118 +135,6 @@ const AdminDashboardPage = () => {
     handleShowMore: handleShowMoreCourse,
   } = useShowMore(sortCourses);
 
-  const RowUserItem = ({ item }) => {
-    const handleClickStatus = (userId, isActive) => {
-      //update new status of user
-      const data = users.find((item) => item.id === userId);
-
-      dispatch(
-        onUpdateUser({
-          ...data,
-          status: isActive === 1 ? 0 : 1,
-        })
-      );
-    };
-
-    return (
-      <tr>
-        <td>
-          <div className="w-10">
-            <ImageCom
-              srcSet={item?.imageUrl ?? AVATAR_DEFAULT}
-              alt={item?.name}
-              className="w-full h-full object-cover rounded-full"
-            />
-          </div>
-          {item?.status === 0 && <div className="status-circle bg-primary" />}
-        </td>
-        <td className="img-content-box">
-          <span className="d-block">{sliceText(item?.name, 9)}</span>
-          <span className="font-roboto">{item?.role}</span>
-        </td>
-        <td>
-          <p className="m-0 text-tw-primary">
-            {convertDateTime(item?.created_at, false)}
-          </p>
-        </td>
-        <td
-          className="text-end"
-          onClick={() => handleClickStatus(item?.id, item?.status)}
-        >
-          {item?.status === 1 ? (
-            <div className="button btn btn-success">
-              Approve
-              <i className="fa fa-check-circle ms-2" />
-            </div>
-          ) : (
-            <div className="button btn btn-danger">
-              Not yet
-              <i className="fa fa-clock-o ms-2" />
-            </div>
-          )}
-        </td>
-      </tr>
-    );
-  };
-
-  const RowCourseItem = ({ item }) => {
-    const handleClickStatus = (courseId, isActive) => {
-      //update new status of Course
-      const data = users.find((item) => item.id === courseId);
-
-      // dispatch(
-      //   onUpdateUser({
-      //     ...data,
-      //     status: isActive === 1 ? 0 : 1,
-      //   })
-      // );
-    };
-
-    return (
-      <tr>
-        <td>
-          <div className="w-10">
-            <ImageCom
-              srcSet={item?.image ?? AVATAR_DEFAULT}
-              alt={item?.slug}
-              className="w-full h-full object-cover rounded-lg"
-            />
-          </div>
-          {item?.status === 0 && <div className="status-circle bg-primary" />}
-        </td>
-        <td className="img-content-box">
-          <span className="d-block">{sliceText(item?.name, 50)}</span>
-          <span className="font-roboto">{item?.category_name}</span>
-        </td>
-        <td>
-          <p className="m-0 text-tw-primary">
-            {item?.price === 0
-              ? "Free"
-              : item?.net_price > 0
-              ? `$${convertIntToStrMoney(item?.net_price)}`
-              : `$${convertIntToStrMoney(item?.price)}`}
-          </p>
-        </td>
-        <td
-          className="text-end"
-          onClick={() => handleClickStatus(item?.id, item?.status)}
-        >
-          {item?.status === 1 ? (
-            <div className="button btn btn-success">
-              Approve
-              <i className="fa fa-check-circle ms-2" />
-            </div>
-          ) : (
-            <div className="button btn btn-danger">
-              Not yet
-              <i className="fa fa-clock-o ms-2" />
-            </div>
-          )}
-        </td>
-      </tr>
-    );
-  };
-
   return (
     <>
       <div className="flex justify-between items-center">
@@ -265,7 +165,7 @@ const AdminDashboardPage = () => {
                     </div>
                     <div className="media-body">
                       <h6>Total Users</h6>
-                      <p>{formatNumber(250293)} accounts</p>
+                      <p>{formatNumber(users?.length ?? 0)} accounts</p>
                     </div>
                   </div>
                 </div>
@@ -278,7 +178,12 @@ const AdminDashboardPage = () => {
                     </div>
                     <div className="media-body">
                       <h6>Today Registered</h6>
-                      <p>{formatNumber(2402)} accounts</p>
+                      <p>
+                        {formatNumber(usersRegisteredToday?.length ?? 0)}{" "}
+                        {usersRegisteredToday?.length > 1
+                          ? "accounts"
+                          : "account"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -308,7 +213,7 @@ const AdminDashboardPage = () => {
             </div>
           </div>
           <div className="row">
-            <div className="col-xl-4 appointment">
+            <div className="col-xl-5 appointment">
               <div className="card">
                 <div className="card-header card-no-border">
                   <div className="header-top">
@@ -317,7 +222,7 @@ const AdminDashboardPage = () => {
                       <div>
                         <SelectDefaultAntCom
                           listItems={sortItems}
-                          defaultValue={"DESC"}
+                          defaultValue={sortItems[0].value}
                           value={orderUser}
                           onChange={handleChangeSortUser}
                           className="custom-dropdown"
@@ -335,7 +240,11 @@ const AdminDashboardPage = () => {
                         <tbody>
                           {showItems?.length > 0 &&
                             showItems.map((item) => (
-                              <RowUserItem item={item} key={item?.id} />
+                              <RowUserItem
+                                key={item?.id}
+                                item={item}
+                                users={users}
+                              />
                             ))}
                         </tbody>
                       </table>
@@ -352,7 +261,7 @@ const AdminDashboardPage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-xl-8 appointment">
+            <div className="col-xl-7 appointment">
               <div className="card">
                 <div className="card-header card-no-border">
                   <div className="header-top">
@@ -363,7 +272,7 @@ const AdminDashboardPage = () => {
                           listItems={categoryItems}
                           defaultValue={categoryItems[0].label}
                           value={orderCourse}
-                          onChange={handleChangeSortCourse}
+                          onChange={handleChangeSortBlog}
                           className="custom-dropdown"
                         ></SelectDefaultAntCom>
                       </div>
@@ -379,7 +288,11 @@ const AdminDashboardPage = () => {
                         <tbody>
                           {showCourseItems?.length > 0 &&
                             showCourseItems.map((item) => (
-                              <RowCourseItem item={item} key={item?.id} />
+                              <RowCourseItem
+                                item={item}
+                                courses={courses}
+                                key={item?.id}
+                              />
                             ))}
                         </tbody>
                       </table>
@@ -404,9 +317,9 @@ const AdminDashboardPage = () => {
                     <div className="card-header-right-icon">
                       <div>
                         <SelectDefaultAntCom
-                          listItems={categoryItems}
-                          defaultValue={categoryItems[0].label}
-                          value={orderCourse}
+                          listItems={sortItems}
+                          defaultValue={sortItems[0].value}
+                          value={orderBlog}
                           onChange={handleChangeSortCourse}
                           className="custom-dropdown"
                         ></SelectDefaultAntCom>
@@ -423,7 +336,11 @@ const AdminDashboardPage = () => {
                         <tbody>
                           {showCourseItems?.length > 0 &&
                             showCourseItems.map((item) => (
-                              <RowCourseItem item={item} key={item?.id} />
+                              <RowCourseItem
+                                key={item?.id}
+                                item={item}
+                                courses={courses}
+                              />
                             ))}
                         </tbody>
                       </table>
@@ -442,22 +359,24 @@ const AdminDashboardPage = () => {
             </div>
           </div>
         </div>
-        <div className="col-sm-1 p-0">
-          <div className="sticky top-0">
-            <div className="card bg-tw-dark">
-              <div className="card-header 2xl:!py-5 !bg-tw-primary shadow-primary">
-                <HeadingH2Com className="text-white text-center flex justify-center">
+        <div className="col-sm-1 p-0 flex flex-col">
+          <div className="flex-grow">
+            <div className="card bg-tw-dark h-full relative">
+              <div className="card-header !py-5 px-0 !bg-tw-primary shadow-primary">
+                <HeadingH2Com className="text-white text-center flex justify-center w-10 mx-auto">
                   <IconAdminCom />
                 </HeadingH2Com>
               </div>
-              <div className="card-body mx-auto p-0 !py-10">
-                {adminMenuItems.map((item, index) => (
-                  <AdminMenuItems
-                    key={item.id}
-                    item={item}
-                    isLastItem={index === adminMenuItems.length - 1}
-                  />
-                ))}
+              <div className="card-body mx-auto p-0">
+                <div className="sticky top-0 py-10">
+                  {adminMenuItems.map((item, index) => (
+                    <AdminMenuItems
+                      key={item.id}
+                      item={item}
+                      isLastItem={index === adminMenuItems.length - 1}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -471,7 +390,11 @@ const AdminMenuItems = ({ item, isLastItem = false }) => {
   return (
     <div className={`${isLastItem ? "" : "mb-3"}`}>
       <NavLink to={item.slug}>
-        <ButtonCom className="px-3 py-2 w-20" backgroundColor="gradient">
+        <ButtonCom
+          className="px-3 py-2 w-20"
+          minHeight="xs:min-h-[24px] md:min-h-[36px] xl:min-h-[42px]"
+          backgroundColor="gradient"
+        >
           {item.icon}
           <span>{item.title}</span>
         </ButtonCom>
