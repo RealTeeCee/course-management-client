@@ -7,15 +7,38 @@ const objBlogCookies = {
   domain: process.env.REACT_APP_COOKIE_DOMAIN,
 };
 
+// export const setBlogViewCount = (blogId, view_count) => {
+//   if (view_count) {
+//     const viewCountObj = {
+//       blogId,
+//       view_count,
+//     };
+//     Cookies.set(COOKIE_VIEW_COUNT_KEY, JSON.stringify(viewCountObj), {
+//       ...objBlogCookies,
+//     });
+//   } else {
+//     Cookies.remove(COOKIE_VIEW_COUNT_KEY, {
+//       ...objBlogCookies,
+//       path: "/",
+//       domain: process.env.REACT_APP_COOKIE_DOMAIN,
+//     });
+//   }
+// };
 export const setBlogViewCount = (blogId, view_count) => {
   if (view_count) {
-    const viewCountObj = {
-      blogId,
-      view_count,
-    };
-    Cookies.set(COOKIE_VIEW_COUNT_KEY, JSON.stringify(viewCountObj), {
-      ...objBlogCookies,
-    });
+    const viewCountObjString = Cookies.get(COOKIE_VIEW_COUNT_KEY);
+    console.log("COOKIE_VIEW_COUNT_KEY",COOKIE_VIEW_COUNT_KEY)
+    let viewCountObj = {};
+    if (viewCountObjString) {
+      viewCountObj = JSON.parse(viewCountObjString);
+    }console.log("viewCountObj",viewCountObj);
+    console.log("viewCountObjString",viewCountObjString)
+    if (!viewCountObj[blogId]) {
+      viewCountObj[blogId] = true;
+      Cookies.set(COOKIE_VIEW_COUNT_KEY, JSON.stringify(viewCountObj), {
+        ...objBlogCookies,
+      });
+    }
   } else {
     Cookies.remove(COOKIE_VIEW_COUNT_KEY, {
       ...objBlogCookies,

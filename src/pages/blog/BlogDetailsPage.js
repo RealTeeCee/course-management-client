@@ -8,12 +8,7 @@ import ButtonBackCom from "../../components/button/ButtonBackCom";
 import moment from "moment/moment";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { useSelector } from "react-redux";
-import Cookies from "js-cookie";
-import {
-  COOKIE_EXPIRED_BLOG_DAYS,
-  COOKIE_VIEW_COUNT_KEY,
-} from "../../constants/config";
-import CommentCom from "../../components/comment/CommentCom";
+import { getBlogViewCount, setBlogViewCount } from "../../utils/authBlog";
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
@@ -45,61 +40,33 @@ const BlogDetailsPage = () => {
     fetchData();
   }, [id]);
 
+  // const updateViewCount = async () => {
+  //   try {
+  //     await axiosBearer.put(`/blog/view-count/${id}`, {
+  //       view_count: viewCount + 1,
+  //     });
+  //     setViewCount((prevCount) => prevCount + 1);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  //------------------ 
   const updateViewCount = async () => {
     try {
-      await axiosBearer.put(`/blog/view-count/${id}`, {
-        view_count: viewCount + 1,
-      });
-      setViewCount((prevCount) => prevCount + 1);
+      const cookieViewCount = getBlogViewCount(id);
+      if (cookieViewCount === 0) {
+        await axiosBearer.put(`/blog/view-count/${id}`, {
+          view_count: viewCount + 1,
+        });
+        setViewCount(prevCount => prevCount + 1);
+        setBlogViewCount(id, viewCount + 1); // Tạo cookie mới
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
-  //------------------
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const cookieViewCount = Cookies.get(`${COOKIE_VIEW_COUNT_KEY}_${id}`);
-  //       if (cookieViewCount) {
-  //         setViewCount(Number(cookieViewCount));
-  //       } else {
-  //         await updateViewCount();
-  //       }
-
-  //       const response = await axiosBearer.get(`/blog/${id}`);
-  //       console.log(response);
-  //       setBlogs({
-  //         name: response.data.name,
-  //         description: response.data.description,
-  //         image: response.data.image,
-  //         view_count: response.data.view_count,
-  //         created_at: response.data.created_at
-  //           ? moment(response.data.created_at).format("DD/MM/YYYY")
-  //           : "", // Format the date
-  //       });
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [id]);
-
-  // const updateViewCount = async () => {
-  //   if (!isViewCountUpdated) {
-  //     try {
-  //       await axiosBearer.put(`/blog/view-count/${id}`, { view_count: viewCount + 1 });
-  //       setViewCount(prevCount => prevCount + 1);
-  //       Cookies.set(`${COOKIE_VIEW_COUNT_KEY}_blogId=${id}`, viewCount + 1, {
-  //         expires: COOKIE_EXPIRED_BLOG_DAYS,
-  //       });
-  //       setIsViewCountUpdated(true);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
+  
 
   return (
     <>

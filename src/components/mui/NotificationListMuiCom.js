@@ -15,8 +15,10 @@ import {
 } from "../../store/course/courseSlice";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
 import { HeadingH3Com } from "../heading";
+import { useNavigate } from "react-router-dom";
 
 const NotificationListMuiCom = ({ notifs }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userToId = useSelector(selectUserId);
   const handleReadNotification = (notifId) => {
@@ -26,13 +28,16 @@ const NotificationListMuiCom = ({ notifs }) => {
   const handleReadAllNotifications = () => {
     dispatch(onReadAllNotification(userToId));
   };
-
+  
   const handleOpenNotifications = () => {
-    console.log();
+    // dispatch(onReadAllNotification(userToId));
+    navigate('/notification')
   };
 
+
   return (
-    <List
+    <>
+      <List
       sx={{
         width: "100%",
         maxWidth: 360,
@@ -168,6 +173,11 @@ const NotificationListMuiCom = ({ notifs }) => {
         </Grid>
       </ListItem>
     </List>
+  
+    </>
+  
+
+
   );
 };
 

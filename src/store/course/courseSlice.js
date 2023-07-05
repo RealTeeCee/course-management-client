@@ -8,7 +8,7 @@ const initialState = {
   isSubmitting: false,
   isSelectLessonManual: false,
   isReload: false,
-  isReady: false,
+  isReady: false, 
   isEnrolled: false,
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
@@ -39,6 +39,7 @@ const initialState = {
   courseRating: [],
   examination: [],
   finishExam: null,
+  notifications: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -362,6 +363,13 @@ const courseSlice = createSlice({
       ...state,
       finishExam: action.payload,
     }),
+    onAllNotification: (state,action) => ({
+      ...state,
+    }),
+    onAllNotificationSuccess: (state,action) => ({
+      ...state,
+      notifications: action.payload,
+    }),
   },
 });
 
@@ -373,7 +381,7 @@ export const {
   onMyCourseFailed,
   onCourseLoading,
   onCourseSuccess,
-  onCourseFailed,
+  onCourseFailed, 
   onFreeCourseLoading,
   onFreeCourseSuccess,
   onBestSellerCourseLoading,
@@ -429,6 +437,8 @@ export const {
   onGenerateCourseExamSuccess,
   onFinishExam,
   onFinishExamSuccess,
+  onAllNotification,
+  onAllNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
