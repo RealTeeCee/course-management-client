@@ -16,6 +16,7 @@ import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import {
   IconAnswerCom,
   IconCheckCom,
+  IconClockCom,
   IconEditCom,
   IconRemoveCom,
   IconTrashCom,
@@ -185,10 +186,24 @@ const AdminQuestionListPage = () => {
       name: "Finish",
       cell: (row) => (
         <>
-          {row.fullAnswer ? (
-            <IconCheckCom className="text-tw-success" />
+          {!row.fullAnswer ? (
+            <ButtonCom
+              icon={<IconCheckCom />}
+              padding="px-3"
+              backgroundColor="success"
+              className="!cursor-default"
+            >
+              Done
+            </ButtonCom>
           ) : (
-            <IconRemoveCom className="text-tw-danger" />
+            <ButtonCom
+              icon={<IconClockCom />}
+              padding="px-3"
+              backgroundColor="danger"
+              className="!cursor-default"
+            >
+              Pending
+            </ButtonCom>
           )}
         </>
       ),

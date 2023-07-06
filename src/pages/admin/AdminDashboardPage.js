@@ -4,23 +4,26 @@ import { NavLink } from "react-router-dom";
 import { SelectDefaultAntCom, SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
+import CardItemModalCom from "../../components/common/card/CardItemModalCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import {
   IconAdminCom,
   IconBlogCom,
   IconLearnCom,
+  IconMoneyCom,
   IconUserCom,
 } from "../../components/icon";
 import { RowCourseItem, RowUserItem } from "../../components/table/dashboard";
 import { categoryItems, sortItems } from "../../constants/config";
 import useShowMore from "../../hooks/useShowMore";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
+import { onGetUsers } from "../../store/admin/user/userSlice";
 import {
-  onGetUsers,
-  onGetUsersRegisteredToday,
-} from "../../store/admin/user/userSlice";
-import { convertIntToStrMoney, formatNumber } from "../../utils/helper";
+  convertIntToStrMoney,
+  formatNumber,
+  getCurrentDate,
+} from "../../utils/helper";
 
 const adminMenuItems = [
   {
@@ -50,7 +53,6 @@ const AdminDashboardPage = () => {
   const [orderBlog, setOrderBlog] = useState("DESC");
   const {
     users,
-    usersRegisteredToday,
     isUpdateUserSuccess,
     isLoading: isUserLoading,
   } = useSelector((state) => state.user);
@@ -85,11 +87,12 @@ const AdminDashboardPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateCourseSuccess]);
 
-  useEffect(() => {
-    dispatch(onGetUsersRegisteredToday());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  console.log("usersRegisteredToday:", usersRegisteredToday);
+  const currentDate = getCurrentDate();
+  const usersRegisteredToday = users.filter((item, index) => {
+    const userCreatedAt = new Date(item?.created_at);
+    const userCreatedDateString = userCreatedAt.toISOString().split("T")[0];
+    return userCreatedDateString === currentDate && item?.role === "USER";
+  });
 
   // Handle Sort Users
   useEffect(() => {
@@ -155,59 +158,38 @@ const AdminDashboardPage = () => {
         <div className="col-sm-11 relative">
           <div className="card earning-card">
             <div className="card-body p-0">
-              <div className="row border-top m-0">
+              <div className="row border-top m-0 bg-tw-dark text-white rounded-2xl">
                 <div className="col-xl-3 col-md-6 col-sm-6 ps-0">
-                  <div className="media p-0">
-                    <div className="media-left">
-                      {/* Icon Revenue */}
-                      {/* <i className="icofont icofont-crown" /> */}
-                      <IconUserCom />
-                    </div>
-                    <div className="media-body">
-                      <h6>Total Users</h6>
-                      <p>{formatNumber(users?.length ?? 0)} accounts</p>
-                    </div>
-                  </div>
+                  <CardItemModalCom title="Total Users" icon={<IconUserCom />}>
+                    {formatNumber(users?.length ?? 0)} accounts
+                  </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6 col-sm-6">
-                  <div className="media p-0">
-                    <div className="media-left !bg-tw-light-pink">
-                      {/* Icon Heart */}
-                      {/* <i className="icofont icofont-heart-alt" /> */}
-                      <IconUserCom />
-                    </div>
-                    <div className="media-body">
-                      <h6>Today Registered</h6>
-                      <p>
-                        {formatNumber(usersRegisteredToday?.length ?? 0)}{" "}
-                        {usersRegisteredToday?.length > 1
-                          ? "accounts"
-                          : "account"}
-                      </p>
-                    </div>
-                  </div>
+                  <CardItemModalCom
+                    title="Total Registered"
+                    icon={<IconUserCom />}
+                    classNameIcon="!bg-tw-light-pink"
+                  >
+                    {formatNumber(usersRegisteredToday?.length ?? 0)}{" "}
+                    {usersRegisteredToday?.length > 1 ? "accounts" : "account"}
+                  </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6">
-                  <div className="media p-0">
-                    <div className="media-left">
-                      <i className="icofont icofont-cur-dollar" />
-                    </div>
-                    <div className="media-body">
-                      <h6>Total Revenue</h6>
-                      <p>${convertIntToStrMoney(18234)}/year</p>
-                    </div>
-                  </div>
+                  <CardItemModalCom
+                    title="Total Revenue"
+                    icon={<IconMoneyCom />}
+                  >
+                    ${convertIntToStrMoney(18234)}/year
+                  </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6 pe-0">
-                  <div className="media p-0">
-                    <div className="media-left !bg-tw-light-pink">
-                      <i className="icofont icofont-cur-dollar" />
-                    </div>
-                    <div className="media-body">
-                      <h6>Today Revenue</h6>
-                      <p>${convertIntToStrMoney(6789)}</p>
-                    </div>
-                  </div>
+                  <CardItemModalCom
+                    title="Total Revenue"
+                    icon={<IconMoneyCom />}
+                    classNameIcon="!bg-tw-light-pink"
+                  >
+                    ${convertIntToStrMoney(6789)}
+                  </CardItemModalCom>
                 </div>
               </div>
             </div>
@@ -272,7 +254,7 @@ const AdminDashboardPage = () => {
                           listItems={categoryItems}
                           defaultValue={categoryItems[0].label}
                           value={orderCourse}
-                          onChange={handleChangeSortBlog}
+                          onChange={handleChangeSortCourse}
                           className="custom-dropdown"
                         ></SelectDefaultAntCom>
                       </div>
@@ -320,7 +302,7 @@ const AdminDashboardPage = () => {
                           listItems={sortItems}
                           defaultValue={sortItems[0].value}
                           value={orderBlog}
-                          onChange={handleChangeSortCourse}
+                          onChange={handleChangeSortBlog}
                           className="custom-dropdown"
                         ></SelectDefaultAntCom>
                       </div>

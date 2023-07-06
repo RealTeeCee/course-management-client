@@ -4,7 +4,6 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     users: [],
-    usersRegisteredToday: [],
     isLoading: false,
     isUpdateUserSuccess: false,
   },
@@ -20,15 +19,6 @@ const userSlice = createSlice({
     onGetUsersSuccess: (state, action) => ({
       ...state,
       users: action.payload,
-      isLoading: false,
-    }),
-    onGetUsersRegisteredToday: (state, action) => ({
-      ...state,
-      isLoading: true,
-    }),
-    onGetUsersRegisteredTodaySuccess: (state, action) => ({
-      ...state,
-      usersRegisteredToday: action.payload,
       isLoading: false,
     }),
     onUpdateUser: (state, action) => ({
@@ -49,8 +39,6 @@ export const {
   onGetUsersSuccess,
   onUpdateUser,
   onUpdateUserSuccess,
-  onGetUsersRegisteredToday,
-  onGetUsersRegisteredTodaySuccess,
 } = userSlice.actions;
 // reducer
 export default userSlice.reducer;

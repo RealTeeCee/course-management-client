@@ -122,6 +122,13 @@ export function convertDateTime(dateTimeString, isShowYear = true) {
   return newDateTime;
 }
 
+// return "YYYY-MM-DD"
+export function getCurrentDate() {
+  // Get the current date
+  const currentDate = new Date();
+  return currentDate.toISOString().split("T")[0];
+}
+
 // If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
   const newText = text.replace(/(<([^>]+)>)/gi, "");
