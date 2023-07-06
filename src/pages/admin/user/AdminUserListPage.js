@@ -1,10 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import {
+  AVATAR_DEFAULT,
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
@@ -14,17 +15,31 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../constants/config";
-import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
+import {
+  SelectDefaultAntCom,
+  SelectSearchAntCom,
+  SwitchAntCom,
+} from "../../../components/ant";
 import { ButtonCom } from "../../../components/button";
-import { IconTrashCom } from "../../../components/icon";
+import {
+  IconCheckCom,
+  IconEditCom,
+  IconRemoveCom,
+  IconTrashCom,
+} from "../../../components/icon";
 import { axiosBearer } from "../../../api/axiosInstance";
 import Swal from "sweetalert2";
 import { showMessageError } from "../../../utils/helper";
 import LoadingCom from "../../../components/common/LoadingCom";
-import { HeadingH1Com } from "../../../components/heading";
+import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import GapYCom from "../../../components/common/GapYCom";
 import { TableCom } from "../../../components/table";
+import { onGetAllUsers } from "../../../store/admin/user/userSlice";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
+import ReactModal from "react-modal";
+import { ALL_ROLES } from "../../../constants/permissions";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -37,6 +52,8 @@ const schemaValidation = yup.object().shape({
 });
 
 const AdminUserListPage = () => {
+  const dispatch = useDispatch();
+  const { users } = useSelector((state) => state.user);
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
@@ -44,13 +61,11 @@ const AdminUserListPage = () => {
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenAuthorize, setIsOpenAuthorize] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [users, setUsers] = useState([]);
   const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
-
 
   /********* END API State ********* */
 
@@ -74,9 +89,9 @@ const AdminUserListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
+          onClick={() => handleBulkDelete()}
         >
-          Remove All
+          Bulk Delete
         </div>
       ),
     },
@@ -107,12 +122,22 @@ const AdminUserListPage = () => {
       width: "70px",
     },
     {
+      name: "Avatar",
+      selector: (row) => (
+        <img
+          width={50}
+          height={50}
+          src={`${row.imageUrl || AVATAR_DEFAULT}`}
+          alt={row.name}
+        />
+      ),
+      width: "80px",
+    },
+    {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
-      width: "300px",
-    }
-    ,
+    },
     {
       name: "Email",
       selector: (row) => row.email,
@@ -120,16 +145,26 @@ const AdminUserListPage = () => {
       width: "200px",
     },
     {
-      name: "Verifile",
-      selector: (row) => (
-        row.verified ? "True" : "False"
-      ),
+      name: "Verify",
+      selector: (row) =>
+        row.verified ? (
+          <IconCheckCom className="text-tw-success" />
+        ) : (
+          <IconRemoveCom className="text-tw-danger" />
+        ),
       width: "100px",
     },
     {
-      name: "Avatar",
+      name: "Authorize",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.imageUrl}`} alt={row.name} />
+        <ButtonCom
+          className="px-3 rounded-lg"
+          onClick={() => {
+            handleAuthorize(row);
+          }}
+        >
+          {row.role}
+        </ButtonCom>
       ),
     },
     {
@@ -143,16 +178,21 @@ const AdminUserListPage = () => {
           onChange={(isChecked) => handleChangeStatus(row.id, isChecked)}
         />
       ),
-    },
-    {
-      name: "Role",
-      selector: (row) => row.role,
-      width: "150px",
+      width: "80px",
     },
     {
       name: "Action",
       cell: (row) => (
         <>
+          <ButtonCom
+            className="px-3 rounded-lg mr-2"
+            backgroundColor="info"
+            onClick={() => {
+              // handleEdit(row.id);
+            }}
+          >
+            <IconEditCom className="w-5"></IconEditCom>
+          </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -169,20 +209,19 @@ const AdminUserListPage = () => {
 
   /********* Call API ********* */
   //Get All user
-  const getUsers = async () => {
-    try {
-      const res = await axiosBearer.get(`/auth/user/all`);
-      console.log("data user", res.data);
-      setUsers(res.data);
-      setFilterUser(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    getUsers();
+    dispatch(onGetAllUsers());
   }, []);
+  // const getUsers = async () => {
+  //   try {
+  //     const res = await axiosBearer.get(`/auth/user/all`);
+  //     console.log("data user", res.data);
+  //     setUsers(res.data);
+  //     setFilterUser(res.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const clearSelectedRows = () => {
     setSelectedRows([]);
@@ -220,7 +259,7 @@ const AdminUserListPage = () => {
 
   /********* Delete one API ********* */
   const handleDeleteUser = ({ id, name }) => {
-    console.log("userId",id)
+    console.log("userId", id);
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete user: <span class="text-tw-danger">${name}</span>`,
@@ -233,7 +272,7 @@ const AdminUserListPage = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosBearer.delete(`/auth/user?userId=${id}`);
-          getUsers();
+          // getUsers();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -243,8 +282,8 @@ const AdminUserListPage = () => {
     });
   };
 
-  /********* Multi Delete API ********* */
-  const handleDeleteMultipleRecords = () => {
+  /********* Bulk Delete API ********* */
+  const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
@@ -270,7 +309,7 @@ const AdminUserListPage = () => {
         } catch (error) {
           showMessageError(error);
         } finally {
-          getUsers();
+          // getUsers();
           clearSelectedRows();
         }
       }
@@ -281,25 +320,34 @@ const AdminUserListPage = () => {
     try {
       //update new status of user
       const newUsers = users.map((user) =>
-      user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
-    );
-    const updatedUser = newUsers.find((user) => user.id === userId);
+        user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
+      );
+      const updatedUser = newUsers.find((user) => user.id === userId);
 
-    const formData = {
-      id: updatedUser.id,
-      first_name: updatedUser.first_name,
-      last_name: updatedUser.last_name,
-      imageUrl: updatedUser.imageUrl,
-      status: updatedUser.status,
-    };
-    
+      const formData = {
+        id: updatedUser.id,
+        first_name: updatedUser.first_name,
+        last_name: updatedUser.last_name,
+        imageUrl: updatedUser.imageUrl,
+        status: updatedUser.status,
+      };
+
       await axiosBearer.put(`/auth/user`, formData);
       console.log("formData", formData);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getUsers();
+      // getUsers();
     } catch (error) {
       showMessageError(error);
     }
+  };
+
+  /********* Update Authorize ********* */
+  const handleAuthorize = (item) => {
+    setIsOpenAuthorize(true);
+  };
+
+  const handleSubmitAuthorize = (values) => {
+    console.log("values: ", values);
   };
 
   return (
@@ -327,6 +375,7 @@ const AdminUserListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
+                  urlCreate="/admin/users/create"
                   tableKey={tableKey}
                   title="List Users"
                   columns={columns}
@@ -338,10 +387,80 @@ const AdminUserListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
+
+      {/* Modal Authorize */}
+      <ReactModal
+        isOpen={isOpenAuthorize}
+        onRequestClose={() => setIsOpenAuthorize(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpenAuthorize ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Authorize</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpenAuthorize(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitAuthorize)}
+          >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Course hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-12 text-center">
+                  <LabelCom htmlFor="role" isRequired>
+                    Role
+                  </LabelCom>
+                  <div>
+                    <SelectSearchAntCom
+                      // selectedValue={categorySelected}
+                      listItems={ALL_ROLES}
+                      // onChange={handleChangeCategory}
+                      className="w-full py-1"
+                      status={
+                        errors.category_id &&
+                        errors.category_id.message &&
+                        "error"
+                      }
+                      errorMsg={errors.role?.message}
+                      placeholder="Choose a role"
+                    ></SelectSearchAntCom>
+                    {/* <InputCom
+                      type="hidden"
+                      control={control}
+                      name="role"
+                      register={register}
+                    ></InputCom> */}
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </>
   );
 };

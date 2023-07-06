@@ -53,7 +53,7 @@ const AdminDashboardPage = () => {
   const [orderBlog, setOrderBlog] = useState("DESC");
   const {
     users,
-    isUpdateUserSuccess,
+    isPostUserSuccess,
     isLoading: isUserLoading,
   } = useSelector((state) => state.user);
 
@@ -80,7 +80,7 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     dispatch(onGetUsers());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdateUserSuccess]);
+  }, [isPostUserSuccess]);
 
   useEffect(() => {
     dispatch(onGetCourses());
@@ -145,8 +145,7 @@ const AdminDashboardPage = () => {
         <BreadcrumbCom
           items={[
             {
-              title: "Dashboard",
-              slug: "/admin",
+              title: "Admin",
               isActive: true,
             },
           ]}
@@ -166,7 +165,7 @@ const AdminDashboardPage = () => {
                 </div>
                 <div className="col-xl-3 col-md-6 col-sm-6">
                   <CardItemModalCom
-                    title="Total Registered"
+                    title="Today Registered"
                     icon={<IconUserCom />}
                     classNameIcon="!bg-tw-light-pink"
                   >
@@ -179,7 +178,7 @@ const AdminDashboardPage = () => {
                     title="Total Revenue"
                     icon={<IconMoneyCom />}
                   >
-                    ${convertIntToStrMoney(18234)}/year
+                    ${convertIntToStrMoney(250293)} this year
                   </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6 pe-0">
@@ -188,7 +187,7 @@ const AdminDashboardPage = () => {
                     icon={<IconMoneyCom />}
                     classNameIcon="!bg-tw-light-pink"
                   >
-                    ${convertIntToStrMoney(6789)}
+                    ${convertIntToStrMoney(6789)} this month
                   </CardItemModalCom>
                 </div>
               </div>
@@ -375,7 +374,7 @@ const AdminMenuItems = ({ item, isLastItem = false }) => {
         <ButtonCom
           className="px-3 py-2 w-20"
           minHeight="xs:min-h-[24px] md:min-h-[36px] xl:min-h-[42px]"
-          backgroundColor="gradient"
+          backgroundColor={`${item.id % 2 !== 0 ? "pink" : "primary"}`}
         >
           {item.icon}
           <span>{item.title}</span>

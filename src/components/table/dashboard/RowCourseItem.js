@@ -39,7 +39,7 @@ const RowCourseItem = ({ item, courses = [] }) => {
       <td>
         <div className="w-10">
           <ImageCom
-            srcSet={item?.image ?? AVATAR_DEFAULT}
+            srcSet={item?.image || AVATAR_DEFAULT}
             alt={item?.slug}
             className="w-full h-full object-cover rounded-lg"
           />

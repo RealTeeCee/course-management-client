@@ -27,7 +27,7 @@ const RowUserItem = ({ item, users = [] }) => {
       <td>
         <div className="w-10">
           <ImageCom
-            srcSet={item?.imageUrl ?? AVATAR_DEFAULT}
+            srcSet={item?.imageUrl || AVATAR_DEFAULT}
             alt={item?.name}
             className="w-full h-full object-cover rounded-full"
           />

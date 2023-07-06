@@ -305,7 +305,7 @@ const AdminCreateCoursePage = () => {
                           control={control}
                           name="name"
                           register={register}
-                          placeholder="Input Course Name"
+                          placeholder="Input course's name"
                           errorMsg={errors.name?.message}
                         ></InputCom>
                       </div>

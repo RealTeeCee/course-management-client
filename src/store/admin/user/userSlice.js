@@ -5,7 +5,7 @@ const userSlice = createSlice({
   initialState: {
     users: [],
     isLoading: false,
-    isUpdateUserSuccess: false,
+    isPostUserSuccess: false,
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -15,20 +15,32 @@ const userSlice = createSlice({
     onGetUsers: (state, action) => ({
       ...state,
       isLoading: true,
+      isPostUserSuccess: false,
+    }),
+    onGetAllUsers: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isPostUserSuccess: false,
     }),
     onGetUsersSuccess: (state, action) => ({
       ...state,
       users: action.payload,
       isLoading: false,
     }),
+    onCreateUser: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isPostUserSuccess: false,
+    }),
     onUpdateUser: (state, action) => ({
       ...state,
       isLoading: true,
-      isUpdateUserSuccess: false,
+      isPostUserSuccess: false,
     }),
-    onUpdateUserSuccess: (state, action) => ({
+    onPostUserSuccess: (state, action) => ({
       ...state,
-      isUpdateUserSuccess: action.payload,
+      isLoading: false,
+      isPostUserSuccess: action.payload,
     }),
   },
 });
@@ -36,9 +48,11 @@ const userSlice = createSlice({
 export const {
   onLoading,
   onGetUsers,
+  onGetAllUsers,
   onGetUsersSuccess,
+  onCreateUser,
   onUpdateUser,
-  onUpdateUserSuccess,
+  onPostUserSuccess,
 } = userSlice.actions;
 // reducer
 export default userSlice.reducer;

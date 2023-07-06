@@ -163,6 +163,8 @@ const CourseDetailPage = () => {
     (item) => item.slug === convertStrToSlug(courseBySlug?.category_name)
   );
 
+  console.log("courseBySlug:", courseBySlug);
+
   return (
     <>
       <div
@@ -315,7 +317,13 @@ const CourseDetailPage = () => {
                   </HeadingH2Com>
                 )}
                 <GapYCom></GapYCom>
-                <Link to={`/checkout/${slug}`}>
+                <Link
+                  to={
+                    courseBySlug?.price === 0
+                      ? `/learn/${slug}`
+                      : `/checkout/${slug}`
+                  }
+                >
                   <ButtonCom backgroundColor="gradient">
                     Enrolling Now
                   </ButtonCom>

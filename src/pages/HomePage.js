@@ -73,12 +73,23 @@ const HomePage = () => {
                     <h2 className="font-bold text-3xl mb-[.75rem] w-[30rem]">
                       {sliceText(c.name, 50)}
                     </h2>
-                    <p className="mb-[.75rem] text-xl">
-                      Only{" "}
-                      <span className="text-tw-light-pink font-bold">
-                        ${c.net_price}
-                      </span>
-                    </p>
+                    {c.price === 0 ? (
+                      "Free"
+                    ) : c.net_price > 0 ? (
+                      <p className="mb-[.75rem] text-xl">
+                        Only{" "}
+                        <span className="text-tw-light-pink font-bold">
+                          ${c.net_price}
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="mb-[.75rem] text-xl">
+                        Only{" "}
+                        <span className="text-tw-light-pink font-bold">
+                          ${c.price}
+                        </span>
+                      </p>
+                    )}
                     <div className="flex items-center gap-x-3 mb-8">
                       {c.tags
                         .split(",")
