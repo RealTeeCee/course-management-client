@@ -51,7 +51,6 @@ export function getDurationFromVideo(
     setValue(name, Math.round(video.duration));
   };
 
-  console.log(e.target.files);
   if (e.target.files.length === 0) {
     return null;
   }
