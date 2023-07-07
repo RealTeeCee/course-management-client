@@ -21,6 +21,9 @@ export const requestEnrollId = (data) => {
 export const requestLearning = (courseId) => {
   return axiosBearer.get(`/track/learning/${courseId}`);
 };
+export const requestMyLearning = ({ courseId, enrollId }) => {
+  return axiosBearer.get(`/track/learning/${courseId}/${enrollId}`);
+};
 export const requestLoadTracking = (data) => {
   return axiosBearer.post(`/track/load`, data);
 };
@@ -86,4 +89,12 @@ export const requestRetakeCourseExam = (data) => {
 };
 export const requestLoadAccomplishmentsExam = (data) => {
   return axiosBearer.post(`/exam-result/accomplishments`, data);
+};
+export const requestLoadCertificate = (data) => {
+  return axiosBearer.post(`/exam-result/certificate`, data, {
+    headers: {
+      "Access-Control-Allow-Origin": `http://localhost:3000`,
+    },
+    responseType: "blob",
+  });
 };

@@ -10,5 +10,6 @@ export const selectAllAuthorsState = createSelector(
     isFilter: authorSlice.isFilter,
     subcribes: authorSlice.subcribes,
     isSubcribed: authorSlice.isSubcribed,
+    author: authorSlice.author,
   })
 );

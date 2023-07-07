@@ -134,7 +134,12 @@ const ExamResultMuiCom = () => {
         <br />
         <Typography sx={{ marginLeft: "15px" }}>
           Exam session:{" "}
-          {retakeExam.examSession ? retakeExam.examSession : "None"}
+          {retakeExam.examSession ? retakeExam.examSession : "None"}{" "}
+          {retakeExam.examSession && retakeExam.examSession > 1 ? (
+            <strong>(RETAKE)</strong>
+          ) : (
+            ""
+          )}
         </Typography>
         <br />
         <Typography sx={{ marginLeft: "15px" }}>

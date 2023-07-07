@@ -4,7 +4,10 @@ import accomplishmentImage from "../../assets/images/accomplishment.jpg";
 import { HeadingFormH1Com, HeadingH3Com } from "../../components/heading";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { onLoadAccomplishmentsExam } from "../../store/course/courseSlice";
+import {
+  onLoadAccomplishmentsExam,
+  onSelectedCertificate,
+} from "../../store/course/courseSlice";
 import { selectUser } from "../../store/auth/authSelector";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 
@@ -27,6 +30,7 @@ const UserAccomplishmentPage = () => {
   });
 
   const handleClickAccomplishment = (certificateUID) => {
+    dispatch(onSelectedCertificate(certificateUID));
     return navigate(`/profile/accomplishments/verify/${certificateUID}`);
   };
 
@@ -42,7 +46,7 @@ const UserAccomplishmentPage = () => {
         <Grid item xs={12} sm={12} md={12}>
           <img
             src={accomplishmentImage}
-            alt="Lỗi"
+            alt={accomplishmentImage}
             className="w-full h-60 object-cover"
           />
         </Grid>
@@ -96,7 +100,7 @@ const UserAccomplishmentPage = () => {
                         >
                           <img
                             src={acc.courseImage}
-                            alt="Lỗi"
+                            alt={acc.courseImage}
                             style={{
                               width: "180px",
                               height: "90px",

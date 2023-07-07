@@ -20,3 +20,7 @@ export const requestSubcribeAuthor = (data) => {
 export const requestUnsubcribeAuthor = (data) => {
   return axiosBearer.delete(`/subcribes`, data);
 };
+
+export const requestLoadAuthor = (authorId) => {
+  return axiosBearer.get(`/author/${authorId}`);
+};

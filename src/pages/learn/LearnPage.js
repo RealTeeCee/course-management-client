@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { TabsAntCom } from "../../components/ant";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
 import { DialogNextVideoMuiCom, RatingListMuiCom } from "../../components/mui";
+import ExamResultMuiCom from "../../components/mui/ExamResultMuiCom";
 import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
@@ -19,7 +21,7 @@ import {
   onCountdown,
   onGenerateCourseExam,
   onGetEnrollId,
-  onGetLearning,
+  onGetMyLearning,
   onGetTrackingLesson,
   onManualSelectedLesson,
   onMyCourseLoading,
@@ -31,9 +33,6 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
-import { toast } from "react-toastify";
-import { Button } from "@mui/material";
-import ExamResultMuiCom from "../../components/mui/ExamResultMuiCom";
 
 const LearnPage = () => {
   const {
@@ -89,11 +88,16 @@ const LearnPage = () => {
   useEffect(() => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
-      dispatch(onGetLearning(courseId));
       dispatch(onRetakeExam({ userId: userId, courseId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, userId]);
+  useEffect(() => {
+    if (courseId > 0 && enrollId > 0) {
+      dispatch(onGetMyLearning({ courseId, enrollId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, enrollId]);
 
   useEffect(() => {
     if (isLoadLearningStatus) {
@@ -158,17 +162,23 @@ const LearnPage = () => {
       // const now = Math.floor(Date.now() / 1000);
 
       // console.log(countDown);
-
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
       if ((retakeExam && retakeExam.created_at === null) || countdown === 0) {
         setIsFinal(true);
       } else {
         setIsFinal(false);
       }
     }
+
     nextLesson =
       learning.lessonDto[
         learning.lessonDto.findIndex((dto) => dto.id === lessonId) + 1
       ];
+
+    if (nextLesson === undefined && countdown > 0) {
+      setIsEnd(false);
+      return;
+    }
     if (nextLesson || progress === 100) {
       setIsEnd(true);
     }

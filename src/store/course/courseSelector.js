@@ -31,8 +31,9 @@ export const selectAllCourseState = createSelector(
     finishExam: courseSlice.finishExam,
     generateExamSuccess: courseSlice.generateExamSuccess,
     retakeExam: courseSlice.retakeExam,
-    accomplishments: courseSlice.accomplishments,
     countdown: courseSlice.countdown,
+    accomplishments: courseSlice.accomplishments,
+    cert: courseSlice.cert,
   })
 );
 

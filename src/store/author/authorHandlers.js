@@ -1,11 +1,13 @@
 import { call, put } from "redux-saga/effects";
 import {
+  requestLoadAuthor,
   requestLoadAuthorsPagination,
   requestLoadSubcribesByUserId,
   requestLoadTop3Authors,
   requestSubcribeAuthor,
 } from "./authorRequests";
 import {
+  onLoadAuthorSuccess,
   onLoadAuthorsPaginationSuccess,
   onLoadSubcribesByUserIdSuccess,
   onLoadTop3AuthorsSuccess,
@@ -85,6 +87,20 @@ function* handleOnUnsubcribeAuthor({ payload }) {
     // showMessageError(error);
   }
 }
+function* handleOnLoadAuthor({ payload }) {
+  try {
+    const res = yield call(requestLoadAuthor, payload);
+
+    if (res.status === 200) {
+      yield put(onLoadAuthorSuccess(res.data));
+    } else {
+      // toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    console.log(error);
+    // showMessageError(error);
+  }
+}
 
 export {
   handleOnLoadAuthorsPagination,
@@ -92,4 +108,5 @@ export {
   handleOnLoadSubcribesByUserId,
   handleOnSubcribeAuthor,
   handleOnUnsubcribeAuthor,
+  handleOnLoadAuthor,
 };

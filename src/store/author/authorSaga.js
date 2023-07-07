@@ -1,5 +1,6 @@
 import { takeLatest } from "redux-saga/effects";
 import {
+  handleOnLoadAuthor,
   handleOnLoadAuthorsPagination,
   handleOnLoadSubcribesByUserId,
   handleOnLoadTop3Authors,
@@ -7,6 +8,7 @@ import {
   handleOnUnsubcribeAuthor,
 } from "./authorHandlers";
 import {
+  onLoadAuthor,
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,
   onLoadTop3Authors,
@@ -20,4 +22,5 @@ export default function* authSaga() {
   yield takeLatest(onLoadSubcribesByUserId.type, handleOnLoadSubcribesByUserId);
   yield takeLatest(onSubcribeAuthor.type, handleOnSubcribeAuthor);
   yield takeLatest(onUnsubcribeAuthor.type, handleOnUnsubcribeAuthor);
+  yield takeLatest(onLoadAuthor.type, handleOnLoadAuthor);
 }

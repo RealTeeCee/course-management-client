@@ -283,7 +283,7 @@ function App() {
           ></Route>
           <Route path="/authors" element={<AuthorPage></AuthorPage>}></Route>
           <Route
-            path="/authors/:id"
+            path="/authors/:authorId"
             element={<AuthorDetailsPage></AuthorDetailsPage>}
           ></Route>
 

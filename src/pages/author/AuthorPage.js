@@ -22,6 +22,7 @@ import { selectUser } from "../../store/auth/authSelector";
 import { selectAllAuthorsState } from "../../store/author/authorSelector";
 import {
   onAuthorInitialState,
+  onLoadAuthor,
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,
   onLoadTop3Authors,
@@ -122,7 +123,7 @@ const AuthorPage = () => {
         <Grid item xs={12} sm={12} md={12}>
           <img
             src={authorImage}
-            alt="Lỗi"
+            alt={authorImage}
             className="w-full h-60 object-cover"
           />
         </Grid>

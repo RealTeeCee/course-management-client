@@ -29,6 +29,7 @@ const initialState = {
   isFilter: false,
   subcribes: [],
   isSubcribed: false,
+  author: null,
 };
 const authorSlice = createSlice({
   name: "author",
@@ -101,6 +102,15 @@ const authorSlice = createSlice({
       ...state,
       isLoading: false,
     }),
+    onLoadAuthor: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onLoadAuthorSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      author: action.payload,
+    }),
   },
 });
 
@@ -116,6 +126,8 @@ export const {
   onSubcribeAuthorSuccess,
   onUnsubcribeAuthor,
   onUnsubcribeAuthorSuccess,
+  onLoadAuthor,
+  onLoadAuthorSuccess,
 } = authorSlice.actions;
 // authReducer
 export default authorSlice.reducer;
