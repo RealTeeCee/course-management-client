@@ -15,3 +15,7 @@ export const requestCreateUser = (data) => {
 export const requestUpdateUser = (data) => {
   return axiosBearer.put(`/auth/user`, data);
 };
+
+export const requestDeleteUser = (id) => {
+  return axiosBearer.delete(`/auth/user?userId=${id}`);
+};

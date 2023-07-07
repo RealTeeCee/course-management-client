@@ -53,7 +53,7 @@ import useExportExcel from "../../../hooks/useExportExcel";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   id: yup.number(),
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   duration: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)

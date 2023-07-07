@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -7,9 +7,7 @@ import * as yup from "yup";
 import { ImageCropUploadAntCom } from "../../../components/ant";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
-import { CheckBoxCom } from "../../../components/checkbox";
 import DividerCom from "../../../components/common/DividerCom";
-import FormGroupCom from "../../../components/common/FormGroupCom";
 import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
 import { InputCom } from "../../../components/input";
@@ -19,19 +17,24 @@ import {
   MAX_LENGTH_VARCHAR,
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
-  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_REGEX_NAME,
 } from "../../../constants/config";
+import { regexName } from "../../../constants/regex";
 import { onCreateUser } from "../../../store/admin/user/userSlice";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   last_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   email: yup
@@ -136,9 +139,7 @@ const AdminCreateUserPage = () => {
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="email" isRequired>
-                    Email
-                  </LabelCom>
+                  <LabelCom htmlFor="email">Email</LabelCom>
                   <InputCom
                     type="text"
                     control={control}
@@ -149,6 +150,7 @@ const AdminCreateUserPage = () => {
                   ></InputCom>
                 </div>
               </div>
+              <GapYCom className="mb-3"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
                   <LabelCom htmlFor="password" isRequired>
@@ -167,19 +169,18 @@ const AdminCreateUserPage = () => {
               <GapYCom className="mb-3"></GapYCom>
               <div className="row">
                 <div className="col-sm-12 text-center">
-                  <LabelCom htmlFor="image" isRequired>
-                    Avatar
-                  </LabelCom>
+                  <LabelCom htmlFor="imageUrl">Avatar</LabelCom>
                   <div>
                     <ImageCropUploadAntCom
-                      name="image"
+                      name="imageUrl"
                       onSetValue={setValue}
-                      errorMsg={errors.image?.message}
+                      errorMsg={errors.imageUrl?.message}
+                      isCropped={false}
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"
                       control={control}
-                      name="image"
+                      name="imageUrl"
                       register={register}
                     ></InputCom>
                   </div>
@@ -195,32 +196,6 @@ const AdminCreateUserPage = () => {
           </form>
         </div>
       </div>
-
-      {/* <form className="theme-form" onSubmit={handleSubmit(handleSubmitForm)}>
-        <FormGroupCom>
-          <LabelCom htmlFor="email">Email Address</LabelCom>
-          <InputCom
-            type="text"
-            control={control}
-            name="email"
-            register={register}
-            placeholder="test123@gmail.com"
-            errorMsg={errors.email?.message}
-          ></InputCom>
-        </FormGroupCom>
-        <FormGroupCom>
-          <LabelCom htmlFor="password">Password</LabelCom>
-          <InputCom
-            type="password"
-            control={control}
-            name="password"
-            register={register}
-            placeholder="Input your password"
-            errorMsg={errors.password?.message}
-          ></InputCom>
-        </FormGroupCom>
-        <GapYCom></GapYCom>
-      </form> */}
     </>
   );
 };

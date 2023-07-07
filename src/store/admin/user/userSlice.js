@@ -6,6 +6,7 @@ const userSlice = createSlice({
     users: [],
     isLoading: false,
     isPostUserSuccess: false,
+    isBulkDeleteSuccess: false,
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -42,6 +43,24 @@ const userSlice = createSlice({
       isLoading: false,
       isPostUserSuccess: action.payload,
     }),
+    onDeleteUser: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onDeleteUserSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      users: state.users.filter((item) => item.id !== action.payload),
+    }),
+    onBulkDeleteUser: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isBulkDeleteSuccess: false,
+    }),
+    onBulkDeleteUserSuccess: (state, action) => ({
+      ...state,
+      isBulkDeleteSuccess: action.payload,
+    }),
   },
 });
 
@@ -53,6 +72,10 @@ export const {
   onCreateUser,
   onUpdateUser,
   onPostUserSuccess,
+  onDeleteUser,
+  onDeleteUserSuccess,
+  onBulkDeleteUser,
+  onBulkDeleteUserSuccess,
 } = userSlice.actions;
 // reducer
 export default userSlice.reducer;

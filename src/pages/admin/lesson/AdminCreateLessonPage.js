@@ -1,50 +1,41 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import ImageUploader from "quill-image-uploader";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom/dist";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { axiosBearer } from "../../../api/axiosInstance";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { ButtonCom } from "../../../components/button";
+import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { ButtonCom } from "../../../components/button";
-import "react-quill/dist/quill.snow.css";
-import GapYCom from "../../../components/common/GapYCom";
-import { toast } from "react-toastify";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
-  MESSAGE_FIELD_REQUIRED,
-  MESSAGE_UPLOAD_REQUIRED,
-  MESSAGE_VIDEO_FILE_INVALID,
-  MESSAGE_CAPTION_FILE_INVALID,
-  VIDEO_EXT_VALID,
   CAPTION_EXT_REGEX,
   CAPTION_EXT_VALID,
+  MESSAGE_CAPTION_FILE_INVALID,
+  MESSAGE_FIELD_REQUIRED,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_VIDEO_FILE_INVALID,
+  VIDEO_EXT_VALID,
 } from "../../../constants/config";
-import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import { useParams } from "react-router-dom";
-import {
-  API_LESSON_URL,
-  API_SECTION_URL,
-  IMG_BB_URL,
-} from "../../../constants/endpoint";
-import { useNavigate } from "react-router-dom/dist";
-import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
-import ImageUploader from "quill-image-uploader";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill, { Quill } from "react-quill";
-import { TextEditorQuillCom } from "../../../components/texteditor";
-import { BreadcrumbCom } from "../../../components/breadcrumb";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  onCourseLoading,
-  onSelectedCourse,
-} from "../../../store/course/courseSlice";
+import { API_LESSON_URL, API_SECTION_URL } from "../../../constants/endpoint";
 import { selectAllCourseState } from "../../../store/course/courseSelector";
+import { onCourseLoading } from "../../../store/course/courseSlice";
+import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
   videoFile: yup
     .mixed()

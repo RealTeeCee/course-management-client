@@ -37,6 +37,8 @@ export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
 
+export const MESSAGE_REGEX_NAME = "Only letters are allowed";
+
 export const MESSAGE_FIELD_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL_INVALID =
   "Invalid email! Correct: example@domain.com";

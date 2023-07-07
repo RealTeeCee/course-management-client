@@ -17,7 +17,7 @@ export const ALL_ROLES = [
   {
     id: 4,
     value: "USER",
-    label: "user",
+    label: "User",
   },
 ];
 
@@ -34,7 +34,7 @@ export const permissions = {
     ROLE: ADMIN_ROLE,
   },
   manager: {
-    USER: null,
+    USER: ["CREATE", "READ", "UPDATE", "DELETE"],
     COURSE: ["CREATE", "READ", "UPDATE", "DELETE"],
     BLOG: ["CREATE", "READ", "UPDATE", "DELETE"],
     ROLE: MANAGER_ROLE,
@@ -54,7 +54,7 @@ export const permissions = {
   user: {
     USER: null,
     COURSE: null,
-    BLOG: null,
+    BLOG: ["CREATE", "READ", "UPDATE", "DELETE"],
     ROLE: USER_ROLE,
   },
 };

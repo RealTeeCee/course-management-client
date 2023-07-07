@@ -68,6 +68,7 @@ import { helperChangeStatusCourse } from "../../../utils/helperCourse";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
