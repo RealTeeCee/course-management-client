@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { TabsAntCom } from "../../components/ant";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
 import { DialogNextVideoMuiCom, RatingListMuiCom } from "../../components/mui";
+import ExamResultMuiCom from "../../components/mui/ExamResultMuiCom";
 import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
@@ -16,14 +18,16 @@ import {
   selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
+  onCountdown,
   onGenerateCourseExam,
   onGetEnrollId,
-  onGetLearning,
+  onGetMyLearning,
   onGetTrackingLesson,
   onManualSelectedLesson,
   onMyCourseLoading,
   onReady,
   onReload,
+  onRetakeExam,
   onSaveTrackingVideo,
   onSelectedCourse,
   onUpdateCompletedVideo,
@@ -44,6 +48,10 @@ const LearnPage = () => {
     isReload,
     learning,
     progress,
+    generateExamSuccess,
+    examination,
+    retakeExam,
+    countdown,
   } = useSelector(selectAllCourseState);
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -53,6 +61,7 @@ const LearnPage = () => {
   // const [isReady, setIsReady] = useState(ready);
   const [isCompleted, setIsCompleted] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
+  // const [readyExam, setReadyExam] = useState(false);
 
   const { slug } = useParams();
 
@@ -79,10 +88,16 @@ const LearnPage = () => {
   useEffect(() => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
-      dispatch(onGetLearning(courseId));
+      dispatch(onRetakeExam({ userId: userId, courseId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, userId]);
+  useEffect(() => {
+    if (courseId > 0 && enrollId > 0) {
+      dispatch(onGetMyLearning({ courseId, enrollId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, enrollId]);
 
   useEffect(() => {
     if (isLoadLearningStatus) {
@@ -111,6 +126,21 @@ const LearnPage = () => {
     setIsCompleted(0);
   }, [lessonId]);
 
+  useEffect(() => {
+    const countDown =
+      retakeExam?.created_at === null
+        ? 0
+        : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) +
+          60 -
+          Math.floor(Date.now() / 1000);
+
+    const interval = setInterval(() => {
+      if (countDown > 0) {
+        dispatch(onCountdown(countDown - 1));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);
   };
@@ -119,17 +149,36 @@ const LearnPage = () => {
     if (played > 0.9) {
       setIsCompleted((prev) => prev + 1);
     }
+    setPlayedSeconds(playedSeconds);
   };
 
   const handleEnded = () => {
     console.log("onSaveTrackingVideo - handleEnded");
     if (progress === 100) {
-      setIsFinal(true);
+      // const countDown =
+      //   retakeExam && retakeExam.created_at === null
+      //     ? 0
+      //     : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) + 60;
+      // const now = Math.floor(Date.now() / 1000);
+
+      // console.log(countDown);
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+      if ((retakeExam && retakeExam.created_at === null) || countdown === 0) {
+        setIsFinal(true);
+      } else {
+        setIsFinal(false);
+      }
     }
+
     nextLesson =
       learning.lessonDto[
         learning.lessonDto.findIndex((dto) => dto.id === lessonId) + 1
       ];
+
+    if (nextLesson === undefined && countdown > 0) {
+      setIsEnd(false);
+      return;
+    }
     if (nextLesson || progress === 100) {
       setIsEnd(true);
     }
@@ -233,8 +282,19 @@ const LearnPage = () => {
 
   const handleInitialExam = () => {
     dispatch(onGenerateCourseExam({ courseId, userId }));
-    navigate("/exam");
   };
+
+  useEffect(() => {
+    if (generateExamSuccess && examination.length > 0) {
+      navigate("/exam");
+    } else if (generateExamSuccess && examination.length === 0) {
+      // dispatch(onSetGenerateExamSuccess)
+      toast.warning(
+        "Sorry for unconvenience. The examination is not available for this course."
+      );
+    }
+    setIsEnd(false);
+  }, [examination, generateExamSuccess, navigate]);
 
   const course = data.find((c) => c.id === courseId);
   const tabItems = [
@@ -272,6 +332,13 @@ const LearnPage = () => {
       label: `Comment`,
       children: <CommentCom />,
     },
+    progress === 100
+      ? {
+          key: "5",
+          label: `Examination`,
+          children: <ExamResultMuiCom />,
+        }
+      : "",
   ];
 
   return isLoading ? (

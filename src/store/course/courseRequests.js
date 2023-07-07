@@ -21,6 +21,9 @@ export const requestEnrollId = (data) => {
 export const requestLearning = (courseId) => {
   return axiosBearer.get(`/track/learning/${courseId}`);
 };
+export const requestMyLearning = ({ courseId, enrollId }) => {
+  return axiosBearer.get(`/track/learning/${courseId}/${enrollId}`);
+};
 export const requestLoadTracking = (data) => {
   return axiosBearer.post(`/track/load`, data);
 };
@@ -81,7 +84,21 @@ export const requestGenerateCourseExam = (data) => {
 export const requestFinishCourseExam = (data) => {
   return axiosBearer.post(`/exam-result/finish-exam`, data);
 };
+export const requestRetakeCourseExam = (data) => {
+  return axiosBearer.post(`/exam-result/retake-exam`, data);
+};
+export const requestLoadAccomplishmentsExam = (data) => {
+  return axiosBearer.post(`/exam-result/accomplishments`, data);
+};
+export const requestLoadCertificate = (data) => {
+  return axiosBearer.post(`/exam-result/certificate`, data, {
+    headers: {
+      "Access-Control-Allow-Origin": `http://localhost:3000`,
+    },
+    responseType: "blob",
+  });
+};
 export const requestAllNotification = (userToId) => {
-  console.log("req: UserToId",userToId);
+  console.log("req: UserToId", userToId);
   return axiosBearer.get(`/notification/${userToId}`);
 };
