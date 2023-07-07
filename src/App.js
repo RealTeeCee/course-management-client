@@ -14,6 +14,14 @@ import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
+import { onAuthorInitialState } from "./store/author/authorSlice.js";
+const UserCertificationPage = lazy(() =>
+  import("./pages/user/UserCertificationPage.js")
+);
+const UserAccomplishmentPage = lazy(() =>
+  import("./pages/user/UserAccomplishmentPage.js")
+);
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));

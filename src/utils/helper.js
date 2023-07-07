@@ -154,6 +154,7 @@ export function fakeName(title, number, divider = "#") {
   return `${title}${divider}${number}`;
 }
 
+// Convert seconds to only hour, minute, second (approximately). Ex: 65 = "1 minute", 3665 = "1 hour"...
 export function convertToHumanTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
