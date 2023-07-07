@@ -90,7 +90,7 @@ const HomeTopbarMod = () => {
   //       sse.close();
   //     };
   //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">

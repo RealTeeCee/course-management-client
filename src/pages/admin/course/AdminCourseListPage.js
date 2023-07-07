@@ -726,7 +726,15 @@ const AdminCourseListPage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
-    const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
+    const strReplace = itemsArrs
+      .filter((item, index) => {
+        if (item.includes(",")) {
+          toast.error("Achievements not accept the Comma !");
+          return false;
+        }
+        return true;
+      })
+      .map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
     setValue("achievements", itemsString);

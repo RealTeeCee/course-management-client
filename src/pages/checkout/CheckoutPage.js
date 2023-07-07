@@ -20,7 +20,10 @@ import { LabelCom } from "../../components/label";
 import { TextAreaCom } from "../../components/textarea";
 import { MESSAGE_FIELD_REQUIRED, NOT_FOUND_URL } from "../../constants/config";
 import { API_CHECKOUT_URL } from "../../constants/endpoint";
-import { selectAllCourseState } from "../../store/course/courseSelector";
+import {
+  selectAllCourseState,
+  selectEnrollIdAndCourseId,
+} from "../../store/course/courseSelector";
 import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 
@@ -48,11 +51,18 @@ const CheckoutPage = () => {
   const { slug } = useParams();
   const { user } = useSelector((state) => state.auth);
   const { data } = useSelector(selectAllCourseState);
+  const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
   const courseBySlug = data.find((item, index) => item.slug === slug);
   useEffect(() => {
     if (!courseBySlug) navigate(NOT_FOUND_URL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseBySlug]);
+
+  useEffect(() => {
+    if (isEnrolled && user?.role === "USER")
+      navigate(`/learn/${courseBySlug?.slug}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnrolled]);
 
   const [isLoading, setIsLoading] = useState(false);
 

@@ -98,3 +98,7 @@ export const requestLoadCertificate = (data) => {
     responseType: "blob",
   });
 };
+export const requestAllNotification = (userToId) => {
+  console.log("req: UserToId", userToId);
+  return axiosBearer.get(`/notification/${userToId}`);
+};

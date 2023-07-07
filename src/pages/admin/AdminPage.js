@@ -1,17 +1,11 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
-import { MESSAGE_UNAUTHORIZE } from "../../constants/config";
 
 const AdminPage = () => {
-  // const { user } = useSelector((state) => state.auth);
-  // const navigate = useNavigate();
 
   return (
     <>

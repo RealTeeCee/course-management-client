@@ -14,12 +14,6 @@ import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
-import AuthorPage from "./pages/author/AuthorPage.js";
-import { onAuthorInitialState } from "./store/author/authorSlice.js";
-import UserAccomplishmentPage from "./pages/user/UserAccomplishmentPage.js";
-import { selectAllCourseState } from "./store/course/courseSelector.js";
-import AuthorDetailsPage from "./pages/author/AuthorDetailsPage.js";
-import UserCertificationPage from "./pages/user/UserCertificationPage.js";
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -120,6 +114,9 @@ const PaymentSuccessPage = lazy(() =>
 );
 const PaymentErrorPage = lazy(() =>
   import("./pages/payment/PaymentErrorPage.js")
+);
+const NotificationListPage = lazy(() =>
+  import("./pages/notification/NotificationListPage.js")
 );
 
 Modal.setAppElement("#root");
@@ -281,12 +278,6 @@ function App() {
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
-          <Route path="/authors" element={<AuthorPage></AuthorPage>}></Route>
-          <Route
-            path="/authors/:authorId"
-            element={<AuthorDetailsPage></AuthorDetailsPage>}
-          ></Route>
-
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"

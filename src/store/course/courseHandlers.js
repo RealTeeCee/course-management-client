@@ -1,6 +1,11 @@
 import { call, put, delay } from "redux-saga/effects";
 import { showMessageError } from "../../utils/helper";
 import {
+  MESSAGE_CHANGE_PASSWORD_SUCCESS,
+  MESSAGE_FORGET_PASSWORD_SUCCESS,
+  MESSAGE_GENERAL_FAILED,
+} from "../../constants/config";
+import {
   requestBestSellerCourse,
   requestCourse,
   requestDeleteNote,
@@ -32,8 +37,11 @@ import {
   requestSaveTrackingVideo,
   requestUpdateCompleted,
   requestUpdateUserRating,
+  requestAllNotification,
 } from "./courseRequests";
 import {
+  onAllNotification,
+  onAllNotificationSuccess,
   onBestSellerCourseSuccess,
   onCourseFailed,
   onCourseSuccess,
@@ -461,7 +469,23 @@ function* handleDownloadCertificate() {
     yield null;
   }
 }
+function* handleAllNotification({ payload }) {
+  console.log("handle Payload:", payload);
 
+  try {
+    const res = yield call(requestAllNotification, payload.userToId);
+    console.log("res: ", res);
+    if (res.status === 200) {
+      yield put(onAllNotificationSuccess(res.data));
+      console.log("res.data", res.data);
+      toast.success(res.data.message);
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -496,4 +520,5 @@ export {
   handleLoadAccomplishmentsExam,
   handleLoadCertificate,
   handleDownloadCertificate,
+  handleAllNotification,
 };

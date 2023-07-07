@@ -52,6 +52,7 @@ const initialState = {
   },
   accomplishments: [],
   cert: null,
+  notifications: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -446,6 +447,13 @@ const courseSlice = createSlice({
     onDownloadCertificate: (state, action) => ({
       ...state,
     }),
+    onAllNotification: (state, action) => ({
+      ...state,
+    }),
+    onAllNotificationSuccess: (state, action) => ({
+      ...state,
+      notifications: action.payload,
+    }),
   },
 });
 
@@ -524,6 +532,8 @@ export const {
   onLoadCertificate,
   onLoadCertificateSuccess,
   onDownloadCertificate,
+  onAllNotification,
+  onAllNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

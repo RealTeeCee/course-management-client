@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import {
@@ -25,6 +24,9 @@ import { HeadingH1Com } from "../../../components/heading";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import GapYCom from "../../../components/common/GapYCom";
 import { TableCom } from "../../../components/table";
+import { getToken } from "../../../utils/auth";
+import { onUserUpdateProfile } from "../../../store/auth/authSlice";
+import { useDispatch, useSelector} from "react-redux";;
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -44,13 +46,12 @@ const AdminUserListPage = () => {
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
-
+  const dispatch = useDispatch();
+  const { user, isLoading} = useSelector((state) => state.auth);
 
   /********* END API State ********* */
 
@@ -84,12 +85,6 @@ const AdminUserListPage = () => {
 
   //manage status and event in form
   const {
-    control,
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    setError,
     reset,
     formState: { errors },
   } = useForm({
@@ -176,7 +171,7 @@ const AdminUserListPage = () => {
       setUsers(res.data);
       setFilterUser(res.data);
     } catch (error) {
-      console.log(error);
+      console.log(error); 
     }
   };
 
@@ -277,29 +272,20 @@ const AdminUserListPage = () => {
     });
   };
   /********* Update Status API ********* */
-  const handleChangeStatus = async (userId, isChecked) => {
-    try {
-      //update new status of user
-      const newUsers = users.map((user) =>
-      user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
+  const handleChangeStatus = (id,isChecked) => {
+   console.log("id",id);
+   console.log("isChecked",isChecked);
+    const { access_token } = getToken();
+    dispatch(
+      onUserUpdateProfile({
+        id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        imageUrl: user.imageUrl,
+        status: isChecked ? 1 : 0,
+        access_token,
+      })
     );
-    const updatedUser = newUsers.find((user) => user.id === userId);
-
-    const formData = {
-      id: updatedUser.id,
-      first_name: updatedUser.first_name,
-      last_name: updatedUser.last_name,
-      imageUrl: updatedUser.imageUrl,
-      status: updatedUser.status,
-    };
-    
-      await axiosBearer.put(`/auth/user`, formData);
-      console.log("formData", formData);
-      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getUsers();
-    } catch (error) {
-      showMessageError(error);
-    }
   };
 
   return (
