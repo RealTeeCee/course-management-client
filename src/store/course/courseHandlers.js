@@ -35,8 +35,10 @@ import {
   requestUpdateUserRating,
   requestAllNotification,
   requestDeleteNotification,
+  requestAllDeleteNotification,
 } from "./courseRequests";
 import {
+  onAllDeleteNotificationSuccess,
   onAllNotification,
   onAllNotificationSuccess,
   onBestSellerCourseSuccess,
@@ -399,10 +401,8 @@ function* handleAllNotification({payload}) {
 
   try {
     const res = yield call(requestAllNotification, payload.userToId);
-    console.log("res: ", res);
     if (res.status === 200) {
       yield put(onAllNotificationSuccess(res.data)); 
-      console.log("res.data",res.data);
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
@@ -416,32 +416,27 @@ function* handleDeleteNotification({ payload }) {
  
   try {
     const res = yield call(requestDeleteNotification, payload);
-    console.log("req delete notif: ",res);
     if (res.status === 200) {
       yield put(onDeleteNotificationSuccess(payload));
-      toast.success("Delete notification successfully");
+      
     }
   } catch (error) {
     console.log(error);
     showMessageError(error);
   }
 }
-// function* handleDeleteNotification({ payload }) {
-//   console.log("payload delete notif handler: ",payload);
-//   try {
-//     yield call(requestDeleteNotification, payload.id);
-//     const res = yield call(requestDeleteNotification, payload); // Truyền id vào hàm requestDeleteNotification
-//     console.log("req delete notif: ",payload);
-//         if (res.status === 200) {
-//           yield put(onDeleteNotificationSuccess(payload));
-//           toast.success("Delete notification successfully");
-//         }
-//   } catch (error) {
-//     console.log(error);
-//     showMessageError(error);
-//   }
-// }
 
+function* handleAllDeleteNotification({ payload }) {
+  try {
+    const res = yield call(requestAllDeleteNotification, payload);
+    if (res.status === 200) {
+      yield put(onAllDeleteNotificationSuccess(payload));
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -473,4 +468,5 @@ export {
   handleFinishExam,
   handleAllNotification,
   handleDeleteNotification,
+  handleAllDeleteNotification,
 };

@@ -373,15 +373,8 @@ const courseSlice = createSlice({
     onDeleteNotification: (state,action) => ({
       ...state,
     }),
-    // onDeleteNotificationSuccess: (state,action) => ({
-    //   ...state,
-    //   notifications: action.payload,
-    // }),
-
     onDeleteNotificationSuccess: (state, action) => {
-      // const { id } = action.payload;
       console.log("action.payload slice", action.payload);
-      // Lọc ra danh sách thông báo đã xóa khỏi state.notifications
       const updatedNotifications = state.notifications.filter(
         (notif) => notif.id !== action.payload
       );
@@ -392,8 +385,21 @@ const courseSlice = createSlice({
       };
     },
 
-    
-    
+    onAllDeleteNotification: (state,action) => ({
+      ...state,
+    }),
+    onAllDeleteNotificationSuccess: (state, action) => {
+      const { id } = action.payload;
+      console.log("action.payload slice", action.payload);
+      const updatedNotifications = state.notifications.filter(
+        (user) => user.id === id
+      );
+    console.log("updatedNotifications: ",updatedNotifications);
+      return {
+        ...state,
+        notifications: updatedNotifications,
+      };
+    },
   },
 });
 
@@ -465,6 +471,8 @@ export const {
   onAllNotificationSuccess,
   onDeleteNotification,
   onDeleteNotificationSuccess,
+  onAllDeleteNotification,
+  onAllDeleteNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

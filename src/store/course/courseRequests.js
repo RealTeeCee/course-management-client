@@ -82,10 +82,12 @@ export const requestFinishCourseExam = (data) => {
   return axiosBearer.post(`/exam-result/finish-exam`, data);
 };
 export const requestAllNotification = (userToId) => {
-  console.log("req: UserToId",userToId);
   return axiosBearer.get(`/notification/${userToId}`);
 };
 export const requestDeleteNotification = (notifId) => {
-  console.log("req: notifId",notifId);
   return axiosBearer.delete(`/notification/${notifId}`);
+};
+
+export const requestAllDeleteNotification = (userToId) => {
+  return axiosBearer.delete(`/notification/delete-all/${userToId}`);
 };
