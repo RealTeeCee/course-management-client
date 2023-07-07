@@ -41,6 +41,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
   onAllNotification,
+  onDeleteNotification,
   onReadAllNotification,
   onReadNotification,
 } from "../../store/course/courseSlice";
@@ -59,6 +60,7 @@ const NotificationListPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { notifications } = useSelector((state) => state.course);
+  
   const userToId = user.id;
   console.log("userToId", userToId);
   
@@ -232,10 +234,12 @@ const NotificationListPage = () => {
   /********* Get All Notification ********* */
   useEffect(() => {
     if (user) {
-      console.log("ok user");
-      dispatch(onAllNotification({ userToId }));
+      const data = dispatch(onAllNotification({ userToId }));
+      setNotifs(data);
     }
-  }, [user, userToId, dispatch]);
+  }, [dispatch]);
+
+  
 
   /********* Delete one API ********* */
   const clearSelectedRows = () => {
@@ -247,10 +251,13 @@ const NotificationListPage = () => {
     setSelectedRows(currentRowsSelected.selectedRows);
   };
 
-  const handleDeleteBlog = ({ id, name }) => {
+  const handleDeleteBlog = (row) => {
+    const { id, userFrom } = row;
+    console.log("row",row);
+    console.log("row.id",row.id);
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete blog: <span class="text-tw-danger">${userFrom.first_name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -259,17 +266,14 @@ const NotificationListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosBearer.delete(`/blog/${id}`);
-          //   getnotifs();
-          reset(res.data);
-          toast.success(res.data.message);
+          dispatch(onDeleteNotification( id ));
         } catch (error) {
           showMessageError(error);
         }
       }
     });
   };
-
+  
   /********* Multi Delete API ********* */
   const handleDeleteMultipleRecords = () => {
     if (selectedRows.length === 0) {
@@ -280,7 +284,7 @@ const NotificationListPage = () => {
       title: "Are you sure?",
       html: `You will delete <span class="text-tw-danger">${
         selectedRows.length
-      } selected ${selectedRows.length > 1 ? "notifs" : "blog"}</span>`,
+      } selected ${selectedRows.length > 1 ? "notifs" : "notif"}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -290,7 +294,8 @@ const NotificationListPage = () => {
       if (result.isConfirmed) {
         try {
           const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/blog/${row.id}`)
+            // axiosBearer.delete(`/blog/${row.id}`)
+            dispatch(onDeleteNotification( row.id ))
           );
           await Promise.all(deletePromises);
           toast.success(`Delete ${selectedRows.length} notifs success`);
@@ -322,6 +327,7 @@ const NotificationListPage = () => {
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
                   onSelectedRowsChange={handleRowSelection} // selected Mutilple
+                  clearSelectedRows={handleDeleteMultipleRecords} 
                 ></TableCom>
                  
               </span>

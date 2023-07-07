@@ -135,7 +135,7 @@ const AdminUserListPage = () => {
           className={`${
             row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
           }`}
-          onChange={(isChecked) => handleChangeStatus(row.id, isChecked)}
+          onChange={(isChecked) => handleSubmitForm(row.id, isChecked)}
         />
       ),
     },
@@ -272,7 +272,7 @@ const AdminUserListPage = () => {
     });
   };
   /********* Update Status API ********* */
-  const handleChangeStatus = (id,isChecked) => {
+  const handleSubmitForm = (id,isChecked) => {
    console.log("id",id);
    console.log("isChecked",isChecked);
     const { access_token } = getToken();

@@ -370,6 +370,30 @@ const courseSlice = createSlice({
       ...state,
       notifications: action.payload,
     }),
+    onDeleteNotification: (state,action) => ({
+      ...state,
+    }),
+    // onDeleteNotificationSuccess: (state,action) => ({
+    //   ...state,
+    //   notifications: action.payload,
+    // }),
+
+    onDeleteNotificationSuccess: (state, action) => {
+      // const { id } = action.payload;
+      console.log("action.payload slice", action.payload);
+      // Lọc ra danh sách thông báo đã xóa khỏi state.notifications
+      const updatedNotifications = state.notifications.filter(
+        (notif) => notif.id !== action.payload
+      );
+    console.log("updatedNotifications: ",updatedNotifications);
+      return {
+        ...state,
+        notifications: updatedNotifications,
+      };
+    },
+
+    
+    
   },
 });
 
@@ -439,6 +463,8 @@ export const {
   onFinishExamSuccess,
   onAllNotification,
   onAllNotificationSuccess,
+  onDeleteNotification,
+  onDeleteNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

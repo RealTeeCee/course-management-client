@@ -34,6 +34,7 @@ import {
   requestUpdateCompleted,
   requestUpdateUserRating,
   requestAllNotification,
+  requestDeleteNotification,
 } from "./courseRequests";
 import {
   onAllNotification,
@@ -42,6 +43,8 @@ import {
   onCourseFailed,
   onCourseSuccess,
   onDeleteNoteSuccess,
+  onDeleteNotification,
+  onDeleteNotificationSuccess,
   onFinishExamSuccess,
   onFreeCourseSuccess,
   onGenerateCourseExamSuccess,
@@ -408,6 +411,37 @@ function* handleAllNotification({payload}) {
     showMessageError(error);
   }
 }
+
+function* handleDeleteNotification({ payload }) {
+ 
+  try {
+    const res = yield call(requestDeleteNotification, payload);
+    console.log("req delete notif: ",res);
+    if (res.status === 200) {
+      yield put(onDeleteNotificationSuccess(payload));
+      toast.success("Delete notification successfully");
+    }
+  } catch (error) {
+    console.log(error);
+    showMessageError(error);
+  }
+}
+// function* handleDeleteNotification({ payload }) {
+//   console.log("payload delete notif handler: ",payload);
+//   try {
+//     yield call(requestDeleteNotification, payload.id);
+//     const res = yield call(requestDeleteNotification, payload); // Truyền id vào hàm requestDeleteNotification
+//     console.log("req delete notif: ",payload);
+//         if (res.status === 200) {
+//           yield put(onDeleteNotificationSuccess(payload));
+//           toast.success("Delete notification successfully");
+//         }
+//   } catch (error) {
+//     console.log(error);
+//     showMessageError(error);
+//   }
+// }
+
 export {
   handleLoadNote,
   handleLoadProgress,
@@ -438,4 +472,5 @@ export {
   handleGenerateCourseExam,
   handleFinishExam,
   handleAllNotification,
+  handleDeleteNotification,
 };

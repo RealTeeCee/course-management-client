@@ -85,3 +85,7 @@ export const requestAllNotification = (userToId) => {
   console.log("req: UserToId",userToId);
   return axiosBearer.get(`/notification/${userToId}`);
 };
+export const requestDeleteNotification = (notifId) => {
+  console.log("req: notifId",notifId);
+  return axiosBearer.delete(`/notification/${notifId}`);
+};

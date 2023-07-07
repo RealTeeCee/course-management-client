@@ -29,6 +29,7 @@ import {
   handleGenerateCourseExam,
   handleFinishExam,
   handleAllNotification,
+  handleDeleteNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -60,6 +61,7 @@ import {
   onUpdateCompletedVideo,
   onUpdateUserRating,
   onAllNotification,
+  onDeleteNotification,
 } from "./courseSlice";
 
 /**
@@ -96,5 +98,6 @@ export default function* courseSaga() {
     takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
     takeLatest(onFinishExam.type, handleFinishExam),
     takeLatest(onAllNotification.type,handleAllNotification),
+    takeLatest(onDeleteNotification.type,handleDeleteNotification),
   ]);
 }
