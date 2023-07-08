@@ -269,15 +269,12 @@ function App() {
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
-          
 
-        
-        <Route
+          <Route
             path="/notification"
             element={<NotificationListPage></NotificationListPage>}
           ></Route>
-        
-     
+
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"
@@ -421,7 +418,6 @@ function App() {
         {/* ********* Examination ********* */}
         <Route path="/exam" element={<ExamPage></ExamPage>}></Route>
         {/* ********* End Examination ********* */}
-
       </Routes>
     </Suspense>
   );
