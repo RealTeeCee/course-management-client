@@ -15,11 +15,20 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
-import { onRemoveToken } from "./store/auth/authSlice.js";
+import {
+  onAuthInitialState,
+  onGetUser,
+  onRemoveToken,
+} from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
 import { onAuthorInitialState } from "./store/author/authorSlice.js";
+
+const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
+const AuthorDetailsPage = lazy(() =>
+  import("./pages/author/AuthorDetailsPage.js")
+);
 const UserCertificationPage = lazy(() =>
   import("./pages/user/UserCertificationPage.js")
 );
@@ -294,6 +303,11 @@ function App() {
           <Route
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
+          ></Route>
+          <Route path="/authors" element={<AuthorPage></AuthorPage>}></Route>
+          <Route
+            path="/authors/:authorId"
+            element={<AuthorDetailsPage></AuthorDetailsPage>}
           ></Route>
           {/* ********* ADMIN ********* */}
           <Route
