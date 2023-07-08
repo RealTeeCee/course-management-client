@@ -25,7 +25,7 @@ import { onRemoveToken } from "../../store/auth/authSlice";
 import { onAuthorInitialState } from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
 import { onCourseInitalState } from "../../store/course/courseSlice";
-import { sliceText } from "../../utils/helper";
+import { getUserNameByEmail, sliceText } from "../../utils/helper";
 import HomeSearchMod from "../HomeSearchMod";
 import { Button } from "@mui/material";
 import { selectAllCourseState } from "../../store/course/courseSelector";
@@ -37,7 +37,7 @@ const HomeTopbarMod = () => {
   const location = useLocation();
   const isLearnPage = location.pathname.startsWith("/learn");
 
-  const userName = user?.email.split("@")[0];
+  const userName = getUserNameByEmail(user?.email);
   const userItems = [
     {
       icon: <IconUserCom />,
@@ -90,7 +90,7 @@ const HomeTopbarMod = () => {
   //       sse.close();
   //     };
   //   }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">

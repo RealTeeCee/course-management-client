@@ -176,3 +176,8 @@ export function convertToHumanTime(seconds) {
     return `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
   }
 }
+// Input email and return userName
+export function getUserNameByEmail(email) {
+  if (email === "undefined") return email;
+  return email.split("@")[0];
+}

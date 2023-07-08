@@ -46,7 +46,7 @@ import {
   onGetAllUsers,
   onUpdateUser,
 } from "../../../store/admin/user/userSlice";
-import { showMessageError } from "../../../utils/helper";
+import { getUserNameByEmail, showMessageError } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -171,11 +171,6 @@ const AdminUserListPage = () => {
   /********* Fetch API Area ********* */
   const columns = [
     {
-      name: "No",
-      selector: (row, i) => ++i,
-      width: "70px",
-    },
-    {
       name: "Avatar",
       selector: (row) => (
         <img
@@ -224,19 +219,29 @@ const AdminUserListPage = () => {
     {
       name: "Role",
       selector: (row) => row.role,
+      width: "80px",
     },
     {
       name: "Status",
       selector: (row) => (
-        <SwitchAntCom
-          defaultChecked={row.status === 1 ? true : false}
-          className={`${
-            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
-          }`}
-          onChange={(isChecked) => handleChangeStatus(row.id, isChecked)}
-        />
+        <>
+          {row.status === 1 ? (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id)}
+              backgroundColor="success"
+            >
+              Active
+            </ButtonCom>
+          ) : (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id)}
+              backgroundColor="danger"
+            >
+              InActive
+            </ButtonCom>
+          )}
+        </>
       ),
-      width: "80px",
     },
     {
       name: "Action",
@@ -351,38 +356,37 @@ const AdminUserListPage = () => {
     });
   };
   /********* Update Status API ********* */
-  const handleChangeStatus = async (userId, isChecked) => {
-    try {
-      //update new status of user
-      const newUsers = users.map((user) =>
-        user.id === userId ? { ...user, status: isChecked ? 1 : 0 } : user
-      );
-      const updatedUser = newUsers.find((user) => user.id === userId);
+  const handleChangeStatus = async (userId) => {
+    const { id, email, first_name, last_name, imageUrl, status } = users.find(
+      (user) => user.id === userId
+    );
+    const formData = {
+      id,
+      first_name,
+      last_name,
+      imageUrl,
+      status: status === 1 ? 0 : 1,
+    };
 
-      const formData = {
-        id: updatedUser.id,
-        first_name: updatedUser.first_name,
-        last_name: updatedUser.last_name,
-        imageUrl: updatedUser.imageUrl,
-        status: updatedUser.status,
-      };
-
-      await axiosBearer.put(`/auth/user`, formData);
-      console.log("formData", formData);
-      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      // getUsers();
-    } catch (error) {
-      showMessageError(error);
+    if (status === 1) {
+      Swal.fire({
+        title: "Are you sure?",
+        html: `Your will set inactive user: <span class="text-tw-danger">${getUserNameByEmail(
+          email
+        )}</span>`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7366ff",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, please continue!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          dispatch(onUpdateUser(formData));
+        }
+      });
+    } else {
+      dispatch(onUpdateUser(formData));
     }
-  };
-
-  /********* Update Authorize ********* */
-  const handlePermission = (item) => {
-    setIsOpenPermission(true);
-  };
-
-  const handleSubmitFormPermission = (values) => {
-    console.log("values: ", values);
   };
 
   /********* Update User ********* */
@@ -460,6 +464,15 @@ const AdminUserListPage = () => {
         })
       );
     }
+  };
+
+  /********* Update Authorize ********* */
+  const handlePermission = (item) => {
+    setIsOpenPermission(true);
+  };
+
+  const handleSubmitFormPermission = (values) => {
+    console.log("values: ", values);
   };
 
   return (
