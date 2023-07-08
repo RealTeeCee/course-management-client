@@ -26,9 +26,10 @@ import { onAuthorInitialState } from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
 import { onCourseInitalState } from "../../store/course/courseSlice";
 import { getUserNameByEmail, sliceText } from "../../utils/helper";
-import HomeSearchMod from "../HomeSearchMod";
+import HomeSearchMod from "../search/HomeSearchMod";
 import { Button } from "@mui/material";
 import { selectAllCourseState } from "../../store/course/courseSelector";
+import Overlay from "../../components/common/Overlay";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -105,13 +106,10 @@ const HomeTopbarMod = () => {
         </Link>
       </div>
       {!isLearnPage && (
-        <div className="w-full max-w-[458px]">
+        <div className="w-full max-w-[400px]">
           <HomeSearchMod></HomeSearchMod>
         </div>
       )}
-      {/* <div className="w-full max-w-[458px]">
-        <HomeSearchMod></HomeSearchMod>
-      </div> */}
 
       <div className="flex items-center justify-between gap-x-5">
         {isLearnPage &&

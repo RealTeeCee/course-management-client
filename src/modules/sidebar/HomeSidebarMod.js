@@ -7,7 +7,7 @@ import {
   IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
-  IconMapCom
+  IconMapCom,
 } from "../../components/icon";
 
 const sidebarItems = [
@@ -15,11 +15,6 @@ const sidebarItems = [
     icon: <IconHomeCom className="mx-auto" />,
     title: "Home",
     url: "/",
-  },
-  {
-    icon: <IconAdminCom className="mx-auto" />,
-    title: "Admin",
-    url: "/admin",
   },
   {
     icon: <IconMapCom className="mx-auto" />,
@@ -40,6 +35,11 @@ const sidebarItems = [
     icon: <IconBlogCom className="mx-auto" />,
     title: "Blog",
     url: "/blogs",
+  },
+  {
+    icon: <IconAdminCom className="mx-auto" />,
+    title: "Admin",
+    url: "/admin",
   },
   // {
   //   icon: <IconMoonCom className="mx-auto" />,
