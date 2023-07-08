@@ -153,7 +153,7 @@ const HomeTopbarMod = () => {
               <img
                 className="object-cover rounded-full w-12 h-12"
                 src={`${
-                  user ? user.imageUrl ?? AVATAR_DEFAULT : IMAGE_DEFAULT
+                  user ? user.imageUrl || AVATAR_DEFAULT : IMAGE_DEFAULT
                 }`}
                 alt="User Avatar"
               />

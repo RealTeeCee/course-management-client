@@ -44,6 +44,7 @@ import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
@@ -305,7 +306,7 @@ const AdminCreateCoursePage = () => {
                           control={control}
                           name="name"
                           register={register}
-                          placeholder="Input Course Name"
+                          placeholder="Input course's name"
                           errorMsg={errors.name?.message}
                         ></InputCom>
                       </div>

@@ -112,15 +112,24 @@ export function convertSecondToTime(seconds) {
 }
 
 // Input: 2023-06-20T16:21:34.017435Z, Output: June 20, 2023
-export function convertDateTime(dateTimeString) {
+export function convertDateTime(dateTimeString, isShowYear = true) {
   if (dateTimeString === null) return;
   const dateTime = new Date(dateTimeString);
-  const options = { month: "long", day: "numeric", year: "numeric" };
+  const options = { month: "long", day: "numeric" };
+  if (isShowYear) options.year = "numeric";
+
   const newDateTime = new Intl.DateTimeFormat("en-US", options).format(
     dateTime
   );
 
   return newDateTime;
+}
+
+// return "YYYY-MM-DD"
+export function getCurrentDate() {
+  // Get the current date
+  const currentDate = new Date();
+  return currentDate.toISOString().split("T")[0];
 }
 
 // If text > maxLength, will slice

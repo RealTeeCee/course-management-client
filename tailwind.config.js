@@ -17,6 +17,7 @@ module.exports = {
         "tw-light": "#f4f4f4",
         "tw-dark": "#2c323f",
         "tw-light-pink": "#f62682",
+        "tw-light-green": "#0be8ab",
         "tw-orange": "#ff6651",
       },
       boxShadow: {

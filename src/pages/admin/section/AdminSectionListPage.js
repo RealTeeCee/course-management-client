@@ -35,7 +35,7 @@ import { showMessageError } from "../../../utils/helper";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   ordered: yup
     .number(MESSAGE_FIELD_REQUIRED)
     .typeError(MESSAGE_NUMBER_REQUIRED)

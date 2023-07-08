@@ -11,14 +11,18 @@ export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
 export const COOKIE_VIEW_COUNT_KEY = `${APP_KEY_NAME}_view_count`; // New constant for the view count cookie
 // export const COOKIE_EXPIRED_BLOG_DAYS = 1;
-export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; 
+// export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60;
 
- 
 export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
+// LIMIT PAGINATION
 export const LIMIT_PAGE = 12;
 export const LIMIT_HOME_PAGE = 4;
+
+// LIMIT SHOW MORE
+export const LIMIT_SHOW_MORE = 5;
+
 export const VIDEO_EXT_VALID = "mp4, avi, mov, wmv, flv, mkv, webm, mpeg, mpg";
 export const CAPTION_EXT_VALID = "en.vtt, vi.vtt, jp.vtt";
 export const CAPTION_EXT_REGEX = /\.(en|vi|jp)\.vtt$/;
@@ -32,6 +36,8 @@ export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
+
+export const MESSAGE_REGEX_NAME = "Only letters are allowed";
 
 export const MESSAGE_FIELD_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL_INVALID =
@@ -76,7 +82,8 @@ export const MESSAGE_NET_PRICE_HIGHER_PRICE =
 export const MESSAGE_POINT_EXCEED_MAX =
   "The question point cannot exceed the max point";
 
-export const MESSAGE_MAINTENANCE = "Sorry, This function is currently under maintenance !";
+export const MESSAGE_MAINTENANCE =
+  "Sorry, This function is currently under maintenance !";
 
 // Data Static List
 export const categoryItems = [

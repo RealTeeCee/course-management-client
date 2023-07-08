@@ -22,7 +22,7 @@ import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
 });
 

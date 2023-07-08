@@ -73,12 +73,7 @@ const SelectSearchAntCom = (props) => {
 };
 
 SelectSearchAntCom.propTypes = {
-  listItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.number.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  listItems: PropTypes.array.isRequired,
   status: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,

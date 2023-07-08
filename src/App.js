@@ -3,7 +3,11 @@ import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
-import { permissions } from "./constants/permissions.js";
+import {
+  ADMIN_ROLE,
+  MANAGER_ROLE,
+  permissions,
+} from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
@@ -32,7 +36,9 @@ const ResetPasswordPage = lazy(() =>
   import("./pages/auth/ResetPasswordPage.js")
 );
 
-const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
+const AdminDashboardPage = lazy(() =>
+  import("./pages/admin/AdminDashboardPage.js")
+);
 const AdminCourseListPage = lazy(() =>
   import("./pages/admin/course/AdminCourseListPage.js")
 );
@@ -87,6 +93,9 @@ const AdminBlogListPage = lazy(() =>
 
 const AdminUserListPage = lazy(() =>
   import("./pages/admin/user/AdminUserListPage.js")
+);
+const AdminCreateUserPage = lazy(() =>
+  import("./pages/admin/user/AdminCreateUserPage.js")
 );
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
@@ -291,11 +300,11 @@ function App() {
             path="/admin"
             element={
               <CheckAuthPage
-                allowPermissions={permissions.admin.ROLE}
+                allowPermissions={[ADMIN_ROLE, MANAGER_ROLE]}
               ></CheckAuthPage>
             }
           >
-            <Route index element={<AdminPage />}></Route>
+            <Route index element={<AdminDashboardPage />}></Route>
             {/* Admin Courses */}
             <Route path="courses" element={<AdminCourseListPage />}></Route>
             <Route
@@ -310,7 +319,6 @@ function App() {
               path="courses/authors/create"
               element={<AdminCreateAuthorPage />}
             ></Route>
-
             {/* Admin Parts */}
             <Route
               path="courses/:courseId/parts"
@@ -338,7 +346,6 @@ function App() {
               path="courses/:courseId/parts/:partId/questions/:questionId/answers/create"
               element={<AdminCreateAnswerPage />}
             ></Route>
-
             {/* Admin Sections */}
             <Route
               // path="sections"
@@ -363,11 +370,14 @@ function App() {
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
-
             {/* Admin Users */}
             <Route
               path="users"
               element={<AdminUserListPage></AdminUserListPage>}
+            ></Route>
+            <Route
+              path="users/create"
+              element={<AdminCreateUserPage></AdminCreateUserPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}

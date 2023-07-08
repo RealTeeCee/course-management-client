@@ -5,6 +5,8 @@ import questionSaga from "./admin/question/questionSaga";
 import authSaga from "./auth/authSaga";
 import authorSaga from "./author/authorSaga";
 import courseSaga from "./course/courseSaga";
+import userSaga from "./admin/user/userSaga";
+import adminCourseSaga from "./admin/course/courseSaga";
 import categorySaga from "./category/categorySaga";
 
 export default function* rootSaga() {
@@ -16,5 +18,7 @@ export default function* rootSaga() {
     fork(partSaga),
     fork(questionSaga),
     fork(answerSaga),
+    fork(userSaga),
+    fork(adminCourseSaga),
   ]);
 }
