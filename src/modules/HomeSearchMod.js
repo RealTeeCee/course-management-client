@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import { IconRemoveCom, IconSearchCom } from "../components/icon";
+import useDebounceOnChange from "../hooks/useDebounceOnChange";
 
 const HomeSearchMod = () => {
   const [isSearch, setIsSearch] = useState(false);
+  const [search, setSearch] = useState("");
+  const searchDebounce = useDebounceOnChange(search, 500);
+  const handleChangeSearch = (e) => {
+    setSearch(e.target.value);
+  };
   return (
     <div className="c-search relative z-50">
       <div className="bg-tw-light rounded-full shadow-primary p-2 w-full flex items-center">
         <div className="flex-1 px-2">
           <input
             type="text"
+            name="keyword"
             placeholder="Search course, video, blog..."
             className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full outline-none"
+            onChange={handleChangeSearch}
           />
         </div>
         <button
@@ -19,7 +27,6 @@ const HomeSearchMod = () => {
           }`}
         >
           {/* Xứ lý nếu có search thì hiện Icon Remove + style text-tw-danger hoặc bg-tw-orange */}
-
           {isSearch ? (
             <IconRemoveCom></IconRemoveCom>
           ) : (

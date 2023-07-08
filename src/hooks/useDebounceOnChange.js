@@ -1,12 +1,19 @@
 import { debounce } from "lodash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // After time will OnChange value
-export default function useDebounceOnChange(time = 0) {
-  const [value, setValue] = useState(null);
-  const handleOnChange = debounce((e) => {
-    setValue(e.target.value);
-  }, time);
+export default function useDebounceOnChange(
+  initialValue = "",
+  delayTime = 1000
+) {
+  const [debounceValue, setDebounceValue] = useState(initialValue);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebounceValue(initialValue);
+    }, delayTime);
 
-  return [value, handleOnChange];
+    return () => clearTimeout(timer);
+  }, [delayTime, initialValue]);
+
+  return debounceValue;
 }
