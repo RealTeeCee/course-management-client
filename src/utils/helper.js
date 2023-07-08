@@ -51,6 +51,9 @@ export function getDurationFromVideo(
     setValue(name, Math.round(video.duration));
   };
 
+  if (e.target.files.length === 0) {
+    return null;
+  }
   video.src = URL.createObjectURL(e.target.files[0]);
 }
 
@@ -76,7 +79,7 @@ export function convertSecondToDiffForHumans(seconds = 3600) {
     let formattedDuration = `${minutes} ${minutes >= 1 ? "mins" : "min"}`;
 
     if (remainingSeconds >= 1) {
-      formattedDuration += ` ${remainingSeconds} ${
+      formattedDuration += ` ${Math.round(Math.floor(remainingSeconds))} ${
         remainingSeconds >= 1 ? "seconds" : "second"
       }`;
     }
@@ -109,15 +112,24 @@ export function convertSecondToTime(seconds) {
 }
 
 // Input: 2023-06-20T16:21:34.017435Z, Output: June 20, 2023
-export function convertDateTime(dateTimeString) {
+export function convertDateTime(dateTimeString, isShowYear = true) {
   if (dateTimeString === null) return;
   const dateTime = new Date(dateTimeString);
-  const options = { month: "long", day: "numeric", year: "numeric" };
+  const options = { month: "long", day: "numeric" };
+  if (isShowYear) options.year = "numeric";
+
   const newDateTime = new Intl.DateTimeFormat("en-US", options).format(
     dateTime
   );
 
   return newDateTime;
+}
+
+// return "YYYY-MM-DD"
+export function getCurrentDate() {
+  // Get the current date
+  const currentDate = new Date();
+  return currentDate.toISOString().split("T")[0];
 }
 
 // If text > maxLength, will slice
@@ -148,4 +160,24 @@ export function convertStrToSlug(str) {
 // title = "Part", and number = "1"
 export function fakeName(title, number, divider = "#") {
   return `${title}${divider}${number}`;
+}
+
+// Convert seconds to only hour, minute, second (approximately). Ex: 65 = "1 minute", 3665 = "1 hour"...
+export function convertToHumanTime(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours} hour${hours > 1 ? "s" : ""}`;
+  } else if (minutes > 0) {
+    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+  } else {
+    return `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
+  }
+}
+// Input email and return userName
+export function getUserNameByEmail(email) {
+  if (email === "undefined") return email;
+  return email.split("@")[0];
 }

@@ -12,6 +12,7 @@ const ButtonCom = (props) => {
     children,
     backgroundColor = "primary",
     padding = "px-8",
+    minHeight = "min-h-[42px]",
     icon = "",
     ...rest
   } = props;
@@ -28,7 +29,7 @@ const ButtonCom = (props) => {
     children
   );
 
-  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] ${padding} ${className} ${
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 ${minHeight} ${padding} ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
   switch (backgroundColor) {
@@ -116,6 +117,8 @@ ButtonCom.propTypes = {
     "gradient",
     "finish",
   ]),
+  padding: PropTypes.string,
+  minHeight: PropTypes.string,
   children: PropTypes.node,
 };
 

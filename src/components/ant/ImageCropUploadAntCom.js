@@ -8,7 +8,6 @@ import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
 import ErrorCom from "../common/ErrorCom";
 
-// Crop image before uploading
 const ImageCropUploadAntCom = ({
   onSetValue = () => {},
   name,
@@ -17,18 +16,10 @@ const ImageCropUploadAntCom = ({
   editImage,
   aspect = 16 / 9,
   isWidthFull = false,
+  isCropped = true, // New prop: isCropped
   ...rest
 }) => {
-  // const [fileList, setFileList] = useState([
-  //   {
-  //     uid: "-1",
-  //     name: "image.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  // ]);
   const [fileList, setFileList] = useState([]);
-  // show Image when Edit
   useEffect(() => {
     if (editImage) setFileList(editImage);
   }, [editImage]);
@@ -54,7 +45,6 @@ const ImageCropUploadAntCom = ({
         onError(MESSAGE_UPLOAD_IMAGE_FAILED);
         return;
       } else {
-        // CallBack
         onSetValue(name, imgUrl);
         onSuccess(res.data);
       }
@@ -95,7 +85,21 @@ const ImageCropUploadAntCom = ({
           }
         `}
       </style>
-      <ImgCrop rotationSlider size="large" aspect={aspect}>
+      {isCropped ? ( // Conditionally render based on isCropped prop
+        <ImgCrop rotationSlider size="large" aspect={aspect}>
+          <Upload
+            customRequest={customUploadRequest}
+            listType="picture-card"
+            fileList={fileList}
+            onChange={onChange}
+            onRemove={onRemove}
+            onPreview={onPreview}
+            className={`${isWidthFull && "custom-upload"}  block w-full`}
+          >
+            {fileList.length < 1 && "Drag & Drop or click to upload"}
+          </Upload>
+        </ImgCrop>
+      ) : (
         <Upload
           customRequest={customUploadRequest}
           listType="picture-card"
@@ -107,7 +111,7 @@ const ImageCropUploadAntCom = ({
         >
           {fileList.length < 1 && "Drag & Drop or click to upload"}
         </Upload>
-      </ImgCrop>
+      )}
       {errorMsg && errorMsg.length > 0 && (
         <span className="text-tw-danger text-sm">{errorMsg}</span>
       )}
@@ -124,7 +128,9 @@ ImageCropUploadAntCom.propTypes = {
   type: PropTypes.string,
   errorMsg: PropTypes.string,
   children: PropTypes.node,
+  isCropped: PropTypes.bool, // New prop: isCropped
 };
+
 export default withErrorBoundary(ImageCropUploadAntCom, {
   FallbackComponent: ErrorCom,
 });

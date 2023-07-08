@@ -1,41 +1,43 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
+  IconCertificateCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
+import IconRefreshCom from "../../components/icon/IconRefreshCom";
+import {
+  CircularProgressMuiCom,
+  NotificationListPopupMuiCom,
+  NotificationToastListMuiCom,
+} from "../../components/mui";
 import {
   AVATAR_DEFAULT,
-  BASE_API_URL,
   IMAGE_DEFAULT,
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import {
-  onAddNotification,
-  onCourseInitalState,
-} from "../../store/course/courseSlice";
+import { onAuthorInitialState } from "../../store/author/authorSlice";
+import { onCategoryInitialState } from "../../store/category/categorySlice";
+import { onCourseInitalState } from "../../store/course/courseSlice";
+import { getUserNameByEmail, sliceText } from "../../utils/helper";
 import HomeSearchMod from "../HomeSearchMod";
-import IconRefreshCom from "../../components/icon/IconRefreshCom";
-import { sliceText } from "../../utils/helper";
-import {
-  NotificationListPopupMuiCom,
-  NotificationToastListMuiCom,
-} from "../../components/mui";
+import { Button } from "@mui/material";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
-  const { progress } = useSelector((state) => state.course);
+  const { progress } = useSelector(selectAllCourseState);
 
   const location = useLocation();
   const isLearnPage = location.pathname.startsWith("/learn");
 
-  const userName = user?.email.split("@")[0];
+  const userName = getUserNameByEmail(user?.email);
   const userItems = [
     {
       icon: <IconUserCom />,
@@ -46,6 +48,11 @@ const HomeTopbarMod = () => {
       icon: <IconRefreshCom />,
       title: "Password",
       url: `/profile/change-password`,
+    },
+    {
+      icon: <IconCertificateCom />,
+      title: "Cert",
+      url: `/profile/accomplishments`,
     },
     {
       icon: <IconLoginCom />,
@@ -83,7 +90,7 @@ const HomeTopbarMod = () => {
   //       sse.close();
   //     };
   //   }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
@@ -108,14 +115,36 @@ const HomeTopbarMod = () => {
 
       <div className="flex items-center justify-between gap-x-5">
         {isLearnPage &&
-          (progress ? <p>Progress: {progress}%</p> : <p>Progress: 0%</p>)}
+          (progress ? (
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                background:
+                  "linear-gradient(to right, #0f0c29, #302b63, #24243e);",
+              }}
+            >
+              <CircularProgressMuiCom value={progress} />
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                background:
+                  "linear-gradient(to right, #0f0c29, #302b63, #24243e);",
+              }}
+            >
+              <CircularProgressMuiCom value={0.3} />
+            </Button>
+          ))}
         {user && (
-          <>
+          <React.Fragment>
             <ButtonCom to="/my-courses" className="flex items-center">
               <span className="text-sm font-medium">My Courses</span>
             </ButtonCom>
             <NotificationListPopupMuiCom />
-          </>
+          </React.Fragment>
         )}
         <ul className="nav-menus">
           <li className="profile-nav onhover-dropdown p-0 me-0 relative">
@@ -124,7 +153,7 @@ const HomeTopbarMod = () => {
               <img
                 className="object-cover rounded-full w-12 h-12"
                 src={`${
-                  user ? user.imageUrl ?? AVATAR_DEFAULT : IMAGE_DEFAULT
+                  user ? user.imageUrl || AVATAR_DEFAULT : IMAGE_DEFAULT
                 }`}
                 alt="User Avatar"
               />
@@ -162,7 +191,9 @@ const HomeTopbarMod = () => {
                         onClick: () => {
                           toast.success(MESSAGE_LOGOUT_SUCCESS);
                           dispatch(onRemoveToken());
+                          dispatch(onCategoryInitialState());
                           dispatch(onCourseInitalState());
+                          dispatch(onAuthorInitialState());
                         },
                       }
                     : {};

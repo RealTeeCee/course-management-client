@@ -163,6 +163,8 @@ const CourseDetailPage = () => {
     (item) => item.slug === convertStrToSlug(courseBySlug?.category_name)
   );
 
+  console.log("courseBySlug:", courseBySlug);
+
   return (
     <>
       <div
@@ -315,7 +317,13 @@ const CourseDetailPage = () => {
                   </HeadingH2Com>
                 )}
                 <GapYCom></GapYCom>
-                <Link to={`/checkout/${slug}`}>
+                <Link
+                  to={
+                    courseBySlug?.price === 0
+                      ? `/learn/${slug}`
+                      : `/checkout/${slug}`
+                  }
+                >
                   <ButtonCom backgroundColor="gradient">
                     Enrolling Now
                   </ButtonCom>
@@ -427,7 +435,7 @@ const CourseDetailPage = () => {
   );
 };
 
-const ArchiveItems = ({ title }) => (
+export const ArchiveItems = ({ title }) => (
   <div className="archive-item col-sm-6 mb-3">
     <div className="flex gap-x-2 items-center">
       <IconCheckCom className="text-tw-success"></IconCheckCom>

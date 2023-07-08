@@ -29,6 +29,11 @@ export const selectAllCourseState = createSelector(
     courseRating: courseSlice.courseRating,
     examination: courseSlice.examination,
     finishExam: courseSlice.finishExam,
+    generateExamSuccess: courseSlice.generateExamSuccess,
+    retakeExam: courseSlice.retakeExam,
+    countdown: courseSlice.countdown,
+    accomplishments: courseSlice.accomplishments,
+    cert: courseSlice.cert,
   })
 );
 
@@ -37,7 +42,7 @@ export const selectEnrollIdAndCourseId = createSelector(
   (courseSlice) => ({
     enrollId: courseSlice.enrollId,
     courseId: courseSlice.courseId,
-    isEnrolled: courseSlice.isEnrolled
+    isEnrolled: courseSlice.isEnrolled,
   })
 );
 

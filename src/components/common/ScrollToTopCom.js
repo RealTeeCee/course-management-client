@@ -19,14 +19,16 @@ const ScrollToTopCom = () => {
   }, []);
 
   return (
-    <div
-      className={`fixed bottom-10 right-10 bg-tw-primary p-3 text-white rounded animate-bounce rounded-full cursor-pointer z-20 tw-transition-all ${
-        showScrollButton ? "opacity-100" : "opacity-0"
-      }`}
-      onClick={scrollToTop}
-    >
-      <IconArrowUpCom />
-    </div>
+    <>
+      <div
+        className={`tap-top block z-20 animate-bounce tw-transition-all ${
+          showScrollButton ? "opacity-60" : "opacity-0"
+        }`}
+        onClick={scrollToTop}
+      >
+        <IconArrowUpCom className="mx-auto" />
+      </div>
+    </>
   );
 };
 

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { toast } from "react-toastify";
 import {
   IconAdminCom,
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
-  IconMapCom,
-  IconMoonCom,
-  IconSunCom,
+  IconMapCom
 } from "../../components/icon";
 
 const sidebarItems = [
@@ -26,8 +23,8 @@ const sidebarItems = [
   },
   {
     icon: <IconMapCom className="mx-auto" />,
-    title: "Route",
-    url: "/routes",
+    title: "Author",
+    url: "/authors",
   },
   {
     icon: <IconCategoryCom className="mx-auto" />,

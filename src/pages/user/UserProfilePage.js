@@ -187,7 +187,7 @@ const UserProfilePage = () => {
         </div> */}
         <div className="absolute -bottom-10">
           <img
-            srcSet={user.imageUrl ? user.imageUrl : AVATAR_DEFAULT}
+            srcSet={user?.imageUrl || AVATAR_DEFAULT}
             className="image_avatar object-cover border-4 border-white w-40 h-40 rounded-full object-center"
             alt={user.name ?? "avatar-user"}
           />

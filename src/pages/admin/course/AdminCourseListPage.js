@@ -63,10 +63,12 @@ import LoadingCom from "../../../components/common/LoadingCom";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import useExportExcel from "../../../hooks/useExportExcel";
+import { helperChangeStatusCourse } from "../../../utils/helperCourse";
 
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
@@ -585,63 +587,65 @@ const AdminCourseListPage = () => {
     //   });
     // }
     try {
-      const newCourses = courses.map((course) =>
-        course.id === courseId
-          ? {
-              ...course,
-              status: isChecked ? 1 : 0,
-            }
-          : course
-      );
+      // const newCourses = courses.map((course) =>
+      //   course.id === courseId
+      //     ? {
+      //         ...course,
+      //         status: isChecked ? 1 : 0,
+      //       }
+      //     : course
+      // );
 
-      const dataBody = newCourses.find((course) => course.id === courseId);
+      // const dataBody = newCourses.find((course) => course.id === courseId);
 
-      const {
-        id,
-        name,
-        status,
-        level,
-        image,
-        category_id,
-        author_id,
-        price,
-        net_price,
-        duration,
-        enrollmentCount,
-        description,
-        tags,
-        achievements,
-      } = dataBody;
+      // const {
+      //   id,
+      //   name,
+      //   status,
+      //   level,
+      //   image,
+      //   category_id,
+      //   author_id,
+      //   price,
+      //   net_price,
+      //   duration,
+      //   enrollmentCount,
+      //   description,
+      //   tags,
+      //   achievements,
+      // } = dataBody;
 
-      const fd = new FormData();
-      fd.append(
-        "courseJson",
-        JSON.stringify({
-          id,
-          name,
-          status,
-          level,
-          image,
-          category_id,
-          author_id,
-          price,
-          net_price,
-          duration,
-          enrollmentCount,
-          description,
-          tags: tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .join(","),
-          achievements:
-            achievements !== null
-              ? achievements
-                  .split(",")
-                  .map((achievement) => achievement.trim())
-                  .join(",")
-              : "",
-        })
-      );
+      // const fd = new FormData();
+      // fd.append(
+      //   "courseJson",
+      //   JSON.stringify({
+      //     id,
+      //     name,
+      //     status,
+      //     level,
+      //     image,
+      //     category_id,
+      //     author_id,
+      //     price,
+      //     net_price,
+      //     duration,
+      //     enrollmentCount,
+      //     description,
+      //     tags: tags
+      //       .split(",")
+      //       .map((tag) => tag.trim())
+      //       .join(","),
+      //     achievements:
+      //       achievements !== null
+      //         ? achievements
+      //             .split(",")
+      //             .map((achievement) => achievement.trim())
+      //             .join(",")
+      //         : "",
+      //   })
+      // );
+
+      const fd = helperChangeStatusCourse(isChecked, courseId, courses);
 
       await axiosBearer.put(`/course`, fd);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);

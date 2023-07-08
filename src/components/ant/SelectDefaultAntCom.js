@@ -1,6 +1,7 @@
 import { Select } from "antd";
 import PropTypes from "prop-types";
 import { withErrorBoundary } from "react-error-boundary";
+import { mainColor } from "../../constants/mainTheme";
 import ErrorCom from "../common/ErrorCom";
 
 // const handleChange = (value) => {
@@ -20,6 +21,17 @@ const SelectDefaultAntCom = ({
 }) => {
   return (
     <>
+      <style>
+        {`
+          .custom-dropdown .ant-select-selector {
+            background: ${mainColor.light} !important;
+            color: ${mainColor.primary} !important;
+          }
+          .custom-dropdown .ant-select-arrow {
+            color: ${mainColor.primary} !important;
+          }
+        `}
+      </style>
       <Select
         size="large"
         defaultValue={defaultValue}

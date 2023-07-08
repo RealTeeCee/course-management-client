@@ -1,3 +1,4 @@
+import { Checkbox } from "@mui/material";
 import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,7 +64,7 @@ const CollapseAntCom = ({
     setLessionId(lessonId);
 
     if (isLearning && tracking && !manualSelectLesson) {
-      navigate(`/learn/${slug}?id=${tracking?.lessonId}`);
+      navigate("/learn/" + slug + "?id=" + tracking?.lessonId);
       setManualSelectLesson(true);
       dispatch(
         onSelectedLesson({
@@ -110,7 +111,12 @@ const CollapseAntCom = ({
                           }`}
                         >
                           <span>
-                            {lessionNo++}. {child.name}
+                            <Checkbox
+                              aria-label="Checkbox demo"
+                              color="success"
+                              checked={child.completed}
+                            />{" "}
+                            {child.name}
                           </span>
                           <span>
                             {convertSecondToDiffForHumans(child.duration)}

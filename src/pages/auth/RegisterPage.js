@@ -18,7 +18,9 @@ import {
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_POLICY_REQUIRED,
+  MESSAGE_REGEX_NAME,
 } from "../../constants/config";
+import { regexName } from "../../constants/regex";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
 import { onRegister } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
@@ -26,12 +28,16 @@ import OAuth2Page from "./OAuth2Page";
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   last_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   email: yup
@@ -81,9 +87,9 @@ const RegisterPage = () => {
   // };
   const handleRegister = (values) => {
     if (!acceptTerm) {
-          toast.warning(MESSAGE_POLICY_REQUIRED);
-          return;
-        }
+      toast.warning(MESSAGE_POLICY_REQUIRED);
+      return;
+    }
     dispatch(onRegister(values));
     // navigate("/login");
   };

@@ -1,44 +1,96 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { v4 } from "uuid";
 import * as yup from "yup";
+import { axiosBearer } from "../../../api/axiosInstance";
 import {
+  ImageCropUploadAntCom,
+  SelectSearchAntCom,
+  SwitchAntCom,
+} from "../../../components/ant";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { ButtonCom } from "../../../components/button";
+import DividerCom from "../../../components/common/DividerCom";
+import GapYCom from "../../../components/common/GapYCom";
+import LoadingCom from "../../../components/common/LoadingCom";
+import { HeadingFormH5Com, HeadingH1Com } from "../../../components/heading";
+import {
+  IconCheckCom,
+  IconEditCom,
+  IconRemoveCom,
+  IconTrashCom,
+} from "../../../components/icon";
+import { InputCom } from "../../../components/input";
+import { LabelCom } from "../../../components/label";
+import { TableCom } from "../../../components/table";
+import {
+  AVATAR_DEFAULT,
   MAX_LENGTH_NAME,
-  MESSAGE_FIELD_MAX_LENGTH_NAME,
-  MESSAGE_FIELD_MIN_LENGTH_NAME,
+  MAX_LENGTH_VARCHAR,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NO_ITEM_SELECTED,
+  MESSAGE_READONLY,
+  MESSAGE_REGEX_NAME,
   MESSAGE_UPDATE_STATUS_SUCCESS,
-  MESSAGE_UPLOAD_REQUIRED,
-  MIN_LENGTH_NAME,
 } from "../../../constants/config";
-import { SelectDefaultAntCom, SwitchAntCom } from "../../../components/ant";
-import { ButtonCom } from "../../../components/button";
-import { IconTrashCom } from "../../../components/icon";
-import { axiosBearer } from "../../../api/axiosInstance";
-import Swal from "sweetalert2";
-import { showMessageError } from "../../../utils/helper";
-import LoadingCom from "../../../components/common/LoadingCom";
-import { HeadingH1Com } from "../../../components/heading";
-import { BreadcrumbCom } from "../../../components/breadcrumb";
-import GapYCom from "../../../components/common/GapYCom";
-import { TableCom } from "../../../components/table";
-import { getToken } from "../../../utils/auth";
-import { onUserUpdateProfile } from "../../../store/auth/authSlice";
-import { useDispatch, useSelector} from "react-redux";;
+import { ALL_ROLES } from "../../../constants/permissions";
+import { regexName } from "../../../constants/regex";
+import {
+  onBulkDeleteUser,
+  onDeleteUser,
+  onGetAllUsers,
+  onUpdateUser,
+} from "../../../store/admin/user/userSlice";
+import { getUserNameByEmail, showMessageError } from "../../../utils/helper";
+
 const schemaValidation = yup.object().shape({
-  name: yup
+  first_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
-    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
-    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
-  status: yup.number().default(2),
-  image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
-  category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
+    .matches(regexName, MESSAGE_REGEX_NAME)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
+  last_name: yup
+    .string()
+    .trim()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
+    .min(3, "Minimum is 3 letters")
+    .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
+  // email: yup
+  //   .string()
+  //   .required(MESSAGE_FIELD_REQUIRED)
+  //   .email(MESSAGE_EMAIL_INVALID),
+  newPassword: yup
+    .string()
+    .transform((value) => (value === "" ? null : value))
+    .nullable()
+    .min(8, "Minimum is 8 letters")
+    .max(MAX_LENGTH_VARCHAR, `Maximum ${MAX_LENGTH_VARCHAR} letters`),
+});
+
+const schemaValidationPermission = yup.object().shape({
+  // name: yup
+  //   .string()
+  //   .required(MESSAGE_FIELD_REQUIRED)
+  //   .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+  //   .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  // status: yup.number().default(2),
+  // image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
+  // category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
 const AdminUserListPage = () => {
+  const dispatch = useDispatch();
+  const { users, isPostUserSuccess, isBulkDeleteSuccess } = useSelector(
+    (state) => state.user
+  );
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
@@ -46,12 +98,14 @@ const AdminUserListPage = () => {
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenPermission, setIsOpenPermission] = useState(false);
+
   const [isFetching, setIsFetching] = useState(false);
-  const [users, setUsers] = useState([]);
   const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
-  const dispatch = useDispatch();
-  const { user, isLoading} = useSelector((state) => state.auth);
+
+  const { user, isLoading } = useSelector((state) => state.auth);
 
   /********* END API State ********* */
 
@@ -75,9 +129,9 @@ const AdminUserListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
+          onClick={() => handleBulkDelete()}
         >
-          Remove All
+          Bulk Delete
         </div>
       ),
     },
@@ -85,11 +139,31 @@ const AdminUserListPage = () => {
 
   //manage status and event in form
   const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
     reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
+
+  const {
+    control: controlPermission,
+    register: registerPermission,
+    handleSubmit: handleSubmitPermission,
+    setValue: setValuePermission,
+    watch: watchPermission,
+    setError: setErrorPermission,
+    reset: resetPermission,
+    formState: { errors: errosPermission },
+  } = useForm({
+    resolver: yupResolver(schemaValidationPermission),
+  });
+
   const resetValues = () => {
     reset();
   };
@@ -97,17 +171,22 @@ const AdminUserListPage = () => {
   /********* Fetch API Area ********* */
   const columns = [
     {
-      name: "No",
-      selector: (row, i) => ++i,
-      width: "70px",
+      name: "Avatar",
+      selector: (row) => (
+        <img
+          width={50}
+          height={50}
+          src={`${row.imageUrl || AVATAR_DEFAULT}`}
+          alt={row.name}
+        />
+      ),
+      width: "80px",
     },
     {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
-      width: "300px",
-    }
-    ,
+    },
     {
       name: "Email",
       selector: (row) => row.email,
@@ -115,39 +194,68 @@ const AdminUserListPage = () => {
       width: "200px",
     },
     {
-      name: "Verifile",
-      selector: (row) => (
-        row.verified ? "True" : "False"
-      ),
+      name: "Verify",
+      selector: (row) =>
+        row.verified ? (
+          <IconCheckCom className="text-tw-success" />
+        ) : (
+          <IconRemoveCom className="text-tw-danger" />
+        ),
       width: "100px",
     },
     {
-      name: "Avatar",
+      name: "Authorize",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.imageUrl}`} alt={row.name} />
-      ),
-    },
-    {
-      name: "Status",
-      selector: (row) => (
-        <SwitchAntCom
-          defaultChecked={row.status === 1 ? true : false}
-          className={`${
-            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
-          }`}
-          onChange={(isChecked) => handleSubmitForm(row.id, isChecked)}
-        />
+        <ButtonCom
+          className="px-3 rounded-lg"
+          onClick={() => {
+            handlePermission(row);
+          }}
+        >
+          Permission
+        </ButtonCom>
       ),
     },
     {
       name: "Role",
       selector: (row) => row.role,
-      width: "150px",
+      width: "80px",
+    },
+    {
+      name: "Status",
+      selector: (row) => (
+        <>
+          {row.status === 1 ? (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id)}
+              backgroundColor="success"
+            >
+              Active
+            </ButtonCom>
+          ) : (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id)}
+              backgroundColor="danger"
+            >
+              InActive
+            </ButtonCom>
+          )}
+        </>
+      ),
     },
     {
       name: "Action",
       cell: (row) => (
         <>
+          <ButtonCom
+            className="px-3 rounded-lg mr-2"
+            backgroundColor="info"
+            onClick={() => {
+              handleEdit(row.id);
+            }}
+          >
+            <IconEditCom className="w-5"></IconEditCom>
+          </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -164,20 +272,11 @@ const AdminUserListPage = () => {
 
   /********* Call API ********* */
   //Get All user
-  const getUsers = async () => {
-    try {
-      const res = await axiosBearer.get(`/auth/user/all`);
-      console.log("data user", res.data);
-      setUsers(res.data);
-      setFilterUser(res.data);
-    } catch (error) {
-      console.log(error); 
-    }
-  };
-
   useEffect(() => {
-    getUsers();
-  }, []);
+    dispatch(onGetAllUsers());
+    if (isPostUserSuccess) setIsOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostUserSuccess]);
 
   const clearSelectedRows = () => {
     setSelectedRows([]);
@@ -213,9 +312,12 @@ const AdminUserListPage = () => {
     setFilterUser(result);
   }, [users, search]);
 
+  useEffect(() => {
+    if (isBulkDeleteSuccess) clearSelectedRows();
+  }, [isBulkDeleteSuccess]);
+
   /********* Delete one API ********* */
   const handleDeleteUser = ({ id, name }) => {
-    console.log("userId",id)
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete user: <span class="text-tw-danger">${name}</span>`,
@@ -226,20 +328,13 @@ const AdminUserListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const res = await axiosBearer.delete(`/auth/user?userId=${id}`);
-          getUsers();
-          reset(res.data);
-          toast.success(res.data.message);
-        } catch (error) {
-          showMessageError(error);
-        }
+        dispatch(onDeleteUser(id));
       }
     });
   };
 
-  /********* Multi Delete API ********* */
-  const handleDeleteMultipleRecords = () => {
+  /********* Bulk Delete API ********* */
+  const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
@@ -256,36 +351,128 @@ const AdminUserListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/auth/user?userId=${row.id}`)
-          );
-          await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} users success`);
-        } catch (error) {
-          showMessageError(error);
-        } finally {
-          getUsers();
-          clearSelectedRows();
-        }
+        dispatch(onBulkDeleteUser(selectedRows));
       }
     });
   };
   /********* Update Status API ********* */
-  const handleSubmitForm = (id,isChecked) => {
-   console.log("id",id);
-   console.log("isChecked",isChecked);
-    const { access_token } = getToken();
-    dispatch(
-      onUserUpdateProfile({
-        id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        imageUrl: user.imageUrl,
-        status: isChecked ? 1 : 0,
-        access_token,
-      })
+  const handleChangeStatus = async (userId) => {
+    const { id, email, first_name, last_name, imageUrl, status } = users.find(
+      (user) => user.id === userId
     );
+    const formData = {
+      id,
+      first_name,
+      last_name,
+      imageUrl,
+      status: status === 1 ? 0 : 1,
+    };
+
+    if (status === 1) {
+      Swal.fire({
+        title: "Are you sure?",
+        html: `Your will set inactive user: <span class="text-tw-danger">${getUserNameByEmail(
+          email
+        )}</span>`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7366ff",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, please continue!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          dispatch(onUpdateUser(formData));
+        }
+      });
+    } else {
+      dispatch(onUpdateUser(formData));
+    }
+  };
+
+  /********* Update User ********* */
+  const getUserById = (userId, action = "n/a") => {
+    setIsFetching(true);
+    const user = users.find((item) => item.id === userId);
+    switch (action) {
+      case "fetch":
+        typeof user !== "undefined" ? reset(user) : showMessageError("No data");
+        const resImage = user.imageUrl;
+        const imgObj = [
+          {
+            uid: v4(),
+            name: resImage?.substring(resImage.lastIndexOf("/") + 1),
+            status: "done",
+            url: resImage,
+          },
+        ];
+        setImage(imgObj);
+        break;
+      default:
+        break;
+    }
+    setIsFetching(false);
+    return typeof user !== "undefined" ? user : showMessageError("No data");
+  };
+
+  const handleEdit = (userId) => {
+    setIsOpen(true);
+    getUserById(userId, "fetch");
+  };
+
+  const handleSubmitForm = (values) => {
+    const {
+      id,
+      first_name,
+      last_name,
+      email,
+      imageUrl,
+      password,
+      newPassword,
+    } = values;
+    if (values.newPassword) {
+      Swal.fire({
+        title: "Are you sure?",
+        html: `Password of user will be change after you update`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7366ff",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, please continue!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          dispatch(
+            onUpdateUser({
+              id,
+              first_name,
+              last_name,
+              email,
+              imageUrl,
+              password: newPassword,
+            })
+          );
+        }
+      });
+    } else {
+      dispatch(
+        onUpdateUser({
+          id,
+          first_name,
+          last_name,
+          email,
+          imageUrl,
+          password,
+        })
+      );
+    }
+  };
+
+  /********* Update Authorize ********* */
+  const handlePermission = (item) => {
+    setIsOpenPermission(true);
+  };
+
+  const handleSubmitFormPermission = (values) => {
+    console.log("values: ", values);
   };
 
   return (
@@ -313,6 +500,7 @@ const AdminUserListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
+                  urlCreate="/admin/users/create"
                   tableKey={tableKey}
                   title="List Users"
                   columns={columns}
@@ -324,10 +512,209 @@ const AdminUserListPage = () => {
                 ></TableCom>
               </span>
             </div>
-            <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
         </div>
       </div>
+
+      {/* Modal Edit Authorize */}
+      <ReactModal
+        isOpen={isOpenPermission}
+        onRequestClose={() => setIsOpenPermission(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpenPermission ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Authorize</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpenPermission(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmitPermission(handleSubmitFormPermission)}
+          >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Course hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-3">
+                  <LabelCom htmlFor="role" isRequired>
+                    Role
+                  </LabelCom>
+                  <div>
+                    <SelectSearchAntCom
+                      // selectedValue={categorySelected}
+                      listItems={ALL_ROLES}
+                      // onChange={handleChangeCategory}
+                      className="w-full py-1"
+                      status={
+                        errors.category_id &&
+                        errors.category_id.message &&
+                        "error"
+                      }
+                      errorMsg={errors.role?.message}
+                      placeholder="Choose a role"
+                    ></SelectSearchAntCom>
+                    {/* <InputCom
+                      type="hidden"
+                      control={control}
+                      name="role"
+                      register={register}
+                    ></InputCom> */}
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
+
+      {/* Modal Edit User */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit User</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="login-card bg-none items-baseline">
+          <div className="login-main">
+            <form
+              className="theme-form"
+              onSubmit={handleSubmit(handleSubmitForm)}
+            >
+              <InputCom
+                type="hidden"
+                control={control}
+                name="id"
+                register={register}
+                placeholder="User hidden id"
+                errorMsg={errors.id?.message}
+              ></InputCom>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="first_name" isRequired>
+                      First Name
+                    </LabelCom>
+                    <InputCom
+                      type="text"
+                      control={control}
+                      name="first_name"
+                      register={register}
+                      placeholder="Input first name"
+                      errorMsg={errors.first_name?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="first_name" isRequired>
+                      Last Name
+                    </LabelCom>
+                    <InputCom
+                      type="text"
+                      control={control}
+                      name="last_name"
+                      register={register}
+                      placeholder="Input last name"
+                      errorMsg={errors.last_name?.message}
+                    ></InputCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-12">
+                    <LabelCom htmlFor="email" subText="Read Only">
+                      Email
+                    </LabelCom>
+                    <InputCom
+                      type="text"
+                      control={control}
+                      name="email"
+                      register={register}
+                      placeholder={MESSAGE_READONLY}
+                      errorMsg={errors.email?.message}
+                      readOnly
+                    ></InputCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-12">
+                    <LabelCom htmlFor="newPassword">New password</LabelCom>
+                    <InputCom
+                      type="newPassword"
+                      control={control}
+                      name="newPassword"
+                      register={register}
+                      placeholder="Input the new will reset password"
+                      errorMsg={errors.newPassword?.message}
+                    ></InputCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-12 text-center">
+                    <LabelCom htmlFor="imageUrl">Avatar</LabelCom>
+                    <div>
+                      <ImageCropUploadAntCom
+                        name="imageUrl"
+                        onSetValue={setValue}
+                        errorMsg={errors.imageUrl?.message}
+                        isCropped={false}
+                        editImage={image}
+                      ></ImageCropUploadAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="imageUrl"
+                        register={register}
+                      ></InputCom>
+                    </div>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+
+                <DividerCom />
+                <ButtonCom
+                  type="submit"
+                  isLoading={isLoading}
+                  className="w-full"
+                >
+                  Update
+                </ButtonCom>
+              </div>
+            </form>
+          </div>
+        </div>
+      </ReactModal>
     </>
   );
 };

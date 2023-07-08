@@ -3,7 +3,11 @@ import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
-import { permissions } from "./constants/permissions.js";
+import {
+  ADMIN_ROLE,
+  MANAGER_ROLE,
+  permissions,
+} from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
@@ -14,6 +18,14 @@ import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
+import { onAuthorInitialState } from "./store/author/authorSlice.js";
+const UserCertificationPage = lazy(() =>
+  import("./pages/user/UserCertificationPage.js")
+);
+const UserAccomplishmentPage = lazy(() =>
+  import("./pages/user/UserAccomplishmentPage.js")
+);
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -24,7 +36,9 @@ const ResetPasswordPage = lazy(() =>
   import("./pages/auth/ResetPasswordPage.js")
 );
 
-const AdminPage = lazy(() => import("./pages/admin/AdminPage.js"));
+const AdminDashboardPage = lazy(() =>
+  import("./pages/admin/AdminDashboardPage.js")
+);
 const AdminCourseListPage = lazy(() =>
   import("./pages/admin/course/AdminCourseListPage.js")
 );
@@ -80,6 +94,9 @@ const AdminBlogListPage = lazy(() =>
 const AdminUserListPage = lazy(() =>
   import("./pages/admin/user/AdminUserListPage.js")
 );
+const AdminCreateUserPage = lazy(() =>
+  import("./pages/admin/user/AdminCreateUserPage.js")
+);
 
 const HomePage = lazy(() => import("./pages/HomePage.js"));
 
@@ -124,6 +141,7 @@ Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const { examination } = useSelector(selectAllCourseState);
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -143,10 +161,10 @@ function App() {
     }
   }, [dispatch, navigate, user?.status]);
 
-  // useEffect(() => {
-  //   //   dispatch(onCourseInitalState());
-  //   dispatch(onAuthInitialState());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(onAuthorInitialState());
+    // dispatch(onAuthInitialState());
+  }, [dispatch]);
 
   // useEffect(() => {
   //   axiosBearer
@@ -243,6 +261,14 @@ function App() {
               path="change-password"
               element={<UserChangePasswordPage></UserChangePasswordPage>}
             ></Route>
+            <Route
+              path="accomplishments"
+              element={<UserAccomplishmentPage></UserAccomplishmentPage>}
+            ></Route>
+            <Route
+              path="accomplishments/verify/:certificateUID"
+              element={<UserCertificationPage></UserCertificationPage>}
+            ></Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
@@ -269,22 +295,20 @@ function App() {
             path="/oauth2/redirect"
             element={<OAuth2RedirectPage></OAuth2RedirectPage>}
           ></Route>
-
-          <Route
+            <Route
             path="/notification"
             element={<NotificationListPage></NotificationListPage>}
           ></Route>
-
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"
             element={
               <CheckAuthPage
-                allowPermissions={permissions.admin.ROLE}
+                allowPermissions={[ADMIN_ROLE, MANAGER_ROLE]}
               ></CheckAuthPage>
             }
           >
-            <Route index element={<AdminPage />}></Route>
+            <Route index element={<AdminDashboardPage />}></Route>
             {/* Admin Courses */}
             <Route path="courses" element={<AdminCourseListPage />}></Route>
             <Route
@@ -299,7 +323,6 @@ function App() {
               path="courses/authors/create"
               element={<AdminCreateAuthorPage />}
             ></Route>
-
             {/* Admin Parts */}
             <Route
               path="courses/:courseId/parts"
@@ -327,7 +350,6 @@ function App() {
               path="courses/:courseId/parts/:partId/questions/:questionId/answers/create"
               element={<AdminCreateAnswerPage />}
             ></Route>
-
             {/* Admin Sections */}
             <Route
               // path="sections"
@@ -352,11 +374,14 @@ function App() {
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
-
             {/* Admin Users */}
             <Route
               path="users"
               element={<AdminUserListPage></AdminUserListPage>}
+            ></Route>
+            <Route
+              path="users/create"
+              element={<AdminCreateUserPage></AdminCreateUserPage>}
             ></Route>
           </Route>
           {/* ******* END ADMIN ******* */}
