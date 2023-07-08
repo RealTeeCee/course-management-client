@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { MESSAGE_GENERAL_FAILED } from "../constants/config";
+import { APP_KEY_NAME, MESSAGE_GENERAL_FAILED } from "../constants/config";
 
 // Input: 123456 - Output: 123.456 using For Count items
 export function formatNumber(number) {
@@ -179,4 +179,25 @@ export function convertToHumanTime(seconds) {
 // Input email and return userName
 export function getUserNameByEmail(email) {
   return email ? email.split("@")[0] : email;
+}
+// Set keyword when User input search something
+export function setSearchHistory(keyword) {
+  const history =
+    JSON.parse(localStorage.getItem(`${APP_KEY_NAME}_searchHistory`)) || [];
+
+  // Remove the keyword if it already exists in the history
+  const filteredHistory = history.filter((item) => item !== keyword);
+  const updatedHistory = [keyword, ...filteredHistory];
+
+  localStorage.setItem(
+    `${APP_KEY_NAME}_searchHistory`,
+    JSON.stringify(updatedHistory)
+  );
+}
+
+// get search history
+export function getSearchHistory() {
+  return (
+    JSON.parse(localStorage.getItem(`${APP_KEY_NAME}_searchHistory`)) || []
+  );
 }

@@ -1,11 +1,18 @@
 import { Skeleton } from "antd";
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
 import Overlay from "../../components/common/Overlay";
-import { HeadingH2Com } from "../../components/heading";
+import {
+  HeadingH2Com,
+  HeadingH3Com,
+  HeadingH4Com,
+  HeadingH5Com,
+} from "../../components/heading";
 import { IconRemoveCom, IconSearchCom } from "../../components/icon";
 import useDebounceOnChange from "../../hooks/useDebounceOnChange";
+import { getSearchHistory, setSearchHistory } from "../../utils/helper";
 import SearchItemMod from "./SearchItemMod";
 
 const HomeSearchMod = () => {
@@ -15,6 +22,7 @@ const HomeSearchMod = () => {
   const [search, setSearch] = useState("");
   const searchDebounce = useDebounceOnChange(search, 2000);
   const [dataSearch, setDataSearch] = useState([]);
+  const [historyKeyword, setHistoryKeyword] = useState([]);
 
   const inputRef = useRef(null);
 
@@ -25,8 +33,16 @@ const HomeSearchMod = () => {
   };
 
   useEffect(() => {
-    if (searchDebounce) getSearchData(searchDebounce);
+    if (searchDebounce) {
+      getSearchData(searchDebounce);
+      setSearchHistory(searchDebounce);
+      setHistoryKeyword(getSearchHistory());
+    }
   }, [searchDebounce]);
+
+  useEffect(() => {
+    setHistoryKeyword(getSearchHistory());
+  }, []);
 
   useEffect(() => {
     if (search) setIsSearch(true);
@@ -48,7 +64,6 @@ const HomeSearchMod = () => {
       const res = await axiosInstance.post(
         `/home/search?name=${searchDebounce}`
       );
-      console.log("res:", res);
       setDataSearch(res.data);
     } catch (error) {
       console.log(error);
@@ -56,6 +71,7 @@ const HomeSearchMod = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <>
       <Overlay isShow={isSearch} onClick={handleShowSearch} />
@@ -67,9 +83,18 @@ const HomeSearchMod = () => {
               type="text"
               name="keyword"
               placeholder="Search course, author, blog..."
-              className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full outline-none"
+              className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full outline-none appearance-none"
               onChange={handleChangeSearch}
+              autoComplete="off"
+              list="search-history-list"
             />
+            {historyKeyword.length > 0 && (
+              <datalist id="search-history-list">
+                {historyKeyword.slice(0, 4).map((keyword) => (
+                  <option value={keyword} key={keyword} />
+                ))}
+              </datalist>
+            )}
           </div>
           <button
             className={`w-[42px] h-10 rounded-full text-tw-light tw-transition-all flex items-center justify-center flex-shrink-0 hover:opacity-60 ${
@@ -93,18 +118,24 @@ const HomeSearchMod = () => {
               </div>
             ) : dataSearch.length > 0 ? (
               <>
-                <div className="flex items-center justify-between px-6 py-[0.5rem] bg-gray-200 rounded-lg">
-                  <h4 className="font-medium text-sm text-tw-light-pink">
-                    See all {dataSearch.length}{" "}
-                    {dataSearch.length > 1 ? "results" : "result"}
-                  </h4>
-                  <button className="flex items-center justify-center w-16 h-11"></button>
-                </div>
+                <Link to={`/`}>
+                  <div className="flex items-center justify-between px-6 py-3 bg-gray-200 rounded-lg">
+                    <HeadingH4Com>
+                      See all {dataSearch.length}{" "}
+                      {dataSearch.length > 1 ? "results" : "result"}
+                    </HeadingH4Com>
+                  </div>
+                </Link>
 
                 <div className="p-6">
                   <div className="flex flex-col gap-y-5 mb-6">
-                    {dataSearch.map((item) => (
-                      <SearchItemMod key={item.id} item={item}></SearchItemMod>
+                    {dataSearch.map((item, index) => (
+                      <div key={item.id}>
+                        {item?.type !== dataSearch[index - 1]?.type && (
+                          <HeadingH5Com>{item.type}</HeadingH5Com>
+                        )}
+                        <SearchItemMod item={item} />
+                      </div>
                     ))}
                   </div>
                   <h3 className="text-sm font-semibold mb-[1rem]">

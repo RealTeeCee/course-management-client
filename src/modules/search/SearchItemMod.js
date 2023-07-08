@@ -1,39 +1,46 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { sliceText } from "../../utils/helper";
 
 const SearchItemMod = ({ item }) => {
   const { data: courses } = useSelector((state) => state.course);
   let newItem = [];
   let slug = "/";
-  let sub = "";
+  let subText = "";
   switch (item.type) {
     case "COURSE":
       newItem = courses.find((c) => c.id === item.id);
-      slug = `/courses/${newItem.slug}`;
+      slug = `/courses/${newItem?.slug}`;
       break;
     case "BLOG":
-      slug = `/blogs/${newItem.id}`;
+      newItem = item;
+      slug = `/blogs/${newItem?.id}`;
+      subText = sliceText(newItem?.description, 200);
       break;
     case "AUTHOR":
+      newItem = item;
+      slug = `/authors/${newItem?.id}`;
+      subText = sliceText(newItem?.description, 200);
       break;
     default:
       break;
   }
   console.log("newItem:", newItem);
   return (
-    <Link to={slug}>
+    <Link to={slug} className="tw-transition-all">
       <div className="c-search-item flex items-center gap-x-5">
         <img
-          srcSet={newItem.image}
+          srcSet={newItem?.image}
           className="w-[50px] h-[50px] object-cover flex-shrink-0 rounded-xl"
           alt="Search Results"
         />
         <div className="flex-1 text-sm">
           <h3 className="mb-[.25rem]">
-            <strong>{newItem.category_name}</strong> {newItem.name}
+            {newItem?.category_name && <strong>{newItem.category_name}</strong>}{" "}
+            {newItem?.name}
           </h3>
-          <p className="text-gray-400">By FPT Aptech</p>
+          <p className="text-gray-400">{subText}</p>
         </div>
       </div>
     </Link>
