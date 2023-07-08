@@ -13,10 +13,18 @@ const HomeSearchMod = () => {
             className="bg-transparent text-sm placeholder:text-gray-400 text-black w-full pl-3 py-2 rounded-full outline-none"
           />
         </div>
-        <button className={`w-[72px] h-10 rounded-full text-tw-light tw-transition-all flex items-center justify-center flex-shrink-0 hover:opacity-60 ${isSearch ? "bg-tw-light-pink" : "bg-primary"}`}>
+        <button
+          className={`w-[72px] h-10 rounded-full text-tw-light tw-transition-all flex items-center justify-center flex-shrink-0 hover:opacity-60 ${
+            isSearch ? "bg-tw-light-pink" : "bg-primary"
+          }`}
+        >
           {/* Xứ lý nếu có search thì hiện Icon Remove + style text-tw-danger hoặc bg-tw-orange */}
-          
-          {isSearch ? <IconRemoveCom></IconRemoveCom> : <IconSearchCom></IconSearchCom>}
+
+          {isSearch ? (
+            <IconRemoveCom></IconRemoveCom>
+          ) : (
+            <IconSearchCom></IconSearchCom>
+          )}
         </button>
       </div>
       {isSearch && (

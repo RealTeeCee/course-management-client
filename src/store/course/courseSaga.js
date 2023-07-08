@@ -28,18 +28,28 @@ import {
   handleReadAllNotification,
   handleGenerateCourseExam,
   handleFinishExam,
+  handleRetakeExam,
+  handleLoadAccomplishmentsExam,
+  handleLoadCertificate,
+  handleDownloadCertificate,
+  handleOnGetMyLearning,
+  handleAllNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
   onCourseLoading,
   onDeleteNote,
   onDeletePost,
+  onDownloadCertificate,
   onFinishExam,
   onFreeCourseLoading,
   onGenerateCourseExam,
   onGetEnrollId,
   onGetLearning,
+  onGetMyLearning,
   onGetTrackingLesson,
+  onLoadAccomplishmentsExam,
+  onLoadCertificate,
   onLoadCourseRating,
   onLoadNote,
   onLoadNotification,
@@ -50,6 +60,7 @@ import {
   onReadNotification,
   onRelatedCourseLoading,
   onRemoveReplyInPost,
+  onRetakeExam,
   onSaveLikeOfPost,
   onSaveNote,
   onSavePost,
@@ -58,6 +69,7 @@ import {
   onSaveTrackingVideo,
   onUpdateCompletedVideo,
   onUpdateUserRating,
+  onAllNotification,
 } from "./courseSlice";
 
 /**
@@ -72,6 +84,7 @@ export default function* courseSaga() {
     takeLatest(onRelatedCourseLoading.type, handleOnRelatedCourseLoading),
     takeLatest(onGetEnrollId.type, handleOnGetEnrollId),
     takeLatest(onGetLearning.type, handleOnGetLearning),
+    takeLatest(onGetMyLearning.type, handleOnGetMyLearning),
     takeLatest(onManualSelectedLesson.type, handleOnManualSelectedLesson),
     takeLatest(onGetTrackingLesson.type, handleOnGetTrackingLesson),
     takeLatest(onSaveTrackingLesson.type, handleOnSaveTrackingLesson),
@@ -93,5 +106,10 @@ export default function* courseSaga() {
     takeLatest(onLoadCourseRating.type, handleLoadCourseRating),
     takeLatest(onGenerateCourseExam.type, handleGenerateCourseExam),
     takeLatest(onFinishExam.type, handleFinishExam),
+    takeLatest(onRetakeExam.type, handleRetakeExam),
+    takeLatest(onLoadAccomplishmentsExam.type, handleLoadAccomplishmentsExam),
+    takeLatest(onLoadCertificate.type, handleLoadCertificate),
+    takeLatest(onDownloadCertificate.type, handleDownloadCertificate),
+    takeLatest(onAllNotification.type, handleAllNotification),
   ]);
 }

@@ -100,10 +100,12 @@ const AdminUserListPage = () => {
   const [tableKey, setTableKey] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenPermission, setIsOpenPermission] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [isFetching, setIsFetching] = useState(false);
   const [filterUser, setFilterUser] = useState([]);
   const [search, setSearch] = useState("");
+
+  const { user, isLoading } = useSelector((state) => state.auth);
 
   /********* END API State ********* */
 

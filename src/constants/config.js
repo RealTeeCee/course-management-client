@@ -1,4 +1,4 @@
-export const APP_KEY_NAME = "click_and_learn";
+export const APP_KEY_NAME = "click_and_learn"; 
 export const BASE_DOMAIN_URL =
   process.env.REACT_APP_DOMAIN_URL ?? "http://localhost:3000";
 export const BASE_API_URL =
@@ -163,6 +163,21 @@ export const sortItems = [
   {
     value: "ASC",
     label: "Sort by Oldest",
+  },
+];
+
+export const statusBlogItems = [
+  {
+    value: 1,
+    label: "Active",
+  },
+  {
+    value: 0,
+    label: "InActive",
+  },
+  {
+    value: 2,
+    label: "Proccessing",
   },
 ];
 

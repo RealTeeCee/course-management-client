@@ -51,6 +51,9 @@ export function getDurationFromVideo(
     setValue(name, Math.round(video.duration));
   };
 
+  if (e.target.files.length === 0) {
+    return null;
+  }
   video.src = URL.createObjectURL(e.target.files[0]);
 }
 
@@ -76,7 +79,7 @@ export function convertSecondToDiffForHumans(seconds = 3600) {
     let formattedDuration = `${minutes} ${minutes >= 1 ? "mins" : "min"}`;
 
     if (remainingSeconds >= 1) {
-      formattedDuration += ` ${remainingSeconds} ${
+      formattedDuration += ` ${Math.round(Math.floor(remainingSeconds))} ${
         remainingSeconds >= 1 ? "seconds" : "second"
       }`;
     }
@@ -157,4 +160,19 @@ export function convertStrToSlug(str) {
 // title = "Part", and number = "1"
 export function fakeName(title, number, divider = "#") {
   return `${title}${divider}${number}`;
+}
+
+// Convert seconds to only hour, minute, second (approximately). Ex: 65 = "1 minute", 3665 = "1 hour"...
+export function convertToHumanTime(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours} hour${hours > 1 ? "s" : ""}`;
+  } else if (minutes > 0) {
+    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+  } else {
+    return `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
+  }
 }

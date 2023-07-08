@@ -68,7 +68,7 @@ const UserProfilePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const { user, isLoading, course } = useSelector((state) => state.auth);
+  const { user, isLoading} = useSelector((state) => state.auth);
   console.log("user: ", user);
   const { data } = useSelector((state) => state.course);
   const dispatch = useDispatch();
@@ -129,9 +129,10 @@ const UserProfilePage = () => {
         id,
         first_name,
         last_name,
-        imageUrl,
+        imageUrl, 
         access_token,
       })
+      
     );
   };
 
@@ -275,7 +276,7 @@ const UserProfilePage = () => {
                     {" "}
                     {/* Container */}
                     <SwitchAntCom
-                      defaultChecked={user.notify ? true : false}
+                      defaultChecked={user.notify ? true : false} 
                       className={`${
                         user.notify ? "" : "bg-tw-danger hover:!bg-tw-orange"
                       }`}

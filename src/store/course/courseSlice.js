@@ -1,4 +1,4 @@
-import { addNewNotes, deleteNotes } from "./courseHelper";
+import { addNewNotes, deleteNotes, updateLessonDto } from "./courseHelper";
 
 const { createSlice } = require("@reduxjs/toolkit");
 
@@ -9,7 +9,7 @@ const initialState = {
   isSelectLessonManual: false,
   isReload: false,
   isReady: false,
-  isEnrolled: false,
+  isEnrolled: undefined,
   data: [], //onCourseLoading() - HomePage.js, CoursePage.js
   freeCourse: [],
   bestSellerCourse: [],
@@ -39,6 +39,20 @@ const initialState = {
   courseRating: [],
   examination: [],
   finishExam: null,
+  generateExamSuccess: false,
+  countdown: -1,
+  retakeExam: {
+    examSession: 0,
+    correctAnswer: "",
+    totalExamTime: 0,
+    totalPoint: 0,
+    grade: null,
+    created_at: null,
+    passed: false,
+  },
+  accomplishments: [],
+  cert: null,
+  notifications: [],
 };
 const courseSlice = createSlice({
   name: "course",
@@ -53,11 +67,13 @@ const courseSlice = createSlice({
         errorMessage: null,
         isReload: action.payload,
         isLoadLearningStatus: false,
+        generateExamSuccess: false,
       };
     },
     onMyCourseLoading: (state, action) => ({
       ...state,
       errorMessage: null,
+      generateExamSuccess: false,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
@@ -69,7 +85,7 @@ const courseSlice = createSlice({
     }),
     onCourseLoading: (state, action) => ({
       ...state,
-      isEnrolled: false,
+      isEnrolled: undefined,
       errorMessage: null,
     }),
     onCourseSuccess: (state, action) => ({
@@ -113,12 +129,15 @@ const courseSlice = createSlice({
         return {
           ...state,
           courseId: filteredCourse[0].id,
+          progress: filteredCourse[0].progress,
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
+          generateExamSuccess: false,
         };
       }
       return {
         ...state,
+        generateExamSuccess: false,
       };
     },
     onSelectedLesson: (state, action) => {
@@ -173,7 +192,7 @@ const courseSlice = createSlice({
     }),
     onGetEnrollId: (state, action) => ({
       ...state,
-      isEnrolled: false,
+      isEnrolled: undefined,
       errorMessage: null,
     }),
     onGetEnrollIdSuccess: (state, action) => ({
@@ -188,6 +207,18 @@ const courseSlice = createSlice({
       isLoading: true,
     }),
     onGetLearningSuccess: (state, action) => ({
+      ...state,
+      learning: action.payload,
+      isLoadLearningStatus: true,
+      isLoading: false,
+    }),
+    onGetMyLearning: (state, action) => ({
+      ...state,
+      errorMessage: null,
+      isLoadLearningStatus: false,
+      isLoading: true,
+    }),
+    onGetMyLearningSuccess: (state, action) => ({
       ...state,
       learning: action.payload,
       isLoadLearningStatus: true,
@@ -222,6 +253,13 @@ const courseSlice = createSlice({
     onUpdateCompletedVideo: (state, action) => ({
       ...state,
       errorMessage: null,
+      learning: {
+        ...state.learning,
+        lessonDto: updateLessonDto(
+          state.learning.lessonDto,
+          action.payload.lessonId
+        ),
+      },
     }),
     onUpdateCompletedVideoSuccess: (state, action) => ({
       ...state,
@@ -350,10 +388,12 @@ const courseSlice = createSlice({
     }),
     onGenerateCourseExam: (state, action) => ({
       ...state,
+      generateExamSuccess: false,
     }),
     onGenerateCourseExamSuccess: (state, action) => ({
       ...state,
       examination: action.payload,
+      generateExamSuccess: true,
     }),
     onFinishExam: (state, action) => ({
       ...state,
@@ -361,6 +401,58 @@ const courseSlice = createSlice({
     onFinishExamSuccess: (state, action) => ({
       ...state,
       finishExam: action.payload,
+      generateExamSuccess: false,
+    }),
+    onRetakeExam: (state, action) => ({
+      ...state,
+    }),
+    onRetakeExamSuccess: (state, action) => ({
+      ...state,
+      retakeExam: action.payload,
+    }),
+    onCountdown: (state, action) => ({
+      ...state,
+      countdown: state.countdown === 0 ? 0 : action.payload,
+    }),
+    onLoadAccomplishmentsExam: (state, action) => ({
+      ...state,
+    }),
+    onLoadAccomplishmentsExamSuccess: (state, action) => ({
+      ...state,
+      accomplishments: action.payload,
+    }),
+
+    onSelectedCertificate: (state, action) => {
+      const filteredCert = state.accomplishments.filter(
+        (cert) => cert.certificateUID === action.payload
+      );
+
+      if (filteredCert.length > 0) {
+        return {
+          ...state,
+          cert: filteredCert[0],
+        };
+      }
+      return {
+        ...state,
+      };
+    },
+
+    onLoadCertificate: (state, action) => ({
+      ...state,
+    }),
+    onLoadCertificateSuccess: (state, action) => ({
+      ...state,
+    }),
+    onDownloadCertificate: (state, action) => ({
+      ...state,
+    }),
+    onAllNotification: (state, action) => ({
+      ...state,
+    }),
+    onAllNotificationSuccess: (state, action) => ({
+      ...state,
+      notifications: action.payload,
     }),
   },
 });
@@ -388,6 +480,8 @@ export const {
   onGetEnrollIdSuccess,
   onGetLearning,
   onGetLearningSuccess,
+  onGetMyLearning,
+  onGetMyLearningSuccess,
   onGetTrackingLesson,
   onSaveTrackingLesson,
   onGetTrackingLessonSuccess,
@@ -429,6 +523,17 @@ export const {
   onGenerateCourseExamSuccess,
   onFinishExam,
   onFinishExamSuccess,
+  onRetakeExam,
+  onRetakeExamSuccess,
+  onCountdown,
+  onLoadAccomplishmentsExam,
+  onLoadAccomplishmentsExamSuccess,
+  onSelectedCertificate,
+  onLoadCertificate,
+  onLoadCertificateSuccess,
+  onDownloadCertificate,
+  onAllNotification,
+  onAllNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

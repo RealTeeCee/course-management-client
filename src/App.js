@@ -18,6 +18,14 @@ import ExamPage from "./pages/exam/ExamPage.js";
 import { onRemoveToken } from "./store/auth/authSlice.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
+import { onAuthorInitialState } from "./store/author/authorSlice.js";
+const UserCertificationPage = lazy(() =>
+  import("./pages/user/UserCertificationPage.js")
+);
+const UserAccomplishmentPage = lazy(() =>
+  import("./pages/user/UserAccomplishmentPage.js")
+);
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -124,12 +132,16 @@ const PaymentSuccessPage = lazy(() =>
 const PaymentErrorPage = lazy(() =>
   import("./pages/payment/PaymentErrorPage.js")
 );
+const NotificationListPage = lazy(() =>
+  import("./pages/notification/NotificationListPage.js")
+);
 
 Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const { examination } = useSelector(selectAllCourseState);
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -149,10 +161,10 @@ function App() {
     }
   }, [dispatch, navigate, user?.status]);
 
-  // useEffect(() => {
-  //   //   dispatch(onCourseInitalState());
-  //   dispatch(onAuthInitialState());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(onAuthorInitialState());
+    // dispatch(onAuthInitialState());
+  }, [dispatch]);
 
   // useEffect(() => {
   //   axiosBearer
@@ -248,6 +260,14 @@ function App() {
             <Route
               path="change-password"
               element={<UserChangePasswordPage></UserChangePasswordPage>}
+            ></Route>
+            <Route
+              path="accomplishments"
+              element={<UserAccomplishmentPage></UserAccomplishmentPage>}
+            ></Route>
+            <Route
+              path="accomplishments/verify/:certificateUID"
+              element={<UserCertificationPage></UserCertificationPage>}
             ></Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>

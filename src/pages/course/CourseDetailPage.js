@@ -435,7 +435,7 @@ const CourseDetailPage = () => {
   );
 };
 
-const ArchiveItems = ({ title }) => (
+export const ArchiveItems = ({ title }) => (
   <div className="archive-item col-sm-6 mb-3">
     <div className="flex gap-x-2 items-center">
       <IconCheckCom className="text-tw-success"></IconCheckCom>

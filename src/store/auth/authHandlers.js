@@ -158,8 +158,10 @@ function* handleOnUserChangePassword({ payload }) {
 function* handleOnUserUpdateProfile({ payload }) {
   try {
     const res = yield call(requestUserUpdateProfile, payload);
+    console.log("res handle: ",res);
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
+      console.log("res.data handle: ",res.data);
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
@@ -170,7 +172,7 @@ function* handleOnUserUpdateProfile({ payload }) {
     yield put(onLoading(false));
   }
 }
-
+ 
 function* handleOnUserUpdateNoti({ payload }) {
   try {
     const res = yield call(requestUserUpdateNoti, payload);

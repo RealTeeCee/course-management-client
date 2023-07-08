@@ -24,6 +24,24 @@ export const addNewNotes = (notes = [], noteToAdd) => {
   return [noteToAdd, ...notes];
 };
 
+export const updateLessonDto = (lessonDtos = [], updatedLessonId) => {
+  const updatedLesson = lessonDtos.find(
+    (lessonDto) => lessonDto.id === updatedLessonId
+  );
+
+  if (updatedLesson) {
+    return lessonDtos.map((lessonDto) =>
+      lessonDto.id === updatedLessonId
+        ? {
+            ...lessonDto,
+            completed: true,
+          }
+        : lessonDto
+    );
+  }
+  return lessonDtos;
+};
+
 export const deleteNotes = (notes = [], noteId) => {
   return notes.filter((note) => note.id !== noteId);
 };

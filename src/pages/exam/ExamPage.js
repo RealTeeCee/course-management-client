@@ -1,22 +1,64 @@
-import React from "react";
 import { Container } from "@mui/material";
-import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
 import { selectAllCourseState } from "../../store/course/courseSelector";
-import { useState } from "react";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
+import { Navigate, useBeforeUnload, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import useExitPrompt from "../../hooks/useExitPrompt";
+import useNavigationBlocker from "../../hooks/useNavigationBlocker";
+
+const WarningContent = () => (
+  <span>
+    If you exit/close this page, it will be counted as a{" "}
+    <strong style={{ color: "red" }}>FAILED</strong> exam or an incomplete
+    status. Please make sure to complete the exam before leaving the page.
+  </span>
+);
 
 const ExamPage = () => {
   const { examination } = useSelector(selectAllCourseState);
-
   const [showDialog, setShowDialog] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
+  // const [showExitPrompt, setShowExitPrompt] = useExitPrompt(true);
+  const location = useLocation();
+  window.onbeforeunload = function () {
+    return "Are you sure to leave this page?";
+  };
+
+  console.log("LOCATION", location);
+
+  useEffect(() => {
+    setShowAlert(true);
+    setShowDialog(false);
+  }, [location.key]);
 
   const handleConfirm = () => {
     setShowDialog(false);
   };
 
-  return (
+  const handleUnderstand = () => {
+    if (!showDialog) {
+      setShowDialog(true);
+    }
+    setShowAlert(false);
+  };
+
+  //useNavigationBlocker("Are you sure you want to leave?", true);
+
+  return !examination || examination.length === 0 ? (
+    <Navigate to="/forbidden" />
+  ) : (
     <Container maxWidth="sm">
+      <DialogConfirmMuiCom
+        open={showAlert}
+        onClose={() => setShowAlert(!showAlert)}
+        onConfirm={handleUnderstand}
+        confirmContent={"Yes, I understand."}
+        warning={`WARNING`}
+        warningContent={<WarningContent></WarningContent>}
+      ></DialogConfirmMuiCom>
       <DialogConfirmMuiCom
         open={showDialog}
         onConfirm={handleConfirm}
@@ -26,12 +68,14 @@ const ExamPage = () => {
             ? convertSecondToDiffForHumans(examination[0].limitTime)
             : 0
         }`}
-        content={`Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-      dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-      consectetur ac, vestibulum at eros.`}
+        title2={`Exam Rules`}
+        content0={`Hardware is an important example not to be overlooked. Students need to have working microphones and 
+        cameras If need be.`}
+        content={`Students must also have a reliable internet connection. This is important to ensure smooth testing.
+         Technical difficulties can be made into an opportunistic situation for students involving re-testing.`}
       ></DialogConfirmMuiCom>
 
-      {!showDialog && <QuizMuiCom exam={examination} />}
+      {!showDialog && !showAlert && <QuizMuiCom exam={examination} />}
     </Container>
   );
 };
