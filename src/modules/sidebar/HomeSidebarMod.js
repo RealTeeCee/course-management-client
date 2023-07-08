@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import {
   IconAdminCom,
+  IconAuthorCom,
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
@@ -17,7 +18,7 @@ const sidebarItems = [
     url: "/",
   },
   {
-    icon: <IconMapCom className="mx-auto" />,
+    icon: <IconAuthorCom className="mx-auto text-2xl" />,
     title: "Author",
     url: "/authors",
   },

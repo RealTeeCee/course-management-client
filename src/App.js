@@ -129,6 +129,8 @@ const UserChangePasswordPage = lazy(() =>
   import("./pages/user/UserChangePasswordPage.js")
 );
 
+const SearchPage = lazy(() => import("./pages/search/SearchPage.js"));
+
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 const BlogCreatePage = lazy(() => import("./pages/blog/BlogCreatePage.js"));
@@ -309,6 +311,8 @@ function App() {
             path="/authors/:authorId"
             element={<AuthorDetailsPage></AuthorDetailsPage>}
           ></Route>
+          <Route path="/search" element={<SearchPage></SearchPage>}></Route>
+
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"

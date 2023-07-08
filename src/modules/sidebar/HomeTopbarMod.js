@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -24,12 +25,10 @@ import {
 import { onRemoveToken } from "../../store/auth/authSlice";
 import { onAuthorInitialState } from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import { onCourseInitalState } from "../../store/course/courseSlice";
 import { getUserNameByEmail, sliceText } from "../../utils/helper";
 import HomeSearchMod from "../search/HomeSearchMod";
-import { Button } from "@mui/material";
-import { selectAllCourseState } from "../../store/course/courseSelector";
-import Overlay from "../../components/common/Overlay";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -52,7 +51,7 @@ const HomeTopbarMod = () => {
     },
     {
       icon: <IconCertificateCom />,
-      title: "Cert",
+      title: "Certificate",
       url: `/profile/accomplishments`,
     },
     {
@@ -165,7 +164,7 @@ const HomeTopbarMod = () => {
                 </p>
               </div>
             </div>
-            <ul className="profile-dropdown onhover-show-div active top-14 w-36">
+            <ul className="profile-dropdown onhover-show-div active top-14 left-auto right-0 w-[10.5rem]">
               {userItems.map((item, index) => {
                 // If user is login, exclude "/register" and "/login" URLs
                 if (

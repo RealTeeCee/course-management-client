@@ -134,7 +134,7 @@ export function getCurrentDate() {
 
 // If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
-  const newText = text.replace(/(<([^>]+)>)/gi, "");
+  const newText = text.replace(/(&nbsp;)/gi, " ").replace(/(<([^>]+)>)/gi, "");
   if (newText.length > maxLength)
     return `${newText.slice(0, maxLength)}${loadMore}`;
 
@@ -187,7 +187,7 @@ export function setSearchHistory(keyword) {
 
   // Remove the keyword if it already exists in the history
   const filteredHistory = history.filter((item) => item !== keyword);
-  const updatedHistory = [keyword, ...filteredHistory];
+  const updatedHistory = [keyword, ...filteredHistory].slice(0, 100);
 
   localStorage.setItem(
     `${APP_KEY_NAME}_searchHistory`,

@@ -1,26 +1,24 @@
 import { Skeleton } from "antd";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { v4 } from "uuid";
 import axiosInstance from "../../api/axiosInstance";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
 import Overlay from "../../components/common/Overlay";
-import {
-  HeadingH2Com,
-  HeadingH3Com,
-  HeadingH4Com,
-  HeadingH5Com,
-} from "../../components/heading";
+import { HeadingH4Com, HeadingH5Com } from "../../components/heading";
 import { IconRemoveCom, IconSearchCom } from "../../components/icon";
 import useDebounceOnChange from "../../hooks/useDebounceOnChange";
 import { getSearchHistory, setSearchHistory } from "../../utils/helper";
 import SearchItemMod from "./SearchItemMod";
 
 const HomeSearchMod = () => {
+  const { data: courses } = useSelector((state) => state.course);
   const [isSearch, setIsSearch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [search, setSearch] = useState("");
-  const searchDebounce = useDebounceOnChange(search, 2000);
+  const searchDebounce = useDebounceOnChange(search);
   const [dataSearch, setDataSearch] = useState([]);
   const [historyKeyword, setHistoryKeyword] = useState([]);
 
@@ -64,7 +62,7 @@ const HomeSearchMod = () => {
       const res = await axiosInstance.post(
         `/home/search?name=${searchDebounce}`
       );
-      setDataSearch(res.data);
+      if (res.status === 200) setDataSearch(res.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -72,10 +70,30 @@ const HomeSearchMod = () => {
     }
   };
 
+  // Handle Related Search Data
+  let courseInSearch = null;
+  if (dataSearch.length > 0) {
+    for (let i = 0; i < dataSearch.length; i++) {
+      if (dataSearch[i].type === "COURSE") {
+        courseInSearch = courses.find((item) => item.id === dataSearch[i].id);
+      }
+    }
+  }
+  let relatedCourses = [];
+  if (courseInSearch) {
+    relatedCourses = courses
+      .filter(
+        (item) =>
+          item.category_id === courseInSearch.category_id &&
+          item.id !== courseInSearch.id
+      )
+      .slice(0, 3);
+  }
+
   return (
     <>
       <Overlay isShow={isSearch} onClick={handleShowSearch} />
-      <div className="c-search relative z-50">
+      <div className="c-search relative z-50" onClick={handleShowSearch}>
         <div className="bg-tw-light rounded-full shadow-primary p-2 w-full flex items-center">
           <div className="flex-1 px-2">
             <input
@@ -118,8 +136,8 @@ const HomeSearchMod = () => {
               </div>
             ) : dataSearch.length > 0 ? (
               <>
-                <Link to={`/`}>
-                  <div className="flex items-center justify-between px-6 py-3 bg-gray-200 rounded-lg">
+                <Link to={`/search?keyword=${searchDebounce}`}>
+                  <div className="flex items-center justify-between px-6 py-3 bg-gray-200 tw-transition-all hover:bg-tw-dark rounded-lg">
                     <HeadingH4Com>
                       See all {dataSearch.length}{" "}
                       {dataSearch.length > 1 ? "results" : "result"}
@@ -130,7 +148,7 @@ const HomeSearchMod = () => {
                 <div className="p-6">
                   <div className="flex flex-col gap-y-5 mb-6">
                     {dataSearch.map((item, index) => (
-                      <div key={item.id}>
+                      <div key={v4()}>
                         {item?.type !== dataSearch[index - 1]?.type && (
                           <HeadingH5Com>{item.type}</HeadingH5Com>
                         )}
@@ -138,15 +156,26 @@ const HomeSearchMod = () => {
                       </div>
                     ))}
                   </div>
-                  <h3 className="text-sm font-semibold mb-[1rem]">
-                    Related results
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <p>
-                      <strong>Programming</strong> What is Web3, how does NFT
-                      work ?
-                    </p>
-                  </div>
+                  {relatedCourses.length > 0 && (
+                    <div className="text-tw-light-gray">
+                      <h3 className="text-sm font-semibold mb-[0.5rem] text-black">
+                        Related results
+                      </h3>
+                      {relatedCourses.map((item) => (
+                        <Link
+                          to={`/courses/${item.slug}`}
+                          key={v4()}
+                          className="tw-transition-all"
+                        >
+                          <div className="flex flex-col gap-y-3">
+                            <p>
+                              <strong>{item.category_name}</strong> {item.name}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             ) : (

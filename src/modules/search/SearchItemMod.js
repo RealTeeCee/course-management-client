@@ -12,28 +12,29 @@ const SearchItemMod = ({ item }) => {
     case "COURSE":
       newItem = courses.find((c) => c.id === item.id);
       slug = `/courses/${newItem?.slug}`;
+      subText = sliceText(newItem?.description, 115);
       break;
     case "BLOG":
       newItem = item;
       slug = `/blogs/${newItem?.id}`;
-      subText = sliceText(newItem?.description, 200);
+      subText = sliceText(newItem?.description, 115);
       break;
     case "AUTHOR":
       newItem = item;
       slug = `/authors/${newItem?.id}`;
-      subText = sliceText(newItem?.description, 200);
+      subText = sliceText(newItem?.description, 115);
       break;
     default:
       break;
   }
-  console.log("newItem:", newItem);
+  // console.log("newItem:", newItem);
   return (
     <Link to={slug} className="tw-transition-all">
-      <div className="c-search-item flex items-center gap-x-5">
+      <div className="c-search-item flex items-center gap-x-5 px-[0.5rem] tw-transition-all hover:border-l-[6px] hover:solid hover:border-tw-primary hover:bg-tw-light">
         <img
           srcSet={newItem?.image}
           className="w-[50px] h-[50px] object-cover flex-shrink-0 rounded-xl"
-          alt="Search Results"
+          alt={newItem?.name}
         />
         <div className="flex-1 text-sm">
           <h3 className="mb-[.25rem]">
