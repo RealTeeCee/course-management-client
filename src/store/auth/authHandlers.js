@@ -10,15 +10,20 @@ import { showMessageError } from "../../utils/helper";
 import {
   requestForgetPassword,
   requestGetUser,
+  requestLoadPermissions,
+  requestLoadRoles,
   requestLogin,
   requestRefreshToken,
   requestRegister,
   requestResetPassword,
+  requestUpdatePermissions,
   requestUserChangePassword,
   requestUserUpdateNoti,
   requestUserUpdateProfile,
 } from "./authRequests";
 import {
+  onLoadPermissionSuccess,
+  onLoadRoleSuccess,
   onLoading,
   onLoginSuccess,
   onResetPasswordSuccess,
@@ -158,10 +163,10 @@ function* handleOnUserChangePassword({ payload }) {
 function* handleOnUserUpdateProfile({ payload }) {
   try {
     const res = yield call(requestUserUpdateProfile, payload);
-    console.log("res handle: ",res);
+    console.log("res handle: ", res);
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
-      console.log("res.data handle: ",res.data);
+      console.log("res.data handle: ", res.data);
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
@@ -172,11 +177,11 @@ function* handleOnUserUpdateProfile({ payload }) {
     yield put(onLoading(false));
   }
 }
- 
+
 function* handleOnUserUpdateNoti({ payload }) {
   try {
     const res = yield call(requestUserUpdateNoti, payload);
-    console.log("res: ", res);
+
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
 
@@ -187,6 +192,36 @@ function* handleOnUserUpdateNoti({ payload }) {
   } catch (error) {
     showMessageError(error);
   }
+}
+function* handleOnLoadRoles() {
+  try {
+    const res = yield call(requestLoadRoles);
+
+    if (res.status === 200) {
+      yield put(onLoadRoleSuccess(res.data));
+    } else {
+    }
+  } catch (error) {}
+}
+function* handleOnLoadPermissions() {
+  try {
+    const res = yield call(requestLoadPermissions);
+
+    if (res.status === 200) {
+      yield put(onLoadPermissionSuccess(res.data));
+    } else {
+    }
+  } catch (error) {}
+}
+function* handleOnUpdatePermissions({ payload }) {
+  try {
+    const res = yield call(requestUpdatePermissions, payload);
+
+    if (res.status === 200) {
+      toast.success(res.data.message);
+    } else {
+    }
+  } catch (error) {}
 }
 
 export {
@@ -200,4 +235,7 @@ export {
   handleOnUserChangePassword,
   handleOnUserUpdateProfile,
   handleOnUserUpdateNoti,
+  handleOnLoadRoles,
+  handleOnLoadPermissions,
+  handleOnUpdatePermissions,
 };

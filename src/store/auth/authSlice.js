@@ -11,6 +11,8 @@ const initialState = {
   isResetPasswordSuccess: false,
   isUserChangePasswordSuccess: false,
   errorMessage: null,
+  roles: [],
+  permissions: [],
 };
 const authSlice = createSlice({
   name: "auth",
@@ -101,6 +103,22 @@ const authSlice = createSlice({
     onUserUpdateNoti: (state, action) => ({
       ...state,
     }),
+    onLoadRole: (state, action) => ({
+      ...state,
+    }),
+    onLoadRoleSuccess: (state, action) => ({
+      ...state,
+      roles: action.payload,
+    }),
+    onLoadPermission: (state, action) => ({
+      ...state,
+    }),
+    onLoadPermissionSuccess: (state, action) => ({
+      ...state,
+      permissions: action.payload,
+    }),
+    onUpdatePermission: (state, action) => state,
+    onUpdatePermissionSuccess: (state, action) => state,
   },
 });
 
@@ -125,6 +143,11 @@ export const {
   onUserChangePasswordSuccess,
   onUserUpdateProfile,
   onUserUpdateNoti,
+  onLoadRole,
+  onLoadRoleSuccess,
+  onLoadPermission,
+  onLoadPermissionSuccess,
+  onUpdatePermission,
 } = authSlice.actions;
 // reducer
 export default authSlice.reducer;
