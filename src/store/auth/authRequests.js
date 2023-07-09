@@ -47,18 +47,22 @@ export const requestResetPassword = ({ password, confirmPassword, token }) => {
 };
 
 export const requestUserChangePassword = (data) => {
-  return axiosBearer.post(`/auth/change-password`, data);
+  return axiosBearer.post("/auth/change-password", data);
 };
 
 export const requestUserUpdateProfile = (data) => {
-  return axiosInstance.put(`/auth/user`, data, {
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${data.access_token ?? ""}`,
-    },
-  }); 
+  return axiosBearer.put("/auth/user", data);
 };
 
 export const requestUserUpdateNoti = (data) => {
-  return axiosBearer.put(`/auth/user/notify`, data); 
+  return axiosBearer.put("/auth/user/notify", data);
+};
+export const requestLoadRoles = () => {
+  return axiosBearer.get("/auth/role");
+};
+export const requestLoadPermissions = () => {
+  return axiosBearer.get("/auth/permission");
+};
+export const requestUpdatePermissions = (data) => {
+  return axiosBearer.put("/auth/user/update-permission", data);
 };
