@@ -41,9 +41,9 @@ const SelectSearchAntCom = (props) => {
     errorMsg = "",
     className = "",
     selectedValue = null,
+    isGetObject = false,
     ...rest
   } = props;
-
   return (
     <>
       <Select
@@ -59,7 +59,11 @@ const SelectSearchAntCom = (props) => {
             .toLowerCase()
             .localeCompare((optionB?.label ?? "").toLowerCase())
         }
-        onChange={(value) => onChange(listItems.find((r) => r.value === value))}
+        onChange={(value) =>
+          isGetObject
+            ? onChange(listItems.find((r) => r.value === value))
+            : onChange(value)
+        }
         options={listItems}
         className={`${className}`}
         {...rest}

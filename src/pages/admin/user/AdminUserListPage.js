@@ -300,7 +300,9 @@ const AdminUserListPage = () => {
     dispatch(onLoadRole());
     dispatch(onLoadPermission());
   }, [dispatch]);
+
   useEffect(() => {
+    console.log(role);
     role
       ? setPermissionList(permissions.filter((p) => p.role.id === role.id))
       : setPermissionList([]);
@@ -655,6 +657,7 @@ const AdminUserListPage = () => {
                         label: r.name,
                       }))}
                       onChange={handleChangeRole}
+                      isGetObject={true}
                       // onChange={handleChangeCategory}
                       className="w-full py-1"
                       status={
