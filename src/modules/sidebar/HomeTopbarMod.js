@@ -164,7 +164,7 @@ const HomeTopbarMod = () => {
                 </p>
               </div>
             </div>
-            <ul className="profile-dropdown onhover-show-div active top-14 left-auto right-0 w-[10.5rem]">
+            <ul className="profile-dropdown onhover-show-div active top-14 left-auto right-0 w-[10.5rem] z-20">
               {userItems.map((item, index) => {
                 // If user is login, exclude "/register" and "/login" URLs
                 if (

@@ -1,6 +1,13 @@
 import React from "react";
+import SpinAntCom from "../ant/SpinAntCom";
 
-const LoadingCom = () => {
+const LoadingCom = ({ isChild = false }) => {
+  if (isChild)
+    return (
+      <div className="w-full h-full fixed !top-1/2 !left-0">
+        <SpinAntCom loadingText="Loading..." />
+      </div>
+    );
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
       {/* <div>

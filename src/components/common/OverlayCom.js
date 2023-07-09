@@ -1,6 +1,6 @@
 import React from "react";
 
-const Overlay = ({ onClick = () => {}, isShow = false }) => {
+const OverlayCom = ({ onClick = () => {}, isShow = false }) => {
   return (
     <div
       className={`overlay fixed inset-0 z-40 bg-black bg-opacity-20 tw-transition-all ${
@@ -11,4 +11,4 @@ const Overlay = ({ onClick = () => {}, isShow = false }) => {
   );
 };
 
-export default Overlay;
+export default OverlayCom;

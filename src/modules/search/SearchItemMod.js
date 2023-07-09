@@ -1,11 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getItemsAfterCallApiSearch } from "../../utils/helper";
+import { convertCoreObjectItems } from "../../utils/helper";
 
 const SearchItemMod = ({ item }) => {
   const { data: courses } = useSelector((state) => state.course);
-  const newItem = getItemsAfterCallApiSearch(item, item.type, courses);
+  const newItem = convertCoreObjectItems(item, item.type, courses);
 
   return (
     <Link to={newItem.slug} className="tw-transition-all">

@@ -6,11 +6,13 @@ import ErrorCom from "../common/ErrorCom";
 
 const SpinAntCom = ({ loadingText }) => {
   return (
-    <div className="text-center">
-      <Spin size="large" tip={loadingText}>
-        {loadingText && <div className="content" />}
-      </Spin>
-    </div>
+    <>
+      <div className="text-center">
+        <Spin size="large" tip={loadingText}>
+          {loadingText && <div className="content" />}
+        </Spin>
+      </div>
+    </>
   );
 };
 

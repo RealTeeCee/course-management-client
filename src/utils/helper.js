@@ -203,8 +203,8 @@ export function getSearchHistory() {
   );
 }
 
-// Call API /home/search and then need to add some value, required: item, type, originalObj maybe courses, blogs, authors obj
-export function getItemsAfterCallApiSearch(
+// item will include id of originalObj,  originalObj is store in redux: courses, blogs, authors obj
+export function convertCoreObjectItems(
   item,
   type,
   originalObj,
@@ -214,30 +214,36 @@ export function getItemsAfterCallApiSearch(
   let slug = "/";
   let description = "";
   let countText = "";
+  let createdBy = "";
   switch (type) {
     case "COURSE":
       newItems = originalObj.find((o) => o.id === item.id);
       slug = `/courses/${newItems?.slug}`;
       description = sliceText(newItems?.description, limitText);
-      countText = `0 enrolled`;
+      countText = `Enrolled: <span class="text-tw-light-pink">${newItems?.enrollmentCount}</span>`;
+      createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
       break;
     case "BLOG":
       newItems = {
         ...item,
       };
+      // newItems = originalObj.find((o) => o.id === item.id);
       slug = `/blogs/${newItems?.id}`;
       description = sliceText(newItems?.description, limitText);
-      countText = `${newItems.view_count} ${
-        newItems.view_count > 1 ? "views" : "view"
-      }`;
+      countText = `View: <span class="text-tw-light-pink">${
+        newItems?.view_count ?? 0
+      }</span>`;
+      createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
       break;
     case "AUTHOR":
       newItems = {
         ...item,
       };
+      // newItems = originalObj.find((o) => o.id === item.id);
       slug = `/authors/${newItems?.id}`;
       description = sliceText(newItems?.description, limitText);
       countText = `0 subcribe`;
+      // createdBy = ``;
       break;
     default:
       break;
@@ -248,5 +254,6 @@ export function getItemsAfterCallApiSearch(
     slug,
     description,
     countText,
+    createdBy,
   };
 }

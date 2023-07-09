@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { v4 } from "uuid";
 import axiosInstance from "../../api/axiosInstance";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
-import Overlay from "../../components/common/Overlay";
+import OverlayCom from "../../components/common/OverlayCom";
 import { HeadingH4Com, HeadingH5Com } from "../../components/heading";
 import { IconRemoveCom, IconSearchCom } from "../../components/icon";
 import useDebounceOnChange from "../../hooks/useDebounceOnChange";
@@ -92,7 +92,7 @@ const HomeSearchMod = () => {
 
   return (
     <>
-      <Overlay isShow={isSearch} onClick={handleShowSearch} />
+      <OverlayCom isShow={isSearch} onClick={handleShowSearch} />
       <div className="c-search relative z-50" onClick={handleShowSearch}>
         <div className="bg-tw-light rounded-full shadow-primary p-2 w-full flex items-center">
           <div className="flex-1 px-2">
