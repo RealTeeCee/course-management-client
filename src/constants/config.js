@@ -181,6 +181,21 @@ export const statusBlogItems = [
   },
 ];
 
+export const sortSearchItems = [
+  {
+    value: "COURSE",
+    label: "Sort By Course",
+  },
+  {
+    value: "BLOG",
+    label: "Sort By Blog",
+  },
+  {
+    value: "AUTHOR",
+    label: "Sort By Author",
+  },
+];
+
 // Data Static Variable
 export const IMAGE_DEFAULT =
   "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930";

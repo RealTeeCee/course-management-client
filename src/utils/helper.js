@@ -222,7 +222,7 @@ export function convertCoreObjectItems(
       slug = `/courses/${newItems?.slug}`;
       description = sliceText(newItems?.description, limitText);
       countText = `Enrolled: <span class="text-tw-light-pink">${newItems?.enrollmentCount}</span>`;
-      createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
+      createdBy = `Author: <span class="text-tw-light-pink">${newItems?.author_name}</span>`;
       break;
     case "BLOG":
       // Sau này có store cho blog thì bỏ gán cứng

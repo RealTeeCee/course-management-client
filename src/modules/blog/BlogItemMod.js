@@ -16,7 +16,8 @@ const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
       <Link to={newItem.slug} className="relative">
         <div className="blog-box blog-list row">
           <div className="col-md-2">
-            <div className="w-full h-[150px]">
+            <div className="w-full h-[150px] relative">
+              <div className="absolute w-full h-full top-0 bg-opacity-30 bg-black"></div>
               <ImageCom
                 srcSet={newItem.image ?? IMAGE_DEFAULT}
                 alt={newItem.name}
@@ -47,7 +48,7 @@ const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
         </div>
         {isShowType && (
           <div
-            className={`absolute top-2 right-5 text-white ${
+            className={`absolute top-2 left-5 text-white ${
               type === "COURSE"
                 ? "bg-tw-primary"
                 : type === "BLOG"
