@@ -14,6 +14,8 @@ import SearchItemMod from "./SearchItemMod";
 
 const HomeSearchMod = () => {
   const { data: courses } = useSelector((state) => state.course);
+  const { authors } = useSelector((state) => state.author);
+
   const [isSearch, setIsSearch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -152,14 +154,25 @@ const HomeSearchMod = () => {
                         {item?.type !== dataSearch[index - 1]?.type && (
                           <HeadingH5Com>{item.type}</HeadingH5Com>
                         )}
-                        <SearchItemMod item={item} />
+                        <SearchItemMod
+                          key={v4()}
+                          item={item}
+                          type={item.type}
+                          objectOriginal={
+                            item.type === "COURSE"
+                              ? courses
+                              : item.type === "AUTHOR"
+                              ? authors
+                              : null
+                          }
+                        />
                       </div>
                     ))}
                   </div>
                   {relatedCourses.length > 0 && (
                     <div className="text-tw-light-gray">
                       <h3 className="text-sm font-semibold mb-[0.5rem] text-black">
-                        Related results
+                        Related courses
                       </h3>
                       {relatedCourses.map((item) => (
                         <Link

@@ -1,7 +1,11 @@
 const {
-  default: axiosInstance,
   axiosBearer,
+  default: axiosInstance,
 } = require("../../api/axiosInstance");
+
+export const requestGetAuthors = () => {
+  return axiosInstance.get(`/author`);
+};
 
 export const requestLoadTop3Authors = () => {
   return axiosBearer.get(`/author/top3`);

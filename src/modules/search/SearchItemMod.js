@@ -1,11 +1,9 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { convertCoreObjectItems } from "../../utils/helper";
 
-const SearchItemMod = ({ item }) => {
-  const { data: courses } = useSelector((state) => state.course);
-  const newItem = convertCoreObjectItems(item, item.type, courses);
+const SearchItemMod = ({ item, type, objectOriginal }) => {
+  const newItem = convertCoreObjectItems(item, type, objectOriginal, 115);
 
   return (
     <Link to={newItem.slug} className="tw-transition-all">

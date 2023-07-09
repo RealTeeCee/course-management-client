@@ -1,5 +1,6 @@
 import { call, put } from "redux-saga/effects";
 import {
+  requestGetAuthors,
   requestLoadAuthor,
   requestLoadAuthorsPagination,
   requestLoadSubcribesByUserId,
@@ -13,8 +14,18 @@ import {
   onLoadTop3AuthorsSuccess,
   onSubcribeAuthorSuccess,
   onUnsubcribeAuthorSuccess,
+  onGetAuthorsSuccess,
 } from "./authorSlice";
 import { toast } from "react-toastify";
+
+function* handleOnGetAuthors() {
+  try {
+    const res = yield call(requestGetAuthors);
+    if (res.status === 200) yield put(onGetAuthorsSuccess(res.data));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 function* handleOnLoadTop3Authors() {
   try {
@@ -103,6 +114,7 @@ function* handleOnLoadAuthor({ payload }) {
 }
 
 export {
+  handleOnGetAuthors,
   handleOnLoadAuthorsPagination,
   handleOnLoadTop3Authors,
   handleOnLoadSubcribesByUserId,

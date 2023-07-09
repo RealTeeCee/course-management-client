@@ -1,22 +1,16 @@
 import React from "react";
-import SpinAntCom from "../ant/SpinAntCom";
+import OverlayCom from "./OverlayCom";
 
-const LoadingCom = ({ isChild = false }) => {
-  if (isChild)
-    return (
-      <div className="w-full h-full fixed !top-1/2 !left-0">
-        <SpinAntCom loadingText="Loading..." />
-      </div>
-    );
+const LoadingCom = ({ isChild = false, loadingText }) => {
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
-      {/* <div>
-          <Spin size="large" />
-        </div> */}
-      <div className="loader-box">
-        <div className="loader-10"></div>
+    <>
+      {!isChild && <OverlayCom isShow />}
+      <div className="fixed loading-spin">
+        <span />
+        <span />
+        <span />
       </div>
-    </div>
+    </>
   );
 };
 

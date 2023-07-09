@@ -30,6 +30,7 @@ const initialState = {
   subcribes: [],
   isSubcribed: false,
   author: null,
+  authors: [],
 };
 const authorSlice = createSlice({
   name: "author",
@@ -37,6 +38,15 @@ const authorSlice = createSlice({
   reducers: {
     onAuthorInitialState: (state, action) => ({
       ...initialState,
+    }),
+    onGetAuthors: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onGetAuthorsSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      authors: action.payload,
     }),
     onLoadTop3Authors: (state, action) => ({
       ...state,
@@ -116,6 +126,8 @@ const authorSlice = createSlice({
 
 export const {
   onAuthorInitialState,
+  onGetAuthors,
+  onGetAuthorsSuccess,
   onLoadTop3Authors,
   onLoadTop3AuthorsSuccess,
   onLoadAuthorsPagination,

@@ -134,6 +134,7 @@ export function getCurrentDate() {
 
 // If text > maxLength, will slice
 export function sliceText(text = "", maxLength = 50, loadMore = "...") {
+  if (!text) return "";
   const newText = text.replace(/(&nbsp;)/gi, " ").replace(/(<([^>]+)>)/gi, "");
   if (newText.length > maxLength)
     return `${newText.slice(0, maxLength)}${loadMore}`;
@@ -224,6 +225,7 @@ export function convertCoreObjectItems(
       createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
       break;
     case "BLOG":
+      // Sau này có store cho blog thì bỏ gán cứng
       newItems = {
         ...item,
       };
@@ -236,14 +238,11 @@ export function convertCoreObjectItems(
       createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
       break;
     case "AUTHOR":
-      newItems = {
-        ...item,
-      };
-      // newItems = originalObj.find((o) => o.id === item.id);
+      newItems = originalObj.find((o) => o.id === item.id);
       slug = `/authors/${newItems?.id}`;
-      description = sliceText(newItems?.description, limitText);
-      countText = `0 subcribe`;
-      // createdBy = ``;
+      description = sliceText(newItems?.information, limitText);
+      countText = `Subcribe: <span class="text-tw-light-pink">0</span>`;
+      createdBy = `Title: <span class="text-tw-light-pink">${newItems?.title}</span>`;
       break;
     default:
       break;

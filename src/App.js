@@ -23,7 +23,10 @@ import {
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
-import { onAuthorInitialState } from "./store/author/authorSlice.js";
+import {
+  onAuthorInitialState,
+  onGetAuthors,
+} from "./store/author/authorSlice.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
 const AuthorDetailsPage = lazy(() =>
@@ -174,6 +177,7 @@ function App() {
 
   useEffect(() => {
     dispatch(onAuthorInitialState());
+    dispatch(onGetAuthors());
     // dispatch(onAuthInitialState());
   }, [dispatch]);
 

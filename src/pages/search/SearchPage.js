@@ -1,9 +1,8 @@
-import { Pagination } from "antd";
+import { Pagination, Skeleton } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { v4 } from "uuid";
 import axiosInstance from "../../api/axiosInstance";
-import { SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
 import GapYCom from "../../components/common/GapYCom";
@@ -16,6 +15,8 @@ import { formatNumber } from "../../utils/helper";
 
 const SearchPage = () => {
   const { data: courses } = useSelector((state) => state.course);
+  const { authors } = useSelector((state) => state.author);
+
   const params = new URLSearchParams(window.location.search);
   const keyword = params.get("keyword");
 
@@ -28,7 +29,6 @@ const SearchPage = () => {
   );
 
   const getSearchData = async () => {
-    setIsFetching(true);
     try {
       const res = await axiosInstance.post(`/home/search?name=${keyword}`);
       if (res.status === 200) setDataSearch(res.data);
@@ -43,7 +43,19 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
-    getSearchData();
+    let timerId;
+
+    const delayedSearch = () => {
+      clearTimeout(timerId);
+      setIsFetching(true);
+      timerId = setTimeout(() => {
+        getSearchData();
+      }, 1000);
+    };
+
+    delayedSearch();
+
+    return () => clearTimeout(timerId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword]);
 
@@ -70,9 +82,24 @@ const SearchPage = () => {
 
       <div className="row">
         <div className="col-12">
-          <div className="card">
+          <div className="cards">
             {isFetching ? (
-              <LoadingCom isChild />
+              <>
+                <LoadingCom isChild />
+                {Array(8)
+                  .fill(0)
+                  .map((item) => (
+                    <Skeleton
+                      key={v4()}
+                      avatar={{
+                        shape: "square",
+                      }}
+                      paragraph={{ rows: 2 }}
+                      active
+                      size="large"
+                    />
+                  ))}
+              </>
             ) : dataSearch.length > 0 ? (
               dataSearch.map((item, index) => {
                 if (index >= startIndex && index < endIndex) {
@@ -81,7 +108,14 @@ const SearchPage = () => {
                       key={v4()}
                       item={item}
                       type={item.type}
-                      objectOriginal={item.type === "COURSE" ? courses : null}
+                      isShowType
+                      objectOriginal={
+                        item.type === "COURSE"
+                          ? courses
+                          : item.type === "AUTHOR"
+                          ? authors
+                          : null
+                      }
                     />
                   );
                 }
