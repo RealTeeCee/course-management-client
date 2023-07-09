@@ -180,6 +180,7 @@ export function convertToHumanTime(seconds) {
 export function getUserNameByEmail(email) {
   return email ? email.split("@")[0] : email;
 }
+
 // Set keyword when User input search something
 export function setSearchHistory(keyword) {
   const history =
@@ -200,4 +201,52 @@ export function getSearchHistory() {
   return (
     JSON.parse(localStorage.getItem(`${APP_KEY_NAME}_searchHistory`)) || []
   );
+}
+
+// Call API /home/search and then need to add some value, required: item, type, originalObj maybe courses, blogs, authors obj
+export function getItemsAfterCallApiSearch(
+  item,
+  type,
+  originalObj,
+  limitText = 115
+) {
+  let newItems = [];
+  let slug = "/";
+  let description = "";
+  let countText = "";
+  switch (type) {
+    case "COURSE":
+      newItems = originalObj.find((o) => o.id === item.id);
+      slug = `/courses/${newItems?.slug}`;
+      description = sliceText(newItems?.description, limitText);
+      countText = `0 enrolled`;
+      break;
+    case "BLOG":
+      newItems = {
+        ...item,
+      };
+      slug = `/blogs/${newItems?.id}`;
+      description = sliceText(newItems?.description, limitText);
+      countText = `${newItems.view_count} ${
+        newItems.view_count > 1 ? "views" : "view"
+      }`;
+      break;
+    case "AUTHOR":
+      newItems = {
+        ...item,
+      };
+      slug = `/authors/${newItems?.id}`;
+      description = sliceText(newItems?.description, limitText);
+      countText = `0 subcribe`;
+      break;
+    default:
+      break;
+  }
+
+  return {
+    ...newItems,
+    slug,
+    description,
+    countText,
+  };
 }
