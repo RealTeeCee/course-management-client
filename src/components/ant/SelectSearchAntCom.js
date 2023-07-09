@@ -35,7 +35,7 @@ import ErrorCom from "../common/ErrorCom";
 // Select with search field
 const SelectSearchAntCom = (props) => {
   const {
-    listItems,
+    listItems = [],
     onChange = () => {},
     status = "",
     errorMsg = "",
@@ -59,7 +59,7 @@ const SelectSearchAntCom = (props) => {
             .toLowerCase()
             .localeCompare((optionB?.label ?? "").toLowerCase())
         }
-        onChange={onChange}
+        onChange={(value) => onChange(listItems.find((r) => r.value === value))}
         options={listItems}
         className={`${className}`}
         {...rest}

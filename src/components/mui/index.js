@@ -27,3 +27,6 @@ export const {
 export const {
   default: RankingAuthorsBadgeMuiCom,
 } = require("./RankingAuthorsBadgeMuiCom");
+export const {
+  default: MultipleSelectMuiCom,
+} = require("./MultipleSelectMuiCom");

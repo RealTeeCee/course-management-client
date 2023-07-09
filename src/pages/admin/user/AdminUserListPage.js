@@ -47,6 +47,14 @@ import {
   onUpdateUser,
 } from "../../../store/admin/user/userSlice";
 import { getUserNameByEmail, showMessageError } from "../../../utils/helper";
+import { MultipleSelectMuiCom } from "../../../components/mui";
+import {
+  onLoadPermission,
+  onLoadRole,
+  onUpdatePermission,
+} from "../../../store/auth/authSlice";
+import { selectRolesAndPermissions } from "../../../store/auth/authSelector";
+import { Button } from "@mui/material";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -91,6 +99,9 @@ const AdminUserListPage = () => {
   const { users, isPostUserSuccess, isBulkDeleteSuccess } = useSelector(
     (state) => state.user
   );
+
+  const { roles, permissions } = useSelector(selectRolesAndPermissions);
+
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
@@ -106,6 +117,13 @@ const AdminUserListPage = () => {
   const [search, setSearch] = useState("");
 
   const { user, isLoading } = useSelector((state) => state.auth);
+
+  const [role, setRole] = useState();
+  const [permission, setPermission] = React.useState([]);
+  const [permissionList, setPermissionList] = useState([]);
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(0);
+  //const [roleItem, setRoleItem] = useState([]);
 
   /********* END API State ********* */
 
@@ -277,6 +295,38 @@ const AdminUserListPage = () => {
     if (isPostUserSuccess) setIsOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostUserSuccess]);
+
+  useEffect(() => {
+    dispatch(onLoadRole());
+    dispatch(onLoadPermission());
+  }, [dispatch]);
+  useEffect(() => {
+    role
+      ? setPermissionList(permissions.filter((p) => p.role.id === role.id))
+      : setPermissionList([]);
+    if (firstLoad) {
+      setFirstLoad(false);
+    } else {
+      if (role?.value === "EMPLOYEE") {
+        const permission = permissions.find((p) => p.permission === "EMPLOYEE");
+        setPermission([permission]);
+      } else {
+        setPermission([]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissions, role]);
+
+  // useEffect(() => {
+  //   if (roles.length > 0 && roleItem) {
+  //     const obj = roles.find((r) => r.name === roleItem.role);
+  //     setRole({
+  //       id: obj.id,
+  //       value: obj.name,
+  //       label: obj.name,
+  //     });
+  //   }
+  // }, [roleItem, roles]);
 
   const clearSelectedRows = () => {
     setSelectedRows([]);
@@ -468,11 +518,54 @@ const AdminUserListPage = () => {
 
   /********* Update Authorize ********* */
   const handlePermission = (item) => {
+    setFirstLoad(true);
+
+    const role = roles.find((r) => r.name === item.role);
+    setRole({ id: role.id, value: role.name, label: role.name });
+    setSelectedUser(item.id);
+    //setPermission
+    const userPermissions = [];
+    for (let i = 0; i < item.permissions.length; i++) {
+      const element = permissions.find(
+        (p) => p.permission === item.permissions[i]
+      );
+      if (element) {
+        userPermissions.push(element);
+      }
+    }
+
+    setPermission(userPermissions);
     setIsOpenPermission(true);
   };
 
-  const handleSubmitFormPermission = (values) => {
-    console.log("values: ", values);
+  const handleSubmitFormPermission = () => {
+    const payload = {
+      userId: selectedUser,
+      permissions: permission,
+      role: { id: role.id, name: role.value },
+    };
+
+    dispatch(onUpdatePermission(payload));
+    setIsOpenPermission(false);
+  };
+
+  const handleChangeRole = (value) => {
+    setRole(value);
+  };
+
+  const handleChangePermission = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    if (role.value === "EMPLOYEE") {
+      const permission = permissions.find((p) => p.permission === role.value);
+      if (permission && !value.find((p) => p.permission === "EMPLOYEE")) {
+        value.unshift(permission);
+      }
+    }
+
+    setPermission(value);
   };
 
   return (
@@ -555,8 +648,13 @@ const AdminUserListPage = () => {
                   </LabelCom>
                   <div>
                     <SelectSearchAntCom
-                      // selectedValue={categorySelected}
-                      listItems={ALL_ROLES}
+                      selectedValue={role}
+                      listItems={roles.map((r) => ({
+                        id: r.id,
+                        value: r.name,
+                        label: r.name,
+                      }))}
+                      onChange={handleChangeRole}
                       // onChange={handleChangeCategory}
                       className="w-full py-1"
                       status={
@@ -567,6 +665,12 @@ const AdminUserListPage = () => {
                       errorMsg={errors.role?.message}
                       placeholder="Choose a role"
                     ></SelectSearchAntCom>
+                    <MultipleSelectMuiCom
+                      onChange={handleChangePermission}
+                      selectedValue={permission}
+                      permissions={permissionList}
+                    ></MultipleSelectMuiCom>
+
                     {/* <InputCom
                       type="hidden"
                       control={control}
@@ -579,9 +683,9 @@ const AdminUserListPage = () => {
               <GapYCom className="mb-3"></GapYCom>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
-              <ButtonCom type="submit" isLoading={isLoading}>
+              <Button type="submit" disabled={permission.length === 0}>
                 Update
-              </ButtonCom>
+              </Button>
             </div>
           </form>
         </div>

@@ -16,6 +16,14 @@ export const selectIsUserChangePasswordSuccess = createSelector(
   (authSlice) => authSlice.isUserChangePasswordSuccess
 );
 
+export const selectRolesAndPermissions = createSelector(
+  [selectUserReducer],
+  (authSlice) => ({
+    roles: authSlice.roles,
+    permissions: authSlice.permissions,
+  })
+);
+
 // export const selectUserIsSuccess = createSelector(
 //   [selectUserReducer],
 //   (userSlice) => userSlice.isSuccess
