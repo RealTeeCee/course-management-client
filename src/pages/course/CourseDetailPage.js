@@ -164,8 +164,6 @@ const CourseDetailPage = () => {
     (item) => item.slug === convertStrToSlug(courseBySlug?.category_name)
   );
 
-  console.log("courseBySlug:", courseBySlug);
-
   return (
     <>
       <div

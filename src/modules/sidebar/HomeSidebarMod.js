@@ -7,8 +7,7 @@ import {
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
-  IconLearnCom,
-  IconMapCom,
+  IconLearnCom
 } from "../../components/icon";
 
 const sidebarItems = [

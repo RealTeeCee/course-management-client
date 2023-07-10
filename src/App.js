@@ -22,7 +22,7 @@ import {
   onGetAuthors
 } from "./store/author/authorSlice.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
-import { onCourseInitalState } from "./store/course/courseSlice.js";
+import { onCourseInitalState, onCourseLoading } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
@@ -175,7 +175,7 @@ function App() {
   useEffect(() => {
     dispatch(onAuthorInitialState());
     dispatch(onGetAuthors());
-    // dispatch(onAuthInitialState());
+    dispatch(onCourseLoading());
   }, [dispatch]);
 
   // useEffect(() => {
