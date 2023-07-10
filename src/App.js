@@ -309,6 +309,10 @@ function App() {
             path="/authors/:authorId"
             element={<AuthorDetailsPage></AuthorDetailsPage>}
           ></Route>
+           <Route
+            path="/notification"
+            element={<NotificationListPage></NotificationListPage>}
+          ></Route>
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"

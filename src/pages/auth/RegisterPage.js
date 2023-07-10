@@ -91,7 +91,7 @@ const RegisterPage = () => {
       return;
     }
     dispatch(onRegister(values));
-    navigate("/login");
+    // navigate("/login");
   };
 
   return (
