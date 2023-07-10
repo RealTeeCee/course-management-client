@@ -9,6 +9,7 @@ import GapYCom from "../../components/common/GapYCom";
 import OverlayCom from "../../components/common/OverlayCom";
 import { HeadingH4Com, HeadingH5Com } from "../../components/heading";
 import { IconRemoveCom, IconSearchCom } from "../../components/icon";
+import { LIMIT_SEARCH_ITEM } from "../../constants/config";
 import useDebounceOnChange from "../../hooks/useDebounceOnChange";
 import { getSearchHistory, setSearchHistory } from "../../utils/helper";
 import SearchItemMod from "./SearchItemMod";
@@ -154,25 +155,35 @@ const HomeSearchMod = () => {
 
                 <div className="p-6">
                   <div className="flex flex-col gap-y-5 mb-6">
-                    {dataSearch.map((item, index) => (
-                      <div key={v4()}>
-                        {item?.type !== dataSearch[index - 1]?.type && (
-                          <HeadingH5Com>{item.type}</HeadingH5Com>
-                        )}
-                        <SearchItemMod
-                          key={v4()}
-                          item={item}
-                          type={item.type}
-                          objectOriginal={
-                            item.type === "COURSE"
-                              ? courses
-                              : item.type === "AUTHOR"
-                              ? authors
-                              : null
-                          }
-                        />
-                      </div>
-                    ))}
+                    {dataSearch.map((item, index) => {
+                      if (
+                        item?.type !== dataSearch[index - 1]?.type ||
+                        index < LIMIT_SEARCH_ITEM ||
+                        item.type !==
+                          dataSearch[index - LIMIT_SEARCH_ITEM]?.type
+                      ) {
+                        return (
+                          <div key={v4()}>
+                            {item?.type !== dataSearch[index - 1]?.type && (
+                              <HeadingH5Com>{item.type}</HeadingH5Com>
+                            )}
+                            <SearchItemMod
+                              key={v4()}
+                              item={item}
+                              type={item.type}
+                              objectOriginal={
+                                item.type === "COURSE"
+                                  ? courses
+                                  : item.type === "AUTHOR"
+                                  ? authors
+                                  : null
+                              }
+                            />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
                   </div>
                   {relatedCourses.length > 0 && (
                     <>

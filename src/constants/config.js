@@ -23,6 +23,9 @@ export const LIMIT_HOME_PAGE = 4;
 // LIMIT SHOW MORE
 export const LIMIT_SHOW_MORE = 5;
 
+// LIMIT SEARCH
+export const LIMIT_SEARCH_ITEM = 4;
+
 export const VIDEO_EXT_VALID = "mp4, avi, mov, wmv, flv, mkv, webm, mpeg, mpg";
 export const CAPTION_EXT_VALID = "en.vtt, vi.vtt, jp.vtt";
 export const CAPTION_EXT_REGEX = /\.(en|vi|jp)\.vtt$/;
