@@ -1,6 +1,6 @@
 import React from "react";
 
-const IconRefreshCom = () => {
+const IconRefreshCom = ({ className = "" }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +12,7 @@ const IconRefreshCom = () => {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="feather feather-refresh-cw"
+      className={`feather feather-refresh-cw ${className}`}
     >
       <polyline points="23 4 23 10 17 10" />
       <polyline points="1 20 1 14 7 14" />

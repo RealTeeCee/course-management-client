@@ -37,3 +37,5 @@ export const { default: IconQuestionCom } = require("./IconQuestionCom");
 export const { default: IconAnswerCom } = require("./IconAnswerCom");
 export const { default: IconArrowUpCom } = require("./IconArrowUpCom");
 export const { default: IconMoneyCom } = require("./IconMoneyCom");
+export const { default: IconAuthorCom } = require("./IconAuthorCom");
+export const { default: IconRefreshCom } = require("./IconRefreshCom");

@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -10,7 +11,7 @@ import {
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import IconRefreshCom from "../../components/icon/IconRefreshCom";
+import { IconRefreshCom } from "../../components/icon";
 import {
   CircularProgressMuiCom,
   NotificationListPopupMuiCom,
@@ -22,13 +23,12 @@ import {
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onAuthorInitialState } from "../../store/author/authorSlice";
+import { onAuthorInitialState, onGetAuthors } from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import { onCourseInitalState } from "../../store/course/courseSlice";
 import { getUserNameByEmail, sliceText } from "../../utils/helper";
-import HomeSearchMod from "../HomeSearchMod";
-import { Button } from "@mui/material";
-import { selectAllCourseState } from "../../store/course/courseSelector";
+import HomeSearchMod from "../search/HomeSearchMod";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
@@ -51,7 +51,7 @@ const HomeTopbarMod = () => {
     },
     {
       icon: <IconCertificateCom />,
-      title: "Cert",
+      title: "Certificate",
       url: `/profile/accomplishments`,
     },
     {
@@ -105,13 +105,10 @@ const HomeTopbarMod = () => {
         </Link>
       </div>
       {!isLearnPage && (
-        <div className="w-full max-w-[458px]">
+        <div className="w-full max-w-[400px]">
           <HomeSearchMod></HomeSearchMod>
         </div>
       )}
-      {/* <div className="w-full max-w-[458px]">
-        <HomeSearchMod></HomeSearchMod>
-      </div> */}
 
       <div className="flex items-center justify-between gap-x-5">
         {isLearnPage &&
@@ -167,7 +164,7 @@ const HomeTopbarMod = () => {
                 </p>
               </div>
             </div>
-            <ul className="profile-dropdown onhover-show-div active top-14 w-36">
+            <ul className="profile-dropdown onhover-show-div active top-14 left-auto right-0 w-[10.5rem] z-20">
               {userItems.map((item, index) => {
                 // If user is login, exclude "/register" and "/login" URLs
                 if (
@@ -194,6 +191,7 @@ const HomeTopbarMod = () => {
                           dispatch(onCategoryInitialState());
                           dispatch(onCourseInitalState());
                           dispatch(onAuthorInitialState());
+                          dispatch(onGetAuthors());
                         },
                       }
                     : {};

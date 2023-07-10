@@ -3,11 +3,12 @@ import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import {
   IconAdminCom,
+  IconAuthorCom,
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
-  IconMapCom
+  IconMapCom,
 } from "../../components/icon";
 
 const sidebarItems = [
@@ -17,12 +18,7 @@ const sidebarItems = [
     url: "/",
   },
   {
-    icon: <IconAdminCom className="mx-auto" />,
-    title: "Admin",
-    url: "/admin",
-  },
-  {
-    icon: <IconMapCom className="mx-auto" />,
+    icon: <IconAuthorCom className="mx-auto text-2xl" />,
     title: "Author",
     url: "/authors",
   },
@@ -40,6 +36,11 @@ const sidebarItems = [
     icon: <IconBlogCom className="mx-auto" />,
     title: "Blog",
     url: "/blogs",
+  },
+  {
+    icon: <IconAdminCom className="mx-auto" />,
+    title: "Admin",
+    url: "/admin",
   },
   // {
   //   icon: <IconMoonCom className="mx-auto" />,

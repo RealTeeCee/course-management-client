@@ -97,7 +97,7 @@ const RegisterPage = () => {
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
-        <HeadingFormH1Com>Register Form</HeadingFormH1Com>
+        <HeadingFormH1Com>Register Page</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="first_name" isRequired>
             Your Name

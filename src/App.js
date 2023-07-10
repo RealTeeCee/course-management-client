@@ -5,8 +5,7 @@ import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import {
   ADMIN_ROLE,
-  MANAGER_ROLE,
-  permissions,
+  MANAGER_ROLE
 } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
@@ -16,14 +15,15 @@ import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
 import {
-  onAuthInitialState,
-  onGetUser,
-  onRemoveToken,
+  onRemoveToken
 } from "./store/auth/authSlice.js";
+import {
+  onAuthorInitialState,
+  onGetAuthors
+} from "./store/author/authorSlice.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
 import { onCourseInitalState } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
-import { selectAllCourseState } from "./store/course/courseSelector.js";
-import { onAuthorInitialState } from "./store/author/authorSlice.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
 const AuthorDetailsPage = lazy(() =>
@@ -129,6 +129,8 @@ const UserChangePasswordPage = lazy(() =>
   import("./pages/user/UserChangePasswordPage.js")
 );
 
+const SearchPage = lazy(() => import("./pages/search/SearchPage.js"));
+
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.js"));
 const BlogDetailsPage = lazy(() => import("./pages/blog/BlogDetailsPage.js"));
 const BlogCreatePage = lazy(() => import("./pages/blog/BlogCreatePage.js"));
@@ -172,6 +174,7 @@ function App() {
 
   useEffect(() => {
     dispatch(onAuthorInitialState());
+    dispatch(onGetAuthors());
     // dispatch(onAuthInitialState());
   }, [dispatch]);
 
@@ -313,6 +316,8 @@ function App() {
             path="/notification"
             element={<NotificationListPage></NotificationListPage>}
           ></Route>
+          <Route path="/search" element={<SearchPage></SearchPage>}></Route>
+
           {/* ********* ADMIN ********* */}
           <Route
             path="/admin"

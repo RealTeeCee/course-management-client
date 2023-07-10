@@ -22,6 +22,7 @@ import {
 import { sliceText } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
+import EmptyDataCom from "../components/common/EmptyDataCom";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -123,9 +124,10 @@ const HomePage = () => {
                   className="w-full h-full object-cover rounded-lg"
                 />
                 <div className="absolute left-5 bottom-1/2 w-full text-white">
-                  <h2 className="font-bold text-3xl w-[30rem]">
-                    Empty best selling courses
-                  </h2>
+                  <EmptyDataCom
+                    className="font-bold text-3xl w-[30rem]"
+                    text="Empty best selling courses"
+                  />
                 </div>
               </div>
             </SwiperSlide>
@@ -181,9 +183,7 @@ const HomePage = () => {
             )}
           </>
         ) : (
-          <HeadingH2Com className="text-black text-4xl text-center py-10">
-            Empty best selling courses
-          </HeadingH2Com>
+          <EmptyDataCom text="Empty best selling courses" />
         )}
 
         {/* Free Course */}
@@ -205,9 +205,7 @@ const HomePage = () => {
               return null;
             })
           ) : (
-            <HeadingH2Com className="text-black text-4xl text-center py-10">
-              Empty free courses
-            </HeadingH2Com>
+            <EmptyDataCom text="Empty free courses" />
           )}
         </CourseGridMod>
         {freeCourse?.length > LIMIT_HOME_PAGE && (

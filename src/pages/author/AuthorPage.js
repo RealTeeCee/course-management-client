@@ -22,6 +22,7 @@ import { selectUser } from "../../store/auth/authSelector";
 import { selectAllAuthorsState } from "../../store/author/authorSelector";
 import {
   onAuthorInitialState,
+  onGetAuthors,
   onLoadAuthor,
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,
@@ -54,6 +55,7 @@ const AuthorPage = () => {
 
   useEffect(() => {
     dispatch(onAuthorInitialState());
+    dispatch(onGetAuthors());
   }, [dispatch, location]);
 
   // useEffect(() => {
