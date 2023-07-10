@@ -147,7 +147,7 @@ const AdminBlogListPage = () => {
       name: "Image",
       selector: (row) => (
         
-        <img width={50} height={50} src={`${row.image|| AVATAR_DEFAULT}`} alt={row.name} />
+        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
       ),
     },
     {
