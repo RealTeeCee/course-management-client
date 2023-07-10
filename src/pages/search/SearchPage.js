@@ -63,7 +63,6 @@ const SearchPage = () => {
         setDataSearch(sortDefault);
       }
 
-      console.log("res:", res);
     } catch (error) {
       console.log(error);
     } finally {
@@ -74,7 +73,6 @@ const SearchPage = () => {
   const filterSearchData = () => {
     let resultData = [...initialDataSearch];
     // Filter when input name"result"
-    console.log("resultData:", resultData);
     if (result !== "") {
       resultData = resultData.filter((item) => {
         const nameMatch = item.name
@@ -160,7 +158,6 @@ const SearchPage = () => {
 
   const handleChangeResult = (e) => {
     setResult(e.target.value);
-    // setIsLoading(true);
   };
 
   const handleRefresh = () => {

@@ -26,7 +26,7 @@ const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
         <div className="blog-box blog-list row">
           <div className="col-md-2">
             <div className="w-full h-[150px] relative">
-              <div className="absolute w-full h-full top-0 bg-opacity-30 bg-black"></div>
+              <div className="absolute w-full h-full top-0 bg-opacity-20 bg-black"></div>
               <ImageCom
                 srcSet={newItem.image ?? IMAGE_DEFAULT}
                 alt={newItem.name}
