@@ -99,7 +99,6 @@ export const requestLoadCertificate = (data) => {
   });
 };
 export const requestAllNotification = (userToId) => {
-  console.log("req: UserToId", userToId);
   return axiosBearer.get(`/notification/${userToId}`);
 };
 export const requestDeleteNotification = (notifId) => {

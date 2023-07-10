@@ -458,11 +458,9 @@ const courseSlice = createSlice({
       ...state,
     }),
     onDeleteNotificationSuccess: (state, action) => {
-      console.log("action.payload slice", action.payload);
       const updatedNotifications = state.notifications.filter(
         (notif) => notif.id !== action.payload
       );
-    console.log("updatedNotifications: ",updatedNotifications);
       return {
         ...state,
         notifications: updatedNotifications,
@@ -474,11 +472,9 @@ const courseSlice = createSlice({
     }),
     onAllDeleteNotificationSuccess: (state, action) => {
       const { id } = action.payload;
-      console.log("action.payload slice", action.payload);
       const updatedNotifications = state.notifications.filter(
         (user) => user.id === id
       );
-    console.log("updatedNotifications: ",updatedNotifications);
       return {
         ...state,
         notifications: updatedNotifications,

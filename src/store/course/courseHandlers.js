@@ -474,7 +474,6 @@ function* handleDownloadCertificate() {
   }
 }
 function* handleAllNotification({ payload }) {
-  console.log("handle Payload:", payload);
 
   try {
     const res = yield call(requestAllNotification, payload.userToId);
@@ -497,7 +496,6 @@ function* handleDeleteNotification({ payload }) {
       
     }
   } catch (error) {
-    console.log(error);
     showMessageError(error);
   }
 }
@@ -509,7 +507,6 @@ function* handleAllDeleteNotification({ payload }) {
       yield put(onAllDeleteNotificationSuccess(payload));
     }
   } catch (error) {
-    console.log(error);
     showMessageError(error);
   }
 }
