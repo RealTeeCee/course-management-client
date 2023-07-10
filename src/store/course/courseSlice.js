@@ -454,6 +454,32 @@ const courseSlice = createSlice({
       ...state,
       notifications: action.payload,
     }),
+    onDeleteNotification: (state,action) => ({
+      ...state,
+    }),
+    onDeleteNotificationSuccess: (state, action) => {
+      const updatedNotifications = state.notifications.filter(
+        (notif) => notif.id !== action.payload
+      );
+      return {
+        ...state,
+        notifications: updatedNotifications,
+      };
+    },
+
+    onAllDeleteNotification: (state,action) => ({
+      ...state,
+    }),
+    onAllDeleteNotificationSuccess: (state, action) => {
+      const { id } = action.payload;
+      const updatedNotifications = state.notifications.filter(
+        (user) => user.id === id
+      );
+      return {
+        ...state,
+        notifications: updatedNotifications,
+      };
+    },
   },
 });
 
@@ -534,6 +560,10 @@ export const {
   onDownloadCertificate,
   onAllNotification,
   onAllNotificationSuccess,
+  onDeleteNotification,
+  onDeleteNotificationSuccess,
+  onAllDeleteNotification,
+  onAllDeleteNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;

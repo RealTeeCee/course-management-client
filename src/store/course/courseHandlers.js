@@ -38,14 +38,18 @@ import {
   requestUpdateCompleted,
   requestUpdateUserRating,
   requestAllNotification,
+  requestDeleteNotification,
+  requestAllDeleteNotification,
 } from "./courseRequests";
 import {
+  onAllDeleteNotificationSuccess,
   onAllNotification,
   onAllNotificationSuccess,
   onBestSellerCourseSuccess,
   onCourseFailed,
   onCourseSuccess,
   onDeleteNoteSuccess,
+  onDeleteNotificationSuccess,
   onFinishExamSuccess,
   onFreeCourseSuccess,
   onGenerateCourseExamSuccess,
@@ -470,17 +474,37 @@ function* handleDownloadCertificate() {
   }
 }
 function* handleAllNotification({ payload }) {
-  console.log("handle Payload:", payload);
 
   try {
     const res = yield call(requestAllNotification, payload.userToId);
-    console.log("res: ", res);
     if (res.status === 200) {
       yield put(onAllNotificationSuccess(res.data));
-      console.log("res.data", res.data);
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleDeleteNotification({ payload }) {
+ 
+  try {
+    const res = yield call(requestDeleteNotification, payload);
+    if (res.status === 200) {
+      yield put(onDeleteNotificationSuccess(payload));
+      
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+
+function* handleAllDeleteNotification({ payload }) {
+  try {
+    const res = yield call(requestAllDeleteNotification, payload);
+    if (res.status === 200) {
+      yield put(onAllDeleteNotificationSuccess(payload));
     }
   } catch (error) {
     showMessageError(error);
@@ -521,4 +545,7 @@ export {
   handleLoadCertificate,
   handleDownloadCertificate,
   handleAllNotification,
+  handleDeleteNotification,
+  handleAllDeleteNotification,
+
 };

@@ -99,6 +99,12 @@ export const requestLoadCertificate = (data) => {
   });
 };
 export const requestAllNotification = (userToId) => {
-  console.log("req: UserToId", userToId);
   return axiosBearer.get(`/notification/${userToId}`);
+};
+export const requestDeleteNotification = (notifId) => {
+  return axiosBearer.delete(`/notification/${notifId}`);
+};
+
+export const requestAllDeleteNotification = (userToId) => {
+  return axiosBearer.delete(`/notification/delete-all/${userToId}`);
 };

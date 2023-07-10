@@ -34,6 +34,8 @@ import {
   handleDownloadCertificate,
   handleOnGetMyLearning,
   handleAllNotification,
+  handleDeleteNotification,
+  handleAllDeleteNotification,
 } from "./courseHandlers";
 import {
   onBestSellerCourseLoading,
@@ -70,6 +72,8 @@ import {
   onUpdateCompletedVideo,
   onUpdateUserRating,
   onAllNotification,
+  onDeleteNotification,
+  onAllDeleteNotification,
 } from "./courseSlice";
 
 /**
@@ -111,5 +115,7 @@ export default function* courseSaga() {
     takeLatest(onLoadCertificate.type, handleLoadCertificate),
     takeLatest(onDownloadCertificate.type, handleDownloadCertificate),
     takeLatest(onAllNotification.type, handleAllNotification),
+    takeLatest(onDeleteNotification.type,handleDeleteNotification),
+    takeLatest(onAllDeleteNotification.type,handleAllDeleteNotification),
   ]);
 }

@@ -11,6 +11,7 @@ import {
 import { axiosBearer } from "../../../api/axiosInstance";
 import { toast } from "react-toastify";
 import {
+  AVATAR_DEFAULT,
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
@@ -146,7 +147,7 @@ const AdminBlogListPage = () => {
       name: "Image",
       selector: (row) => (
         
-        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+        <img width={50} height={50} src={`${row.image|| AVATAR_DEFAULT}`} alt={row.name} />
       ),
     },
     {

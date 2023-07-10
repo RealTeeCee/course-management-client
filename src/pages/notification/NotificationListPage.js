@@ -40,11 +40,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
+  onAllDeleteNotification,
   onAllNotification,
+  onDeleteNotification,
   onReadAllNotification,
   onReadNotification,
 } from "../../store/course/courseSlice";
-
 
 const NotificationListPage = () => {
   // Local State
@@ -59,15 +60,12 @@ const NotificationListPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { notifications } = useSelector((state) => state.course);
+
   const userToId = user.id;
   console.log("userToId", userToId);
-  
 
   //manage status and event in form
-  const {
-    control,
-    reset,
-  } = useForm({
+  const { control, reset } = useForm({
     resolver: yupResolver(),
   });
   /********* Display Data ********* */
@@ -81,9 +79,7 @@ const NotificationListPage = () => {
           primary={
             <React.Fragment>
               <Typography component="span" variant="body2">
-                <React.Fragment>
-                  {row.userFrom.first_name}{" "}
-                </React.Fragment>
+                <React.Fragment>{row.userFrom.first_name} </React.Fragment>
               </Typography>
             </React.Fragment>
           }
@@ -101,7 +97,7 @@ const NotificationListPage = () => {
             </React.Fragment>
           }
         />
-         {/* <ListItemText
+        {/* <ListItemText
                 primary={
                   <React.Fragment>
                     <Typography
@@ -232,10 +228,10 @@ const NotificationListPage = () => {
   /********* Get All Notification ********* */
   useEffect(() => {
     if (user) {
-      console.log("ok user");
-      dispatch(onAllNotification({ userToId }));
+      const data = dispatch(onAllNotification({ userToId }));
+      setNotifs(data);
     }
-  }, [user, userToId, dispatch]);
+  }, [dispatch]);
 
   /********* Delete one API ********* */
   const clearSelectedRows = () => {
@@ -247,10 +243,13 @@ const NotificationListPage = () => {
     setSelectedRows(currentRowsSelected.selectedRows);
   };
 
-  const handleDeleteBlog = ({ id, name }) => {
+  const handleDeleteBlog = (row) => {
+    const { id, userFrom } = row;
+    console.log("row", row);
+    console.log("row.id", row.id);
     Swal.fire({
       title: "Are you sure?",
-      html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
+      html: `You will delete blog: <span class="text-tw-danger">${userFrom.first_name}</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",
@@ -259,10 +258,7 @@ const NotificationListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axiosBearer.delete(`/blog/${id}`);
-          //   getnotifs();
-          reset(res.data);
-          toast.success(res.data.message);
+          dispatch(onDeleteNotification(id));
         } catch (error) {
           showMessageError(error);
         }
@@ -276,32 +272,13 @@ const NotificationListPage = () => {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
     }
-    Swal.fire({
-      title: "Are you sure?",
-      html: `You will delete <span class="text-tw-danger">${
-        selectedRows.length
-      } selected ${selectedRows.length > 1 ? "notifs" : "blog"}</span>`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#7366ff",
-      cancelButtonColor: "#dc3545",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/blog/${row.id}`)
-          );
-          await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} notifs success`);
-        } catch (error) {
-          showMessageError(error);
-        } finally {
-          //   getnotifs();
-          clearSelectedRows();
-        }
-      }
-    });
+
+    try {
+      dispatch(onAllDeleteNotification(userToId));
+      toast.success(`Delete ${selectedRows.length} notifs success`);
+    } catch (error) {
+      showMessageError(error);
+    } 
   };
 
   return (
@@ -322,10 +299,9 @@ const NotificationListPage = () => {
                   setSearch={setSearch}
                   dropdownItems={dropdownItems}
                   onSelectedRowsChange={handleRowSelection} // selected Mutilple
+                  clearSelectedRows={handleDeleteMultipleRecords}
                 ></TableCom>
-                 
               </span>
-             
             </div>
             <div className="card-body flex gap-x-4 h-[50vh]"></div>
           </div>
