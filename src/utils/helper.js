@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import axiosInstance from "../api/axiosInstance";
 import { APP_KEY_NAME, MESSAGE_GENERAL_FAILED } from "../constants/config";
 
 // Input: 123456 - Output: 123.456 using For Count items
@@ -222,27 +223,43 @@ export function convertCoreObjectItems(
       slug = `/courses/${newItems?.slug}`;
       description = sliceText(newItems?.description, limitText);
       countText = `Enrolled: <span class="text-tw-light-pink">${newItems?.enrollmentCount}</span>`;
-      createdBy = `Author: <span class="text-tw-light-pink">${newItems?.author_name}</span>`;
+      createdBy = `Author: <span class="text-tw-light-pink">${
+        newItems?.author_name
+      }</span>, Category: <span class="text-tw-light-pink">${
+        newItems?.category_name || "N/A"
+      }</span>`;
       break;
     case "BLOG":
-      // Sau này có store cho blog thì bỏ gán cứng
+      // Đợi store blog để làm tiếp search, sẽ bỏ gán cứng newItems = {...item}
       newItems = {
         ...item,
       };
       // newItems = originalObj.find((o) => o.id === item.id);
       slug = `/blogs/${newItems?.id}`;
       description = sliceText(newItems?.description, limitText);
+
       countText = `View: <span class="text-tw-light-pink">${
         newItems?.view_count ?? 0
       }</span>`;
-      createdBy = `Author: <span class="text-tw-light-pink">${newItems.author_name}</span>`;
+
+      createdBy = `Author: <span class="text-tw-light-pink">${
+        newItems.author_name || "N/A"
+      }</span>, Category: <span class="text-tw-light-pink">${
+        newItems?.category_name || "N/A"
+      }`;
       break;
     case "AUTHOR":
       newItems = originalObj.find((o) => o.id === item.id);
+      const totalSubcribes =
+        item?.userSubcribes.find((s) => s.authorId === item.id)
+          ?.totalSubcribes || 0;
       slug = `/authors/${newItems?.id}`;
       description = sliceText(newItems?.information, limitText);
-      countText = `Subcribe: <span class="text-tw-light-pink">0</span>`;
-      createdBy = `Title: <span class="text-tw-light-pink">${newItems?.title}</span>`;
+      countText = `Subcribe: <span class="text-tw-light-pink">${totalSubcribes}</span>`;
+      
+      createdBy = `Title: <span class="text-tw-light-pink">${
+        newItems?.title || "N/A"
+      }</span>`;
       break;
     default:
       break;

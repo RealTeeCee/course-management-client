@@ -28,6 +28,7 @@ const initialState = {
   errorMessage: null,
   isFilter: false,
   subcribes: [],
+  userSubcribes: [],
   isSubcribed: false,
   author: null,
   authors: [],
@@ -47,6 +48,22 @@ const authorSlice = createSlice({
       ...state,
       isLoading: false,
       authors: action.payload,
+    }),
+    onGetSubcribesByAuthorId: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onGetSubcribesByAuthorIdSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      userSubcribes: [
+        ...state.userSubcribes,
+        {
+          authorId: action.payload.authorId,
+          totalSubcribes: action.payload.data.length || 0,
+          data: action.payload.data
+        },
+      ],
     }),
     onLoadTop3Authors: (state, action) => ({
       ...state,
@@ -128,6 +145,8 @@ export const {
   onAuthorInitialState,
   onGetAuthors,
   onGetAuthorsSuccess,
+  onGetSubcribesByAuthorId,
+  onGetSubcribesByAuthorIdSuccess,
   onLoadTop3Authors,
   onLoadTop3AuthorsSuccess,
   onLoadAuthorsPagination,

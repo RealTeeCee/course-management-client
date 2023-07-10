@@ -5,8 +5,7 @@ import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import {
   ADMIN_ROLE,
-  MANAGER_ROLE,
-  permissions,
+  MANAGER_ROLE
 } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
@@ -16,17 +15,15 @@ import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
 import {
-  onAuthInitialState,
-  onGetUser,
-  onRemoveToken,
+  onRemoveToken
 } from "./store/auth/authSlice.js";
-import { onCourseInitalState } from "./store/course/courseSlice.js";
-import { getToken } from "./utils/auth.js";
-import { selectAllCourseState } from "./store/course/courseSelector.js";
 import {
   onAuthorInitialState,
-  onGetAuthors,
+  onGetAuthors
 } from "./store/author/authorSlice.js";
+import { selectAllCourseState } from "./store/course/courseSelector.js";
+import { onCourseInitalState } from "./store/course/courseSlice.js";
+import { getToken } from "./utils/auth.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
 const AuthorDetailsPage = lazy(() =>

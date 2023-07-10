@@ -5,10 +5,12 @@ import { v4 } from "uuid";
 import axiosInstance from "../../api/axiosInstance";
 import { SelectDefaultAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
+import { ButtonCom } from "../../components/button";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
 import { HeadingH1Com } from "../../components/heading";
+import { IconRefreshCom } from "../../components/icon";
 import {
   categoryItems,
   LIMIT_PAGE,
@@ -16,11 +18,18 @@ import {
 } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { BlogItemMod } from "../../modules/blog";
-import { formatNumber } from "../../utils/helper";
+import { formatNumber, sliceText } from "../../utils/helper";
 
 const SearchPage = () => {
   const { data: courses } = useSelector((state) => state.course);
   const { authors } = useSelector((state) => state.author);
+
+  // Đợi store blog để làm tiếp search
+  const typesMap = {
+    COURSE: courses,
+    AUTHOR: authors,
+    // BLOG: blogs,
+  };
 
   const params = new URLSearchParams(window.location.search);
   const keyword = params.get("keyword");
@@ -44,8 +53,14 @@ const SearchPage = () => {
     try {
       const res = await axiosInstance.post(`/home/search?name=${keyword}`);
       if (res.status === 200) {
-        setInitialDataSearch(res.data);
-        setDataSearch(res.data);
+        const sortDefault = res.data.sort((a, b) => {
+          if (a.type === "COURSE" && b.type !== "COURSE") return -1;
+          else if (a.type !== "COURSE" && b.key === "COURSE") return 1;
+          else return 0;
+        });
+
+        setInitialDataSearch(sortDefault);
+        setDataSearch(sortDefault);
       }
 
       console.log("res:", res);
@@ -58,43 +73,60 @@ const SearchPage = () => {
 
   const filterSearchData = () => {
     let resultData = [...initialDataSearch];
+    // Filter when input name"result"
+    console.log("resultData:", resultData);
     if (result !== "") {
       resultData = resultData.filter((item) => {
-        return item.name.toLowerCase().includes(result.toLowerCase());
+        const nameMatch = item.name
+          .toLowerCase()
+          .includes(result.toLowerCase());
+        const description = sliceText(item.description, 10000);
+        const keywords = result.toLowerCase().split(" ");
+
+        const descMatch = keywords.every((keyword) =>
+          description.toLowerCase().includes(keyword)
+        );
+        return nameMatch || descMatch;
       });
     }
 
+    // Sort by orderSearch first
     let sortData = resultData.sort((a, b) => {
-      if (orderSearch === a.type) return -1;
-      else if (orderSearch === b.type) return 1;
+      if (orderSearch === a.type && orderSearch !== b.type) return -1;
+      else if (orderSearch !== a.type && orderSearch === b.type) return 1;
       return 0;
     });
 
-    console.log("sortData:", sortData);
+    // Add more item to sortData, missing category_id fields
     const updatedSortData = sortData.map((item) => {
-      const course = courses.find((c) => c.id === item.id);
-      if (course) {
+      const data = typesMap[item.type]?.find((obj) => obj.id === item.id);
+      if (data)
         return {
-          ...course,
+          ...data,
           type: item.type,
         };
-      }
       return item;
     });
 
-    console.log("updatedSortData:", updatedSortData);
+    // Priority sort by orderSearch, then sort by category_id
+    const sortedData = updatedSortData.sort((a, b) => {
+      if (a.type === orderSearch && b.type !== orderSearch) return -1;
+      else if (a.type !== orderSearch && b.type === orderSearch) return 1;
 
-    sortData = [...sortData].sort((a, b) => {
-      if (orderCategory === a.category_id) return -1;
-      else if (orderCategory === b.category_id) return 1;
+      if (orderCategory === a.category_id && orderCategory !== b.category_id)
+        return -1;
+      else if (
+        orderCategory !== a.category_id &&
+        orderCategory === b.category_id
+      )
+        return 1;
       return 0;
     });
 
-    console.log("after clone:", sortData);
-
-    setDataSearch(sortData);
+    setDataSearch(sortedData);
   };
 
+  // 1. First Call
   useEffect(() => {
     let timerId;
 
@@ -112,6 +144,7 @@ const SearchPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword]);
 
+  // 2. if sorted, search, will call
   useEffect(() => {
     filterSearchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,6 +161,12 @@ const SearchPage = () => {
   const handleChangeResult = (e) => {
     setResult(e.target.value);
     // setIsLoading(true);
+  };
+
+  const handleRefresh = () => {
+    setOrderSearch(sortSearchItems[0].value);
+    setOrderCategory(categoryItems[0].value);
+    setResult("");
   };
 
   return (
@@ -158,9 +197,19 @@ const SearchPage = () => {
             placeholder="Find the results..."
             className="border-2 solid border-tw-primary bg-transparent text-sm placeholder:text-tw-light-green text-white w-full pl-3 py-2 rounded-full outline-none hover:shadow-primary tw-transition-all"
             onChange={handleChangeResult}
+            value={result}
           />
         </div>
         <div className="flex justify-end gap-x-2">
+          <div>
+            <ButtonCom
+              backgroundColor="light"
+              title="Refresh"
+              onClick={handleRefresh}
+            >
+              <IconRefreshCom className="text-tw-primary" />
+            </ButtonCom>
+          </div>
           <div>
             <SelectDefaultAntCom
               listItems={categoryItems}

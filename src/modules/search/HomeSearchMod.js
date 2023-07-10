@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { v4 } from "uuid";
 import axiosInstance from "../../api/axiosInstance";
 import EmptyDataCom from "../../components/common/EmptyDataCom";
+import GapYCom from "../../components/common/GapYCom";
 import OverlayCom from "../../components/common/OverlayCom";
 import { HeadingH4Com, HeadingH5Com } from "../../components/heading";
 import { IconRemoveCom, IconSearchCom } from "../../components/icon";
@@ -83,12 +84,16 @@ const HomeSearchMod = () => {
   }
   let relatedCourses = [];
   if (courseInSearch) {
+    const searchTags = courseInSearch?.tags.split(",");
+
     relatedCourses = courses
-      .filter(
-        (item) =>
-          item.category_id === courseInSearch.category_id &&
-          item.id !== courseInSearch.id
-      )
+      .filter((item) => {
+        const courseTags = item?.tags.split(",");
+        return (
+          item.id !== courseInSearch.id &&
+          searchTags.some((tag) => courseTags.includes(tag))
+        );
+      })
       .slice(0, 3);
   }
 
@@ -139,7 +144,7 @@ const HomeSearchMod = () => {
             ) : dataSearch.length > 0 ? (
               <>
                 <Link to={`/search?keyword=${searchDebounce}`}>
-                  <div className="flex items-center justify-between px-6 py-3 bg-gray-200 tw-transition-all hover:bg-tw-dark rounded-lg">
+                  <div className="flex items-center justify-between px-6 py-3 bg-gray-200 tw-transition-all hover:bg-tw-dark rounded-lg rounded-b-none">
                     <HeadingH4Com>
                       See all {dataSearch.length}{" "}
                       {dataSearch.length > 1 ? "results" : "result"}
@@ -170,24 +175,29 @@ const HomeSearchMod = () => {
                     ))}
                   </div>
                   {relatedCourses.length > 0 && (
-                    <div className="text-tw-light-gray">
-                      <h3 className="text-sm font-semibold mb-[0.5rem] text-black">
-                        Related courses
-                      </h3>
-                      {relatedCourses.map((item) => (
-                        <Link
-                          to={`/courses/${item.slug}`}
-                          key={v4()}
-                          className="tw-transition-all"
-                        >
-                          <div className="flex flex-col gap-y-3">
-                            <p>
-                              <strong>{item.category_name}</strong> {item.name}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                    <>
+                      <hr />
+                      <GapYCom className="mb-3" />
+                      <div className="text-tw-light-gray">
+                        <h3 className="text-sm font-semibold mb-[0.5rem] text-black">
+                          Related courses
+                        </h3>
+                        {relatedCourses.map((item) => (
+                          <Link
+                            to={`/courses/${item.slug}`}
+                            key={v4()}
+                            className="tw-transition-all"
+                          >
+                            <div className="flex flex-col gap-y-3">
+                              <p>
+                                <strong>{item.category_name}</strong>{" "}
+                                {item.name}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </div>
               </>

@@ -1,6 +1,7 @@
 import { takeLatest } from "redux-saga/effects";
 import {
   handleOnGetAuthors,
+  handleOnGetSubcribesByAuthorId,
   handleOnLoadAuthor,
   handleOnLoadAuthorsPagination,
   handleOnLoadSubcribesByUserId,
@@ -10,6 +11,7 @@ import {
 } from "./authorHandlers";
 import {
   onGetAuthors,
+  onGetSubcribesByAuthorId,
   onLoadAuthor,
   onLoadAuthorsPagination,
   onLoadSubcribesByUserId,

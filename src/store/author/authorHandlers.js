@@ -1,6 +1,8 @@
+import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 import {
   requestGetAuthors,
+  requestGetSubcribesByAuthorId,
   requestLoadAuthor,
   requestLoadAuthorsPagination,
   requestLoadSubcribesByUserId,
@@ -8,20 +10,36 @@ import {
   requestSubcribeAuthor,
 } from "./authorRequests";
 import {
-  onLoadAuthorSuccess,
+  onGetAuthorsSuccess,
+  onGetSubcribesByAuthorId,
+  onGetSubcribesByAuthorIdSuccess,
   onLoadAuthorsPaginationSuccess,
+  onLoadAuthorSuccess,
   onLoadSubcribesByUserIdSuccess,
   onLoadTop3AuthorsSuccess,
   onSubcribeAuthorSuccess,
   onUnsubcribeAuthorSuccess,
-  onGetAuthorsSuccess,
 } from "./authorSlice";
-import { toast } from "react-toastify";
 
 function* handleOnGetAuthors() {
   try {
     const res = yield call(requestGetAuthors);
-    if (res.status === 200) yield put(onGetAuthorsSuccess(res.data));
+    if (res.status === 200) {
+      for (const author of res.data) {
+        const resSubcribes = yield call(
+          requestGetSubcribesByAuthorId,
+          author.id
+        );
+        yield put(
+          onGetSubcribesByAuthorIdSuccess({
+            data: resSubcribes.data,
+            authorId: author.id,
+          })
+        );
+      }
+
+      yield put(onGetAuthorsSuccess(res.data));
+    }
   } catch (error) {
     console.log(error);
   }

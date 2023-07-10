@@ -7,6 +7,10 @@ export const requestGetAuthors = () => {
   return axiosInstance.get(`/author`);
 };
 
+export const requestGetSubcribesByAuthorId = (data) => {
+  return axiosInstance.get(`/subcribes/author/${data}`);
+};
+
 export const requestLoadTop3Authors = () => {
   return axiosBearer.get(`/author/top3`);
 };

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { withErrorBoundary } from "react-error-boundary";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ErrorCom from "../../components/common/ErrorCom";
 import { HeadingH5Com } from "../../components/heading";
@@ -9,6 +10,14 @@ import { IMAGE_DEFAULT } from "../../constants/config";
 import { convertCoreObjectItems } from "../../utils/helper";
 
 const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
+  const { userSubcribes } = useSelector((state) => state.author);
+  if (type === "AUTHOR") {
+    item = {
+      ...item,
+      userSubcribes,
+    };
+  }
+
   const newItem = convertCoreObjectItems(item, type, objectOriginal, 250);
 
   return (

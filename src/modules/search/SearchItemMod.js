@@ -1,8 +1,16 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { convertCoreObjectItems } from "../../utils/helper";
 
 const SearchItemMod = ({ item, type, objectOriginal }) => {
+  const { userSubcribes } = useSelector((state) => state.author);
+  if (type === "AUTHOR") {
+    item = {
+      ...item,
+      userSubcribes,
+    };
+  }
   const newItem = convertCoreObjectItems(item, type, objectOriginal, 115);
 
   return (

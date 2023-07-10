@@ -11,7 +11,7 @@ import {
   IconRegisterCom,
   IconUserCom,
 } from "../../components/icon";
-import IconRefreshCom from "../../components/icon/IconRefreshCom";
+import { IconRefreshCom } from "../../components/icon";
 import {
   CircularProgressMuiCom,
   NotificationListPopupMuiCom,
@@ -23,7 +23,7 @@ import {
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onAuthorInitialState } from "../../store/author/authorSlice";
+import { onAuthorInitialState, onGetAuthors } from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { onCourseInitalState } from "../../store/course/courseSlice";
@@ -191,6 +191,7 @@ const HomeTopbarMod = () => {
                           dispatch(onCategoryInitialState());
                           dispatch(onCourseInitalState());
                           dispatch(onAuthorInitialState());
+                          dispatch(onGetAuthors());
                         },
                       }
                     : {};
