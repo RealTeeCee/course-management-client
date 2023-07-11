@@ -53,7 +53,7 @@ const LoginPage = () => {
   const dispatch = useDispatch();
 
   const searchParams = new URLSearchParams(location.search);
-  const isVerify = searchParams.get("verify"); //=== "verified";
+  const verifyParam = searchParams.get("verify"); // = "success" || "verified";
   const { value: isRemember, handleToggleBoolean: setIsRemember } =
     useClickToggleBoolean();
 
@@ -83,11 +83,11 @@ const LoginPage = () => {
 
   return (
     <>
-      {!isVerify ? null : isVerify === "success" ? (
-        <AlertAntCom type="success" msg={MESSAGE_VERIFY_SUCCESS} />
-      ) : (
-        <AlertAntCom type="success" msg={MESSAGE_EMAIL_ACTIVED} />
-      )}
+      {verifyParam === "success" ? (
+        <AlertAntCom type="success" message={MESSAGE_VERIFY_SUCCESS} />
+      ) : verifyParam === "verified" ? (
+        <AlertAntCom type="warning" message={MESSAGE_EMAIL_ACTIVED} />
+      ) : null}
 
       <form className="theme-form" onSubmit={handleSubmit(handleSubmitForm)}>
         {/* <HeadingFormH1Com className="text-center !text-[#818cf8] font-tw-primary font-light mb-3">

@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
 import { axiosBearer } from "../../api/axiosInstance";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
 import DividerCom from "../../components/common/DividerCom";
 import GapYCom from "../../components/common/GapYCom";
@@ -18,14 +19,19 @@ import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
 import { InputReadOnlyCom } from "../../components/input";
 import { LabelCom } from "../../components/label";
 import { TextAreaCom } from "../../components/textarea";
-import { MESSAGE_FIELD_REQUIRED, NOT_FOUND_URL } from "../../constants/config";
+import {
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_LOGIN_REQUIRED,
+  NOT_FOUND_URL,
+} from "../../constants/config";
 import { API_CHECKOUT_URL } from "../../constants/endpoint";
 import {
   selectAllCourseState,
   selectEnrollIdAndCourseId,
 } from "../../store/course/courseSelector";
 import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
-import { BreadcrumbCom } from "../../components/breadcrumb";
+import { toast } from "react-toastify";
+import { checkUserLogin } from "../../utils/auth";
 
 const schemaValidation = yup.object().shape({
   payment_method: yup
@@ -50,6 +56,11 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    checkUserLogin(user?.id, navigate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
   const { data } = useSelector(selectAllCourseState);
   const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
   const courseBySlug = data.find((item, index) => item.slug === slug);
@@ -73,26 +84,31 @@ const CheckoutPage = () => {
   };
 
   const handleSubmitForm = async (values) => {
-    try {
-      setIsLoading(!isLoading);
-      const res = await axiosBearer.post(API_CHECKOUT_URL, {
-        amount:
-          courseBySlug?.price === 0
-            ? 0
-            : courseBySlug?.net_price > 0
-            ? courseBySlug?.net_price
-            : courseBySlug?.price,
-        userId: user?.id,
-        courseId: courseBySlug?.id,
-        paymentType: values.payment_method,
-        userDescription: values.description,
-      });
-      if (res?.data?.statusCodeValue === 200)
-        window.location.href = res.data.body.payUrl;
-    } catch (error) {
-      showMessageError(error);
-    } finally {
-      setIsLoading(false);
+    if (!user?.id) {
+      toast.warning(MESSAGE_LOGIN_REQUIRED);
+      navigate("/login");
+    } else {
+      try {
+        setIsLoading(!isLoading);
+        const res = await axiosBearer.post(API_CHECKOUT_URL, {
+          amount:
+            courseBySlug?.price === 0
+              ? 0
+              : courseBySlug?.net_price > 0
+              ? courseBySlug?.net_price
+              : courseBySlug?.price,
+          userId: user?.id,
+          courseId: courseBySlug?.id,
+          paymentType: values.payment_method,
+          userDescription: values.description,
+        });
+        if (res?.data?.statusCodeValue === 200)
+          window.location.href = res.data.body.payUrl;
+      } catch (error) {
+        showMessageError(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

@@ -39,6 +39,8 @@ export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
+export const MESSAGE_LOGIN_REQUIRED =
+  "Please log in before proceeding further !";
 
 export const MESSAGE_REGEX_NAME = "Only letters are allowed";
 
