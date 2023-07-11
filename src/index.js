@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./assets/css/vendors/icofont.css";
 import "./assets/css/vendors/themify.css";
+import "./assets/css/vendors/animate.css";
 import "./assets/css/vendors/bootstrap.css";
 import "./assets/css/style.css";
 import "./assets/css/color-1.css";
