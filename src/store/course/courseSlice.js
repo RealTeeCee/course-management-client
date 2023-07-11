@@ -71,9 +71,12 @@ const courseSlice = createSlice({
       };
     },
     onMyCourseLoading: (state, action) => ({
-      ...state,
+      ...initialState,
       errorMessage: null,
       generateExamSuccess: false,
+      bestSellerCourse: state.bestSellerCourse,
+      data: state.data,
+      freeCourse: state.freeCourse,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
@@ -133,11 +136,27 @@ const courseSlice = createSlice({
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
           generateExamSuccess: false,
+          countdown: -1,
+          lessonId: 0,
+          sectionId: 0,
+          tracking: null,
+          resumePoint: 0,
+          isReload: false,
+          isReady: false,
+          isSelectLessonManual: false,
         };
       }
       return {
         ...state,
         generateExamSuccess: false,
+        countdown: -1,
+        lessonId: 0,
+        sectionId: 0,
+        tracking: null,
+        resumePoint: 0,
+        isReload: false,
+        isReady: false,
+        isSelectLessonManual: false,
       };
     },
     onSelectedLesson: (state, action) => {
@@ -454,7 +473,7 @@ const courseSlice = createSlice({
       ...state,
       notifications: action.payload,
     }),
-    onDeleteNotification: (state,action) => ({
+    onDeleteNotification: (state, action) => ({
       ...state,
     }),
     onDeleteNotificationSuccess: (state, action) => {
@@ -467,7 +486,7 @@ const courseSlice = createSlice({
       };
     },
 
-    onAllDeleteNotification: (state,action) => ({
+    onAllDeleteNotification: (state, action) => ({
       ...state,
     }),
     onAllDeleteNotificationSuccess: (state, action) => {

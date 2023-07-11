@@ -33,6 +33,7 @@ import {
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
+import { Paper } from "@mui/material";
 
 const LearnPage = () => {
   const {
@@ -163,7 +164,7 @@ const LearnPage = () => {
 
       // console.log(countDown);
       console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-      if ((retakeExam && retakeExam.created_at === null) || countdown === 0) {
+      if ((retakeExam && retakeExam.created_at === null) || countdown === -1) {
         setIsFinal(true);
       } else {
         setIsFinal(false);
@@ -243,6 +244,9 @@ const LearnPage = () => {
   };
 
   const handleOnReady = React.useCallback(() => {
+    console.log(isReady);
+    console.log(isReload);
+    console.log(!isReady || isReload);
     if (!isReady || isReload) {
       player.current.seekTo(tracking ? tracking.resumePoint : 0);
       dispatch(onReady(true));
@@ -302,20 +306,42 @@ const LearnPage = () => {
       key: "1",
       label: `Description`,
       children: (
-        <div
-          dangerouslySetInnerHTML={{ __html: course && course.description }}
-        ></div>
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: course && course.description }}
+          ></div>
+        </Paper>
       ),
     },
     {
       key: "2",
       label: `Note`,
       children: (
-        <NoteCom
-          notePoint={playedSeconds}
-          onWriteNote={onWriteNote}
-          onSelectNote={onSelectNote}
-        />
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <NoteCom
+            notePoint={playedSeconds}
+            onWriteNote={onWriteNote}
+            onSelectNote={onSelectNote}
+          />
+        </Paper>
       ),
     },
     {
@@ -324,13 +350,37 @@ const LearnPage = () => {
       // check điều kiện user rating xong thì thêm props readOnly
       children: (
         // <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
-        <RatingListMuiCom></RatingListMuiCom>
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "10px",
+            borderRadius: "10px",
+          }}
+        >
+          <RatingListMuiCom></RatingListMuiCom>
+        </Paper>
       ),
     },
     {
       key: "4",
       label: `Comment`,
-      children: <CommentCom />,
+      children: (
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <CommentCom />
+        </Paper>
+      ),
     },
     progress === 100
       ? {

@@ -181,8 +181,46 @@ function QuizMuiCom({ exam = [] }) {
         sx={{
           padding: "20px",
           width: "1000px",
+          borderRadius: "10px",
+          backgroundImage: 'url("path/to/background-image.jpg")',
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          position: "relative",
         }}
       >
+        {finishExam && finishExam.grade && finishExam.grade === "FAIL" ? (
+          <img
+            src={"https://i.ibb.co/HpKqmqN/failed.png"}
+            alt="Foreground"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "40%",
+              height: "40%",
+              zIndex: 0,
+            }}
+          />
+        ) : finishExam &&
+          (finishExam.grade === "GOOD" ||
+            finishExam.grade === "AVERAGE" ||
+            finishExam.grade === "EXCELLENT") ? (
+          <img
+            src={"https://i.ibb.co/6ndv2vS/passed.png"}
+            alt="Foreground"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "40%",
+              height: "40%",
+              zIndex: 0,
+            }}
+          />
+        ) : (
+          ""
+        )}
         {finishExam ? (
           <div>
             <p>
