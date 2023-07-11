@@ -25,13 +25,13 @@ const authSlice = createSlice({
       ...state,
       isLoading: action.payload,
     }),
-    onLoginSuccess: (state, action) => ({
-      ...state,
-      isLoginSuccess: action.payload,
-    }),
     onLogin: (state, action) => ({
       ...state,
       ...action.payload,
+    }),
+    onLoginSuccess: (state, action) => ({
+      ...state,
+      isLoginSuccess: action.payload,
     }),
     onRegister: (state, action) => ({
       ...state,

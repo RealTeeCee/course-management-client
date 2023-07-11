@@ -35,7 +35,6 @@ function* handleOnRegister(action) {
   try {
     const res = yield call(requestRegister, action.payload);
     if (res.data.type === "success") {
-      
       toast.success(res.data.message);
     } else if (res.data.type === "warning") {
       toast.warning(res.data.message);

@@ -5,7 +5,9 @@ import {
   COOKIE_ACCESS_TOKEN_KEY,
   COOKIE_EXPIRED_DAYS,
   COOKIE_REFRESH_TOKEN_KEY,
+  MESSAGE_LOGIN_REQUIRED,
 } from "../constants/config";
+import { toast } from "react-toastify";
 
 export const objCookies = {
   expires: COOKIE_EXPIRED_DAYS,
@@ -109,3 +111,10 @@ export const getRememberUser = () => {
     password: "",
   };
 };
+
+export function checkUserLogin(data, navigate) {
+  if (!data) {
+    toast.warning(MESSAGE_LOGIN_REQUIRED);
+    navigate("/login");
+  }
+}
