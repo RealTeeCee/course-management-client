@@ -46,7 +46,7 @@ import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
-
+import { mainColor } from "../../../constants/mainTheme";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -158,13 +158,7 @@ const AdminBlogListPage = () => {
           name="status"
           defaultValue={row.status}
           options={statusBlogItems}
-          defaultClassName={`${
-            row.status
-            === 1 ? "bg-tw-success" : row.status === 2 ? "bg-tw-danger" : "bg-tw-warning"
-          }`}
-          // style={{
-          //   backgroundColor: row.status === 1 ? "green" : row.status === 2 ? "red" : "yellow",
-          // }}
+          className={`${row.status === 1 ? "blog-dropdown-success" : row.status === 2 ? "blog-dropdown-warning" :"blog-dropdown-dark"} rounded-full`}
           onChange={(selectedStatus) =>
             handleChangeStatus(row.id, selectedStatus)
           }
