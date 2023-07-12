@@ -231,7 +231,7 @@ const NotificationListPage = () => {
       const data = dispatch(onAllNotification({ userToId }));
       setNotifs(data);
     }
-  }, [dispatch]);
+  }, [dispatch]); 
 
   /********* Delete one API ********* */
   const clearSelectedRows = () => {

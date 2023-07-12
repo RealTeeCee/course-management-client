@@ -30,6 +30,20 @@ const SelectDefaultAntCom = ({
           .custom-dropdown .ant-select-arrow {
             color: ${mainColor.primary} !important;
           }
+
+          .blog-dropdown-dark .ant-select-selector{
+            background: ${mainColor.dark} !important;
+            color: ${mainColor.white} !important;
+          }
+          .blog-dropdown-success .ant-select-selector{
+            background: ${mainColor.success} !important;
+            color: ${mainColor.white} !important;
+          }
+          .blog-dropdown-warning .ant-select-selector{
+            background: ${mainColor.warning} !important;
+            color: ${mainColor.white} !important;
+          }
+       
         `}
       </style>
       <Select

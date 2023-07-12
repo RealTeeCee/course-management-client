@@ -35,11 +35,12 @@ const authSlice = createSlice({
     }),
     onRegister: (state, action) => ({
       ...state,
-      ...action.payload,
+      isLoading: true,
     }),
     onRegisterSuccess: (state, action) => ({
       ...state,
-      ...action.payload,
+      isRegisterSuccess: action.payload,
+      isLoading: false,
     }),
     onUpdateUserToken: (state, action) => ({
       ...state,

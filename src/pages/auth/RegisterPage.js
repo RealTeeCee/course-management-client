@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
@@ -22,7 +22,7 @@ import {
 } from "../../constants/config";
 import { regexName } from "../../constants/regex";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { onRegister } from "../../store/auth/authSlice";
+import { onRegister, onRegisterSuccess } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
@@ -64,36 +64,28 @@ const RegisterPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isRegisterSuccess } = useSelector((state) => state.auth);
+  
+
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  // const handleRegister = async (values) => {
-  //   if (!acceptTerm) {
-  //     toast.warning(MESSAGE_POLICY_REQUIRED);
-  //     return;
-  //   }
-  //   setIsLoading(true);
-  //   try {
-  //     await dispatch(onRegister({ ...values, permissions: [] }));
-  //     toast.success("Registration successful!");
-  //     reset();
-  //     navigate("/login");
-  //   } catch (error) {
-  //     toast.error("Registration failed!");
-  //     setIsLoading(false);
-  //   }
-  // };
-  const handleRegister = (values) => {
+  const handleRegister =(values) => {
     if (!acceptTerm) {
       toast.warning(MESSAGE_POLICY_REQUIRED);
       return;
     }
     dispatch(onRegister(values));
-    // navigate("/login");
   };
 
+ 
+  useEffect(() => {
+    if(isRegisterSuccess){
+      dispatch(onRegisterSuccess(false));
+      navigate("/login");
+    }
+  }, [isRegisterSuccess]);
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
