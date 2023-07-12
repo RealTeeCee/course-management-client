@@ -22,6 +22,7 @@ import {
   onRetakeExam,
 } from "../../store/course/courseSlice";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
+import { v1 } from "uuid";
 
 const colorMap = {
   FAIL: "#FF4136", // red
@@ -101,7 +102,7 @@ const ExamResultMuiCom = () => {
 
   useEffect(() => {
     if (generateExamSuccess && examination.length > 0) {
-      navigate("/exam");
+      navigate("/exam", { state: { path: v1() } });
     } else if (generateExamSuccess && examination.length === 0) {
       // dispatch(onSetGenerateExamSuccess)
       toast.warning(
@@ -115,7 +116,7 @@ const ExamResultMuiCom = () => {
     if (retakeExam.passed) {
       return navigate("/profile/accomplishments");
     }
-    console.log(countdown);
+
     if (countdown <= 1 || isNaN(countdown)) {
       setCanExam(true);
       setShowDialog(true);

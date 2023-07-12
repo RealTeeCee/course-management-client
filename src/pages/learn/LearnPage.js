@@ -34,6 +34,7 @@ import {
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
 import { Paper } from "@mui/material";
+import { v1 } from "uuid";
 
 const LearnPage = () => {
   const {
@@ -53,6 +54,7 @@ const LearnPage = () => {
     examination,
     retakeExam,
     countdown,
+    prevTime,
   } = useSelector(selectAllCourseState);
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -287,6 +289,12 @@ const LearnPage = () => {
   const handleInitialExam = () => {
     dispatch(onGenerateCourseExam({ courseId, userId }));
   };
+
+  useEffect(() => {
+    if (prevTime > 0) {
+      navigate("/exam");
+    }
+  }, [prevTime]);
 
   useEffect(() => {
     if (generateExamSuccess && examination.length > 0) {

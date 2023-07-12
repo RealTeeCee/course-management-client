@@ -1,13 +1,20 @@
 import { Container } from "@mui/material";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DialogConfirmMuiCom, QuizMuiCom } from "../../components/mui";
 import { selectAllCourseState } from "../../store/course/courseSelector";
 import { convertSecondToDiffForHumans } from "../../utils/helper";
-import { Navigate, useBeforeUnload, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  useBeforeUnload,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect } from "react";
 import useExitPrompt from "../../hooks/useExitPrompt";
 import useNavigationBlocker from "../../hooks/useNavigationBlocker";
+import { onUnloadExam } from "../../store/course/courseSlice";
+import { v1 } from "uuid";
 
 const WarningContent = () => (
   <span>
@@ -18,21 +25,27 @@ const WarningContent = () => (
 );
 
 const ExamPage = () => {
-  const { examination } = useSelector(selectAllCourseState);
+  const { examination, prevTime } = useSelector(selectAllCourseState);
   const [showDialog, setShowDialog] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
-  // const [showExitPrompt, setShowExitPrompt] = useExitPrompt(true);
+  const [showExitPrompt, setShowExitPrompt] = useExitPrompt(true);
   const location = useLocation();
-  window.onbeforeunload = function () {
-    return "Are you sure to leave this page?";
-  };
-
-  console.log("LOCATION", location);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (location.pathname.startsWith("/learn")) {
+      navigate("/exam", { state: { path: v1() } });
+    }
     setShowAlert(true);
     setShowDialog(false);
-  }, [location.key]);
+  }, [location.key, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (prevTime > 0) {
+      setShowAlert(false);
+      setShowDialog(false);
+    }
+  }, [prevTime]);
 
   const handleConfirm = () => {
     setShowDialog(false);

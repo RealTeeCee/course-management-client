@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import logger from "redux-logger";
+//import logger from "redux-logger";
+import { createLogger } from "redux-logger";
 import rootSaga from "./rootSaga";
 import { persistReducer, persistStore } from "redux-persist";
 import createSagaMiddleware from "redux-saga";
@@ -22,6 +23,16 @@ const persistConfig = {
   ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+const logger = createLogger({
+  predicate: (getState, action) => {
+    const excludedActions = [
+      "course/onUnloadExam",
+      "course/onAddNotification",
+      "course/onCountdown",
+    ];
+    return !excludedActions.includes(action.type);
+  },
+});
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (gDM) =>

@@ -53,6 +53,7 @@ const initialState = {
   accomplishments: [],
   cert: null,
   notifications: [],
+  prevTime: -1,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -137,26 +138,12 @@ const courseSlice = createSlice({
           userRating: filteredCourse[0].userRating,
           generateExamSuccess: false,
           countdown: -1,
-          lessonId: 0,
-          sectionId: 0,
-          tracking: null,
-          resumePoint: 0,
-          isReload: false,
-          isReady: false,
-          isSelectLessonManual: false,
         };
       }
       return {
         ...state,
         generateExamSuccess: false,
         countdown: -1,
-        lessonId: 0,
-        sectionId: 0,
-        tracking: null,
-        resumePoint: 0,
-        isReload: false,
-        isReady: false,
-        isSelectLessonManual: false,
       };
     },
     onSelectedLesson: (state, action) => {
@@ -459,9 +446,11 @@ const courseSlice = createSlice({
 
     onLoadCertificate: (state, action) => ({
       ...state,
+      isLoading: true,
     }),
     onLoadCertificateSuccess: (state, action) => ({
       ...state,
+      isLoading: false,
     }),
     onDownloadCertificate: (state, action) => ({
       ...state,
@@ -489,6 +478,7 @@ const courseSlice = createSlice({
     onAllDeleteNotification: (state, action) => ({
       ...state,
     }),
+
     onAllDeleteNotificationSuccess: (state, action) => {
       const { id } = action.payload;
       const updatedNotifications = state.notifications.filter(
@@ -499,6 +489,11 @@ const courseSlice = createSlice({
         notifications: updatedNotifications,
       };
     },
+
+    onUnloadExam: (state, action) => ({
+      ...state,
+      prevTime: action.payload,
+    }),
   },
 });
 
@@ -566,6 +561,7 @@ export const {
   onLoadCourseRatingSuccess,
   onGenerateCourseExam,
   onGenerateCourseExamSuccess,
+  onUnloadExam,
   onFinishExam,
   onFinishExamSuccess,
   onRetakeExam,
