@@ -171,7 +171,7 @@ const AdminCourseListPage = () => {
       convertSecondToDiffForHumans(item.duration),
       item.author_name,
       item.tags,
-      item.achievements.trim(),
+      item.achievements?.trim(),
       item.enrollmentCount,
       item.rating,
     ]);

@@ -5,7 +5,9 @@ import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import {
   ADMIN_ROLE,
-  MANAGER_ROLE
+  ALLOWED_ROLES,
+  EMPLOYEE_ROLE,
+  MANAGER_ROLE,
 } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
@@ -14,15 +16,16 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
-import {
-  onRemoveToken
-} from "./store/auth/authSlice.js";
+import { onRemoveToken } from "./store/auth/authSlice.js";
 import {
   onAuthorInitialState,
-  onGetAuthors
+  onGetAuthors,
 } from "./store/author/authorSlice.js";
 import { selectAllCourseState } from "./store/course/courseSelector.js";
-import { onCourseInitalState, onCourseLoading } from "./store/course/courseSlice.js";
+import {
+  onCourseInitalState,
+  onCourseLoading,
+} from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
@@ -312,7 +315,7 @@ function App() {
             path="/authors/:authorId"
             element={<AuthorDetailsPage></AuthorDetailsPage>}
           ></Route>
-           <Route
+          <Route
             path="/notification"
             element={<NotificationListPage></NotificationListPage>}
           ></Route>
@@ -322,9 +325,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <CheckAuthPage
-                allowPermissions={[ADMIN_ROLE, MANAGER_ROLE]}
-              ></CheckAuthPage>
+              <CheckAuthPage allowPermissions={ALLOWED_ROLES}></CheckAuthPage>
             }
           >
             <Route index element={<AdminDashboardPage />}></Route>

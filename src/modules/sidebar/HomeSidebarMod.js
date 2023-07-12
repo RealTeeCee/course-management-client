@@ -7,8 +7,9 @@ import {
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
-  IconLearnCom
+  IconLearnCom,
 } from "../../components/icon";
+import { ALLOWED_ROLES } from "../../constants/permissions";
 
 const sidebarItems = [
   {
@@ -86,7 +87,7 @@ const HomeSidebarMod = () => {
       >
         {sidebarItems.map((item) => {
           if (item.url === "/admin") {
-            if (user && user.role === "ADMIN") {
+            if (user && ALLOWED_ROLES.includes(user.role)) {
               return (
                 <NavLink
                   key={item.title}

@@ -225,7 +225,7 @@ const AdminUserListPage = () => {
       name: "Authorize",
       selector: (row) => (
         <ButtonCom
-          className="px-3 rounded-lg"
+          className="px-3 rounded-lg !text-[12px]"
           onClick={() => {
             handlePermission(row);
           }}
@@ -233,11 +233,12 @@ const AdminUserListPage = () => {
           Permission
         </ButtonCom>
       ),
+      width: "150px",
     },
     {
       name: "Role",
       selector: (row) => row.role,
-      width: "80px",
+      width: "150px",
     },
     {
       name: "Status",
@@ -247,6 +248,7 @@ const AdminUserListPage = () => {
             <ButtonCom
               onClick={() => handleChangeStatus(row.id)}
               backgroundColor="success"
+              className="px-3 rounded-lg !text-[12px]"
             >
               Active
             </ButtonCom>
@@ -254,12 +256,14 @@ const AdminUserListPage = () => {
             <ButtonCom
               onClick={() => handleChangeStatus(row.id)}
               backgroundColor="danger"
+              className="px-3 rounded-lg !text-[12px]"
             >
               InActive
             </ButtonCom>
           )}
         </>
       ),
+      width: "150px",
     },
     {
       name: "Action",

@@ -58,3 +58,5 @@ export const permissions = {
     ROLE: USER_ROLE,
   },
 };
+
+export const ALLOWED_ROLES = [ADMIN_ROLE, MANAGER_ROLE, EMPLOYEE_ROLE];
