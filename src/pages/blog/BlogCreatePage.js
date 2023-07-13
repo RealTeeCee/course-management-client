@@ -26,6 +26,7 @@ import {
 import { TextEditorQuillCom } from "../../components/texteditor";
 import { axiosBearer } from "../../api/axiosInstance";
 import { BreadcrumbCom } from "../../components/breadcrumb";
+import { colors } from "@mui/material";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -66,30 +67,6 @@ const BlogCreatePage = () => {
   };
 
   /********* Get Blog ID from API  ********* */
-  // const handleSubmitForm = async (values) => {
-  //   // console.log(values);
-  //   const { name, description, category_id} = values;
-  //   const image = watch('image'); // Lấy giá trị của hình ảnh từ watch
-  //   const status = values.status || 2;
-  //   const user_id = user.id;
-  //   console.log("user_id",user_id);
-  //   try {
-  //     setIsLoading(!isLoading);
-  //     const res = await axiosPrivate.post(`/blog`, {
-
-  //    ...values,
-  //       status,
-  //       user_id,
-
-  //     });
-  //     toast.success(`${res.data.message}`);
-  //     navigate(`/blogs`);
-  //   } catch (error) {
-  //     showMessageError(error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleSubmitForm = async (values) => {
     console.log(values);
@@ -104,7 +81,7 @@ const BlogCreatePage = () => {
       });
       toast.success(`${res.data.message}`);
       resetValues();
-      navigate(`/blogs/blogList`); 
+      navigate(`/blogs/blogList`);
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -148,10 +125,6 @@ const BlogCreatePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
             >
-              {/* <div className="card-header">
-                    <h5>Form Create Course</h5>
-                    <span>Lorem ipsum dolor sit amet consectetur</span>
-                  </div> */}
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-6">
@@ -167,37 +140,6 @@ const BlogCreatePage = () => {
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
-
-                  {/* {!isHidden && (
-                    <div className="col-sm-6">
-                      <LabelCom htmlFor="status" isRequired>
-                        User Status
-                      </LabelCom>
-                      <InputCom
-                        type="num"
-                        control={control}
-                        name="status"
-                        register={register}
-                        defaultValue={2}
-                        errorMsg={errors.status?.message}
-                      ></InputCom>
-                    </div>
-                  )}
-                  {!isHidden && (
-                    <div className="col-sm-6">
-                      <LabelCom htmlFor="user_id" isRequired>
-                        User ID
-                      </LabelCom>
-                      <InputCom
-                        type="num"
-                        control={control}
-                        name="user_id"
-                        register={register}
-                        defaultValue={user.id}
-                        errorMsg={errors.user_id?.message}
-                      ></InputCom>
-                    </div>
-                  )} */}
 
                   <div className="col-sm-4">
                     <LabelCom htmlFor="category_id" isRequired>
@@ -245,23 +187,14 @@ const BlogCreatePage = () => {
                   </div>
                   <GapYCom className="mt-20"></GapYCom>
                   <div className="row">
-                  <LabelCom htmlFor="description">Description</LabelCom>
-                    {/* <div className="col-sm-12">
-                      <LabelCom htmlFor="description">Description</LabelCom>
-                     
-                      <TextEditorQuillCom
-                        value={description}
-                        onChange={(description) => {
-                          setValue("description", description);
-                          setDescription(description);
-                        }}
-                        placeholder="Describe your course ..."
-                      />
-                    </div> */}
+                    <LabelCom htmlFor="description" isRequired>
+                      Description
+                    </LabelCom>
                     <TextEditorQuillCom
                       value={description}
                       onChange={(newDescription) => {
                         setValue("description", newDescription);
+
                         setDescription(newDescription);
                         setIsDescriptionEmpty(newDescription.trim() === "");
                       }}
@@ -269,6 +202,9 @@ const BlogCreatePage = () => {
                         isDescriptionEmpty ? "Describe your course ..." : ""
                       }
                     />
+                  </div>
+                  <div className="mt-10 " style={{ color: "red" }}>
+                    {errors.description?.message}
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>

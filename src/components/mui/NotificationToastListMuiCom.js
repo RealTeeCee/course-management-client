@@ -21,21 +21,21 @@ const NotificationToastListMuiCom = () => {
 
   const prevNotifListLengthRef = useRef(notifToastList?.length);
 
-  // useEffect(() => {
-  //   if (
-  //     user?.id > 0 &&
-  //     notifToastList?.length > 0 &&
-  //     notifToastList?.length > prevNotifListLengthRef.current
-  //   ) {
-  //     const isReadNotif = notifToastList.filter(
-  //       (notif) => notif.read === false
-  //     );
+  useEffect(() => {
+    if (
+      user?.id > 0 &&
+      notifToastList?.length > 0 &&
+      notifToastList?.length > prevNotifListLengthRef.current
+    ) {
+      const isReadNotif = notifToastList.filter(
+        (notif) => notif.read === false
+      );
 
-  //     setNewNotif(isReadNotif[isReadNotif.length - 1]);
-  //   }
-  //   prevNotifListLengthRef.current = notifToastList?.length;
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user?.id, notifToastList?.length]);
+      setNewNotif(isReadNotif[isReadNotif.length - 1]);
+    }
+    prevNotifListLengthRef.current = notifToastList?.length;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, notifToastList?.length]);
 
   // const handleOpen = (toast) => () => {
   //   if (toast.length > 0) {

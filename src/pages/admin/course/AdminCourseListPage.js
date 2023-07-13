@@ -779,7 +779,7 @@ const AdminCourseListPage = () => {
         ></TableCom>
       </div>
 
-      {/* Modal Edit */}
+      {/* Modal Edit */} 
       <ReactModal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}

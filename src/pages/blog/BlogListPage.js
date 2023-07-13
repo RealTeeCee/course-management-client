@@ -82,6 +82,7 @@ const BlogListPage = () => {
   const { user } = useSelector((state) => state.auth);
   const user_id = user.id;
 
+  console.log("isOpen",isOpen);
   /********* END API State ********* */
 
   /********* More Action Menu ********* */
@@ -368,6 +369,7 @@ const BlogListPage = () => {
       });
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getBlogs();
+      setIsOpen(false);
       // Navigate(`/admin/blogs`);
     } catch (error) {
       showMessageError(error);
@@ -424,7 +426,7 @@ const BlogListPage = () => {
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
+        onRequestClose={() => setIsOpen(false)} 
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
           isOpen ? "w-50" : "w-0"
