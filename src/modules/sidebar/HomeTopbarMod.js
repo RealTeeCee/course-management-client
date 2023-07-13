@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -19,14 +19,21 @@ import {
 } from "../../components/mui";
 import {
   AVATAR_DEFAULT,
+  BASE_API_URL,
   IMAGE_DEFAULT,
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onAuthorInitialState, onGetAuthors } from "../../store/author/authorSlice";
+import {
+  onAuthorInitialState,
+  onGetAuthors,
+} from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
 import { selectAllCourseState } from "../../store/course/courseSelector";
-import { onCourseInitalState } from "../../store/course/courseSlice";
+import {
+  onAddNotification,
+  onCourseInitalState,
+} from "../../store/course/courseSlice";
 import { getUserNameByEmail, sliceText } from "../../utils/helper";
 import HomeSearchMod from "../search/HomeSearchMod";
 
@@ -73,25 +80,25 @@ const HomeTopbarMod = () => {
 
   const dispatch = useDispatch();
   // Ẩn notification tạm thời
-  // useEffect(() => {
-  //   if (user) {
-  //     let url = BASE_API_URL + "/push-notifications/" + user.id;
-  //     const sse = new EventSource(url);
+  useEffect(() => {
+    if (user) {
+      let url = BASE_API_URL + "/push-notifications/" + user.id;
+      const sse = new EventSource(url);
 
-  //     sse.addEventListener("user-list-event", (event) => {
-  //       const data = JSON.parse(event.data);
-  //       dispatch(onAddNotification(data));
-  //     });
+      sse.addEventListener("user-list-event", (event) => {
+        const data = JSON.parse(event.data);
+        dispatch(onAddNotification(data));
+      });
 
-  //     sse.onerror = () => {
-  //       sse.close();
-  //     };
-  //     return () => {
-  //       sse.close();
-  //     };
-  //   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user]);
+      sse.onerror = () => {
+        sse.close();
+      };
+      return () => {
+        sse.close();
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       <NotificationToastListMuiCom></NotificationToastListMuiCom>
