@@ -460,7 +460,7 @@ const courseSlice = createSlice({
     }),
     onAllNotificationSuccess: (state, action) => ({
       ...state,
-      notifications: action.payload,
+      notifications: action.payload, 
     }),
     onDeleteNotification: (state, action) => ({
       ...state,

@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { call, put } from "redux-saga/effects";
+import { call, delay, put } from "redux-saga/effects";
 import {
   MESSAGE_CHANGE_PASSWORD_SUCCESS,
   MESSAGE_FORGET_PASSWORD_SUCCESS,
@@ -26,6 +26,7 @@ import {
   onLoadRoleSuccess,
   onLoading,
   onLoginSuccess,
+  onRegisterSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
   onUserChangePasswordSuccess,
@@ -36,6 +37,7 @@ function* handleOnRegister(action) {
     const res = yield call(requestRegister, action.payload);
     if (res.data.type === "success") {
       toast.success(res.data.message);
+      yield put(onRegisterSuccess(true));
     } else if (res.data.type === "warning") {
       toast.warning(res.data.message);
     } else {
@@ -43,6 +45,7 @@ function* handleOnRegister(action) {
     }
   } catch (error) {
     showMessageError(error);
+    yield put(onLoading(false));
   }
 }
 

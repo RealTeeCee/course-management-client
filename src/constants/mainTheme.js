@@ -7,6 +7,7 @@ export const mainColor = {
   light: "#f4f4f4",
   dark: "#2c323f",
   lightPink: "#f62682",
-  lightGreen: "#0be8ab",
+  lightGreen: "#0be8ab", 
   orange: "#ff6651",
+  white: "#FFF"
 };
