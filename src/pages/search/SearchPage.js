@@ -62,7 +62,6 @@ const SearchPage = () => {
         setInitialDataSearch(sortDefault);
         setDataSearch(sortDefault);
       }
-
     } catch (error) {
       console.log(error);
     } finally {
@@ -254,6 +253,7 @@ const SearchPage = () => {
                 if (index >= startIndex && index < endIndex) {
                   return (
                     <BlogItemMod
+                      isSearchPage
                       key={v4()}
                       item={item}
                       type={item.type}
