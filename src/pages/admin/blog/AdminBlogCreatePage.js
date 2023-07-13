@@ -1,32 +1,28 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
-import ButtonBackCom from "../../components/button/ButtonBackCom";
 import * as yup from "yup";
-import {
-  MESSAGE_FIELD_REQUIRED,
-  MESSAGE_UPLOAD_REQUIRED,
-  categoryItems,
-} from "../../constants/config";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate, useParams } from "react-router-dom";
-import { API_COURSE_URL } from "../../constants/endpoint";
 import { toast } from "react-toastify";
-import { showMessageError } from "../../utils/helper";
-import { HeadingH1Com } from "../../components/heading";
-import GapYCom from "../../components/common/GapYCom";
-import { LabelCom } from "../../components/label";
-import { InputCom } from "../../components/input";
-import { ButtonCom } from "../../components/button";
+
 import { useSelector } from "react-redux";
+
+import { colors } from "@mui/material";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { axiosBearer } from "../../../api/axiosInstance";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
   ImageCropUploadAntCom,
   SelectSearchAntCom,
-} from "../../components/ant";
-import { TextEditorQuillCom } from "../../components/texteditor";
-import { axiosBearer } from "../../api/axiosInstance";
-import { BreadcrumbCom } from "../../components/breadcrumb";
-import { colors } from "@mui/material";
+} from "../../../components/ant";
+import { ButtonCom } from "../../../components/button";
+import { LabelCom } from "../../../components/label";
+import { InputCom } from "../../../components/input";
+import GapYCom from "../../../components/common/GapYCom";
+import { showMessageError } from "../../../utils/helper";
+import { HeadingH1Com } from "../../../components/heading";
+import { MESSAGE_FIELD_REQUIRED, MESSAGE_UPLOAD_REQUIRED, categoryItems } from "../../../constants/config";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -35,7 +31,7 @@ const schemaValidation = yup.object().shape({
   image: yup.string().required(MESSAGE_UPLOAD_REQUIRED),
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
-const BlogCreatePage = () => {
+const AdminBlogCreatePage = () => {
   const {
     control,
     register,
@@ -82,7 +78,7 @@ const BlogCreatePage = () => {
       toast.success(`${res.data.message}`);
       resetValues();
 
-      navigate(`/blogs/blogList`);
+      navigate(`/admin/blogs`);
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -104,8 +100,8 @@ const BlogCreatePage = () => {
         <BreadcrumbCom
           items={[
             {
-              title: "Blog",
-              slug: "/blogs",
+              title: "Admin",
+              slug: "/admin",
             },
             {
               title: "Blog List",
@@ -226,4 +222,4 @@ const BlogCreatePage = () => {
   );
 };
 
-export default BlogCreatePage;
+export default AdminBlogCreatePage;

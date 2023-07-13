@@ -384,7 +384,7 @@ const AdminBlogListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
-                 urlCreate="/blogs/blogCreate"
+                 urlCreate="/admin/blogs/:slug"
                   tableKey={tableKey}
                   title="List Blogs"
                   columns={columns}
