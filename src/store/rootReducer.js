@@ -2,6 +2,7 @@ import authReducer from "./auth/authSlice";
 import authorReducer from "./author/authorSlice";
 import categoryReducer from "./category/categorySlice";
 import courseReducer from "./course/courseSlice";
+import dashboardReducer from "./dashboard/dashboardSlice";
 import partReducer from "./admin/part/partSlice";
 import questionReducer from "./admin/question/questionSlice";
 import answerReducer from "./admin/answer/answerSlice";
@@ -15,6 +16,7 @@ export const rootReducer = combineReducers({
   author: authorReducer,
   category: categoryReducer,
   course: courseReducer,
+  dashboard: dashboardReducer,
   part: partReducer,
   question: questionReducer,
   answer: answerReducer,

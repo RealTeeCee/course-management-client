@@ -15,10 +15,11 @@ import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   onCourseInitalState,
   onFinishExam,
+  onUnloadExam,
 } from "../../store/course/courseSlice";
 import {
   convertSecondToDiffForHumans,
@@ -37,7 +38,7 @@ const colorMap = {
 };
 
 function QuizMuiCom({ exam = [] }) {
-  const { finishExam } = useSelector(selectAllCourseState);
+  const { finishExam, prevTime } = useSelector(selectAllCourseState);
 
   const maxSteps = exam.length;
   const answerOptions = ["A", "B", "C", "D"];
@@ -47,14 +48,24 @@ function QuizMuiCom({ exam = [] }) {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [activeStep, setActiveStep] = useState(0);
   const [chooseAnswer, setChooseAnswer] = useState([]);
-  const [examTime, setExamTime] = useState(exam[0].limitTime);
-  const [timerId, setTimerId] = useState(exam[0].limitTime);
+  const [examTime, setExamTime] = useState(
+    prevTime > 0 ? prevTime : exam[0].limitTime
+  );
+  const [timerId, setTimerId] = useState(
+    prevTime > 0 ? prevTime : exam[0].limitTime
+  );
   const [showDialog, setShowDialog] = useState(false);
   const [timeUpDialog, setTimeUpDialog] = useState(false);
   const [answerId, setAnswerId] = useState(0);
+
+  window.onbeforeunload = function () {
+    dispatch(onUnloadExam(examTime));
+    return "Are you sure to leave this page?";
+  };
 
   useEffect(() => {
     const examTimeId = setInterval(() => {
@@ -71,6 +82,12 @@ function QuizMuiCom({ exam = [] }) {
       setTimeUpDialog(true);
     }
   }, [examTime, timerId]);
+
+  useEffect(() => {
+    if (examTime > 0) {
+      dispatch(onUnloadExam(examTime));
+    }
+  }, [dispatch, examTime]);
 
   useEffect(() => {}, [chooseAnswer]);
 
@@ -181,8 +198,46 @@ function QuizMuiCom({ exam = [] }) {
         sx={{
           padding: "20px",
           width: "1000px",
+          borderRadius: "10px",
+          backgroundImage: 'url("path/to/background-image.jpg")',
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          position: "relative",
         }}
       >
+        {finishExam && finishExam.grade && finishExam.grade === "FAIL" ? (
+          <img
+            src={"https://i.ibb.co/HpKqmqN/failed.png"}
+            alt="Foreground"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "40%",
+              height: "40%",
+              zIndex: 0,
+            }}
+          />
+        ) : finishExam &&
+          (finishExam.grade === "GOOD" ||
+            finishExam.grade === "AVERAGE" ||
+            finishExam.grade === "EXCELLENT") ? (
+          <img
+            src={"https://i.ibb.co/6ndv2vS/passed.png"}
+            alt="Foreground"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "40%",
+              height: "40%",
+              zIndex: 0,
+            }}
+          />
+        ) : (
+          ""
+        )}
         {finishExam ? (
           <div>
             <p>

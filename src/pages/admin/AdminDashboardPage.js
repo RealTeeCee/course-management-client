@@ -31,6 +31,13 @@ import {
   getCurrentDate,
   getEmployeePermission,
 } from "../../utils/helper";
+import { Paper } from "@mui/material";
+import {
+  onLoadCategoryEnrollmentChart,
+  onLoadRevenueYearChart,
+} from "../../store/dashboard/dashboardSlice";
+import { Pie } from "react-chartjs-2";
+import { ChartsMuiCom } from "../../components/mui";
 
 const adminMenuItems = [
   {
@@ -357,6 +364,7 @@ const AdminDashboardPage = () => {
             </div>
           </div>
         </div>
+
         <div className="col-sm-1 p-0 flex flex-col">
           <div className="flex-grow">
             <div className="card bg-tw-dark h-full relative">
@@ -395,6 +403,18 @@ const AdminDashboardPage = () => {
           </div>
         </div>
       </div>
+      <Paper
+        square
+        elevation={5}
+        sx={{
+          padding: "20px",
+          width: "100%",
+          mt: "20px",
+          borderRadius: "10px",
+        }}
+      >
+        <ChartsMuiCom />
+      </Paper>
     </>
   );
 };

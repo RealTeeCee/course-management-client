@@ -150,7 +150,7 @@ const NotificationListPage = lazy(() =>
 
 Modal.setAppElement("#root");
 Modal.defaultStyles = {};
-
+window.removeEventListener("onbeforeunload", () => {});
 function App() {
   const { user } = useSelector((state) => state.auth);
   const { examination } = useSelector(selectAllCourseState);
