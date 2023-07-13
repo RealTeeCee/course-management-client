@@ -53,6 +53,7 @@ const initialState = {
   accomplishments: [],
   cert: null,
   notifications: [],
+  prevTime: -1,
 };
 const courseSlice = createSlice({
   name: "course",
@@ -71,9 +72,12 @@ const courseSlice = createSlice({
       };
     },
     onMyCourseLoading: (state, action) => ({
-      ...state,
+      ...initialState,
       errorMessage: null,
       generateExamSuccess: false,
+      bestSellerCourse: state.bestSellerCourse,
+      data: state.data,
+      freeCourse: state.freeCourse,
     }),
     onMyCourseSuccess: (state, action) => ({
       ...state,
@@ -133,11 +137,13 @@ const courseSlice = createSlice({
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
           generateExamSuccess: false,
+          countdown: -1,
         };
       }
       return {
         ...state,
         generateExamSuccess: false,
+        countdown: -1,
       };
     },
     onSelectedLesson: (state, action) => {
@@ -440,9 +446,11 @@ const courseSlice = createSlice({
 
     onLoadCertificate: (state, action) => ({
       ...state,
+      isLoading: true,
     }),
     onLoadCertificateSuccess: (state, action) => ({
       ...state,
+      isLoading: false,
     }),
     onDownloadCertificate: (state, action) => ({
       ...state,
@@ -454,7 +462,7 @@ const courseSlice = createSlice({
       ...state,
       notifications: action.payload, 
     }),
-    onDeleteNotification: (state,action) => ({
+    onDeleteNotification: (state, action) => ({
       ...state,
     }),
     onDeleteNotificationSuccess: (state, action) => {
@@ -467,9 +475,10 @@ const courseSlice = createSlice({
       };
     },
 
-    onAllDeleteNotification: (state,action) => ({
+    onAllDeleteNotification: (state, action) => ({
       ...state,
     }),
+
     onAllDeleteNotificationSuccess: (state, action) => {
       const { id } = action.payload;
       const updatedNotifications = state.notifications.filter(
@@ -480,6 +489,11 @@ const courseSlice = createSlice({
         notifications: updatedNotifications,
       };
     },
+
+    onUnloadExam: (state, action) => ({
+      ...state,
+      prevTime: action.payload,
+    }),
   },
 });
 
@@ -547,6 +561,7 @@ export const {
   onLoadCourseRatingSuccess,
   onGenerateCourseExam,
   onGenerateCourseExamSuccess,
+  onUnloadExam,
   onFinishExam,
   onFinishExamSuccess,
   onRetakeExam,

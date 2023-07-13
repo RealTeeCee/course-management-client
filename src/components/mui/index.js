@@ -30,3 +30,4 @@ export const {
 export const {
   default: MultipleSelectMuiCom,
 } = require("./MultipleSelectMuiCom");
+export const { default: ChartsMuiCom } = require("./ChartsMuiCom");

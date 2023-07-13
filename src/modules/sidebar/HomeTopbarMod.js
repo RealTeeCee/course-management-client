@@ -24,10 +24,16 @@ import {
   MESSAGE_LOGOUT_SUCCESS,
 } from "../../constants/config";
 import { onRemoveToken } from "../../store/auth/authSlice";
-import { onAuthorInitialState, onGetAuthors } from "../../store/author/authorSlice";
+import {
+  onAuthorInitialState,
+  onGetAuthors,
+} from "../../store/author/authorSlice";
 import { onCategoryInitialState } from "../../store/category/categorySlice";
 import { selectAllCourseState } from "../../store/course/courseSelector";
-import { onAddNotification, onCourseInitalState } from "../../store/course/courseSlice";
+import {
+  onAddNotification,
+  onCourseInitalState,
+} from "../../store/course/courseSlice";
 import { getUserNameByEmail, sliceText } from "../../utils/helper";
 import HomeSearchMod from "../search/HomeSearchMod";
 
@@ -91,7 +97,7 @@ const HomeTopbarMod = () => {
         sse.close();
       };
     }
-  //eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">

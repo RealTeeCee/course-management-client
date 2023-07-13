@@ -6,6 +6,7 @@ import {
   CardContent,
   Container,
   Grid,
+  LinearProgress,
   Paper,
   Rating,
   Typography,
@@ -25,6 +26,7 @@ import {
 } from "../../store/course/courseSlice";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import SpinAntCom from "../../components/ant/SpinAntCom";
 const colorMap = {
   FAIL: "#FF4136", // red
   AVERAGE: "#FF851B", // orange
@@ -33,7 +35,8 @@ const colorMap = {
 };
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 const UserCertificationPage = () => {
-  const { cert, accomplishments } = useSelector(selectAllCourseState);
+  const { cert, accomplishments, isLoading } =
+    useSelector(selectAllCourseState);
 
   const user = useSelector(selectUser);
 
@@ -341,6 +344,7 @@ const UserCertificationPage = () => {
             </Grid>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={12} md={6}>
           <Paper
             square
@@ -357,18 +361,25 @@ const UserCertificationPage = () => {
                   window.open(sessionStorage.getItem("certificatePdf"))
                 }
               >
-                <Document file={sessionStorage.getItem("certificatePdf")}>
+                <Document
+                  loading={<SpinAntCom loadingText={"Loading ..."} />}
+                  file={sessionStorage.getItem("certificatePdf")}
+                >
                   <Page pageNumber={1} renderTextLayer={false} />
                 </Document>
               </ButtonBase>
-              <Button
-                variant="contained"
-                size="large"
-                color="secondary"
-                onClick={handleDownloadCertificate}
-              >
-                Download Cert
-              </Button>
+              {isLoading ? (
+                ""
+              ) : (
+                <Button
+                  variant="contained"
+                  size="large"
+                  color="secondary"
+                  onClick={handleDownloadCertificate}
+                >
+                  Download Cert
+                </Button>
+              )}
             </Typography>
           </Paper>
         </Grid>

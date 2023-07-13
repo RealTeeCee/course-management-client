@@ -23,6 +23,7 @@ import { sliceText } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 import EmptyDataCom from "../components/common/EmptyDataCom";
+import { useState } from "react";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -38,10 +39,28 @@ const HomePage = () => {
     currentPage: currentPageFreeCourse,
     handleChangePage: handleChangePageFreeCourse,
   } = usePagination(1, LIMIT_HOME_PAGE);
+
   const { data, freeCourse, bestSellerCourse, relatedCourse } = useSelector(
     (state) => state.course
   );
   const navigate = useNavigate();
+
+  const [randomCourse, setRandomCourse] = useState([]);
+
+  useEffect(() => {
+    if (bestSellerCourse.length > 0) {
+      const numElements = 6;
+      const randomElements = [];
+      while (randomElements.length < numElements) {
+        const randomIndex = Math.floor(Math.random() * bestSellerCourse.length);
+        const randomElement = bestSellerCourse[randomIndex];
+        if (!randomElements.includes(randomElement)) {
+          randomElements.push(randomElement);
+        }
+      }
+      setRandomCourse(randomElements);
+    }
+  }, [bestSellerCourse]);
 
   useEffect(() => {
     dispatch(onCourseLoading());
@@ -61,7 +80,7 @@ const HomePage = () => {
           autoplay
         >
           {bestSellerCourse?.length > 0 ? (
-            bestSellerCourse?.slice(0, 4).map((c) => (
+            randomCourse?.map((c) => (
               <SwiperSlide key={c.id}>
                 <div className="w-full h-[300px] rounded-lg relative">
                   <div className="overlay tw-bg-gradient-dark absolute inset-0 rounded-lg"></div>
@@ -126,7 +145,7 @@ const HomePage = () => {
                 <div className="absolute left-5 bottom-1/2 w-full text-white">
                   <EmptyDataCom
                     className="font-bold text-3xl w-[30rem]"
-                    text="Empty best selling courses"
+                    text="Empty introducing courses"
                   />
                 </div>
               </div>
