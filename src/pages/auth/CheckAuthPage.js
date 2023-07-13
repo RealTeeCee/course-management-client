@@ -5,6 +5,7 @@ import { AlertAntCom } from "../../components/ant";
 import { EMPLOYEE_ROLE, USER_ROLE } from "../../constants/permissions";
 import { MESSAGE_LOGIN_REQUIRED } from "../../constants/config";
 import { getEmployeePermission } from "../../utils/helper";
+import { onGetLastUrlAccess } from "../../store/auth/authSlice";
 
 const pathItems = [
   {
@@ -25,18 +26,18 @@ const pathItems = [
 ];
 
 const CheckAuthPage = ({ allowPermissions = [] }) => {
-  const { user, lastUrlAccess } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const userRole = user?.role || USER_ROLE;
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // useEffect(() => {
-  //   if (!user && currentPath !== "/login") {
-  //     dispatch(onGetLastUrlAccess(currentPath));
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user, currentPath]);
+  useEffect(() => {
+    if (!user && currentPath !== "/login") {
+      dispatch(onGetLastUrlAccess(currentPath));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, currentPath]);
 
   if (allowPermissions?.includes(userRole)) {
     const empPermissions = getEmployeePermission(user);

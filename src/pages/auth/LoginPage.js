@@ -51,6 +51,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { lastUrlAccess } = useSelector((state) => state.auth);
 
   const searchParams = new URLSearchParams(location.search);
   const verifyParam = searchParams.get("verify"); // = "success" || "verified";
@@ -58,6 +59,10 @@ const LoginPage = () => {
     useClickToggleBoolean();
 
   const handleSubmitForm = (values) => {
+    if (isRemember) {
+      const { email, password } = getValues();
+      setRememberUser(email, password);
+    }
     dispatch(onLogin(values));
   };
 
@@ -70,16 +75,9 @@ const LoginPage = () => {
   }, []);
 
   useEffect(() => {
-    if (isLoginSuccess) {
-      if (isRemember) {
-        const { email, password } = getValues();
-        setRememberUser(email, password);
-      }
-      navigate("/");
-    } else {
-      if (errorMessage) toast.error(errorMessage);
-    }
-  }, [isLoginSuccess, navigate, isRemember, getValues, errorMessage]);
+    if (!isLoginSuccess && errorMessage) toast.error(errorMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoginSuccess, errorMessage]);
 
   return (
     <>

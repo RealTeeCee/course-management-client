@@ -29,6 +29,7 @@ import {
   onResetPasswordSuccess,
   onUpdateUserToken,
   onUserChangePasswordSuccess,
+  onGetLastUrlAccessSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -51,11 +52,11 @@ function* handleOnLogin(action) {
     yield put(onLoading(true));
     const res = yield call(requestLogin, action.payload);
     if (res.data.type === "success") {
-      yield put(onLoginSuccess(true));
       if (res.data.access_token && res.data.refresh_token) {
         setToken(res.data.access_token, res.data.refresh_token);
         yield call(handleOnGetUser, { payload: res.data.access_token });
       }
+      yield put(onLoginSuccess(true));
       toast.success(res.data.message);
     } else {
       toast.error(res.data.message);
@@ -224,6 +225,10 @@ function* handleOnUpdatePermissions({ payload }) {
   } catch (error) {}
 }
 
+function* handleOnGetLastUrlAccess({ payload }) {
+  yield put(onGetLastUrlAccessSuccess(payload));
+}
+
 export {
   handleOnRegister,
   handleOnLogin,
@@ -238,4 +243,5 @@ export {
   handleOnLoadRoles,
   handleOnLoadPermissions,
   handleOnUpdatePermissions,
+  handleOnGetLastUrlAccess,
 };
