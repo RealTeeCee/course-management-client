@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
 import {
-  ADMIN_ROLE,
-  ALLOWED_ROLES,
-  EMPLOYEE_ROLE,
-  MANAGER_ROLE,
+  ALLOWED_ADMIN_MANAGER,
+  ALLOWED_ADMIN_MANAGER_EMPLOYEE,
 } from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
@@ -16,7 +14,7 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
-import { onRemoveToken } from "./store/auth/authSlice.js";
+import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
 import {
   onAuthorInitialState,
   onGetAuthors,
@@ -325,7 +323,9 @@ function App() {
           <Route
             path="/admin"
             element={
-              <CheckAuthPage allowPermissions={ALLOWED_ROLES}></CheckAuthPage>
+              <CheckAuthPage
+                allowPermissions={ALLOWED_ADMIN_MANAGER_EMPLOYEE}
+              ></CheckAuthPage>
             }
           >
             <Route index element={<AdminDashboardPage />}></Route>
@@ -394,15 +394,19 @@ function App() {
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
+
             {/* Admin Users */}
             <Route
               path="users"
-              element={<AdminUserListPage></AdminUserListPage>}
-            ></Route>
-            <Route
-              path="users/create"
-              element={<AdminCreateUserPage></AdminCreateUserPage>}
-            ></Route>
+              element={
+                <CheckAuthPage
+                  allowPermissions={ALLOWED_ADMIN_MANAGER}
+                ></CheckAuthPage>
+              }
+            >
+              <Route index element={<AdminUserListPage />}></Route>
+              <Route path="create" element={<AdminCreateUserPage />}></Route>
+            </Route>
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>

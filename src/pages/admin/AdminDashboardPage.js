@@ -16,6 +16,12 @@ import {
 } from "../../components/icon";
 import { RowCourseItem, RowUserItem } from "../../components/table/dashboard";
 import { categoryItems, sortItems } from "../../constants/config";
+import {
+  ADMIN_ROLE,
+  ALLOWED_ADMIN_MANAGER,
+  ALLOWED_ADMIN_MANAGER_EMPLOYEE,
+  MANAGER_ROLE,
+} from "../../constants/permissions";
 import useShowMore from "../../hooks/useShowMore";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
 import { onGetUsers } from "../../store/admin/user/userSlice";
@@ -23,6 +29,7 @@ import {
   convertIntToStrMoney,
   formatNumber,
   getCurrentDate,
+  getEmployeePermission,
 } from "../../utils/helper";
 
 const adminMenuItems = [
@@ -30,24 +37,34 @@ const adminMenuItems = [
     id: 1,
     title: "Learn",
     slug: "/admin/courses",
+    permission: ALLOWED_ADMIN_MANAGER_EMPLOYEE,
+    area: ["COURSE", "EXAM"],
     icon: <IconLearnCom className="mx-auto" />,
   },
   {
     id: 2,
     title: "User",
     slug: "/admin/users",
+    permission: ALLOWED_ADMIN_MANAGER,
+    area: ["USER"],
     icon: <IconUserCom className="mx-auto" />,
   },
   {
     id: 3,
     title: "Blog",
     slug: "/admin/blogs",
+    permission: ALLOWED_ADMIN_MANAGER_EMPLOYEE,
+    area: ["BLOG"],
     icon: <IconBlogCom className="mx-auto" />,
   },
 ];
 
 const AdminDashboardPage = () => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  console.log("user:", user);
+  let empPermissions = getEmployeePermission(user);
+  // console.log("empPermissions:", empPermissions);
   const [orderUser, setOrderUser] = useState("DESC");
   const [orderCourse, setOrderCourse] = useState(1);
   const [orderBlog, setOrderBlog] = useState("DESC");
@@ -350,13 +367,28 @@ const AdminDashboardPage = () => {
               </div>
               <div className="card-body mx-auto p-0">
                 <div className="sticky top-0 py-10">
-                  {adminMenuItems.map((item, index) => (
-                    <AdminMenuItems
-                      key={item.id}
-                      item={item}
-                      isLastItem={index === adminMenuItems.length - 1}
-                    />
-                  ))}
+                  {adminMenuItems.map((item, index) => {
+                    if (user?.role && !item.permission.includes(user.role)) {
+                      return null;
+                    } else {
+                      const empPermissions = getEmployeePermission(user);
+                      if (empPermissions && empPermissions.length > 0) {
+                        for (let empPer of empPermissions) {
+                          if (!item.area.includes(empPer)) {
+                            return null;
+                          }
+                        }
+                      }
+
+                      return (
+                        <AdminMenuItems
+                          key={item.id}
+                          item={item}
+                          isLastItem={index === adminMenuItems.length - 1}
+                        />
+                      );
+                    }
+                  })}
                 </div>
               </div>
             </div>
@@ -374,7 +406,7 @@ const AdminMenuItems = ({ item, isLastItem = false }) => {
         <ButtonCom
           className="px-3 py-2 w-20"
           minHeight="xs:min-h-[24px] md:min-h-[36px] xl:min-h-[42px]"
-          backgroundColor={`${item.id % 2 !== 0 ? "pink" : "primary"}`}
+          backgroundColor="pink"
         >
           {item.icon}
           <span>{item.title}</span>

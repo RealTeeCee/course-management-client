@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import axiosInstance from "../api/axiosInstance";
 import { APP_KEY_NAME, MESSAGE_GENERAL_FAILED } from "../constants/config";
 
 // Input: 123456 - Output: 123.456 using For Count items
@@ -256,7 +255,7 @@ export function convertCoreObjectItems(
       slug = `/authors/${newItems?.id}`;
       description = sliceText(newItems?.information, limitText);
       countText = `Subcribe: <span class="text-tw-light-pink">${totalSubcribes}</span>`;
-      
+
       createdBy = `Title: <span class="text-tw-light-pink">${
         newItems?.title || "N/A"
       }</span>`;
@@ -272,4 +271,14 @@ export function convertCoreObjectItems(
     countText,
     createdBy,
   };
+}
+
+// Input user store, and get the output ['BLOG','COURSE', 'EXAM']
+export function getEmployeePermission(user) {
+  if (user && user.permissions && Array.isArray(user.permissions)) {
+    return user.permissions
+      .filter((permission) => permission.includes("_"))
+      .map((permission) => permission.split("_")[1]);
+  }
+  return null;
 }
