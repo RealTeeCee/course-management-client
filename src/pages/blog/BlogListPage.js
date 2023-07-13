@@ -193,7 +193,7 @@ const BlogListPage = () => {
   //Get All Blog
   const getBlogs = async () => {
     try {
-      const res = await axiosBearer.get(`/blog/blogs`);
+      const res = await axiosBearer.get(`/blog/my-blog/${user.id}`);
       console.log(res.data);
       setBlogs(res.data);
       setFilterBlog(res.data);
@@ -353,6 +353,9 @@ const BlogListPage = () => {
       console.log(error);
     }
   };
+  useEffect(() => {
+    getBlogs();
+  }, []);
 
   const handleSubmitForm = async (values) => {
     console.log(values);
@@ -386,11 +389,11 @@ const BlogListPage = () => {
         <BreadcrumbCom
           items={[
             {
-              title: "Admin",
-              slug: "/admin",
+              title: "Blog",
+              slug: "/blog",
             },
             {
-              title: "Blog",
+              title: "Management Blog",
               isActive: true,
             },
           ]}
@@ -523,15 +526,18 @@ const BlogListPage = () => {
               <GapYCom className="mb-35 bt-10"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="description">Description</LabelCom>
+                  <LabelCom htmlFor="description" isRequired>Description</LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
                       setValue("description", description);
                     }}
                     placeholder="Write your blog..."
-                  ></TextEditorQuillCom>
+                  />
                 </div>
+                <div className="mt-10 " style={{ color: "red" }}>
+                    {errors.description?.message}
+                  </div>
               </div>
               <GapYCom></GapYCom>
             </div>
@@ -539,9 +545,7 @@ const BlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
+             
             </div>
           </form>
         </div>

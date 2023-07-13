@@ -81,7 +81,12 @@ const BlogCreatePage = () => {
       });
       toast.success(`${res.data.message}`);
       resetValues();
-      navigate(`/blogs/blogList`);
+      if(user.role ==="ADMIN"){
+        navigate(`/admin/blogs`); 
+      }else{
+        navigate(`/blogs/blogList`); 
+      }
+     
     } catch (error) {
       showMessageError(error);
     } finally {
@@ -199,7 +204,7 @@ const BlogCreatePage = () => {
                         setIsDescriptionEmpty(newDescription.trim() === "");
                       }}
                       placeholder={
-                        isDescriptionEmpty ? "Describe your course ..." : ""
+                        isDescriptionEmpty ? "Describe your blog ..." : ""
                       }
                     />
                   </div>
