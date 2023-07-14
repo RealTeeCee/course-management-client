@@ -414,18 +414,18 @@ const AdminBlogListPage = () => {
 
   const handleSubmitForm = async (values) => {
     console.log(values);
-    const user_id = user.id;
+ 
     const status = values.status || 2;
     try {
       setIsLoading(!isLoading);
-      const test = { ...values, user_id, status, view_count: 0 };
+      const test = { ...values, status, view_count: 0 };
       console.log("test:", test);
       const res = await axiosBearer.put(`/blog`, {
         ...values,
-        user_id,
         status,
         view_count: 0,
       });
+      console.log("res:", res);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getBlogs();
       setIsOpen(false);
