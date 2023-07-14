@@ -5,6 +5,7 @@ const selectCourseReducer = (state) => state.course; //store in rootReducer
 export const selectAllCourseState = createSelector(
   [selectCourseReducer],
   (courseSlice) => ({
+    isLoading: courseSlice.isLoading,
     isSubmitting: courseSlice.isSubmitting,
     data: courseSlice.data,
     courseId: courseSlice.courseId,
@@ -28,6 +29,7 @@ export const selectAllCourseState = createSelector(
     userRating: courseSlice.userRating,
     courseRating: courseSlice.courseRating,
     examination: courseSlice.examination,
+    prevTime: courseSlice.prevTime,
     finishExam: courseSlice.finishExam,
     generateExamSuccess: courseSlice.generateExamSuccess,
     retakeExam: courseSlice.retakeExam,

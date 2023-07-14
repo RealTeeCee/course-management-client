@@ -18,6 +18,7 @@ import GapYCom from "../common/GapYCom";
 import { IconTrashCom } from "../icon";
 import { DialogConfirmMuiCom } from "../mui";
 import { TextEditorQuillCom } from "../texteditor";
+import { Card } from "@mui/material";
 
 const schemaValidation = yup.object().shape({
   comment: yup.string(),
@@ -126,7 +127,7 @@ const CommentCom = ({
             {p.comments.map((c) => (
               <CommentChild
                 key={c.id}
-                image={c.imageUrl} 
+                image={c.imageUrl}
                 userName={c.userName}
                 role={c.role}
                 commentId={c.id}
@@ -274,7 +275,14 @@ const CommentParent = ({
     setOpenDialog(false);
   };
   return (
-    <li>
+    <Card
+      variant="outlined"
+      sx={{
+        padding: "10px",
+        marginBottom: "10px",
+        width: "100%",
+      }}
+    >
       <DialogConfirmMuiCom
         title="Warning"
         content="Do you want to delete this note?"
@@ -391,7 +399,7 @@ const CommentParent = ({
           </div>
         </div>
       </div>
-    </li>
+    </Card>
   );
 };
 

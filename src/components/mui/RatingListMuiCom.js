@@ -58,7 +58,7 @@ const RatingListMuiCom = () => {
       spacing={{ xs: 2, md: 3 }}
       columns={{ xs: 4, sm: 8, md: 12 }}
     >
-      <Grid item xs={12} sm={12} md={12} mt={5} mb={5}>
+      <Grid item xs={12} sm={12} md={12} mb={5}>
         <Stack direction="row" spacing={1}>
           <Typography
             variant="h5"
@@ -79,64 +79,70 @@ const RatingListMuiCom = () => {
         </Stack>
       </Grid>
 
-      <Grid item xs={2} sm={2} md={2}>
-        <Grid container justifyContent="center">
-          <Typography
-            variant="h3"
-            sx={{ fontWeight: "bold", color: "#d77d11" }}
-          >
-            {rating}
-          </Typography>
+      <Grid item container>
+        <Grid item xs={2} sm={2} md={2} mt={-1}>
+          <Grid container justifyContent="center">
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: "bold", color: "#d77d11" }}
+            >
+              {rating}
+            </Typography>
 
-          <Rating
-            name="half-rating"
-            value={rating}
-            precision={0.5}
-            size="large"
-            defaultValue={0}
-            readOnly
-          />
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", color: "#d77d11" }}
-          >
-            Course Rating
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid item xs={10} sm={10} md={10}>
-        {courseRating.map((c) => (
-          <Grid container spacing={2} alignContent="center">
-            <Grid item xs={7} sm={7} md={7}>
-              <BorderLinearProgress
-                variant="determinate"
-                value={c.ratio === 0 ? 0.3 : c.ratio}
-              />
-            </Grid>
-            <Grid item xs={2} sm={2} md={2}>
-              <Rating
-                name="half-rating"
-                value={c.star}
-                precision={0.5}
-                size="medium"
-                defaultValue={0}
-                readOnly
-                sx={{ marginTop: "-8px" }}
-              />
-            </Grid>
-            <Grid item xs={1} sm={1} md={1}>
-              <Typography
-                variant="h6"
-                style={{
-                  marginTop: "-8px",
-                  color: "rgb(128 122 112)",
-                }}
-              >
-                {c.ratio}%
-              </Typography>
-            </Grid>
+            <Rating
+              name="half-rating"
+              value={rating}
+              precision={0.5}
+              size="large"
+              defaultValue={0}
+              readOnly
+            />
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "#d77d11" }}
+              align="center"
+              width="100%"
+            >
+              Course Rating
+            </Typography>
           </Grid>
-        ))}
+        </Grid>
+        <Grid item xs={10} sm={10} md={10}>
+          {courseRating.map((c) => (
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={7} sm={7} md={7}>
+                <BorderLinearProgress
+                  variant="determinate"
+                  value={c.ratio === 0 ? 0.3 : c.ratio}
+                />
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Rating
+                  name="half-rating"
+                  value={c.star}
+                  precision={0.5}
+                  size="medium"
+                  defaultValue={0}
+                  readOnly
+                  sx={{ marginTop: "-8px" }}
+                />
+              </Grid>
+              <Grid item xs={1} sm={1} md={1}>
+                <Typography
+                  variant="h6"
+                  style={{
+                    marginTop: "-8px",
+                    marginLeft: "20px",
+                    color: "rgb(128 122 112)",
+                  }}
+                  align="right"
+                >
+                  {c.ratio}%
+                </Typography>
+              </Grid>
+            </Grid>
+          ))}
+        </Grid>
       </Grid>
     </Grid>
   );
