@@ -82,6 +82,7 @@ const BlogListPage = () => {
   const { user } = useSelector((state) => state.auth);
   const user_id = user.id;
 
+  console.log("isOpen",isOpen);
   /********* END API State ********* */
 
   /********* More Action Menu ********* */
@@ -137,7 +138,7 @@ const BlogListPage = () => {
       width: "70px",
     },
     {
-      name: "Blog Name",
+      name: "Title",
       selector: (row) => row.name,
       sortable: true,
       width: "250px",
@@ -192,7 +193,7 @@ const BlogListPage = () => {
   //Get All Blog
   const getBlogs = async () => {
     try {
-      const res = await axiosBearer.get(`/blog/blogs`);
+      const res = await axiosBearer.get(`/blog/my-blog/${user.id}`);
       console.log(res.data);
       setBlogs(res.data);
       setFilterBlog(res.data);
@@ -352,6 +353,9 @@ const BlogListPage = () => {
       console.log(error);
     }
   };
+  useEffect(() => {
+    getBlogs();
+  }, []);
 
   const handleSubmitForm = async (values) => {
     console.log(values);
@@ -368,6 +372,7 @@ const BlogListPage = () => {
       });
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getBlogs();
+      setIsOpen(false);
       // Navigate(`/admin/blogs`);
     } catch (error) {
       showMessageError(error);
@@ -380,15 +385,15 @@ const BlogListPage = () => {
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Blogs</HeadingH1Com>
+        <HeadingH1Com>Management Blogs</HeadingH1Com>
         <BreadcrumbCom
           items={[
             {
-              title: "Admin",
-              slug: "/admin",
+              title: "Blog",
+              slug: "/blogs",
             },
             {
-              title: "Blog",
+              title: "Management Blog",
               isActive: true,
             },
           ]}
@@ -424,14 +429,14 @@ const BlogListPage = () => {
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
+        onRequestClose={() => setIsOpen(false)} 
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
           isOpen ? "w-50" : "w-0"
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Course</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Blog</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -457,14 +462,14 @@ const BlogListPage = () => {
               <div className="row">
                 <div className="col-sm-8">
                   <LabelCom htmlFor="name" isRequired>
-                    Blog Name
+                    Title
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Course Name"
+                    placeholder="Input Title"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
@@ -521,15 +526,18 @@ const BlogListPage = () => {
               <GapYCom className="mb-35 bt-10"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="description">Description</LabelCom>
+                  <LabelCom htmlFor="description" isRequired>Description</LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
                       setValue("description", description);
                     }}
                     placeholder="Write your blog..."
-                  ></TextEditorQuillCom>
+                  />
                 </div>
+                <div className="mt-10 " style={{ color: "red" }}>
+                    {errors.description?.message}
+                  </div>
               </div>
               <GapYCom></GapYCom>
             </div>
@@ -537,9 +545,7 @@ const BlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
+             
             </div>
           </form>
         </div>

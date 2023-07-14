@@ -58,7 +58,6 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-
 const AdminBlogListPage = () => {
   /********* State ********* */
   //API State
@@ -76,7 +75,6 @@ const AdminBlogListPage = () => {
   const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
   const { user } = useSelector((state) => state.auth);
-  const user_id = user.id;
 
   /********* END API State ********* */
 
@@ -133,7 +131,7 @@ const AdminBlogListPage = () => {
       width: "70px",
     },
     {
-      name: "Blog Name",
+      name: "Title",
       selector: (row) => row.name,
       sortable: true,
       width: "250px",
@@ -146,8 +144,12 @@ const AdminBlogListPage = () => {
     {
       name: "Image",
       selector: (row) => (
-        
-        <img width={50} height={50} src={`${row.image|| AVATAR_DEFAULT}`} alt={row.name} />
+        <img
+          width={50}
+          height={50}
+          src={`${row.image || AVATAR_DEFAULT}`}
+          alt={row.name}
+        />
       ),
     },
     {
@@ -158,18 +160,33 @@ const AdminBlogListPage = () => {
           name="status"
           defaultValue={row.status}
           options={statusBlogItems}
-          className={`${row.status === 1 ? "blog-dropdown-success" : row.status === 2 ? "blog-dropdown-warning" :"blog-dropdown-dark"} rounded-full`}
+          className={`${
+            row.status === 1
+              ? "blog-dropdown-success"
+              : row.status === 2
+              ? "blog-dropdown-warning"
+              : "blog-dropdown-dark"
+          } rounded-full`}
           onChange={(selectedStatus) =>
             handleChangeStatus(row.id, selectedStatus)
           }
         />
       ),
     },
-    
+
     {
       name: "Action",
       cell: (row) => (
         <>
+          <ButtonCom
+            className="px-3 rounded-lg mr-2"
+            backgroundColor="info"
+            onClick={() => {
+              handleEdit(row.id);
+            }}
+          >
+            <IconEditCom className="w-5"></IconEditCom>
+          </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -299,35 +316,57 @@ const AdminBlogListPage = () => {
     });
   };
   /********* Update Status API ********* */
+
+  // const handleChangeStatus = async (blogId, selectedStatus) => {
+  //   try {
+  //     //update new status of blog
+  //     const newBlogs = blogs.map((blog) =>
+  //       blog.id === blogId ? { ...blog, status: selectedStatus } : blog
+  //     );
+
+  //     const dataBody = newBlogs.find((blog) => blog.id === blogId);
+
+  //     const {
+  //       id,
+  //       name,
+  //       status,
+  //       image,
+  //       category_id,
+  //       view_count = 0,
+  //       user_id = user.id,
+  //       description,
+  //     } = dataBody;
+  //     console.log("value", dataBody);
+  //     const formData = {
+  //       id,
+  //       name,
+  //       status,
+  //       image,
+  //       category_id,
+  //       view_count: view_count || 0,
+  //       user_id: user_id || user.id,
+  //       description,
+  //     };
+  //     console.log("formData", formData);
+  //     await axiosBearer.put(`/blog`, formData);
+
+  //     toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+  //     getBlogs();
+  //   } catch (error) {
+  //     showMessageError(error);
+  //   }
+  // };
+
   const handleChangeStatus = async (blogId, selectedStatus) => {
     try {
-      //update new status of blog
-      const newBlogs = blogs.map((blog) =>
-        blog.id === blogId ? { ...blog, status: selectedStatus } : blog
-      );
+      console.log("blogId",blogId);
+      console.log("selectedStatus",selectedStatus);
+      const response = await axiosBearer.get(`/blog/${blogId}`);
+      const blogData = response.data; // access to API data
 
-      const dataBody = newBlogs.find((blog) => blog.id === blogId);
-
-      const {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count = 0,
-        user_id = user.id,
-        description,
-      } = dataBody;
-      console.log("value", dataBody);
       const formData = {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count: view_count || 0,
-        user_id: user_id || user.id,
-        description,
+       ...blogData,
+       status: selectedStatus,
       };
       console.log("formData", formData);
       await axiosBearer.put(`/blog`, formData);
@@ -339,6 +378,18 @@ const AdminBlogListPage = () => {
     }
   };
 
+  /********* Update API ********* */
+  const handleEdit = async (blogId) => {
+    try {
+      setIsFetching(true);
+      await getBlogById(blogId);
+      setIsOpen(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   const getBlogById = async (blogId) => {
     try {
@@ -354,11 +405,36 @@ const AdminBlogListPage = () => {
           status: "done",
           url: resImage,
         },
-      ];  } catch (error) {
-        console.log(error);
-      }
-    };
+      ];
+      setImage(imgObj);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const handleSubmitForm = async (values) => {
+    console.log(values);
+ 
+    const status = values.status || 2;
+    try {
+      setIsLoading(!isLoading);
+      const test = { ...values, status, view_count: 0 };
+      console.log("test:", test);
+      const res = await axiosBearer.put(`/blog`, {
+        ...values,
+        status,
+        view_count: 0,
+      });
+      console.log("res:", res);
+      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+      getBlogs();
+      setIsOpen(false);
+    } catch (error) {
+      showMessageError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       {isFetching && <LoadingCom />}
@@ -384,6 +460,7 @@ const AdminBlogListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
+                  urlCreate="/admin/blogs/:slug"
                   tableKey={tableKey}
                   title="List Blogs"
                   columns={columns}
@@ -399,7 +476,131 @@ const AdminBlogListPage = () => {
           </div>
         </div>
       </div>
+      {/* Modal Edit */}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+        className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
+          isOpen ? "w-50" : "w-0"
+        }`}
+      >
+        <div className="card-header bg-tw-primary flex justify-between text-white">
+          <HeadingFormH5Com className="text-2xl">Edit Blog</HeadingFormH5Com>
+          <ButtonCom backgroundColor="danger" className="px-2">
+            <IconRemoveCom
+              className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
+              onClick={() => setIsOpen(false)}
+            ></IconRemoveCom>
+          </ButtonCom>
+        </div>
+        <div className="card-body">
+          <form
+            className="theme-form"
+            onSubmit={handleSubmit(handleSubmitForm)}
+          >
+            <InputCom
+              type="hidden"
+              control={control}
+              name="id"
+              register={register}
+              placeholder="Blog hidden id"
+              errorMsg={errors.id?.message}
+            ></InputCom>
 
+            <div className="card-body">
+              <div className="row">
+                <div className="col-sm-8">
+                  <LabelCom htmlFor="name" isRequired>
+                    Title
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="name"
+                    register={register}
+                    placeholder="Input Title"
+                    errorMsg={errors.name?.message}
+                    defaultValue={watch("name")}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-2 relative">
+                  <LabelCom htmlFor="image" isRequired>
+                    Image
+                  </LabelCom>
+                  <div className="absolute w-full">
+                    <ImageCropUploadAntCom
+                      name="image"
+                      onSetValue={setValue}
+                      errorMsg={errors.image?.message}
+                      editImage={image}
+                    ></ImageCropUploadAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="image"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-20"></GapYCom>
+              <div className="row">
+                <div className="col-sm-4">
+                  <LabelCom htmlFor="category_id" isRequired>
+                    Choose Category
+                  </LabelCom>
+                  <div>
+                    <SelectSearchAntCom
+                      selectedValue={categorySelected}
+                      listItems={categoryItems}
+                      onChange={handleChangeCategory}
+                      className="w-full py-1"
+                      status={
+                        errors.category_id &&
+                        errors.category_id.message &&
+                        "error"
+                      }
+                      errorMsg={errors.category_id?.message}
+                      placeholder="Input category to search"
+                    ></SelectSearchAntCom>
+                    <InputCom
+                      type="hidden"
+                      control={control}
+                      name="category_id"
+                      register={register}
+                    ></InputCom>
+                  </div>
+                </div>
+              </div>
+              <GapYCom className="mb-35 bt-10"></GapYCom>
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="description" isRequired>
+                    Description
+                  </LabelCom>
+                  <TextEditorQuillCom
+                    value={watch("description")}
+                    onChange={(description) => {
+                      setValue("description", description);
+                    }}
+                    placeholder="Write your blog..."
+                  />
+                </div>
+                <div className="mt-10 " style={{ color: "red" }}>
+                  {errors.description?.message}
+                </div>
+              </div>
+              <GapYCom></GapYCom>
+            </div>
+            <div className="card-footer flex justify-end gap-x-5">
+              <ButtonCom type="submit" isLoading={isLoading}>
+                Update
+              </ButtonCom>
+            </div>
+          </form>
+        </div>
+      </ReactModal>
     </>
   );
 };

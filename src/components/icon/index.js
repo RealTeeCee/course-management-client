@@ -39,3 +39,4 @@ export const { default: IconArrowUpCom } = require("./IconArrowUpCom");
 export const { default: IconMoneyCom } = require("./IconMoneyCom");
 export const { default: IconAuthorCom } = require("./IconAuthorCom");
 export const { default: IconRefreshCom } = require("./IconRefreshCom");
+export const { default: IconInvoiceCom } = require("./IconInvoiceCom");

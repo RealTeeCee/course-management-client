@@ -36,6 +36,9 @@ const UserCertificationPage = lazy(() =>
 const UserAccomplishmentPage = lazy(() =>
   import("./pages/user/UserAccomplishmentPage.js")
 );
+const UserPurchaseHistoryPage = lazy(() =>
+  import("./pages/user/UserPurchaseHistoryPage.js")
+);
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -99,6 +102,9 @@ const AdminCreateLessonPage = lazy(() =>
 
 const AdminBlogListPage = lazy(() =>
   import("./pages/admin/blog/AdminBlogListPage.js")
+);
+const AdminBlogCreatePage = lazy(() =>
+  import("./pages/admin/blog/AdminBlogCreatePage.js")
 );
 
 const AdminUserListPage = lazy(() =>
@@ -282,6 +288,10 @@ function App() {
               path="accomplishments/verify/:certificateUID"
               element={<UserCertificationPage></UserCertificationPage>}
             ></Route>
+            <Route
+              path="order-history"
+              element={<UserPurchaseHistoryPage></UserPurchaseHistoryPage>}
+            ></Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
@@ -393,6 +403,10 @@ function App() {
             <Route
               path="blogs"
               element={<AdminBlogListPage></AdminBlogListPage>}
+            ></Route>
+            <Route
+              path="blogs/:slug"
+              element={<AdminBlogCreatePage></AdminBlogCreatePage>}
             ></Route>
 
             {/* Admin Users */}

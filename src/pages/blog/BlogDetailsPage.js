@@ -28,6 +28,7 @@ const BlogDetailsPage = () => {
           description: response.data.description,
           image: response.data.image,
           view_count: response.data.view_count,
+          view_count: response.data.view_count,
           created_at: response.data.created_at
             ? moment(response.data.created_at).format("DD/MM/YYYY")
             : "", // Format the date
@@ -40,18 +41,7 @@ const BlogDetailsPage = () => {
     fetchData();
   }, [id]);
 
-  // const updateViewCount = async () => {
-  //   try {
-  //     await axiosBearer.put(`/blog/view-count/${id}`, {
-  //       view_count: viewCount + 1,
-  //     });
-  //     setViewCount((prevCount) => prevCount + 1);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
-  //------------------ 
   const updateViewCount = async () => {
     try {
       const cookieViewCount = getBlogViewCount(id);
