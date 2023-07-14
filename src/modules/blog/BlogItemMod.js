@@ -9,7 +9,13 @@ import { ImageCom } from "../../components/image";
 import { IMAGE_DEFAULT } from "../../constants/config";
 import { convertCoreObjectItems } from "../../utils/helper";
 
-const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
+const BlogItemMod = ({
+  item,
+  type,
+  objectOriginal,
+  isShowType = false,
+  isSearchPage = false,
+}) => {
   const { userSubcribes } = useSelector((state) => state.author);
   if (type === "AUTHOR") {
     item = {
@@ -21,7 +27,11 @@ const BlogItemMod = ({ item, type, objectOriginal, isShowType = false }) => {
   const newItem = convertCoreObjectItems(item, type, objectOriginal, 250);
 
   return (
-    <div className="card-item duration-300 bg-white rounded-lg">
+    <div
+      className={`${
+        isSearchPage ? "" : "card-item"
+      } duration-300 bg-white rounded-lg`}
+    >
       <Link to={newItem.slug} className="relative">
         <div className="blog-box blog-list row">
           <div className="col-md-2">

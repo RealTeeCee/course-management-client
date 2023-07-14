@@ -40,18 +40,7 @@ const BlogDetailsPage = () => {
     fetchData();
   }, [id]);
 
-  // const updateViewCount = async () => {
-  //   try {
-  //     await axiosBearer.put(`/blog/view-count/${id}`, {
-  //       view_count: viewCount + 1,
-  //     });
-  //     setViewCount((prevCount) => prevCount + 1);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
-  //------------------ 
   const updateViewCount = async () => {
     try {
       const cookieViewCount = getBlogViewCount(id);
