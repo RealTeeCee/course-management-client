@@ -8,6 +8,7 @@ import courseSaga from "./course/courseSaga";
 import dashboardSaga from "./dashboard/dashboardSaga";
 import userSaga from "./admin/user/userSaga";
 import adminCourseSaga from "./admin/course/courseSaga";
+import orderSaga from "./order/orderSaga";
 import categorySaga from "./category/categorySaga";
 
 export default function* rootSaga() {
@@ -22,5 +23,6 @@ export default function* rootSaga() {
     fork(answerSaga),
     fork(userSaga),
     fork(adminCourseSaga),
+    fork(orderSaga),
   ]);
 }
