@@ -138,7 +138,7 @@ const BlogListPage = () => {
       width: "70px",
     },
     {
-      name: "Blog Name",
+      name: "Title",
       selector: (row) => row.name,
       sortable: true,
       width: "250px",
@@ -385,12 +385,12 @@ const BlogListPage = () => {
     <>
       {isFetching && <LoadingCom />}
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Admin Blogs</HeadingH1Com>
+        <HeadingH1Com>Management Blogs</HeadingH1Com>
         <BreadcrumbCom
           items={[
             {
               title: "Blog",
-              slug: "/blog",
+              slug: "/blogs",
             },
             {
               title: "Management Blog",
@@ -436,7 +436,7 @@ const BlogListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Course</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Blog</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -462,14 +462,14 @@ const BlogListPage = () => {
               <div className="row">
                 <div className="col-sm-8">
                   <LabelCom htmlFor="name" isRequired>
-                    Blog Name
+                    Title
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Course Name"
+                    placeholder="Input Title"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>

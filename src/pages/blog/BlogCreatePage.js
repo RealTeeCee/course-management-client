@@ -130,7 +130,7 @@ const BlogCreatePage = () => {
                 <div className="row">
                   <div className="col-sm-6">
                     <LabelCom htmlFor="name" isRequired>
-                      Blog Name
+                      Title
                     </LabelCom>
                     <InputCom
                       type="text"
