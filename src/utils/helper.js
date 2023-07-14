@@ -52,6 +52,7 @@ export function getDurationFromVideo(
   };
 
   if (e.target.files.length === 0) {
+    console.log("null");
     return null;
   }
   video.src = URL.createObjectURL(e.target.files[0]);
