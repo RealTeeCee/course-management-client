@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { ButtonCom } from "../../components/button";
 import {
   IconCertificateCom,
+  IconInvoiceCom,
   IconLoginCom,
   IconLogoutCom,
   IconRegisterCom,
@@ -60,6 +61,11 @@ const HomeTopbarMod = () => {
       icon: <IconCertificateCom />,
       title: "Certificate",
       url: `/profile/accomplishments`,
+    },
+    {
+      icon: <IconInvoiceCom />,
+      title: "Purchase",
+      url: `/profile/order-history`,
     },
     {
       icon: <IconLoginCom />,
@@ -177,6 +183,14 @@ const HomeTopbarMod = () => {
                 if (
                   user &&
                   (item.url === "/register" || item.url === "/login")
+                ) {
+                  return null;
+                }
+                // If user is login, and role is not USER exclude "/order-history"
+                if (
+                  user &&
+                  user.role !== "USER" &&
+                  item.url === "/profile/order-history"
                 ) {
                   return null;
                 }

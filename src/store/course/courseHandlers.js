@@ -453,6 +453,7 @@ function* handleLoadCertificate({ payload }) {
       });
 
       const fileObjectUrl = URL.createObjectURL(blob);
+      window.open(fileObjectUrl);
       sessionStorage.setItem("certificatePdf", fileObjectUrl);
       yield put(onLoadCertificateSuccess());
     }
@@ -474,7 +475,6 @@ function* handleDownloadCertificate() {
   }
 }
 function* handleAllNotification({ payload }) {
-
   try {
     const res = yield call(requestAllNotification, payload.userToId);
     if (res.status === 200) {
@@ -488,12 +488,10 @@ function* handleAllNotification({ payload }) {
   }
 }
 function* handleDeleteNotification({ payload }) {
- 
   try {
     const res = yield call(requestDeleteNotification, payload);
     if (res.status === 200) {
       yield put(onDeleteNotificationSuccess(payload));
-      
     }
   } catch (error) {
     showMessageError(error);
@@ -547,5 +545,4 @@ export {
   handleAllNotification,
   handleDeleteNotification,
   handleAllDeleteNotification,
-
 };

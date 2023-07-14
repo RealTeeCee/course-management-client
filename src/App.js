@@ -33,6 +33,9 @@ const UserCertificationPage = lazy(() =>
 const UserAccomplishmentPage = lazy(() =>
   import("./pages/user/UserAccomplishmentPage.js")
 );
+const UserPurchaseHistoryPage = lazy(() =>
+  import("./pages/user/UserPurchaseHistoryPage.js")
+);
 
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage.js"));
 const LoginPage = lazy(() => import("./pages/auth/LoginPage.js"));
@@ -278,6 +281,10 @@ function App() {
             <Route
               path="accomplishments/verify/:certificateUID"
               element={<UserCertificationPage></UserCertificationPage>}
+            ></Route>
+            <Route
+              path="order-history"
+              element={<UserPurchaseHistoryPage></UserPurchaseHistoryPage>}
             ></Route>
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>

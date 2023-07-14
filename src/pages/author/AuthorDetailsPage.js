@@ -60,7 +60,7 @@ const AuthorDetailsPage = () => {
   }, [authorId, dispatch]);
 
   useEffect(() => {
-    console.log("AA: ", isEnrolled && user?.role === "USER" && slug !== "");
+    console.log("AA: ", isEnrolled && user?.role !== null && slug !== "");
     console.log("AB: ", isEnrolled === false && slug !== "");
     if (isEnrolled && user?.role === "USER" && slug !== "") {
       navigate(`/learn/${slug}`);
