@@ -40,6 +40,7 @@ const initialState = {
   examination: [],
   finishExam: null,
   generateExamSuccess: false,
+  isGenerating: false,
   countdown: -1,
   retakeExam: {
     examSession: 0,
@@ -229,7 +230,7 @@ const courseSlice = createSlice({
         lessonDto: [],
         videoDto: [],
       },
-      video: null,
+      video: state.courseId !== action.payload.courseId ? null : state.video,
     }),
     onGetMyLearningSuccess: (state, action) => ({
       ...state,
@@ -241,11 +242,17 @@ const courseSlice = createSlice({
       ...state,
       errorMessage: null,
     }),
-    onGetTrackingLessonSuccess: (state, action) => ({
-      ...state,
-      tracking: action.payload,
-      resumePoint: action.payload ? action.payload.resumePoint : 0,
-    }),
+    onGetTrackingLessonSuccess: (state, action) => {
+      // const filteredVideo = state.learning.videoDto.find(
+      //   (video) => video.lessonId === action.payload.lessonId
+      // );
+      return {
+        ...state,
+        tracking: action.payload,
+        resumePoint: action.payload ? action.payload.resumePoint : 0,
+        //video: filteredVideo ? filteredVideo : null,
+      };
+    },
     onSaveTrackingLesson: (state, action) => ({
       ...state,
       errorMessage: null,
@@ -291,25 +298,19 @@ const courseSlice = createSlice({
       ...state,
       isReady: action.payload,
     }),
-    onLoadNote: (state, action) => ({
-      ...state,
-    }),
+    onLoadNote: (state, action) => state,
     onLoadNoteSuccess: (state, action) => ({
       ...state,
       notes: action.payload,
     }),
-    onSaveNote: (state, action) => ({
-      ...state,
-    }),
+    onSaveNote: (state, action) => state,
     onSaveNoteSuccess: (state, action) => {
       return {
         ...state,
         notes: addNewNotes(state.notes, action.payload),
       };
     },
-    onDeleteNote: (state, action) => ({
-      ...state,
-    }),
+    onDeleteNote: (state, action) => state,
     onDeleteNoteSuccess: (state, action) => {
       return {
         ...state,
@@ -337,9 +338,7 @@ const courseSlice = createSlice({
       ...state,
       isSubmitting: false,
     }),
-    onDeletePost: (state, action) => ({
-      ...state,
-    }),
+    onDeletePost: (state, action) => state,
     onSaveReplyToPost: (state, action) => ({
       ...state,
       isSubmitting: true,
@@ -348,15 +347,9 @@ const courseSlice = createSlice({
       ...state,
       isSubmitting: false,
     }),
-    onRemoveReplyInPost: (state, action) => ({
-      ...state,
-    }),
-    onSaveLikeOfPost: (state, action) => ({
-      ...state,
-    }),
-    onLoadNotification: (state, action) => ({
-      ...state,
-    }),
+    onRemoveReplyInPost: (state, action) => state,
+    onSaveLikeOfPost: (state, action) => state,
+    onLoadNotification: (state, action) => state,
     onLoadNotificationSuccess: (state, action) => ({
       ...state,
       notifs: action.payload,
@@ -366,18 +359,10 @@ const courseSlice = createSlice({
       notifs: action.payload,
       notifToastList: action.payload,
     }),
-    onReadNotification: (state, action) => ({
-      ...state,
-    }),
-    onReadNotificationSuccess: (state, action) => ({
-      ...state,
-    }),
-    onReadAllNotification: (state, action) => ({
-      ...state,
-    }),
-    onReadAllNotificationSuccess: (state, action) => ({
-      ...state,
-    }),
+    onReadNotification: (state, action) => state,
+    onReadNotificationSuccess: (state, action) => state,
+    onReadAllNotification: (state, action) => state,
+    onReadAllNotificationSuccess: (state, action) => state,
     onRemoveFromToastList: (state, action) => {
       let newNotif = [action.payload];
       const filteredNotif = newNotif.filter((x) => x.id !== action.payload.id);
@@ -386,40 +371,34 @@ const courseSlice = createSlice({
         updatedNotif: filteredNotif,
       };
     },
-    onUpdateUserRating: (state, action) => ({
-      ...state,
-    }),
+    onUpdateUserRating: (state, action) => state,
     onUpdateUserRatingSuccess: (state, action) => ({
       ...state,
       userRating: action.payload,
     }),
-    onLoadCourseRating: (state, action) => ({
-      ...state,
-    }),
+    onLoadCourseRating: (state, action) => state,
     onLoadCourseRatingSuccess: (state, action) => ({
       ...state,
       courseRating: action.payload,
     }),
     onGenerateCourseExam: (state, action) => ({
       ...state,
+      isGenerating: true,
       generateExamSuccess: false,
     }),
     onGenerateCourseExamSuccess: (state, action) => ({
       ...state,
       examination: action.payload,
+      isGenerating: false,
       generateExamSuccess: true,
     }),
-    onFinishExam: (state, action) => ({
-      ...state,
-    }),
+    onFinishExam: (state, action) => state,
     onFinishExamSuccess: (state, action) => ({
       ...state,
       finishExam: action.payload,
       generateExamSuccess: false,
     }),
-    onRetakeExam: (state, action) => ({
-      ...state,
-    }),
+    onRetakeExam: (state, action) => state,
     onRetakeExamSuccess: (state, action) => ({
       ...state,
       retakeExam: action.payload,
@@ -428,9 +407,7 @@ const courseSlice = createSlice({
       ...state,
       countdown: state.countdown === 0 ? 0 : action.payload,
     }),
-    onLoadAccomplishmentsExam: (state, action) => ({
-      ...state,
-    }),
+    onLoadAccomplishmentsExam: (state, action) => state,
     onLoadAccomplishmentsExamSuccess: (state, action) => ({
       ...state,
       accomplishments: action.payload,
@@ -460,19 +437,13 @@ const courseSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    onDownloadCertificate: (state, action) => ({
-      ...state,
-    }),
-    onAllNotification: (state, action) => ({
-      ...state,
-    }),
+    onDownloadCertificate: (state, action) => state,
+    onAllNotification: (state, action) => state,
     onAllNotificationSuccess: (state, action) => ({
       ...state,
       notifications: action.payload,
     }),
-    onDeleteNotification: (state, action) => ({
-      ...state,
-    }),
+    onDeleteNotification: (state, action) => state,
     onDeleteNotificationSuccess: (state, action) => {
       const updatedNotifications = state.notifications.filter(
         (notif) => notif.id !== action.payload
@@ -483,9 +454,7 @@ const courseSlice = createSlice({
       };
     },
 
-    onAllDeleteNotification: (state, action) => ({
-      ...state,
-    }),
+    onAllDeleteNotification: (state, action) => state,
 
     onAllDeleteNotificationSuccess: (state, action) => {
       const { id } = action.payload;

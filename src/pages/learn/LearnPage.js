@@ -57,7 +57,7 @@ const LearnPage = () => {
     countdown,
     prevTime,
   } = useSelector(selectAllCourseState);
-  console.log(video);
+
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
   // const [isSeek, setIsSeek] = useState(false);
@@ -248,9 +248,6 @@ const LearnPage = () => {
   };
 
   const handleOnReady = React.useCallback(() => {
-    console.log(isReady);
-    console.log(isReload);
-    console.log(!isReady || isReload);
     if (!isReady || isReload) {
       player.current.seekTo(tracking ? tracking.resumePoint : 0);
       dispatch(onReady(true));
