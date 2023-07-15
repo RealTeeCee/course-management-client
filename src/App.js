@@ -14,7 +14,11 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
-import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
+import {
+  onAuthInitialState,
+  onLoadCurrentUser,
+  onRemoveToken,
+} from "./store/auth/authSlice.js";
 import {
   onAuthorInitialState,
   onGetAuthors,
@@ -25,6 +29,8 @@ import {
   onCourseLoading,
 } from "./store/course/courseSlice.js";
 import { getToken } from "./utils/auth.js";
+import { BASE_API_URL } from "./constants/config.js";
+import { selectUser } from "./store/auth/authSelector.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
 const AuthorDetailsPage = lazy(() =>
@@ -158,7 +164,7 @@ Modal.setAppElement("#root");
 Modal.defaultStyles = {};
 window.removeEventListener("onbeforeunload", () => {});
 function App() {
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector(selectUser);
   const { examination } = useSelector(selectAllCourseState);
   const { access_token } = getToken();
   const navigate = useNavigate();
@@ -172,6 +178,28 @@ function App() {
   // });
 
   useEffect(() => {
+    if (user) {
+      let url = BASE_API_URL + `/auth/user/me/stream/${user.id}`;
+      const sse = new EventSource(url);
+
+      sse.addEventListener("current-user-event", (event) => {
+        const data = JSON.parse(event.data);
+
+        if (JSON.stringify(data) !== JSON.stringify(user)) {
+          dispatch(onLoadCurrentUser(data));
+        }
+      });
+
+      sse.onerror = () => {
+        sse.close();
+      };
+      return () => {
+        sse.close();
+      };
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
     if (user?.status === 0) {
       navigate("/logout");
       dispatch(onRemoveToken());
@@ -180,6 +208,7 @@ function App() {
   }, [dispatch, navigate, user?.status]);
 
   useEffect(() => {
+    // dispatch(onAuthInitialState());
     dispatch(onAuthorInitialState());
     dispatch(onGetAuthors());
     dispatch(onCourseLoading());
