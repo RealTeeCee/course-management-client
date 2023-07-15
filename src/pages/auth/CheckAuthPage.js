@@ -28,6 +28,7 @@ const pathItems = [
 const CheckAuthPage = ({ allowPermissions = [] }) => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
   const userRole = user?.role || USER_ROLE;
   const location = useLocation();
   const currentPath = location.pathname;

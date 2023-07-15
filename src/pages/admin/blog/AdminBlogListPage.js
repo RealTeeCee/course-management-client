@@ -41,12 +41,13 @@ import { Link } from "@mui/material";
 import Swal from "sweetalert2";
 import { v4 } from "uuid";
 import ReactModal from "react-modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { mainColor } from "../../../constants/mainTheme";
+import { onGetBlogsForAdmin } from "../../../store/admin/blog/blogSlice";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -59,6 +60,9 @@ const schemaValidation = yup.object().shape({
 });
 
 const AdminBlogListPage = () => {
+  const dispatch = useDispatch();
+  const { adminBlogs: blogs } = useSelector((state) => state.adminBlog);
+  console.log("adminBlogs:", blogs);
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
@@ -71,7 +75,7 @@ const AdminBlogListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
   const { user } = useSelector((state) => state.auth);
@@ -203,19 +207,8 @@ const AdminBlogListPage = () => {
 
   /********* Call API ********* */
   //Get All Blog
-  const getBlogs = async () => {
-    try {
-      const res = await axiosBearer.get(`/blog/blogs`);
-      console.log(res.data);
-      setBlogs(res.data);
-      setFilterBlog(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    getBlogs();
+    dispatch(onGetBlogsForAdmin());
   }, []);
 
   const handleChangeCategory = (value) => {
@@ -272,7 +265,7 @@ const AdminBlogListPage = () => {
       if (result.isConfirmed) {
         try {
           const res = await axiosBearer.delete(`/blog/${id}`);
-          getBlogs();
+          // getBlogs();
           reset(res.data);
           toast.success(res.data.message);
         } catch (error) {
@@ -309,7 +302,7 @@ const AdminBlogListPage = () => {
         } catch (error) {
           showMessageError(error);
         } finally {
-          getBlogs();
+          // getBlogs();
           clearSelectedRows();
         }
       }
@@ -359,20 +352,20 @@ const AdminBlogListPage = () => {
 
   const handleChangeStatus = async (blogId, selectedStatus) => {
     try {
-      console.log("blogId",blogId);
-      console.log("selectedStatus",selectedStatus);
+      console.log("blogId", blogId);
+      console.log("selectedStatus", selectedStatus);
       const response = await axiosBearer.get(`/blog/${blogId}`);
       const blogData = response.data; // access to API data
 
       const formData = {
-       ...blogData,
-       status: selectedStatus,
+        ...blogData,
+        status: selectedStatus,
       };
       console.log("formData", formData);
       await axiosBearer.put(`/blog`, formData);
 
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getBlogs();
+      // getBlogs();
     } catch (error) {
       showMessageError(error);
     }
@@ -414,7 +407,7 @@ const AdminBlogListPage = () => {
 
   const handleSubmitForm = async (values) => {
     console.log(values);
- 
+
     const status = values.status || 2;
     try {
       setIsLoading(!isLoading);
@@ -427,7 +420,7 @@ const AdminBlogListPage = () => {
       });
       console.log("res:", res);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getBlogs();
+      // getBlogs();
       setIsOpen(false);
     } catch (error) {
       showMessageError(error);

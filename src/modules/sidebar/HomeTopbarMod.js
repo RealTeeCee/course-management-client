@@ -86,28 +86,28 @@ const HomeTopbarMod = () => {
 
   const dispatch = useDispatch();
   // Ẩn notification tạm thời
-  useEffect(() => {
-    if (user) {
-      let url = BASE_API_URL + "/push-notifications/" + user.id;
-      const sse = new EventSource(url);
+  // useEffect(() => {
+  //   if (user) {
+  //     let url = BASE_API_URL + "/push-notifications/" + user.id;
+  //     const sse = new EventSource(url);
 
-      sse.addEventListener("user-list-event", (event) => {
-        const data = JSON.parse(event.data);
-        dispatch(onAddNotification(data));
-      });
+  //     sse.addEventListener("user-list-event", (event) => {
+  //       const data = JSON.parse(event.data);
+  //       dispatch(onAddNotification(data));
+  //     });
 
-      sse.onerror = () => {
-        sse.close();
-      };
-      return () => {
-        sse.close();
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  //     sse.onerror = () => {
+  //       sse.close();
+  //     };
+  //     return () => {
+  //       sse.close();
+  //     };
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
-      <NotificationToastListMuiCom></NotificationToastListMuiCom>
+      {/* <NotificationToastListMuiCom></NotificationToastListMuiCom> */}
       <div>
         <Link to="/" className="inline-block">
           <img
