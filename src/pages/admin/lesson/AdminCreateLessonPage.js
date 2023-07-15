@@ -167,15 +167,9 @@ const AdminCreateLessonPage = () => {
   };
 
   const handleGetDurationForVideo = (e) => {
-    const video = document.createElement("video");
-    const file = e.target.files[0];
-    setVideoFile(e.target.files);
-    video.preload = "metadata";
-    video.onloadedmetadata = function () {
-      setValue("duration", Math.round(video.duration));
-    };
-    if (!file) return;
-    video.src = URL.createObjectURL(file);
+    const file = e.target.files;
+    setVideoFile(file);
+    getDurationFromVideo(file[0]);
   };
 
   return (

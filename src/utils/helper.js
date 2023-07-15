@@ -6,7 +6,7 @@ export function formatNumber(number) {
   if (number === null || isNaN(number)) number = 0;
   const formattedNumber = number
     .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return formattedNumber;
 }
 
@@ -40,7 +40,7 @@ export function showMessageError(error) {
 
 // Get Duration for Video
 export function getDurationFromVideo(
-  e,
+  file,
   setValue = () => {},
   name = "duration"
 ) {
@@ -51,11 +51,8 @@ export function getDurationFromVideo(
     setValue(name, Math.round(video.duration));
   };
 
-  if (e.target.files.length === 0) {
-    console.log("null");
-    return null;
-  }
-  video.src = URL.createObjectURL(e.target.files[0]);
+  if (!file) return null;
+  video.src = URL.createObjectURL(file);
 }
 
 // Convert second to DiffForHumans Timming, Input: 96, output: 1 min 36 seconds
