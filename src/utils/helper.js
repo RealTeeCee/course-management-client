@@ -123,6 +123,15 @@ export function convertDateTime(dateTimeString, isShowYear = true) {
   return newDateTime;
 }
 
+// Input: 2023-06-20T16:21:34.017435Z, Output: 10 Total date
+export function countDateTime(createdAt) {
+  const createdDate = new Date(createdAt);
+  const currentDate = new Date();
+  const timeDiff = currentDate.getTime() - createdDate.getTime();
+  const daysDiff = Math.ceil(Math.abs(timeDiff / (1000 * 3600 * 24)));
+  return daysDiff;
+}
+
 // return "YYYY-MM-DD"
 export function getCurrentDate() {
   // Get the current date

@@ -31,4 +31,28 @@ export const ALLOWED_ADMIN_MANAGER_EMPLOYEE = [
   MANAGER_ROLE,
   EMPLOYEE_ROLE,
 ];
+
 export const ALLOWED_ADMIN_MANAGER = [ADMIN_ROLE, MANAGER_ROLE];
+
+export const TITLE_POSITION_LIST = [
+  {
+    title: "CEO",
+    value: "ADMIN",
+    permission: "ADMIN",
+  },
+  {
+    title: "COO",
+    value: "MANAGER",
+    permission: "MANAGER",
+  },
+  {
+    title: "Mastering Personnel Course Management",
+    value: "EMPLOYEE",
+    permission: "COURSE",
+  },
+  {
+    title: "Mastering Content Marketing",
+    value: "EMPLOYEE",
+    permission: "BLOG",
+  },
+];

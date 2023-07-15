@@ -57,7 +57,6 @@ const CheckAuthPage = ({ allowPermissions = [] }) => {
         // }
         // // Trường hợp nếu role là "EXAM",
         // if (empPer === "EXAM") {
-        //   console.log("okExam:");
         //   return <Outlet />;
         // }
       }
