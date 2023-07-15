@@ -53,6 +53,7 @@ function* handleOnLogin(action) {
   try {
     yield put(onLoading(true));
     const res = yield call(requestLogin, action.payload);
+
     if (res.data.type === "success") {
       yield put(onLoginSuccess(true));
       if (res.data.access_token && res.data.refresh_token) {
@@ -73,7 +74,7 @@ function* handleOnLogin(action) {
 function* handleOnGetUser({ payload: access_token }) {
   try {
     const res = yield call(requestGetUser, access_token);
-    if (res.data.type === "success") {
+    if (res.status === 200) {
       yield put(
         onUpdateUserToken({
           user: res.data,

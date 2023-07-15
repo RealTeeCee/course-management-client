@@ -120,6 +120,11 @@ const authSlice = createSlice({
     }),
     onUpdatePermission: (state, action) => state,
     onUpdatePermissionSuccess: (state, action) => state,
+
+    onLoadCurrentUser: (state, action) => ({
+      ...state,
+      user: action.payload,
+    }),
   },
 });
 
@@ -149,6 +154,7 @@ export const {
   onLoadPermission,
   onLoadPermissionSuccess,
   onUpdatePermission,
+  onLoadCurrentUser,
 } = authSlice.actions;
 // reducer
 export default authSlice.reducer;

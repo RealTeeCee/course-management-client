@@ -107,7 +107,6 @@ const ChartsMuiCom = () => {
   const year = [...new Set(revenueChart.map((r) => r.year))];
   console.log(year);
 
-  const revenue2022 = revenueChart.filter((r) => r.year === 2022);
   const labels = [
     "January",
     "February",
@@ -123,7 +122,6 @@ const ChartsMuiCom = () => {
     "December",
   ];
 
-  const revenue2023 = revenueChart.filter((r) => r.year === 2023);
   const chart2 = {
     labels,
     datasets: year.map((y) => ({

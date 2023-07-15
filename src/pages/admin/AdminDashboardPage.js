@@ -27,10 +27,12 @@ import {
 import { Paper } from "@mui/material";
 import {
   onLoadCategoryEnrollmentChart,
+  onLoadDashboard,
   onLoadRevenueYearChart,
 } from "../../store/dashboard/dashboardSlice";
 import { Pie } from "react-chartjs-2";
 import { ChartsMuiCom } from "../../components/mui";
+import { selectAllDashboardState } from "../../store/dashboard/dashboardSelector";
 
 const adminMenuItems = [
   {
@@ -58,6 +60,8 @@ const AdminDashboardPage = () => {
   const [orderUser, setOrderUser] = useState("DESC");
   const [orderCourse, setOrderCourse] = useState(1);
   const [orderBlog, setOrderBlog] = useState("DESC");
+
+  const { dashboard } = useSelector(selectAllDashboardState);
   const {
     users,
     isPostUserSuccess,
@@ -94,12 +98,16 @@ const AdminDashboardPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateCourseSuccess]);
 
-  const currentDate = getCurrentDate();
-  const usersRegisteredToday = users.filter((item, index) => {
-    const userCreatedAt = new Date(item?.created_at);
-    const userCreatedDateString = userCreatedAt.toISOString().split("T")[0];
-    return userCreatedDateString === currentDate && item?.role === "USER";
-  });
+  // const currentDate = getCurrentDate();
+  // const usersRegisteredToday = users.filter((item, index) => {
+  //   const userCreatedAt = new Date(item?.created_at);
+  //   const userCreatedDateString = userCreatedAt.toISOString().split("T")[0];
+  //   return userCreatedDateString === currentDate && item?.role === "USER";
+  // });
+
+  useEffect(() => {
+    dispatch(onLoadDashboard());
+  }, [dispatch]);
 
   // Handle Sort Users
   useEffect(() => {
@@ -167,7 +175,7 @@ const AdminDashboardPage = () => {
               <div className="row border-top m-0 bg-tw-dark text-white rounded-2xl">
                 <div className="col-xl-3 col-md-6 col-sm-6 ps-0">
                   <CardItemModalCom title="Total Users" icon={<IconUserCom />}>
-                    {formatNumber(users?.length ?? 0)} accounts
+                    {formatNumber(dashboard.totalUser ?? 0)} accounts
                   </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6 col-sm-6">
@@ -176,8 +184,8 @@ const AdminDashboardPage = () => {
                     icon={<IconUserCom />}
                     classNameIcon="!bg-tw-light-pink"
                   >
-                    {formatNumber(usersRegisteredToday?.length ?? 0)}{" "}
-                    {usersRegisteredToday?.length > 1 ? "accounts" : "account"}
+                    {formatNumber(dashboard?.todayRegister ?? 0)}{" "}
+                    {dashboard?.todayRegister > 1 ? "accounts" : "account"}
                   </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6">
@@ -185,7 +193,7 @@ const AdminDashboardPage = () => {
                     title="Total Revenue"
                     icon={<IconMoneyCom />}
                   >
-                    ${convertIntToStrMoney(250293)} this year
+                    ${convertIntToStrMoney(dashboard?.yearRevenue)} this year
                   </CardItemModalCom>
                 </div>
                 <div className="col-xl-3 col-md-6 pe-0">
@@ -194,7 +202,7 @@ const AdminDashboardPage = () => {
                     icon={<IconMoneyCom />}
                     classNameIcon="!bg-tw-light-pink"
                   >
-                    ${convertIntToStrMoney(6789)} this month
+                    ${convertIntToStrMoney(dashboard?.monthRevenue)} this month
                   </CardItemModalCom>
                 </div>
               </div>

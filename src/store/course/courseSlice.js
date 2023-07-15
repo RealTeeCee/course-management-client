@@ -133,7 +133,7 @@ const courseSlice = createSlice({
         return {
           ...state,
           courseId: filteredCourse[0].id,
-          progress: filteredCourse[0].progress,
+
           rating: filteredCourse[0].rating,
           userRating: filteredCourse[0].userRating,
           generateExamSuccess: false,
@@ -163,6 +163,7 @@ const courseSlice = createSlice({
         ...state,
         sectionId: action.payload.sectionId,
         lessonId: action.payload.lessonId,
+        video: null,
       };
     },
     onManualSelectedLesson: (state, action) => {
@@ -223,6 +224,12 @@ const courseSlice = createSlice({
       errorMessage: null,
       isLoadLearningStatus: false,
       isLoading: true,
+      learning: {
+        sectionDto: [],
+        lessonDto: [],
+        videoDto: [],
+      },
+      video: null,
     }),
     onGetMyLearningSuccess: (state, action) => ({
       ...state,
@@ -274,6 +281,7 @@ const courseSlice = createSlice({
     onLoadProgress: (state, action) => ({
       ...state,
       errorMessage: null,
+      progress: 0,
     }),
     onLoadProgressSuccess: (state, action) => ({
       ...state,
@@ -460,7 +468,7 @@ const courseSlice = createSlice({
     }),
     onAllNotificationSuccess: (state, action) => ({
       ...state,
-      notifications: action.payload, 
+      notifications: action.payload,
     }),
     onDeleteNotification: (state, action) => ({
       ...state,
