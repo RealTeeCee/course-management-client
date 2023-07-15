@@ -2,12 +2,11 @@ import { Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { v4 } from "uuid";
 import { SelectDefaultAntCom, SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
-import CardItemModalCom from "../../components/common/card/CardItemModalCom";
 import GapYCom from "../../components/common/GapYCom";
+import CardItemModalCom from "../../components/common/card/CardItemModalCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import {
   IconAdminCom,
@@ -29,11 +28,12 @@ import {
 import useShowMore from "../../hooks/useShowMore";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
 import { onGetUsers } from "../../store/admin/user/userSlice";
+import { selectAllDashboardState } from "../../store/dashboard/dashboardSelector";
+import { onLoadDashboard } from "../../store/dashboard/dashboardSlice";
 import {
   convertDateTime,
   convertIntToStrMoney,
   formatNumber,
-  getCurrentDate,
   getEmployeePermission,
 } from "../../utils/helper";
 
@@ -72,6 +72,8 @@ const AdminDashboardPage = () => {
   const [orderUser, setOrderUser] = useState("DESC");
   const [orderCourse, setOrderCourse] = useState(1);
   const [orderBlog, setOrderBlog] = useState("DESC");
+
+  const { dashboard } = useSelector(selectAllDashboardState);
   const {
     users,
     isPostUserSuccess,
@@ -108,12 +110,16 @@ const AdminDashboardPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateCourseSuccess]);
 
-  const currentDate = getCurrentDate();
-  const usersRegisteredToday = users.filter((item, index) => {
-    const userCreatedAt = new Date(item?.created_at);
-    const userCreatedDateString = userCreatedAt.toISOString().split("T")[0];
-    return userCreatedDateString === currentDate && item?.role === "USER";
-  });
+  // const currentDate = getCurrentDate();
+  // const usersRegisteredToday = users.filter((item, index) => {
+  //   const userCreatedAt = new Date(item?.created_at);
+  //   const userCreatedDateString = userCreatedAt.toISOString().split("T")[0];
+  //   return userCreatedDateString === currentDate && item?.role === "USER";
+  // });
+
+  useEffect(() => {
+    dispatch(onLoadDashboard());
+  }, [dispatch]);
 
   // Handle Sort Users
   useEffect(() => {
@@ -183,7 +189,7 @@ const AdminDashboardPage = () => {
                   className={user?.role === EMPLOYEE_ROLE ? "col-6" : "col-3"}
                 >
                   <CardItemModalCom title="Total Users" icon={<IconUserCom />}>
-                    {formatNumber(users?.length ?? 0)} accounts
+                    {formatNumber(dashboard.totalUser ?? 0)} accounts
                   </CardItemModalCom>
                 </div>
                 <div
@@ -194,8 +200,8 @@ const AdminDashboardPage = () => {
                     icon={<IconUserCom />}
                     classNameIcon="!bg-tw-light-pink"
                   >
-                    {formatNumber(usersRegisteredToday?.length ?? 0)}{" "}
-                    {usersRegisteredToday?.length > 1 ? "accounts" : "account"}
+                    {formatNumber(dashboard?.todayRegister ?? 0)}{" "}
+                    {dashboard?.todayRegister > 1 ? "accounts" : "account"}
                   </CardItemModalCom>
                 </div>
                 {ALLOWED_ADMIN_MANAGER.includes(user?.role) && (
@@ -205,7 +211,8 @@ const AdminDashboardPage = () => {
                         title="Total Revenue"
                         icon={<IconMoneyCom />}
                       >
-                        ${convertIntToStrMoney(250293)} this year
+                        ${convertIntToStrMoney(dashboard?.yearRevenue)} this
+                        year
                       </CardItemModalCom>
                     </div>
                     <div className="col-3">
@@ -214,7 +221,8 @@ const AdminDashboardPage = () => {
                         icon={<IconMoneyCom />}
                         classNameIcon="!bg-tw-light-pink"
                       >
-                        ${convertIntToStrMoney(6789)} this month
+                        ${convertIntToStrMoney(dashboard?.monthRevenue)} this
+                        month
                       </CardItemModalCom>
                     </div>
                   </>

@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ import HomeSearchMod from "../search/HomeSearchMod";
 
 const HomeTopbarMod = () => {
   const { user } = useSelector((state) => state.auth);
-  const { progress } = useSelector(selectAllCourseState);
+  const { progress, notifs } = useSelector(selectAllCourseState);
 
   const location = useLocation();
   const isLearnPage = location.pathname.startsWith("/learn");
@@ -86,25 +86,27 @@ const HomeTopbarMod = () => {
 
   const dispatch = useDispatch();
   // Ẩn notification tạm thời
-  // useEffect(() => {
-  //   if (user) {
-  //     let url = BASE_API_URL + "/push-notifications/" + user.id;
-  //     const sse = new EventSource(url);
+  useEffect(() => {
+    if (user) {
+      let url = BASE_API_URL + "/push-notifications/" + user.id;
+      const sse = new EventSource(url);
 
-  //     sse.addEventListener("user-list-event", (event) => {
-  //       const data = JSON.parse(event.data);
-  //       dispatch(onAddNotification(data));
-  //     });
+      sse.addEventListener("user-list-event", (event) => {
+        const data = JSON.parse(event.data);
+        if (JSON.stringify(data) !== JSON.stringify(notifs)) {
+          dispatch(onAddNotification(data));
+        }
+      });
 
-  //     sse.onerror = () => {
-  //       sse.close();
-  //     };
-  //     return () => {
-  //       sse.close();
-  //     };
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [user]);
+      sse.onerror = () => {
+        sse.close();
+      };
+      return () => {
+        sse.close();
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       {/* <NotificationToastListMuiCom></NotificationToastListMuiCom> */}

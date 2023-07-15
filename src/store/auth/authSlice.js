@@ -102,25 +102,24 @@ const authSlice = createSlice({
       ...state,
       isLoading: true,
     }),
-    onUserUpdateNoti: (state, action) => ({
-      ...state,
-    }),
-    onLoadRole: (state, action) => ({
-      ...state,
-    }),
+    onUserUpdateNoti: (state, action) => state,
+    onLoadRole: (state, action) => state,
     onLoadRoleSuccess: (state, action) => ({
       ...state,
       roles: action.payload,
     }),
-    onLoadPermission: (state, action) => ({
-      ...state,
-    }),
+    onLoadPermission: (state, action) => state,
     onLoadPermissionSuccess: (state, action) => ({
       ...state,
       permissions: action.payload,
     }),
     onUpdatePermission: (state, action) => state,
     onUpdatePermissionSuccess: (state, action) => state,
+
+    onLoadCurrentUser: (state, action) => ({
+      ...state,
+      user: action.payload,
+    }),
     onGetLastUrlAccess: (state, action) => ({
       ...state,
       lastUrlAccess: null,
@@ -158,6 +157,7 @@ export const {
   onLoadPermission,
   onLoadPermissionSuccess,
   onUpdatePermission,
+  onLoadCurrentUser,
   onGetLastUrlAccess,
   onGetLastUrlAccessSuccess,
 } = authSlice.actions;
