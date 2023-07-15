@@ -58,7 +58,6 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-
 const AdminBlogListPage = () => {
   /********* State ********* */
   //API State
@@ -76,7 +75,6 @@ const AdminBlogListPage = () => {
   const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
   const { user } = useSelector((state) => state.auth);
-  const user_id = user.id;
 
   /********* END API State ********* */
 
@@ -146,8 +144,12 @@ const AdminBlogListPage = () => {
     {
       name: "Image",
       selector: (row) => (
-        
-        <img width={50} height={50} src={`${row.image|| AVATAR_DEFAULT}`} alt={row.name} />
+        <img
+          width={50}
+          height={50}
+          src={`${row.image || AVATAR_DEFAULT}`}
+          alt={row.name}
+        />
       ),
     },
     {
@@ -158,14 +160,20 @@ const AdminBlogListPage = () => {
           name="status"
           defaultValue={row.status}
           options={statusBlogItems}
-          className={`${row.status === 1 ? "blog-dropdown-success" : row.status === 2 ? "blog-dropdown-warning" :"blog-dropdown-dark"} rounded-full`}
+          className={`${
+            row.status === 1
+              ? "blog-dropdown-success"
+              : row.status === 2
+              ? "blog-dropdown-warning"
+              : "blog-dropdown-dark"
+          } rounded-full`}
           onChange={(selectedStatus) =>
             handleChangeStatus(row.id, selectedStatus)
           }
         />
       ),
     },
-    
+
     {
       name: "Action",
       cell: (row) => (
@@ -308,35 +316,57 @@ const AdminBlogListPage = () => {
     });
   };
   /********* Update Status API ********* */
+
+  // const handleChangeStatus = async (blogId, selectedStatus) => {
+  //   try {
+  //     //update new status of blog
+  //     const newBlogs = blogs.map((blog) =>
+  //       blog.id === blogId ? { ...blog, status: selectedStatus } : blog
+  //     );
+
+  //     const dataBody = newBlogs.find((blog) => blog.id === blogId);
+
+  //     const {
+  //       id,
+  //       name,
+  //       status,
+  //       image,
+  //       category_id,
+  //       view_count = 0,
+  //       user_id = user.id,
+  //       description,
+  //     } = dataBody;
+  //     console.log("value", dataBody);
+  //     const formData = {
+  //       id,
+  //       name,
+  //       status,
+  //       image,
+  //       category_id,
+  //       view_count: view_count || 0,
+  //       user_id: user_id || user.id,
+  //       description,
+  //     };
+  //     console.log("formData", formData);
+  //     await axiosBearer.put(`/blog`, formData);
+
+  //     toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+  //     getBlogs();
+  //   } catch (error) {
+  //     showMessageError(error);
+  //   }
+  // };
+
   const handleChangeStatus = async (blogId, selectedStatus) => {
     try {
-      //update new status of blog
-      const newBlogs = blogs.map((blog) =>
-        blog.id === blogId ? { ...blog, status: selectedStatus } : blog
-      );
+      console.log("blogId",blogId);
+      console.log("selectedStatus",selectedStatus);
+      const response = await axiosBearer.get(`/blog/${blogId}`);
+      const blogData = response.data; // access to API data
 
-      const dataBody = newBlogs.find((blog) => blog.id === blogId);
-
-      const {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count = 0,
-        user_id = user.id,
-        description,
-      } = dataBody;
-      console.log("value", dataBody);
       const formData = {
-        id,
-        name,
-        status,
-        image,
-        category_id,
-        view_count: view_count || 0,
-        user_id: user_id || user.id,
-        description,
+       ...blogData,
+       status: selectedStatus,
       };
       console.log("formData", formData);
       await axiosBearer.put(`/blog`, formData);
@@ -348,8 +378,8 @@ const AdminBlogListPage = () => {
     }
   };
 
-   /********* Update API ********* */
-   const handleEdit = async (blogId) => {
+  /********* Update API ********* */
+  const handleEdit = async (blogId) => {
     try {
       setIsFetching(true);
       await getBlogById(blogId);
@@ -375,27 +405,27 @@ const AdminBlogListPage = () => {
           status: "done",
           url: resImage,
         },
-      ];  
+      ];
       setImage(imgObj);
     } catch (error) {
-        console.log(error);
-      }
-    };
+      console.log(error);
+    }
+  };
 
-    
   const handleSubmitForm = async (values) => {
     console.log(values);
+ 
     const status = values.status || 2;
     try {
       setIsLoading(!isLoading);
-      const test = { ...values, user_id, status, view_count: 0 };
-      console.log("test:",test);
+      const test = { ...values, status, view_count: 0 };
+      console.log("test:", test);
       const res = await axiosBearer.put(`/blog`, {
         ...values,
-        user_id,
         status,
         view_count: 0,
       });
+      console.log("res:", res);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getBlogs();
       setIsOpen(false);
@@ -430,7 +460,7 @@ const AdminBlogListPage = () => {
             <div className="card-header py-3">
               <span>
                 <TableCom
-                 urlCreate="/admin/blogs/:slug"
+                  urlCreate="/admin/blogs/:slug"
                   tableKey={tableKey}
                   title="List Blogs"
                   columns={columns}
@@ -446,10 +476,10 @@ const AdminBlogListPage = () => {
           </div>
         </div>
       </div>
-     {/* Modal Edit */}
-     <ReactModal
+      {/* Modal Edit */}
+      <ReactModal
         isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)} 
+        onRequestClose={() => setIsOpen(false)}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
           isOpen ? "w-50" : "w-0"
@@ -546,7 +576,9 @@ const AdminBlogListPage = () => {
               <GapYCom className="mb-35 bt-10"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="description" isRequired>Description</LabelCom>
+                  <LabelCom htmlFor="description" isRequired>
+                    Description
+                  </LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
@@ -556,8 +588,8 @@ const AdminBlogListPage = () => {
                   />
                 </div>
                 <div className="mt-10 " style={{ color: "red" }}>
-                    {errors.description?.message}
-                  </div>
+                  {errors.description?.message}
+                </div>
               </div>
               <GapYCom></GapYCom>
             </div>
@@ -565,7 +597,6 @@ const AdminBlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-             
             </div>
           </form>
         </div>

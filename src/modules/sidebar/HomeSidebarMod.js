@@ -9,6 +9,7 @@ import {
   IconHomeCom,
   IconLearnCom,
 } from "../../components/icon";
+import { ALLOWED_ADMIN_MANAGER_EMPLOYEE } from "../../constants/permissions";
 
 const sidebarItems = [
   {
@@ -86,7 +87,7 @@ const HomeSidebarMod = () => {
       >
         {sidebarItems.map((item) => {
           if (item.url === "/admin") {
-            if (user && user.role === "ADMIN") {
+            if (user && ALLOWED_ADMIN_MANAGER_EMPLOYEE.includes(user.role)) {
               return (
                 <NavLink
                   key={item.title}

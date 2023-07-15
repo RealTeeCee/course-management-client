@@ -13,6 +13,7 @@ const initialState = {
   errorMessage: null,
   roles: [],
   permissions: [],
+  lastUrlAccess: null,
 };
 const authSlice = createSlice({
   name: "auth",
@@ -119,6 +120,14 @@ const authSlice = createSlice({
       ...state,
       user: action.payload,
     }),
+    onGetLastUrlAccess: (state, action) => ({
+      ...state,
+      lastUrlAccess: null,
+    }),
+    onGetLastUrlAccessSuccess: (state, action) => ({
+      ...state,
+      lastUrlAccess: action.payload,
+    }),
   },
 });
 
@@ -149,6 +158,8 @@ export const {
   onLoadPermissionSuccess,
   onUpdatePermission,
   onLoadCurrentUser,
+  onGetLastUrlAccess,
+  onGetLastUrlAccessSuccess,
 } = authSlice.actions;
 // reducer
 export default authSlice.reducer;

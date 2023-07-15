@@ -3,7 +3,10 @@ import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
-import { ADMIN_ROLE, MANAGER_ROLE } from "./constants/permissions.js";
+import {
+  ALLOWED_ADMIN_MANAGER,
+  ALLOWED_ADMIN_MANAGER_EMPLOYEE,
+} from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
@@ -360,7 +363,7 @@ function App() {
             path="/admin"
             element={
               <CheckAuthPage
-                allowPermissions={[ADMIN_ROLE, MANAGER_ROLE]}
+                allowPermissions={ALLOWED_ADMIN_MANAGER_EMPLOYEE}
               ></CheckAuthPage>
             }
           >
@@ -434,15 +437,19 @@ function App() {
               path="blogs/:slug"
               element={<AdminBlogCreatePage></AdminBlogCreatePage>}
             ></Route>
+
             {/* Admin Users */}
             <Route
               path="users"
-              element={<AdminUserListPage></AdminUserListPage>}
-            ></Route>
-            <Route
-              path="users/create"
-              element={<AdminCreateUserPage></AdminCreateUserPage>}
-            ></Route>
+              element={
+                <CheckAuthPage
+                  allowPermissions={ALLOWED_ADMIN_MANAGER}
+                ></CheckAuthPage>
+              }
+            >
+              <Route index element={<AdminUserListPage />}></Route>
+              <Route path="create" element={<AdminCreateUserPage />}></Route>
+            </Route>
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>
