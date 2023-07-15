@@ -3,7 +3,10 @@ import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import LoaderCom from "./components/common/LoaderCom.js";
-import { ADMIN_ROLE, MANAGER_ROLE } from "./constants/permissions.js";
+import {
+  ALLOWED_ADMIN_MANAGER,
+  ALLOWED_ADMIN_MANAGER_EMPLOYEE,
+} from "./constants/permissions.js";
 import LayoutAuthentication from "./layouts/LayoutAuthentication.js";
 import LayoutHome from "./layouts/LayoutHome.js";
 import LayoutLearning from "./layouts/LayoutLearn.js";
@@ -11,7 +14,7 @@ import CheckAuthPage from "./pages/auth/CheckAuthPage.js";
 import CheckUserLoginPage from "./pages/auth/CheckUserLoginPage.js";
 import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
-import { onRemoveToken } from "./store/auth/authSlice.js";
+import { onGetUser, onRemoveToken } from "./store/auth/authSlice.js";
 import {
   onAuthorInitialState,
   onGetAuthors,
@@ -98,12 +101,11 @@ const AdminCreateLessonPage = lazy(() =>
 );
 
 const AdminBlogListPage = lazy(() =>
-  import("./pages/admin/blog/AdminBlogListPage.js") 
+  import("./pages/admin/blog/AdminBlogListPage.js")
 );
 const AdminBlogCreatePage = lazy(() =>
-  import("./pages/admin/blog/AdminBlogCreatePage.js") 
+  import("./pages/admin/blog/AdminBlogCreatePage.js")
 );
-
 
 const AdminUserListPage = lazy(() =>
   import("./pages/admin/user/AdminUserListPage.js")
@@ -332,7 +334,7 @@ function App() {
             path="/admin"
             element={
               <CheckAuthPage
-                allowPermissions={[ADMIN_ROLE, MANAGER_ROLE]}
+                allowPermissions={ALLOWED_ADMIN_MANAGER_EMPLOYEE}
               ></CheckAuthPage>
             }
           >
@@ -406,15 +408,19 @@ function App() {
               path="blogs/:slug"
               element={<AdminBlogCreatePage></AdminBlogCreatePage>}
             ></Route>
+
             {/* Admin Users */}
             <Route
               path="users"
-              element={<AdminUserListPage></AdminUserListPage>}
-            ></Route>
-            <Route
-              path="users/create"
-              element={<AdminCreateUserPage></AdminCreateUserPage>}
-            ></Route>
+              element={
+                <CheckAuthPage
+                  allowPermissions={ALLOWED_ADMIN_MANAGER}
+                ></CheckAuthPage>
+              }
+            >
+              <Route index element={<AdminUserListPage />}></Route>
+              <Route path="create" element={<AdminCreateUserPage />}></Route>
+            </Route>
           </Route>
           {/* ******* END ADMIN ******* */}
         </Route>

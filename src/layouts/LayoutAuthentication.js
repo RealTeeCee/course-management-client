@@ -6,13 +6,18 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import ErrorCom from "../components/common/ErrorCom";
 
 const LayoutAuthentication = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, lastUrlAccess } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   useEffect(() => {
     if (user) {
-      navigate("/");
+      if (lastUrlAccess) {
+        navigate(lastUrlAccess);
+      } else {
+        navigate("/");
+      }
     }
-  }, [navigate, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, lastUrlAccess]);
   if (user) return <></>;
 
   return (
