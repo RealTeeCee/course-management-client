@@ -133,7 +133,7 @@ const AdminBlogCreatePage = () => {
                       control={control}
                       name="name"
                       register={register}
-                      placeholder="Input Blog name"
+                      placeholder="Input title"
                       errorMsg={errors.name?.message}
                     ></InputCom>
                   </div>
@@ -169,24 +169,6 @@ const AdminBlogCreatePage = () => {
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  {/* <div className="col-sm-12">
-                    <LabelCom htmlFor="image" isRequired>
-                      Image
-                    </LabelCom>
-                    <div className="w-full">
-                      <ImageCropUploadAntCom
-                        name="image"
-                        onSetValue={setValue}
-                        errorMsg={errors.image?.message}
-                      ></ImageCropUploadAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="image"
-                        register={register}
-                      ></InputCom>
-                    </div>
-                  </div> */}
                   <div className="col-sm-12 text-center">
                     <LabelCom htmlFor="image" isRequired>
                       Image

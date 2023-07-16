@@ -28,6 +28,7 @@ import { axiosBearer } from "../../api/axiosInstance";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { colors } from "@mui/material";
 import { onPostBlog } from "../../store/admin/blog/blogSlice";
+import Swal from "sweetalert2";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -129,7 +130,96 @@ const BlogCreatePage = () => {
             >
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-6">
+                  <div className="col-sm-12 text-center">
+                    <LabelCom htmlFor="name" isRequired>
+                      Title
+                    </LabelCom>
+                    <InputCom
+                      type="text"
+                      control={control}
+                      name="name"
+                      register={register}
+                      placeholder="Input title"
+                      errorMsg={errors.name?.message}
+                    ></InputCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-2 offset-5 text-center">
+                    <LabelCom htmlFor="category_id" isRequired>
+                      Blog Category
+                    </LabelCom>
+                    <div>
+                      <SelectSearchAntCom
+                        selectedValue={categorySelected}
+                        listItems={categoryItems}
+                        onChange={handleChangeCategory}
+                        className="w-full py-1"
+                        status={
+                          errors.category_id &&
+                          errors.category_id.message &&
+                          "error"
+                        }
+                        errorMsg={errors.category_id?.message}
+                        placeholder="Input category to search"
+                      ></SelectSearchAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="category_id"
+                        register={register}
+                      ></InputCom>
+                    </div>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-12 text-center">
+                    <LabelCom htmlFor="image" isRequired>
+                      Image
+                    </LabelCom>
+                    <div className="w-full">
+                      <ImageCropUploadAntCom
+                        name="image"
+                        onSetValue={setValue}
+                        errorMsg={errors.image?.message}
+                        isWidthFull
+                      ></ImageCropUploadAntCom>
+                      <InputCom
+                        type="hidden"
+                        control={control}
+                        name="image"
+                        register={register}
+                      ></InputCom>
+                    </div>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+                <div className="row text-center">
+                  <LabelCom htmlFor="description" isRequired>
+                    Content
+                  </LabelCom>
+                  <TextEditorQuillCom
+                    value={description}
+                    onChange={(newDescription) => {
+                      setValue("description", newDescription);
+                      setDescription(newDescription);
+                      setIsDescriptionEmpty(newDescription.trim() === "");
+                    }}
+                    placeholder={
+                      isDescriptionEmpty ? "Write your content ..." : ""
+                    }
+                    className="h-[500px]"
+                  />
+                </div>
+                <div className="mt-10" style={{ color: "red" }}>
+                  {errors.description?.message}
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
+
+                <div className="row">
+                  {/* <div className="col-sm-6">
                     <LabelCom htmlFor="name" isRequired>
                       Title
                     </LabelCom>
@@ -141,9 +231,9 @@ const BlogCreatePage = () => {
                       placeholder="Input Blog name"
                       errorMsg={errors.name?.message}
                     ></InputCom>
-                  </div>
+                  </div> */}
 
-                  <div className="col-sm-4">
+                  {/* <div className="col-sm-4">
                     <LabelCom htmlFor="category_id" isRequired>
                       Choose Category
                     </LabelCom>
@@ -168,8 +258,8 @@ const BlogCreatePage = () => {
                         register={register}
                       ></InputCom>
                     </div>
-                  </div>
-                  <div className="col-sm-2 relative">
+                  </div> */}
+                  {/* <div className="col-sm-2 relative">
                     <LabelCom htmlFor="image" isRequired>
                       Image
                     </LabelCom>
@@ -187,8 +277,8 @@ const BlogCreatePage = () => {
                       ></InputCom>
                     </div>
                   </div>
-                  <GapYCom className="mt-20"></GapYCom>
-                  <div className="row">
+                  <GapYCom className="mt-20"></GapYCom> */}
+                  {/* <div className="row">
                     <LabelCom htmlFor="description" isRequired>
                       Description
                     </LabelCom>
@@ -207,15 +297,32 @@ const BlogCreatePage = () => {
                   </div>
                   <div className="mt-10 " style={{ color: "red" }}>
                     {errors.description?.message}
-                  </div>
+                  </div> */}
                 </div>
-                <GapYCom className="mb-3"></GapYCom>
+                {/* <GapYCom className="mb-3"></GapYCom> */}
               </div>
               <div className="card-footer flex justify-end gap-x-5">
                 <ButtonCom type="submit" isLoading={isLoading}>
                   Create
                 </ButtonCom>
-                <ButtonCom backgroundColor="danger" onClick={resetValues}>
+                <ButtonCom
+                  backgroundColor="danger"
+                  onClick={() => {
+                    Swal.fire({
+                      title: "Are you sure?",
+                      html: `You will reset all content you have input already - <span class="text-tw-success">Image still will keep</span>`,
+                      icon: "question",
+                      showCancelButton: true,
+                      confirmButtonColor: "#7366ff",
+                      cancelButtonColor: "#dc3545",
+                      confirmButtonText: "Yes, please reset!",
+                    }).then(async (result) => {
+                      if (result.isConfirmed) {
+                        resetValues();
+                      }
+                    });
+                  }}
+                >
                   Reset
                 </ButtonCom>
               </div>
