@@ -94,7 +94,7 @@ const BlogDetailsPage = () => {
                 ></div>
               </h3>
               <div className="flex justify-between items-center">
-                {user && user.role === "ADMIN" ? (
+                {/* {user && user.role === "ADMIN" ? (
                   <BreadcrumbCom
                     items={[
                       {
@@ -109,7 +109,8 @@ const BlogDetailsPage = () => {
                   />
                 ) : (
                   <ButtonBackCom />
-                )}
+                )} */}
+                 <ButtonBackCom />
               </div>
             </div>
           </div>
