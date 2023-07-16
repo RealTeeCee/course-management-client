@@ -324,15 +324,15 @@ function App() {
           </Route>
           <Route path="/blogs" element={<BlogPage></BlogPage>}></Route>
           <Route
-            path="/blogs/:id"
+            path="/blogs/:slug"
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
           <Route
-            path="/blogs/blogList"
+            path="/blogs/manage"
             element={<BlogListPage></BlogListPage>}
           ></Route>
           <Route
-            path="/blogs/blogCreate"
+            path="/blogs/create"
             element={<BlogCreatePage></BlogCreatePage>}
           ></Route>
           <Route
@@ -434,7 +434,7 @@ function App() {
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
             <Route
-              path="blogs/:slug"
+              path="blogs/create"
               element={<AdminBlogCreatePage></AdminBlogCreatePage>}
             ></Route>
 
