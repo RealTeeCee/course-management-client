@@ -106,7 +106,7 @@ const BlogPage = () => {
           <>
             <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
               {blogs.slice(startIndex, endIndex).map((blog) => (
-                <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                <Link key={blog.id} to={`/blogs/${blog.slug}`}>
                   <div
                     key={blog.id}
                     className="transition-all duration-[0.5s] border-solid border-[1px] border-[#e6e6e6] rounded-[12px] p-[20px] bg-white hover:shadow-[0_2px_4px_rgb(0_0_0_/_8%)] hover:cursor-pointer hover:translate-y-[-5px]"
