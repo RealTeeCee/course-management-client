@@ -169,7 +169,7 @@ const AdminCreateLessonPage = () => {
   const handleGetDurationForVideo = (e) => {
     const file = e.target.files;
     setVideoFile(file);
-    getDurationFromVideo(file[0]);
+    getDurationFromVideo(file[0], setValue);
   };
 
   return (
