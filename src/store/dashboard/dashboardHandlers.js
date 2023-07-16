@@ -44,7 +44,7 @@ function* handleOnLoadRevenueYearChart({ payload }) {
     const res = yield call(requestLoadRevenueYearChart, payload ? payload : 0);
 
     if (res.status === 200) {
-      yield put(onLoadRevenueYearChartSuccess(res.data));
+      yield put(onLoadRevenueYearChartSuccess(res.data === "" ? [] : res.data));
     } else {
       // toast.error(MESSAGE_GENERAL_FAILED);
     }
