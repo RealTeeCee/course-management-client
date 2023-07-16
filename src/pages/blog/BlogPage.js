@@ -127,15 +127,13 @@ const BlogPage = () => {
                     <div className="text-black border-none bg-none outline-none cursor-pointer no-underline list-none text-[17px]">
                       <h3 className="font-[500]">{blog.name}</h3>
                     </div>
-                    {/* <p className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]">
-                      {ReactHtmlParser(blog.description.slice(0, 50))}
-                    </p> */}
-                    <p
+        
+                    {/* <p
                       className="text-[#999] font-[400] my-[20px] text-[17px] leading-[25px]"
                       dangerouslySetInnerHTML={{
                         __html: blog.description.slice(0, 50),
                       }}
-                    ></p>
+                    ></p> */}
 
                     <div id="date" className="flex items-center mt-3">
                       <div className="flex items-center">
