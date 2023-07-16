@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import { AiOutlineClockCircle } from "react-icons/ai";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { axiosBearer } from "../../api/axiosInstance";
-import { FaEye } from "react-icons/fa";
-import ButtonBackCom from "../../components/button/ButtonBackCom";
 import moment from "moment/moment";
-import { BreadcrumbCom } from "../../components/breadcrumb";
+import React, { useEffect, useState } from "react";
+import { AiOutlineClockCircle } from "react-icons/ai";
+import { FaEye } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { getBlogViewCount, setBlogViewCount } from "../../utils/authBlog";
-import { HeadingH1Com } from "../../components/heading";
-import GapYCom from "../../components/common/GapYCom";
-import { NOT_FOUND_URL } from "../../constants/config";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import EmptyDataCom from "../../components/common/EmptyDataCom";
+import { axiosBearer } from "../../api/axiosInstance";
+import { SpinAntCom } from "../../components/ant";
+import { BreadcrumbCom } from "../../components/breadcrumb";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingH1Com } from "../../components/heading";
 import { ImageCom } from "../../components/image";
+import { NOT_FOUND_URL } from "../../constants/config";
+import { getBlogViewCount, setBlogViewCount } from "../../utils/authBlog";
 
 const BlogDetailsPage = () => {
   const { slug } = useParams();
@@ -130,29 +128,11 @@ const BlogDetailsPage = () => {
                   dangerouslySetInnerHTML={{ __html: blog.description }}
                 ></div>
               </h3>
-              {/* <div className="flex justify-between items-center">
-                {user && user.role === "ADMIN" ? (
-                  <BreadcrumbCom
-                    items={[
-                      {
-                        title: "Admin",
-                        slug: "/admin",
-                      },
-                      {
-                        title: "Blog Detail",
-                        isActive: true,
-                      },
-                    ]}
-                  />
-                ) : (
-                  <ButtonBackCom />
-                )}
-              </div> */}
             </div>
           </div>
         </section>
       ) : (
-        <EmptyDataCom text="Empty data" />
+        <SpinAntCom loadingText={"Loading ..."} />
       )}
     </>
   );

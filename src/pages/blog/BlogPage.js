@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
-import Carousel_9 from "../../assets/blog_image/Carousel_9.jpg";
-import { BsFillPersonVcardFill, BsPatchPlusFill } from "react-icons/bs";
-import { Link, NavLink } from "react-router-dom";
-import { FaBlog, FaCog, FaPlug } from "react-icons/fa";
-import usePagination from "../../hooks/usePagination";
 import { Pagination } from "antd";
-import { LIMIT_PAGE } from "../../constants/config";
-import { HeadingFormH1Com } from "../../components/heading";
-import { AiOutlineClockCircle, AiOutlineTags } from "react-icons/ai";
-import { FaEye } from "react-icons/fa";
-import { axiosBearer, axiosPrivate } from "../../api/axiosInstance";
-import { useSelector } from "react-redux";
 import moment from "moment/moment";
+import { useEffect, useState } from "react";
+import { AiOutlineClockCircle, AiOutlineTags } from "react-icons/ai";
+import { FaCog, FaEye } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { axiosBearer } from "../../api/axiosInstance";
+import Carousel_9 from "../../assets/blog_image/Carousel_9.jpg";
 import SpinAntCom from "../../components/ant/SpinAntCom";
+import { HeadingFormH1Com } from "../../components/heading";
+import { LIMIT_PAGE } from "../../constants/config";
+import usePagination from "../../hooks/usePagination";
 
 const sliderData = [
   {
