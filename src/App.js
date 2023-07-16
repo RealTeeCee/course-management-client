@@ -434,7 +434,7 @@ function App() {
               element={<AdminBlogListPage></AdminBlogListPage>}
             ></Route>
             <Route
-              path="blogs/:slug"
+              path="blogs/create"
               element={<AdminBlogCreatePage></AdminBlogCreatePage>}
             ></Route>
 

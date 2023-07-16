@@ -82,7 +82,6 @@ const BlogListPage = () => {
   const { user } = useSelector((state) => state.auth);
   const user_id = user.id;
 
-  console.log("isOpen",isOpen);
   /********* END API State ********* */
 
   /********* More Action Menu ********* */
@@ -149,6 +148,27 @@ const BlogListPage = () => {
       sortable: true,
     },
     {
+      name: "Status",
+      selector: (row) => (
+        <div
+          className={`text-white px-3 py-2 ${
+            row.status === 1
+              ? "bg-tw-success"
+              : row.status === 2
+              ? "bg-tw-warning"
+              : "bg-tw-dark"
+          }`}
+        >
+          {row.status === 1
+            ? "Published"
+            : row.status === 2
+            ? "Proccessing"
+            : "UnPublished"}
+        </div>
+      ),
+      sortable: true,
+    },
+    {
       name: "Image",
       selector: (row) => (
         <img width={50} height={50} src={`${row.image}`} alt={row.name} />
@@ -162,19 +182,19 @@ const BlogListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              handleEdit(row.id);
+              handleEdit(row.slug);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
-          {/* <ButtonCom
+          <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              window.open(`/blogs/${row.id}`);
+              window.open(`/blogs/${row.slug}`);
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom> */}
+          </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -320,10 +340,10 @@ const BlogListPage = () => {
     });
   };
   /********* Update API ********* */
-  const handleEdit = async (blogId) => {
+  const handleEdit = async (slug) => {
     try {
       setIsFetching(true);
-      await getBlogById(blogId);
+      await getBlogById(slug);
       setIsOpen(true);
     } catch (error) {
       console.log(error);
@@ -332,9 +352,9 @@ const BlogListPage = () => {
     }
   };
 
-  const getBlogById = async (blogId) => {
+  const getBlogById = async (slug) => {
     try {
-      const res = await axiosBearer.get(`blog/${blogId}`);
+      const res = await axiosBearer.get(`blog/${slug}`);
       reset(res.data);
       setCategorySelected(res.data.category_id);
 
@@ -363,7 +383,7 @@ const BlogListPage = () => {
     try {
       setIsLoading(!isLoading);
       const test = { ...values, user_id, status, view_count: 0 };
-      console.log("test:",test);
+      console.log("test:", test);
       const res = await axiosBearer.put(`/blog`, {
         ...values,
         user_id,
@@ -429,7 +449,7 @@ const BlogListPage = () => {
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)} 
+        onRequestClose={() => setIsOpen(false)}
         overlayClassName="modal-overplay fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
         className={`modal-content scroll-hidden  max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-lg outline-none transition-all duration-300 ${
           isOpen ? "w-50" : "w-0"
@@ -526,7 +546,9 @@ const BlogListPage = () => {
               <GapYCom className="mb-35 bt-10"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="description" isRequired>Description</LabelCom>
+                  <LabelCom htmlFor="description" isRequired>
+                    Description
+                  </LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
@@ -536,8 +558,8 @@ const BlogListPage = () => {
                   />
                 </div>
                 <div className="mt-10 " style={{ color: "red" }}>
-                    {errors.description?.message}
-                  </div>
+                  {errors.description?.message}
+                </div>
               </div>
               <GapYCom></GapYCom>
             </div>
@@ -545,7 +567,6 @@ const BlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-             
             </div>
           </form>
         </div>

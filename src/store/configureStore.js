@@ -27,7 +27,7 @@ const logger = createLogger({
   predicate: (getState, action) => {
     const excludedActions = [
       "course/onUnloadExam",
-      // "course/onAddNotification",
+      "course/onAddNotification",
       "course/onCountdown",
     ];
     return !excludedActions.includes(action.type);

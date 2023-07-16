@@ -105,7 +105,6 @@ const ChartsMuiCom = () => {
     ],
   };
   const year = [...new Set(revenueChart.map((r) => r.year))];
-  console.log(year);
 
   const labels = [
     "January",

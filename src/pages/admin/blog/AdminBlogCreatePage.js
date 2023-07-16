@@ -104,11 +104,11 @@ const AdminBlogCreatePage = () => {
               slug: "/admin",
             },
             {
-              title: "Blog List",
-              slug: "/blogs/blogList",
+              title: "Blog",
+              slug: "/admin/blogs",
             },
             {
-              title: "Create blog",
+              title: "Create",
               isActive: true,
             },
           ]}
@@ -208,21 +208,21 @@ const AdminBlogCreatePage = () => {
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
+                <div className="row text-center">
                   <LabelCom htmlFor="description" isRequired>
-                    Description
+                    Content
                   </LabelCom>
                   <TextEditorQuillCom
                     value={description}
                     onChange={(newDescription) => {
                       setValue("description", newDescription);
-
                       setDescription(newDescription);
                       setIsDescriptionEmpty(newDescription.trim() === "");
                     }}
                     placeholder={
-                      isDescriptionEmpty ? "Describe your blog ..." : ""
+                      isDescriptionEmpty ? "Write your content ..." : ""
                     }
+                    className="h-[500px]"
                   />
                 </div>
                 <div className="mt-10" style={{ color: "red" }}>

@@ -13,3 +13,7 @@ export const requestPostBlog = (data) => {
     ? axiosBearer.post("/blog", data)
     : axiosBearer.put("/blog", data);
 };
+
+export const requestDeleteBlog = (data) => {
+  return axiosBearer.delete(`/blog/${data}`);
+};

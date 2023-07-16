@@ -109,7 +109,7 @@ const HomeTopbarMod = () => {
   }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
-      {/* <NotificationToastListMuiCom></NotificationToastListMuiCom> */}
+      <NotificationToastListMuiCom></NotificationToastListMuiCom>
       <div>
         <Link to="/" className="inline-block">
           <img

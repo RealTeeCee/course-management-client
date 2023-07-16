@@ -52,6 +52,9 @@ export const MESSAGE_CONFIRM_PASSWORD_INVALID =
 
 export const MESSAGE_READONLY = "This field is Read Only";
 
+export const MESSAGE_ITEM_NOT_FOUND =
+  "Oops! This item not exited ,please reload or try again !";
+
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
 
@@ -76,6 +79,7 @@ export const MESSAGE_CHANGE_PASSWORD_SUCCESS =
 
 export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";
 
+// MESSAGE API
 export const MESSAGE_UNAUTHORIZE = "Please login first then access this page";
 export const MESSAGE_FORBIDDEN = "You dont have permission to access this page";
 export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
