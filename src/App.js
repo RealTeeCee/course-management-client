@@ -328,11 +328,11 @@ function App() {
             element={<BlogDetailsPage></BlogDetailsPage>}
           />
           <Route
-            path="/blogs/blogList"
+            path="/blogs/manage"
             element={<BlogListPage></BlogListPage>}
           ></Route>
           <Route
-            path="/blogs/blogCreate"
+            path="/blogs/create"
             element={<BlogCreatePage></BlogCreatePage>}
           ></Route>
           <Route

@@ -69,10 +69,10 @@ const BlogPage = () => {
         )}
 
         {user && user.role !== "ADMIN" && (
-          <nav className="flex justify-end space-x-20 h-16 bg-white">
+          <nav className="flex justify-end space-x-20 h-16 bg-tw-light">
             <Link
-              to="/blogs/blogList"
-              className="flex items-center text-blue-600 hover:text-blue-800 text-xl hover:font-bold hover:border-b-2"
+              to="/blogs/manage"
+              className="flex items-center bg-tw-dark px-3 text-white hover:!text-tw-light-green text-xl tw-transition-all hover:opacity-80 hover:-translate-x-5"
             >
               <FaCog className="mr-1" />
               Management Blog

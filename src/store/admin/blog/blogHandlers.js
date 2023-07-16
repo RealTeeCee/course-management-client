@@ -6,13 +6,17 @@ import {
   requestDeleteBlog,
   requestGetBlogs,
   requestGetBlogsForAdmin,
+  requestGetMyBlogs,
   requestPostBlog,
 } from "./blogRequests";
 import {
   onBulkDeleteBlogSuccess,
+  onBulkDeleteMyBlogSuccess,
   onGetBlogsForAdmin,
   onGetBlogsForAdminSuccess,
   onGetBlogsSuccess,
+  onGetMyBlogs,
+  onGetMyBlogsSuccess,
   onLoading,
   onPostBlogSuccess,
 } from "./blogSlice";
@@ -31,6 +35,16 @@ function* handleOnGetBlogs() {
   try {
     const res = yield call(requestGetBlogs);
     if (res.status === 200) yield put(onGetBlogsSuccess(res.data));
+  } catch (error) {
+    console.log(error);
+    yield put(onLoading(false));
+  }
+}
+
+function* handleOnGetMyBlogs({ payload }) {
+  try {
+    const res = yield call(requestGetMyBlogs, payload);
+    if (res.status === 200) yield put(onGetMyBlogsSuccess(res.data));
   } catch (error) {
     console.log(error);
     yield put(onLoading(false));
@@ -85,10 +99,48 @@ function* handleOnBulkDeleteBlog({ payload }) {
   }
 }
 
+function* handleOnDeleteMyBlog({ payload }) {
+  try {
+    const res = yield call(requestDeleteBlog, payload.id);
+    if (res.data.type === "success") {
+      yield put(onGetMyBlogs(payload.user_id));
+      toast.success(res.data.message);
+    } else {
+      yield put(onLoading(false));
+      showMessageError(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    yield put(onLoading(false));
+    showMessageError(error);
+  }
+}
+
+function* handleOnBulkDeleteMyBlog({ payload }) {
+  try {
+    for (const item of payload.data) {
+      yield call(requestDeleteBlog, item.id);
+    }
+
+    yield put(onBulkDeleteMyBlogSuccess(true));
+    toast.success(
+      `Delete [${payload.data.length}] ${
+        payload.data.length > 1 ? "blogs" : "blog"
+      } success`
+    );
+  } catch (error) {
+    showMessageError(error);
+  } finally {
+    yield put(onGetMyBlogs(payload.user_id));
+  }
+}
+
 export {
   handleOnGetBlogsForAdmin,
   handleOnGetBlogs,
+  handleOnGetMyBlogs,
   handleOnPostBlog,
   handleOnDeleteBlog,
   handleOnBulkDeleteBlog,
+  handleOnDeleteMyBlog,
+  handleOnBulkDeleteMyBlog,
 };

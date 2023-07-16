@@ -5,9 +5,11 @@ const blogSlice = createSlice({
   initialState: {
     adminBlogs: [], // adminBlogs used for admin
     blogs: [], // blogs used for client
+    myBlogs: [], // blogs by user id used for client
     isLoading: false,
     isPostBlogSuccess: false,
     isBulkDeleteSuccess: false,
+    isBulkDeleteMyBlogSuccess: false,
   },
   reducers: {
     onLoading: (state, action) => ({
@@ -60,6 +62,31 @@ const blogSlice = createSlice({
       ...state,
       isBulkDeleteSuccess: action.payload,
     }),
+    // myBlogs used for manage page of User
+    onGetMyBlogs: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isPostBlogSuccess: false,
+    }),
+    onGetMyBlogsSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      isBulkDeleteMyBlogSuccess: false,
+      myBlogs: action.payload,
+    }),
+    onDeleteMyBlog: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onBulkDeleteMyBlog: (state, action) => ({
+      ...state,
+      isLoading: true,
+      isBulkDeleteMyBlogSuccess: false,
+    }),
+    onBulkDeleteMyBlogSuccess: (state, action) => ({
+      ...state,
+      isBulkDeleteMyBlogSuccess: action.payload,
+    }),
   },
 });
 
@@ -69,12 +96,17 @@ export const {
   onGetBlogsForAdminSuccess,
   onGetBlogs,
   onGetBlogsSuccess,
+  onGetMyBlogs,
+  onGetMyBlogsSuccess,
   onGetBlogsById,
   onPostBlog,
   onPostBlogSuccess,
   onDeleteBlog,
   onBulkDeleteBlog,
   onBulkDeleteBlogSuccess,
+  onDeleteMyBlog,
+  onBulkDeleteMyBlog,
+  onBulkDeleteMyBlogSuccess,
 } = blogSlice.actions;
 // reducer
 export default blogSlice.reducer;

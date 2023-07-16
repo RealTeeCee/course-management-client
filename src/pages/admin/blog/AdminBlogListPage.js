@@ -204,7 +204,7 @@ const AdminBlogListPage = () => {
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteBlog(row);
+              handleDelete(row);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -268,7 +268,7 @@ const AdminBlogListPage = () => {
   }, [blogs, search]);
 
   /********* Delete one API ********* */
-  const handleDeleteBlog = ({ id, name }) => {
+  const handleDelete = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
@@ -303,18 +303,6 @@ const AdminBlogListPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         dispatch(onBulkDeleteBlog(selectedRows));
-        // try {
-        //   const deletePromises = selectedRows.map((row) =>
-        //     axiosBearer.delete(`/blog/${row.id}`)
-        //   );
-        //   await Promise.all(deletePromises);
-        //   toast.success(`Delete ${selectedRows.length} blogs success`);
-        // } catch (error) {
-        //   showMessageError(error);
-        // } finally {
-        //   // getBlogs();
-        //   clearSelectedRows();
-        // }
       }
     });
   };

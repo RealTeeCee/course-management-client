@@ -18,7 +18,7 @@ import GapYCom from "../../components/common/GapYCom";
 import { LabelCom } from "../../components/label";
 import { InputCom } from "../../components/input";
 import { ButtonCom } from "../../components/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ImageCropUploadAntCom,
   SelectSearchAntCom,
@@ -27,6 +27,7 @@ import { TextEditorQuillCom } from "../../components/texteditor";
 import { axiosBearer } from "../../api/axiosInstance";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { colors } from "@mui/material";
+import { onPostBlog } from "../../store/admin/blog/blogSlice";
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
   name: yup.string().required(MESSAGE_FIELD_REQUIRED),
@@ -49,6 +50,8 @@ const BlogCreatePage = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  const dispatch = useDispatch();
+  const { isPostBlogSuccess } = useSelector((state) => state.adminBlog);
   /********* API Area ********* */
   // const [tagItems, setTagItems] = useState([]);
   /********* END API Area ********* */
@@ -66,28 +69,22 @@ const BlogCreatePage = () => {
     setDescription("");
   };
 
-  /********* Get Blog ID from API  ********* */
+  useEffect(() => {
+    if (isPostBlogSuccess) navigate("/blogs/manage");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostBlogSuccess]);
 
+  /********* Get Blog ID from API  ********* */
   const handleSubmitForm = async (values) => {
     console.log(values);
-    const user_id = user.id;
-    try {
-      setIsLoading(!isLoading);
-      const res = await axiosBearer.post(`/blog`, {
+    dispatch(
+      onPostBlog({
         ...values,
-        user_id,
+        user_id: user.id,
         status: 2,
         view_count: 0,
-      });
-      toast.success(`${res.data.message}`);
-      resetValues();
-
-      navigate(`/blogs/blogList`);
-    } catch (error) {
-      showMessageError(error);
-    } finally {
-      setIsLoading(false);
-    }
+      })
+    );
   };
 
   /********* Library Function Area ********* */
@@ -104,12 +101,16 @@ const BlogCreatePage = () => {
         <BreadcrumbCom
           items={[
             {
+              title: "Home",
+              slug: "/",
+            },
+            {
               title: "Blog",
               slug: "/blogs",
             },
             {
-              title: "Blog List",
-              slug: "/blogs/blogList",
+              title: "Management",
+              slug: "/blogs/manage",
             },
             {
               title: "Create blog",
