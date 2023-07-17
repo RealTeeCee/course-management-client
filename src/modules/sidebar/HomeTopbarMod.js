@@ -105,10 +105,8 @@ const HomeTopbarMod = () => {
         sse.close();
       };
     }
-  }, [dispatch, notifs, user]);
-  // useEffect(() => {
-  //   dispatch(onAddNotification(tempData));
-  // }, [dispatch, tempData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div className="topbar flex items-center justify-between mb-8 pl-[14px]">
       <NotificationToastListMuiCom></NotificationToastListMuiCom>
