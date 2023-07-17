@@ -94,6 +94,7 @@ const CommentCom = ({
     dispatch(
       onSavePost({
         typeId: type === "COURSE" ? courseId : blogId,
+        type,
         userId: user.id,
         content: comment,
       })

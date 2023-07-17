@@ -31,7 +31,10 @@ import {
 import {
   onGetEnrollId,
   onGetLearning,
+  onMyCourseLoading,
+  onReady,
   onRelatedCourseLoading,
+  onReload,
 } from "../../store/course/courseSlice";
 import {
   convertIntToStrMoney,
@@ -114,9 +117,15 @@ const CourseDetailPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, courseBySlug?.id]);
 
+  // useEffect(() => {
+
+  // }, [dispatch, user]);
+
   useEffect(() => {
-    if (isEnrolled && user?.role === "USER")
+    if (isEnrolled && user?.role === "USER") {
+      dispatch(onMyCourseLoading(user.id));
       navigate(`/learn/${courseBySlug?.slug}`);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnrolled]);
 
