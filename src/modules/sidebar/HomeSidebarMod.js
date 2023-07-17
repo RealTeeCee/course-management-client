@@ -81,8 +81,8 @@ const HomeSidebarMod = () => {
       <div
         className={`${
           isScrolled
-            ? "sidebar fixed animate-slide-in w-full md:w-[76px] rounded-3xl bg-tw-light shadow-2xl text-center text-xs flex flex-col flex-shrink-0 bg-transparent z-10"
-            : "sidebar fixed w-full md:w-[76px] rounded-3xl bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0 bg-transparent z-10"
+            ? "sidebar fixed animate-slide-in w-full md:w-[76px] rounded-lg bg-tw-light shadow-2xl text-center text-xs flex flex-col flex-shrink-0 bg-transparent z-10"
+            : "sidebar fixed w-full md:w-[76px] rounded-lg bg-tw-light shadow-primary text-center text-xs flex flex-col flex-shrink-0 bg-transparent z-10"
         }`}
       >
         {sidebarItems.map((item) => {
