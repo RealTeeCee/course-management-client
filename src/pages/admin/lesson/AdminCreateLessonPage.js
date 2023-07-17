@@ -97,6 +97,23 @@ const AdminCreateLessonPage = () => {
     }
   }, [dispatch, isSuccess]);
 
+  const getMaxOrderedLessonBySectionId = async () => {
+    try {
+      const res = await axiosBearer.get(
+        `${API_SECTION_URL}/${sectionId}/lesson/max-ordered`
+      );
+      console.log("max:", res.data);
+      setValue("ordered", res?.data > 0 ? res?.data + 1 : 0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getMaxOrderedLessonBySectionId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmitForm = async (values) => {
     if (videoFile && videoFile.length === 0) {
       toast.error(MESSAGE_GENERAL_FAILED);
