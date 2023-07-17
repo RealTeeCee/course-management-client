@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { IconArrowUpCom } from "../components/icon";
 import { FooterMod } from "../modules/footer";
 import { HomeSidebarMod, HomeTopbarMod } from "../modules/sidebar";
 
@@ -14,7 +15,7 @@ const LayoutHome = () => {
           <div className="flex-1">
             <Outlet></Outlet>
           </div>
-        </div>
+        </div> 
       </div>
       <FooterMod />
     </>

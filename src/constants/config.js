@@ -4,15 +4,28 @@ export const BASE_DOMAIN_URL =
 export const BASE_API_URL =
   process.env.REACT_APP_API_URL ?? "http://localhost:8080";
 
+export const NOT_FOUND_URL = "/not-found";
+
 export const COOKIE_ACCESS_TOKEN_KEY = `${APP_KEY_NAME}_access_token`;
 export const COOKIE_REFRESH_TOKEN_KEY = `${APP_KEY_NAME}_refresh_token`;
 export const COOKIE_EXPIRED_DAYS = 30;
+export const COOKIE_VIEW_COUNT_KEY = `${APP_KEY_NAME}_view_count`;
+
+export const COOKIE_EXPIRED_BLOG_DAYS = 1 / 24 / 60; // 1min
 
 export const MIN_LENGTH_NAME = 3;
 export const MAX_LENGTH_NAME = 100;
 export const MAX_LENGTH_VARCHAR = 255;
+// LIMIT PAGINATION
 export const LIMIT_PAGE = 12;
 export const LIMIT_HOME_PAGE = 4;
+
+// LIMIT SHOW MORE
+export const LIMIT_SHOW_MORE = 5;
+
+// LIMIT SEARCH
+export const LIMIT_SEARCH_ITEM = 4;
+
 export const VIDEO_EXT_VALID = "mp4, avi, mov, wmv, flv, mkv, webm, mpeg, mpg";
 export const CAPTION_EXT_VALID = "en.vtt, vi.vtt, jp.vtt";
 export const CAPTION_EXT_REGEX = /\.(en|vi|jp)\.vtt$/;
@@ -26,12 +39,21 @@ export const MESSAGE_UPLOAD_REQUIRED = "This field requires uploading a file";
 export const MESSAGE_POLICY_REQUIRED =
   "Please review and accept our Policy before register";
 export const MESSAGE_NUMBER_REQUIRED = "This field must be a number";
+export const MESSAGE_LOGIN_REQUIRED =
+  "Please log in before proceeding further !";
+
+export const MESSAGE_REGEX_NAME = "Only letters are allowed";
 
 export const MESSAGE_FIELD_INVALID = "This field is invalid";
 export const MESSAGE_EMAIL_INVALID =
   "Invalid email! Correct: example@domain.com";
 export const MESSAGE_CONFIRM_PASSWORD_INVALID =
   "Confirm password does not match with password";
+
+export const MESSAGE_READONLY = "This field is Read Only";
+
+export const MESSAGE_ITEM_NOT_FOUND =
+  "Oops! This item not exited ,please reload or try again !";
 
 export const MESSAGE_VIDEO_FILE_INVALID = `Invalid video format file! Only accept extension: ${VIDEO_EXT_VALID}`;
 export const MESSAGE_CAPTION_FILE_INVALID = `Invalid caption format file! Only accept extension: ${CAPTION_EXT_VALID}`;
@@ -57,6 +79,7 @@ export const MESSAGE_CHANGE_PASSWORD_SUCCESS =
 
 export const MESSAGE_EMAIL_ACTIVED = "Your email has already been activated !";
 
+// MESSAGE API
 export const MESSAGE_UNAUTHORIZE = "Please login first then access this page";
 export const MESSAGE_FORBIDDEN = "You dont have permission to access this page";
 export const MESSAGE_NOT_FOUND = "Oops! You've accessed the wrong URL.";
@@ -65,6 +88,11 @@ export const MESSAGE_BAD_REQUEST = "Oops! Your request have problem";
 export const MESSAGE_NO_ITEM_SELECTED = "No items selected";
 export const MESSAGE_NET_PRICE_HIGHER_PRICE =
   "The sale price is not allowed to be higher than the original price";
+export const MESSAGE_POINT_EXCEED_MAX =
+  "The question point cannot exceed the max point";
+
+export const MESSAGE_MAINTENANCE =
+  "Sorry, This function is currently under maintenance !";
 
 // Data Static List
 export const categoryItems = [
@@ -144,6 +172,36 @@ export const sortItems = [
   {
     value: "ASC",
     label: "Sort by Oldest",
+  },
+];
+
+export const statusBlogItems = [
+  {
+    value: 1,
+    label: "Active",
+  },
+  {
+    value: 0,
+    label: "InActive",
+  },
+  {
+    value: 2,
+    label: "Proccessing",
+  },
+];
+
+export const sortSearchItems = [
+  {
+    value: "COURSE",
+    label: "Sort By Course",
+  },
+  {
+    value: "BLOG",
+    label: "Sort By Blog",
+  },
+  {
+    value: "AUTHOR",
+    label: "Sort By Author",
   },
 ];
 

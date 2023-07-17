@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 
 import ReactPlayer from "react-player/lazy";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { TabsAntCom } from "../../components/ant";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
-import { DialogNextVideo, RatingMuiCom } from "../../components/mui";
+import { DialogNextVideoMuiCom, RatingListMuiCom } from "../../components/mui";
+import ExamResultMuiCom from "../../components/mui/ExamResultMuiCom";
 import { NoteCom } from "../../components/note";
 import { selectUserId } from "../../store/auth/authSelector";
 import {
@@ -16,19 +18,24 @@ import {
   selectIsLoading,
 } from "../../store/course/courseSelector";
 import {
+  onCountdown,
+  onGenerateCourseExam,
   onGetEnrollId,
-  onGetLearning,
+  onGetMyLearning,
   onGetTrackingLesson,
+  onLoadProgress,
   onManualSelectedLesson,
   onMyCourseLoading,
   onReady,
   onReload,
+  onRetakeExam,
   onSaveTrackingVideo,
   onSelectedCourse,
   onUpdateCompletedVideo,
 } from "../../store/course/courseSlice";
 import { getToken } from "../../utils/auth";
-import RatingList from "../../components/mui/RatingList";
+import { Paper } from "@mui/material";
+import { v1 } from "uuid";
 
 const LearnPage = () => {
   const {
@@ -44,28 +51,33 @@ const LearnPage = () => {
     isReload,
     learning,
     progress,
+    generateExamSuccess,
+    examination,
+    retakeExam,
+    countdown,
+    prevTime,
   } = useSelector(selectAllCourseState);
+
   const isLoading = useSelector(selectIsLoading);
   const [isPlaying, setIsPlaying] = useState(false);
   // const [isSeek, setIsSeek] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
   const [isFinal, setIsFinal] = useState(false);
   // const [isReady, setIsReady] = useState(ready);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
+  // const [readyExam, setReadyExam] = useState(false);
 
   const { slug } = useParams();
-
   const userId = useSelector(selectUserId);
 
   const isLoadLearningStatus = useSelector(selectIsLoadLearningStatus);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const player = useRef();
 
   const { access_token } = getToken();
-
-  console.log("isReady: " + isReady + " isReload: " + isReload);
 
   useEffect(() => {
     if (data?.length === 0) {
@@ -80,10 +92,17 @@ const LearnPage = () => {
   useEffect(() => {
     if (courseId) {
       dispatch(onGetEnrollId({ course_id: courseId, user_id: userId }));
-      dispatch(onGetLearning(courseId));
+      dispatch(onRetakeExam({ userId: userId, courseId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, userId]);
+  useEffect(() => {
+    if (courseId > 0 && enrollId > 0) {
+      dispatch(onGetMyLearning({ courseId, enrollId }));
+      dispatch(onLoadProgress({ courseId, enrollmentId: enrollId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, enrollId]);
 
   useEffect(() => {
     if (isLoadLearningStatus) {
@@ -93,8 +112,7 @@ const LearnPage = () => {
   }, [courseId, enrollId, isLoadLearningStatus]);
 
   useEffect(() => {
-    if (isCompleted) {
-      setIsCompleted(false);
+    if (isCompleted === 1) {
       dispatch(
         onUpdateCompletedVideo({
           enrollmentId: enrollId,
@@ -109,35 +127,79 @@ const LearnPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCompleted]);
 
+  useEffect(() => {
+    setIsCompleted(0);
+  }, [lessonId]);
+
+  useEffect(() => {
+    const countDown =
+      retakeExam?.created_at === null
+        ? 0
+        : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) +
+          60 -
+          Math.floor(Date.now() / 1000);
+
+    const interval = setInterval(() => {
+      if (countDown > 0) {
+        dispatch(onCountdown(countDown - 1));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);
   };
 
   const handleGetProgress = ({ playedSeconds, played }) => {
     if (played > 0.9) {
-      setIsCompleted(true);
+      setIsCompleted((prev) => prev + 1);
     }
     setPlayedSeconds(playedSeconds);
   };
 
   const handleEnded = () => {
+    console.log("onSaveTrackingVideo - handleEnded");
     if (progress === 100) {
-      setIsFinal(true);
+      // const countDown =
+      //   retakeExam && retakeExam.created_at === null
+      //     ? 0
+      //     : Math.floor(new Date(retakeExam?.created_at).getTime() / 1000) + 60;
+      // const now = Math.floor(Date.now() / 1000);
+
+      // console.log(countDown);
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+      if ((retakeExam && retakeExam.created_at === null) || countdown === -1) {
+        setIsFinal(true);
+      } else {
+        setIsFinal(false);
+      }
     }
 
-    setIsEnd(true);
-    if (lessonId > 0 && video.id > 0 && sectionId > 0) {
-      dispatch(
-        onSaveTrackingVideo({
-          enrollmentId: enrollId,
-          courseId: courseId,
-          sectionId: sectionId,
-          lessonId: lessonId,
-          videoId: video.id,
-          resumePoint: player.current.getCurrentTime(),
-        })
-      );
+    nextLesson =
+      learning.lessonDto[
+        learning.lessonDto.findIndex((dto) => dto.id === lessonId) + 1
+      ];
+
+    if (nextLesson === undefined && countdown > 0) {
+      setIsEnd(false);
+      return;
     }
+    if (nextLesson || progress === 100) {
+      setIsEnd(true);
+    }
+
+    // if (lessonId > 0 && video.id > 0 && sectionId > 0) {
+    //   dispatch(
+    //     onSaveTrackingVideo({
+    //       enrollmentId: enrollId,
+    //       courseId: courseId,
+    //       sectionId: sectionId,
+    //       lessonId: lessonId,
+    //       videoId: video.id,
+    //       resumePoint: player.current.getCurrentTime(),
+    //     })
+    //   );
+    // }
   };
 
   const handlePauseVideo = () => {
@@ -197,7 +259,8 @@ const LearnPage = () => {
   const handleCloseDialog = () => {
     setIsEnd(false);
   };
-  const nextLesson =
+
+  let nextLesson =
     learning.lessonDto[
       learning.lessonDto.findIndex((dto) => dto.id === tracking?.lessonId) + 1
     ];
@@ -207,8 +270,8 @@ const LearnPage = () => {
     //     learning.lessonDto.findIndex((dto) => dto.id === tracking.lessonId) + 1
     //   ];
 
-    console.log(nextLesson);
     if (nextLesson !== undefined) {
+      navigate(`/learn/${slug}?id=${nextLesson.id}`);
       dispatch(
         onManualSelectedLesson({
           enrollmentId: enrollId,
@@ -221,26 +284,71 @@ const LearnPage = () => {
 
     setIsEnd(false);
   };
+
+  const handleInitialExam = () => {
+    dispatch(onGenerateCourseExam({ courseId, userId }));
+  };
+
+  useEffect(() => {
+    if (prevTime > 0) {
+      navigate("/exam");
+    }
+  }, [prevTime]);
+
+  useEffect(() => {
+    if (generateExamSuccess && examination.length > 0) {
+      navigate("/exam");
+    } else if (generateExamSuccess && examination.length === 0) {
+      // dispatch(onSetGenerateExamSuccess)
+      toast.warning(
+        "Sorry for unconvenience. The examination is not available for this course."
+      );
+    }
+    setIsEnd(false);
+  }, [examination, generateExamSuccess, navigate]);
+
   const course = data.find((c) => c.id === courseId);
   const tabItems = [
     {
       key: "1",
       label: `Description`,
       children: (
-        <div
-          dangerouslySetInnerHTML={{ __html: course && course.description }}
-        ></div>
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: course && course.description }}
+          ></div>
+        </Paper>
       ),
     },
     {
       key: "2",
       label: `Note`,
       children: (
-        <NoteCom
-          notePoint={playedSeconds}
-          onWriteNote={onWriteNote}
-          onSelectNote={onSelectNote}
-        />
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <NoteCom
+            notePoint={playedSeconds}
+            onWriteNote={onWriteNote}
+            onSelectNote={onSelectNote}
+          />
+        </Paper>
       ),
     },
     {
@@ -249,27 +357,58 @@ const LearnPage = () => {
       // check điều kiện user rating xong thì thêm props readOnly
       children: (
         // <RatingMuiCom defaultValue={3.5} readOnly></RatingMuiCom>,
-        <RatingList></RatingList>
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "10px",
+            borderRadius: "10px",
+          }}
+        >
+          <RatingListMuiCom></RatingListMuiCom>
+        </Paper>
       ),
     },
     {
       key: "4",
       label: `Comment`,
-      children: <CommentCom />,
+      children: (
+        <Paper
+          square
+          elevation={5}
+          sx={{
+            padding: "20px",
+            width: "100%",
+            mt: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <CommentCom />
+        </Paper>
+      ),
     },
+    progress === 100
+      ? {
+          key: "5",
+          label: `Examination`,
+          children: <ExamResultMuiCom />,
+        }
+      : "",
   ];
 
   return isLoading ? (
     <LoadingCom></LoadingCom>
   ) : (
     <React.Fragment>
-      <DialogNextVideo
+      <DialogNextVideoMuiCom
         nextLesson={nextLesson && nextLesson.name}
         open={isEnd}
         onClose={handleCloseDialog}
-        onNext={handleNexVideo}
+        onNext={isFinal ? handleInitialExam : handleNexVideo}
         isFinal={isFinal}
-      ></DialogNextVideo>
+      ></DialogNextVideoMuiCom>
       <div className="video-container">
         <div className="video-item">
           <ReactPlayer

@@ -1,8 +1,8 @@
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 import { withErrorBoundary } from "react-error-boundary";
-import ErrorCom from "../common/ErrorCom";
 import { NavLink } from "react-router-dom";
+import ErrorCom from "../common/ErrorCom";
 
 const ButtonCom = (props) => {
   const {
@@ -12,6 +12,8 @@ const ButtonCom = (props) => {
     children,
     backgroundColor = "primary",
     padding = "px-8",
+    minHeight = "min-h-[42px]",
+    icon = "",
     ...rest
   } = props;
 
@@ -27,7 +29,7 @@ const ButtonCom = (props) => {
     children
   );
 
-  let defaultClassName = `btn-block rounded-md transition-all duration-300 min-h-[42px] ${padding} ${className} ${
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 ${minHeight} ${padding} ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
   switch (backgroundColor) {
@@ -59,6 +61,10 @@ const ButtonCom = (props) => {
       defaultClassName +=
         " hover:bg-contain bg-gradient-to-r from-pink-500 to-violet-500 text-white transition-all duration-300 hover:bg-gradient-to-l";
       break;
+    case "finish":
+      defaultClassName +=
+        " hover:cursor-default hover:opacity-100 bg-tw-success text-white";
+      break;
     default:
       // defaultClassName += ` ${backgroundColor}`;
       break;
@@ -82,7 +88,14 @@ const ButtonCom = (props) => {
 
   return (
     <button className={defaultClassName} type={type} {...rest}>
-      {child}
+      {icon ? (
+        <div className="flex items-center gap-x-2">
+          {icon}
+          {child}
+        </div>
+      ) : (
+        child
+      )}
     </button>
   );
 };
@@ -102,7 +115,10 @@ ButtonCom.propTypes = {
     "dark",
     "gray",
     "gradient",
+    "finish",
   ]),
+  padding: PropTypes.string,
+  minHeight: PropTypes.string,
   children: PropTypes.node,
 };
 

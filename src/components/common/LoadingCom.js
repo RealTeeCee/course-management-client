@@ -1,15 +1,16 @@
 import React from "react";
+import OverlayCom from "./OverlayCom";
 
-const LoadingCom = () => {
+const LoadingCom = ({ isChild = false, loadingText }) => {
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
-      {/* <div>
-          <Spin size="large" />
-        </div> */}
-      <div className="loader-box">
-        <div className="loader-10"></div>
+    <>
+      {!isChild && <OverlayCom isShow />}
+      <div className="fixed loading-spin">
+        <span />
+        <span />
+        <span />
       </div>
-    </div>
+    </>
   );
 };
 

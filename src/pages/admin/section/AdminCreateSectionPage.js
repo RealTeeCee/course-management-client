@@ -13,7 +13,6 @@ import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_NUMBER_REQUIRED,
 } from "../../../constants/config";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
 import { useParams } from "react-router-dom";
 import { API_COURSE_URL } from "../../../constants/endpoint";
 import { useNavigate } from "react-router-dom/dist";
@@ -23,7 +22,7 @@ import { BreadcrumbCom } from "../../../components/breadcrumb";
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
 });
 

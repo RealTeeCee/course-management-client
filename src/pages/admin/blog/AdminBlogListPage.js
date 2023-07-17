@@ -11,6 +11,7 @@ import {
 import { axiosBearer } from "../../../api/axiosInstance";
 import { toast } from "react-toastify";
 import {
+  AVATAR_DEFAULT,
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
@@ -20,6 +21,8 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
   categoryItems,
+  statusBlogItems,
+  MESSAGE_ITEM_NOT_FOUND,
 } from "../../../constants/config";
 import { showMessageError } from "../../../utils/helper";
 import LoadingCom from "../../../components/common/LoadingCom";
@@ -39,13 +42,18 @@ import { Link } from "@mui/material";
 import Swal from "sweetalert2";
 import { v4 } from "uuid";
 import ReactModal from "react-modal";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
 import { TextEditorQuillCom } from "../../../components/texteditor";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
-
+import { mainColor } from "../../../constants/mainTheme";
+import {
+  onBulkDeleteBlog,
+  onDeleteBlog,
+  onGetBlogsForAdmin,
+  onPostBlog,
+} from "../../../store/admin/blog/blogSlice";
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
@@ -57,21 +65,14 @@ const schemaValidation = yup.object().shape({
   category_id: yup.string().required(MESSAGE_FIELD_REQUIRED),
 });
 
-const statusItems = [
-  {
-    value: 1,
-    label: "Active",
-  },
-  {
-    value: 0,
-    label: "InActive",
-  },
-  {
-    value: 2,
-    label: "Proccessing",
-  },
-];
 const AdminBlogListPage = () => {
+  const dispatch = useDispatch();
+  const {
+    adminBlogs: blogs,
+    isPostBlogSuccess,
+    isBulkDeleteSuccess,
+  } = useSelector((state) => state.adminBlog);
+  console.log("adminBlogs:", blogs);
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
@@ -84,11 +85,10 @@ const AdminBlogListPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [filterBlog, setFilterBlog] = useState([]);
   const [search, setSearch] = useState("");
   const { user } = useSelector((state) => state.auth);
-  const user_id = user.id;
 
   /********* END API State ********* */
 
@@ -112,9 +112,9 @@ const AdminBlogListPage = () => {
         <div
           rel="noopener noreferrer"
           className="hover:text-tw-danger transition-all duration-300"
-          onClick={() => handleDeleteMultipleRecords()}
+          onClick={() => handleBulkDelete()}
         >
-          Remove All
+          Bulk delete
         </div>
       ),
     },
@@ -145,7 +145,7 @@ const AdminBlogListPage = () => {
       width: "70px",
     },
     {
-      name: "Blog Name",
+      name: "Title",
       selector: (row) => row.name,
       sortable: true,
       width: "250px",
@@ -158,41 +158,34 @@ const AdminBlogListPage = () => {
     {
       name: "Image",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+        <img
+          width={50}
+          height={50}
+          src={`${row.image || AVATAR_DEFAULT}`}
+          alt={row.name}
+        />
       ),
     },
     {
       name: "Status",
-      selector: (row) => {
-        if (row.status === 2) {
-          return (
-            <ButtonCom
-              color="danger"
-              onClick={() => handleChangeStatus(row.id, row.status)}
-            >
-              Proccessing
-            </ButtonCom>
-          );
-        } else if (row.status === 1) {
-          return (
-            <ButtonCom
-              backgroundColor="info"
-              onClick={() => handleChangeStatus(row.id, row.status)}
-            >
-              Active
-            </ButtonCom>
-          );
-        } else {
-          return (
-            <ButtonCom
-              color="pink"
-              onClick={() => handleChangeStatus(row.id, row.status)}
-            >
-              In-Active
-            </ButtonCom>
-          );
-        }
-      },
+      selector: (row) => (
+        <SelectDefaultAntCom
+          control={control}
+          name="status"
+          defaultValue={row.status}
+          options={statusBlogItems}
+          className={`${
+            row.status === 1
+              ? "blog-dropdown-success"
+              : row.status === 2
+              ? "blog-dropdown-warning"
+              : "blog-dropdown-dark"
+          } rounded-full`}
+          onChange={(selectedStatus) =>
+            handleChangeStatus(row.slug, selectedStatus)
+          }
+        />
+      ),
     },
     {
       name: "Action",
@@ -202,24 +195,16 @@ const AdminBlogListPage = () => {
             className="px-3 rounded-lg mr-2"
             backgroundColor="info"
             onClick={() => {
-              handleEdit(row.id);
+              handleEdit(row.slug);
             }}
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
           <ButtonCom
-            className="px-3 rounded-lg mr-2"
-            onClick={() => {
-              window.open(`/blogs/${row.id}`);
-            }}
-          >
-            <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom>
-          <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
             onClick={() => {
-              handleDeleteBlog(row);
+              handleDelete(row);
             }}
           >
             <IconTrashCom className="w-5"></IconTrashCom>
@@ -231,30 +216,20 @@ const AdminBlogListPage = () => {
 
   /********* Call API ********* */
   //Get All Blog
-  const getBlogs = async () => {
-    try {
-      const res = await axiosBearer.get(`/blog/blogs`);
-      console.log(res.data);
-      setBlogs(res.data);
-      setFilterBlog(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    dispatch(onGetBlogsForAdmin());
+    if (isPostBlogSuccess && isOpen) setIsOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostBlogSuccess]);
 
   useEffect(() => {
-    getBlogs();
-  }, []);
+    if (isBulkDeleteSuccess) clearSelectedRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBulkDeleteSuccess]);
 
   const handleChangeCategory = (value) => {
     setValue("category_id", value);
     setError("category_id", { message: "" });
-    setCategorySelected(value);
-  };
-
-  const handleChangeStatus = async (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
     setCategorySelected(value);
   };
 
@@ -293,7 +268,7 @@ const AdminBlogListPage = () => {
   }, [blogs, search]);
 
   /********* Delete one API ********* */
-  const handleDeleteBlog = ({ id, name }) => {
+  const handleDelete = ({ id, name }) => {
     Swal.fire({
       title: "Are you sure?",
       html: `You will delete blog: <span class="text-tw-danger">${name}</span>`,
@@ -304,20 +279,13 @@ const AdminBlogListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const res = await axiosBearer.delete(`/blog/${id}`);
-          getBlogs();
-          reset(res.data);
-          toast.success(res.data.message);
-        } catch (error) {
-          showMessageError(error);
-        }
+        dispatch(onDeleteBlog(id));
       }
     });
   };
 
   /********* Multi Delete API ********* */
-  const handleDeleteMultipleRecords = () => {
+  const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
       toast.warning(MESSAGE_NO_ITEM_SELECTED);
       return;
@@ -334,78 +302,68 @@ const AdminBlogListPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const deletePromises = selectedRows.map((row) =>
-            axiosBearer.delete(`/blog/${row.id}`)
-          );
-          await Promise.all(deletePromises);
-          toast.success(`Delete ${selectedRows.length} blogs success`);
-        } catch (error) {
-          showMessageError(error);
-        } finally {
-          getBlogs();
-          clearSelectedRows();
-        }
+        dispatch(onBulkDeleteBlog(selectedRows));
       }
     });
   };
+  /********* Update Status API ********* */
+
+  const handleChangeStatus = (slug, selectedStatus) => {
+    const blogBySlug = getBlogBySlug(slug);
+    if (!blogBySlug) toast.error(MESSAGE_ITEM_NOT_FOUND);
+
+    dispatch(
+      onPostBlog({
+        ...blogBySlug,
+        status: selectedStatus,
+      })
+    );
+  };
+
   /********* Update API ********* */
-  const handleEdit = async (blogId) => {
-    try {
-      setIsFetching(true);
-      await getBlogById(blogId);
-      setIsOpen(true);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsFetching(false);
+  const getBlogBySlug = (slug, action = "n/a") => {
+    setIsFetching(true);
+    const item = blogs.find((item) => item.slug === slug);
+    switch (action) {
+      case "fetch":
+        typeof item !== "undefined" ? reset(item) : showMessageError("No data");
+        setCategorySelected(item?.category_id);
+        setStatusSelected(item?.status);
+        const imageUrl = item?.image;
+        const imgObj = [
+          {
+            uid: v4(),
+            name: imageUrl?.substring(imageUrl.lastIndexOf("/") + 1),
+            status: "done",
+            url: imageUrl,
+          },
+        ];
+        setImage(imgObj);
+        break;
+      default:
+        break;
     }
+    setIsFetching(false);
+
+    return typeof item !== "undefined" ? item : showMessageError("No data");
   };
 
-  const getBlogById = async (blogId) => {
-    try {
-      const res = await axiosBearer.get(`blog/${blogId}`);
-      reset(res.data);
-      setCategorySelected(res.data.category_id);
-      setStatusSelected(res.data.status);
-      const resImage = res.data.image;
-      const imgObj = [
-        {
-          uid: v4(),
-          name: resImage.substring(resImage.lastIndexOf("/") + 1),
-          status: "done",
-          url: resImage,
-        },
-      ];
-
-      setImage(imgObj);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleEdit = async (slug) => {
+    setIsOpen(true);
+    getBlogBySlug(slug, "fetch");
   };
 
-  const handleSubmitForm = async (values) => {
-    console.log(values);
-    try {
-      setIsLoading(!isLoading);
-      const res = await axiosBearer.put(`/blog`, {
+  const handleSubmitForm = (values) => {
+    dispatch(
+      onPostBlog({
         ...values,
-        user_id,
-        view_count: 0,
-      });
-      toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
-      getBlogs();
-      Navigate(`/admin/blogs`);
-    } catch (error) {
-      showMessageError(error);
-    } finally {
-      setIsLoading(false);
-    }
+        status: values.status || 2,
+      })
+    );
   };
-
   return (
     <>
-      {isFetching && <LoadingCom />}
+      {(isLoading || isFetching) && <LoadingCom />}
       <div className="flex justify-between items-center">
         <HeadingH1Com>Admin Blogs</HeadingH1Com>
         <BreadcrumbCom
@@ -426,13 +384,10 @@ const AdminBlogListPage = () => {
         <div className="col-sm-12">
           <div className="card">
             <div className="card-header py-3">
-              {/* <HeadingH2Com className="text-tw-light-pink">
-                List Courses
-              </HeadingH2Com> */}
               <span>
                 <TableCom
+                  urlCreate="/admin/blogs/create"
                   tableKey={tableKey}
-                  urlCreate="/blogs/blogCreate"
                   title="List Blogs"
                   columns={columns}
                   items={filterBlog}
@@ -447,7 +402,6 @@ const AdminBlogListPage = () => {
           </div>
         </div>
       </div>
-
       {/* Modal Edit */}
       <ReactModal
         isOpen={isOpen}
@@ -458,7 +412,7 @@ const AdminBlogListPage = () => {
         }`}
       >
         <div className="card-header bg-tw-primary flex justify-between text-white">
-          <HeadingFormH5Com className="text-2xl">Edit Course</HeadingFormH5Com>
+          <HeadingFormH5Com className="text-2xl">Edit Blog</HeadingFormH5Com>
           <ButtonCom backgroundColor="danger" className="px-2">
             <IconRemoveCom
               className="flex items-center justify-center p-2 w-10 h-10 rounded-xl bg-opacity-20 text-white"
@@ -484,14 +438,14 @@ const AdminBlogListPage = () => {
               <div className="row">
                 <div className="col-sm-8">
                   <LabelCom htmlFor="name" isRequired>
-                    Blog Name
+                    Title
                   </LabelCom>
                   <InputCom
                     type="text"
                     control={control}
                     name="name"
                     register={register}
-                    placeholder="Input Course Name"
+                    placeholder="Input Title"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
                   ></InputCom>
@@ -518,26 +472,6 @@ const AdminBlogListPage = () => {
               </div>
               <GapYCom className="mb-20"></GapYCom>
               <div className="row">
-                <div className="col-sm-4">
-                  <LabelCom htmlFor="status">Status</LabelCom>
-                  <div>
-                    <SelectDefaultAntCom
-                      listItems={statusItems}
-                      onChange={handleChangeStatus}
-                      status={errors.status && errors.status.message && "error"}
-                      errorMsg={errors.status?.message}
-                      placeholder="Choose Status"
-                      defaultValue={watch("status")}
-                    ></SelectDefaultAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="status"
-                      register={register}
-                      defaultValue={watch("status")}
-                    ></InputCom>
-                  </div>
-                </div>
                 <div className="col-sm-4">
                   <LabelCom htmlFor="category_id" isRequired>
                     Choose Category
@@ -568,14 +502,19 @@ const AdminBlogListPage = () => {
               <GapYCom className="mb-35 bt-10"></GapYCom>
               <div className="row">
                 <div className="col-sm-12">
-                  <LabelCom htmlFor="description">Description</LabelCom>
+                  <LabelCom htmlFor="description" isRequired>
+                    Description
+                  </LabelCom>
                   <TextEditorQuillCom
                     value={watch("description")}
                     onChange={(description) => {
                       setValue("description", description);
                     }}
                     placeholder="Write your blog..."
-                  ></TextEditorQuillCom>
+                  />
+                </div>
+                <div className="mt-10 " style={{ color: "red" }}>
+                  {errors.description?.message}
                 </div>
               </div>
               <GapYCom></GapYCom>
@@ -584,9 +523,6 @@ const AdminBlogListPage = () => {
               <ButtonCom type="submit" isLoading={isLoading}>
                 Update
               </ButtonCom>
-              {/* <ButtonCom backgroundColor="danger" onClick={resetValues}>
-                Reset
-              </ButtonCom> */}
             </div>
           </form>
         </div>
@@ -594,4 +530,5 @@ const AdminBlogListPage = () => {
     </>
   );
 };
+
 export default AdminBlogListPage;

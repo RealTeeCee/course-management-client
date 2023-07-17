@@ -1,37 +1,43 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { ButtonCom } from "../../components/button";
-import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
-import { InputCom } from "../../components/input";
-import { LabelCom } from "../../components/label";
-import { TextAreaCom } from "../../components/textarea";
-
 // **** Mui ****
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import * as yup from "yup";
+import { axiosBearer } from "../../api/axiosInstance";
+import { BreadcrumbCom } from "../../components/breadcrumb";
+import { ButtonCom } from "../../components/button";
 import DividerCom from "../../components/common/DividerCom";
+import GapYCom from "../../components/common/GapYCom";
+import { HeadingH1Com, HeadingH3Com } from "../../components/heading";
+import { InputReadOnlyCom } from "../../components/input";
+import { LabelCom } from "../../components/label";
+import { TextAreaCom } from "../../components/textarea";
 import {
-  BASE_API_URL,
-  MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
+  MESSAGE_LOGIN_REQUIRED,
+  NOT_FOUND_URL,
 } from "../../constants/config";
-import axios from "axios";
+import { API_CHECKOUT_URL } from "../../constants/endpoint";
+import {
+  selectAllCourseState,
+  selectEnrollIdAndCourseId,
+} from "../../store/course/courseSelector";
+import { convertIntToStrMoney, showMessageError } from "../../utils/helper";
 import { toast } from "react-toastify";
+import { checkUserLogin } from "../../utils/auth";
 
 const schemaValidation = yup.object().shape({
-  first_name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  last_name: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  phone: yup.string().required(MESSAGE_FIELD_REQUIRED),
-  email: yup
+  payment_method: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
-    .email(MESSAGE_EMAIL_INVALID),
+    .oneOf(["MOMO", "PAYPAL"], "Only accept payment method: MOMO or PAYPAL"),
 });
 
 const CheckoutPage = () => {
@@ -40,38 +46,100 @@ const CheckoutPage = () => {
     register,
     handleSubmit,
     setValue,
-    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
+  const [paymentMethod, setPaymentMethod] = useState("MOMO");
+
+  const navigate = useNavigate();
+  const { slug } = useParams();
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    checkUserLogin(user?.id, navigate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+  const { data } = useSelector(selectAllCourseState);
+  const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
+  const courseBySlug = data.find((item, index) => item.slug === slug);
+  useEffect(() => {
+    if (!courseBySlug) navigate(NOT_FOUND_URL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug]);
+
+  useEffect(() => {
+    if (isEnrolled && user?.role === "USER")
+      navigate(`/learn/${courseBySlug?.slug}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnrolled]);
+
   const [isLoading, setIsLoading] = useState(false);
 
+  const handlePaymentMethod = (e) => {
+    const selectedPaymentMethod = e.target.value;
+    setPaymentMethod(selectedPaymentMethod);
+    setValue("payment_method", selectedPaymentMethod);
+  };
+
   const handleSubmitForm = async (values) => {
-    try {
-      setIsLoading(!isLoading);
-      const res = await axios.post(`${BASE_API_URL}/checkout`, {
-        ...values,
-      });
-      toast.success(`${res.message}`);
-      setIsLoading(false);
-    } catch (error) {
-      toast.error(`${error.message}`);
-      setIsLoading(false);
+    if (!user?.id) {
+      toast.warning(MESSAGE_LOGIN_REQUIRED);
+      navigate("/login");
+    } else {
+      try {
+        setIsLoading(!isLoading);
+        const res = await axiosBearer.post(API_CHECKOUT_URL, {
+          amount:
+            courseBySlug?.price === 0
+              ? 0
+              : courseBySlug?.net_price > 0
+              ? courseBySlug?.net_price
+              : courseBySlug?.price,
+          userId: user?.id,
+          courseId: courseBySlug?.id,
+          paymentType: values.payment_method,
+          userDescription: values.description,
+        });
+        if (res?.data?.statusCodeValue === 200)
+          window.location.href = res.data.body.payUrl;
+      } catch (error) {
+        showMessageError(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   return (
     <>
-      <HeadingH1Com>Payment Details</HeadingH1Com>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com>Checkout Page</HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Detail",
+              slug: `/courses/${slug ?? "not-found"}`,
+            },
+            {
+              title: "Checkout",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
       <GapYCom></GapYCom>
       <div className="card">
-        <form
-          className="theme-form"
-          onSubmit={handleSubmit(handleSubmitForm)}
-          id="form-create"
-        >
+        <form onSubmit={handleSubmit(handleSubmitForm)}>
           <div className="card-body">
             <div className="row">
               <div className="checkout-user-detail col-xl-6 col-sm-12">
@@ -88,36 +156,42 @@ const CheckoutPage = () => {
                 <GapYCom className="mb-3"></GapYCom> */}
                 <div className="row">
                   <div className="col-sm-6">
-                    <LabelCom htmlFor="first_name" isRequired>
-                      First Name
-                    </LabelCom>
-                    <InputCom
+                    <LabelCom htmlFor="first_name">First Name</LabelCom>
+                    <InputReadOnlyCom
+                      name="first_name"
+                      value={user?.first_name}
+                    />
+                    {/* <InputCom
                       type="text"
                       control={control}
                       name="first_name"
                       register={register}
                       placeholder="First Name"
                       errorMsg={errors.first_name?.message}
-                    ></InputCom>
+                      value={user?.first_name}
+                    ></InputCom> */}
                   </div>
                   <div className="col-sm-6">
-                    <LabelCom htmlFor="last_name" isRequired>
-                      Last Name
-                    </LabelCom>
-                    <InputCom
+                    <LabelCom htmlFor="last_name">Last Name</LabelCom>
+                    <InputReadOnlyCom
+                      name="last_name"
+                      value={user?.last_name}
+                    />
+                    {/* <InputCom
                       type="text"
                       control={control}
                       name="last_name"
                       register={register}
                       placeholder="Last Name"
                       errorMsg={errors.last_name?.message}
-                    ></InputCom>
+                      value={user?.last_name}
+                    ></InputCom> */}
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
                 <div className="row">
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="phone" isRequired>
+                  {/* <div className="col-sm-6">
+                    <LabelCom htmlFor="phone">
                       Phone
                     </LabelCom>
                     <InputCom
@@ -128,19 +202,18 @@ const CheckoutPage = () => {
                       placeholder="0902xxxxxx"
                       errorMsg={errors.phone?.message}
                     ></InputCom>
-                  </div>
-                  <div className="col-sm-6">
-                    <LabelCom htmlFor="email" isRequired>
-                      Email Address
-                    </LabelCom>
-                    <InputCom
+                  </div> */}
+                  <div className="col-sm-12">
+                    <LabelCom htmlFor="email">Email</LabelCom>
+                    <InputReadOnlyCom name="email" value={user?.email} />
+                    {/* <InputCom
                       type="text"
                       control={control}
                       name="email"
                       register={register}
                       placeholder="test123@gmail.com"
                       errorMsg={errors.email?.message}
-                    ></InputCom>
+                    ></InputCom> */}
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
@@ -160,16 +233,22 @@ const CheckoutPage = () => {
                 <div className="checkout-details">
                   <div className="order-box">
                     <div className="title-box">
-                      <div className="checkbox-title">
+                      <div className="checkbox-title items-center">
                         <h4>Course</h4>
                         <span>Total</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
                       <HeadingH3Com className="bg-gradient-to-r from-tw-light-pink to-tw-primary bg-clip-text text-transparent hover:text-black flex-1">
-                        Become Master PHP
+                        {courseBySlug?.name}
                       </HeadingH3Com>
-                      <span>$300</span>
+                      <span>
+                        {courseBySlug?.price === 0
+                          ? "Free"
+                          : courseBySlug?.net_price > 0
+                          ? `$${convertIntToStrMoney(courseBySlug?.net_price)}`
+                          : `$${convertIntToStrMoney(courseBySlug?.price)}`}
+                      </span>
                     </div>
                     <DividerCom></DividerCom>
                     {/* <ul className="qty">
@@ -187,81 +266,58 @@ const CheckoutPage = () => {
                     </ul> */}
                     <ul className="sub-total total">
                       <li className="!font-bold">
-                        Total <span className="count !font-bold">$300</span>
+                        Total{" "}
+                        <span className="count !font-bold">
+                          {courseBySlug?.price === 0
+                            ? "Free"
+                            : courseBySlug?.net_price > 0
+                            ? `$${convertIntToStrMoney(
+                                courseBySlug?.net_price
+                              )}`
+                            : `$${convertIntToStrMoney(courseBySlug?.price)}`}
+                        </span>
                       </li>
                     </ul>
                     <div className="animate-chk">
                       <div className="row">
                         <div className="col">
-                          {/* Radio Group Checkout Online */}
                           <FormControl>
-                            {/* <FormLabel id="payment_method">
-                              Payment Methods
-                            </FormLabel> */}
                             <LabelCom htmlFor="payment_method">
                               Payment Methods
                             </LabelCom>
                             <RadioGroup
                               id="payment_method"
                               aria-labelledby="payment_method"
-                              defaultValue="banking"
                               name="radio-buttons-group"
+                              value={paymentMethod}
                             >
                               <FormControlLabel
-                                value="banking"
-                                control={<Radio style={{ color: "#7366ff" }} />}
-                                label="Banking"
+                                value="MOMO"
+                                control={
+                                  <Radio
+                                    style={{ color: "#7366ff" }}
+                                    onClick={handlePaymentMethod}
+                                  />
+                                }
+                                label="Momo"
                               />
                               <FormControlLabel
-                                value="momo"
-                                control={<Radio style={{ color: "#7366ff" }} />}
-                                label="MOMO"
+                                value="PAYPAL"
+                                control={
+                                  <Radio
+                                    style={{ color: "#7366ff" }}
+                                    onClick={handlePaymentMethod}
+                                  />
+                                }
+                                label="Paypal"
                               />
                             </RadioGroup>
+                            <input
+                              type="hidden"
+                              value={paymentMethod}
+                              {...register("payment_method")}
+                            />
                           </FormControl>
-                          {/* <label className="d-block" htmlFor="edo-ani">
-                            <input
-                              className="radio_animated"
-                              id="edo-ani"
-                              type="radio"
-                              name="rdo-ani"
-                              checked=""
-                              data-original-title=""
-                              title=""
-                              data-bs-original-title=""
-                            />
-                            Check Payments
-                          </label>
-                          <label className="d-block" htmlFor="edo-ani1">
-                            <input
-                              className="radio_animated"
-                              id="edo-ani1"
-                              type="radio"
-                              name="rdo-ani"
-                              data-original-title=""
-                              title=""
-                              data-bs-original-title=""
-                            />
-                            Cash On Delivery
-                          </label>
-                          <label className="d-block" htmlFor="edo-ani2">
-                            <input
-                              className="radio_animated"
-                              id="edo-ani2"
-                              type="radio"
-                              name="rdo-ani"
-                              checked=""
-                              data-original-title=""
-                              title=""
-                              data-bs-original-title=""
-                            />
-                            PayPal
-                            <img
-                              className="img-paypal"
-                              src="../assets/images/checkout/paypal.png"
-                              alt=""
-                            />
-                          </label> */}
                         </div>
                       </div>
                     </div>
@@ -274,9 +330,6 @@ const CheckoutPage = () => {
             <ButtonCom type="submit" isLoading={isLoading}>
               Continue
             </ButtonCom>
-            {/* <ButtonCom backgroundColor="danger" type="reset">
-              Cancel
-            </ButtonCom> */}
           </div>
         </form>
       </div>

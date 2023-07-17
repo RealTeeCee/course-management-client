@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { toast } from "react-toastify";
 import {
   IconAdminCom,
+  IconAuthorCom,
   IconBlogCom,
   IconCategoryCom,
   IconHomeCom,
   IconLearnCom,
-  IconMapCom,
-  IconMoonCom,
-  IconSunCom,
 } from "../../components/icon";
+import { ALLOWED_ADMIN_MANAGER_EMPLOYEE } from "../../constants/permissions";
 
 const sidebarItems = [
   {
@@ -20,14 +18,9 @@ const sidebarItems = [
     url: "/",
   },
   {
-    icon: <IconAdminCom className="mx-auto" />,
-    title: "Admin",
-    url: "/admin",
-  },
-  {
-    icon: <IconMapCom className="mx-auto" />,
-    title: "Route",
-    url: "/routes",
+    icon: <IconAuthorCom className="mx-auto text-2xl" />,
+    title: "Author",
+    url: "/authors",
   },
   {
     icon: <IconCategoryCom className="mx-auto" />,
@@ -43,6 +36,11 @@ const sidebarItems = [
     icon: <IconBlogCom className="mx-auto" />,
     title: "Blog",
     url: "/blogs",
+  },
+  {
+    icon: <IconAdminCom className="mx-auto" />,
+    title: "Admin",
+    url: "/admin",
   },
   // {
   //   icon: <IconMoonCom className="mx-auto" />,
@@ -89,7 +87,7 @@ const HomeSidebarMod = () => {
       >
         {sidebarItems.map((item) => {
           if (item.url === "/admin") {
-            if (user && user.role === "ADMIN") {
+            if (user && ALLOWED_ADMIN_MANAGER_EMPLOYEE.includes(user.role)) {
               return (
                 <NavLink
                   key={item.title}

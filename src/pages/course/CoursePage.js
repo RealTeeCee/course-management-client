@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
 import { BreadcrumbCom } from "../../components/breadcrumb";
+import EmptyDataCom from "../../components/common/EmptyDataCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { LIMIT_PAGE } from "../../constants/config";
@@ -50,7 +51,6 @@ const CoursePage = () => {
                   <CourseItemMod
                     key={v4()}
                     isPaid={false}
-                    isMyCourse={false}
                     course={course}
                     url={`/courses/${course?.slug}`}
                   ></CourseItemMod>
@@ -70,9 +70,7 @@ const CoursePage = () => {
           )}
         </>
       ) : (
-        <HeadingH2Com className="text-black text-4xl text-center py-10">
-          No data
-        </HeadingH2Com>
+        <EmptyDataCom text="No data" />
       )}
     </>
   );

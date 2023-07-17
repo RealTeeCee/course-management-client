@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as yup from "yup";
@@ -18,20 +18,26 @@ import {
   MESSAGE_EMAIL_INVALID,
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_POLICY_REQUIRED,
+  MESSAGE_REGEX_NAME,
 } from "../../constants/config";
+import { regexName } from "../../constants/regex";
 import useClickToggleBoolean from "../../hooks/useClickToggleBoolean";
-import { onRegister } from "../../store/auth/authSlice";
+import { onRegister, onRegisterSuccess } from "../../store/auth/authSlice";
 import OAuth2Page from "./OAuth2Page";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   last_name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
+    .matches(regexName, MESSAGE_REGEX_NAME)
     .min(3, "Minimum is 3 letters")
     .max(MAX_LENGTH_NAME, `Maximum ${MAX_LENGTH_NAME} letters`),
   email: yup
@@ -58,32 +64,32 @@ const RegisterPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isRegisterSuccess } = useSelector((state) => state.auth);
+  
+
 
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
-  const handleRegister = async (values) => {
+  const handleRegister =(values) => {
     if (!acceptTerm) {
       toast.warning(MESSAGE_POLICY_REQUIRED);
       return;
     }
-    setIsLoading(true);
-    try {
-      await dispatch(onRegister({ ...values, permissions: [] }));
-      toast.success("Registration successful!");
-      reset();
-      navigate("/login");
-    } catch (error) {
-      toast.error("Registration failed!");
-      setIsLoading(false);
-    }
+    dispatch(onRegister(values));
   };
 
+ 
+  useEffect(() => {
+    if(isRegisterSuccess){
+      dispatch(onRegisterSuccess(false));
+      navigate("/login");
+    }
+  }, [isRegisterSuccess]);
   return (
     <>
       <form className="theme-form" onSubmit={handleSubmit(handleRegister)}>
-        <HeadingFormH1Com>Register Form</HeadingFormH1Com>
+        <HeadingFormH1Com>Register Page</HeadingFormH1Com>
         <FormGroupCom>
           <LabelCom htmlFor="first_name" isRequired>
             Your Name

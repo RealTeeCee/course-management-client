@@ -35,15 +35,15 @@ import ErrorCom from "../common/ErrorCom";
 // Select with search field
 const SelectSearchAntCom = (props) => {
   const {
-    listItems,
+    listItems = [],
     onChange = () => {},
     status = "",
     errorMsg = "",
     className = "",
     selectedValue = null,
+    isGetObject = false,
     ...rest
   } = props;
-
   return (
     <>
       <Select
@@ -59,7 +59,11 @@ const SelectSearchAntCom = (props) => {
             .toLowerCase()
             .localeCompare((optionB?.label ?? "").toLowerCase())
         }
-        onChange={onChange}
+        onChange={(value) =>
+          isGetObject
+            ? onChange(listItems.find((r) => r.value === value))
+            : onChange(value)
+        }
         options={listItems}
         className={`${className}`}
         {...rest}
@@ -73,12 +77,7 @@ const SelectSearchAntCom = (props) => {
 };
 
 SelectSearchAntCom.propTypes = {
-  listItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.number.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  listItems: PropTypes.array.isRequired,
   status: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,

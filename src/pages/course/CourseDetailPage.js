@@ -1,10 +1,12 @@
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import { CollapseAntCom } from "../../components/ant";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
+import EmptyDataCom from "../../components/common/EmptyDataCom";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import {
@@ -16,11 +18,15 @@ import {
   IconStarCom,
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
-import { categoryItems } from "../../constants/config";
+import { categoryItems, NOT_FOUND_URL } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
-import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
+  selectAllCourseState,
+  selectEnrollIdAndCourseId,
+} from "../../store/course/courseSelector";
+import {
+  onGetEnrollId,
   onGetLearning,
   onRelatedCourseLoading,
 } from "../../store/course/courseSlice";
@@ -30,56 +36,55 @@ import {
   convertStrToSlug,
 } from "../../utils/helper";
 
-const sectionItems = [
-  {
-    id: 1,
-    name: "Introduce",
-  },
-  {
-    id: 2,
-    name: "How to install PHP",
-  },
-];
+// const sectionItems = [
+//   {
+//     id: 1,
+//     name: "Introduce",
+//   },
+//   {
+//     id: 2,
+//     name: "How to install PHP",
+//   },
+// ];
 
-const lessionItems = [
-  {
-    id: 1,
-    name: "What is PHP",
-    duration: 178,
-    sectionId: 1,
-  },
-  {
-    id: 2,
-    name: "What is Laravel",
-    duration: 358,
-    sectionId: 1,
-  },
-  {
-    id: 3,
-    name: "Install XamPP",
-    duration: 138,
-    sectionId: 2,
-  },
-  {
-    id: 4,
-    name: "Install phpMyAdmin",
-    duration: 378,
-    sectionId: 2,
-  },
-];
-
-// const sessionIds = sectionItems.map((item) => String(item.id));
-// const totalLession = 2;
+// const lessionItems = [
+//   {
+//     id: 1,
+//     name: "What is PHP",
+//     duration: 178,
+//     sectionId: 1,
+//   },
+//   {
+//     id: 2,
+//     name: "What is Laravel",
+//     duration: 358,
+//     sectionId: 1,
+//   },
+//   {
+//     id: 3,
+//     name: "Install XamPP",
+//     duration: 138,
+//     sectionId: 2,
+//   },
+//   {
+//     id: 4,
+//     name: "Install phpMyAdmin",
+//     duration: 378,
+//     sectionId: 2,
+//   },
+// ];
 
 const CourseDetailPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const { slug } = useParams();
-  // const [openKeys, setOpenKeys] = useState(["1"]);
-  // const [openKeys, setOpenKeys] = useState(String(sectionItems[0].id));
-  const { courseId, learning, sectionId } = useSelector(selectAllCourseState);
+  const { user } = useSelector((state) => state.auth);
 
-  console.log("learning: ", learning);
+  const { learning, sectionId } = useSelector(selectAllCourseState);
+  const { isEnrolled } = useSelector(selectEnrollIdAndCourseId);
+
   const relatedCourseLimitPage = 4;
   const { startIndex, endIndex, currentPage, handleChangePage } = usePagination(
     1,
@@ -89,7 +94,30 @@ const CourseDetailPage = () => {
   const { data, relatedCourse } = useSelector((state) => state.course);
 
   const courseBySlug = data.find((item, index) => item.slug === slug);
-  console.log("courseBySlug: ", courseBySlug);
+
+  useEffect(() => {
+    if (!courseBySlug) navigate(NOT_FOUND_URL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseBySlug]);
+
+  useEffect(() => {
+    if (user?.id && courseBySlug?.id) {
+      dispatch(
+        onGetEnrollId({ course_id: courseBySlug?.id, user_id: user?.id })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, courseBySlug?.id]);
+
+  useEffect(() => {
+    if (isEnrolled && user?.role === "USER")
+      navigate(`/learn/${courseBySlug?.slug}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnrolled]);
+
+  const newRelatedCourse = relatedCourse.filter(
+    (course) => course.id !== courseBySlug?.id
+  );
 
   useEffect(() => {
     if (courseBySlug?.id) {
@@ -112,9 +140,7 @@ const CourseDetailPage = () => {
   );
 
   useEffect(() => {
-    if (sectionId) {
-      setOpenKeys(sectionId);
-    }
+    if (sectionId) setOpenKeys(sectionId);
   }, [sectionId]);
 
   const handleChangeCollapse = (keys) => {
@@ -126,15 +152,6 @@ const CourseDetailPage = () => {
       setIsOpen(false);
     }
   };
-
-  // const handleChangeCollapse = (keys) => {
-  //   setOpenKeys(keys);
-  //   if (keys.length === sectionItems.length) {
-  //     setIsOpen(true);
-  //   } else {
-  //     setIsOpen(false);
-  //   }
-  // };
 
   const handleToggleOpen = () => {
     setIsOpen(!isOpen);
@@ -153,7 +170,7 @@ const CourseDetailPage = () => {
         className="course-detail-banner bg-cover bg-no-repeat bg-center bg-opacity-40 text-white h-32 rounded-3xl flex items-center justify-center mb-5"
         style={{
           backgroundImage: `linear-gradient(180deg, rgba(54, 12, 46, 0) -1.75%, #000 90%),url(${
-            category.coverImage ?? category.image
+            category?.coverImage ?? category?.image
           })`,
         }}
       >
@@ -166,14 +183,36 @@ const CourseDetailPage = () => {
           </Link>
         </HeadingH2Com>
       </div>
+      <div className="flex justify-between items-center">
+        <HeadingH1Com className="course-detail-title text-4xl">
+          {courseBySlug?.name}
+        </HeadingH1Com>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Detail",
+              isActive: true,
+            },
+          ]}
+        />
+      </div>
+      <GapYCom></GapYCom>
       <div className="course-detail-body">
         <div className="row">
           <div className="col-sm-7 relative">
             <div className="course-detail-header">
-              <HeadingH1Com className="course-detail-title !mb-3">
+              {/* <HeadingH1Com className="course-detail-title !mb-3">
                 {courseBySlug?.name}
               </HeadingH1Com>
-              <GapYCom></GapYCom>
+              <GapYCom></GapYCom> */}
               <div
                 className="course-detail-description"
                 dangerouslySetInnerHTML={{ __html: courseBySlug?.description }}
@@ -240,13 +279,6 @@ const CourseDetailPage = () => {
                     {isOpen ? "Close all" : "Open All"}
                   </div>
                 </div>
-                {/* <CollapseAntCom
-                  isOpen={isOpen}
-                  onChange={handleChangeCollapse}
-                  openKeys={openKeys}
-                  parentItems={sectionItems}
-                  childItems={lessionItems}
-                ></CollapseAntCom> */}
                 <CollapseAntCom
                   isOpen={isOpen}
                   onChange={handleChangeCollapse}
@@ -259,7 +291,7 @@ const CourseDetailPage = () => {
             </div>
           </div>
           <div className="col-sm-5">
-            <div className="sticky top-0">
+            <div className="sticky top-0 pt-3">
               <div className="course-detail-image h-60">
                 <ImageCom
                   srcSet={courseBySlug?.image}
@@ -284,7 +316,13 @@ const CourseDetailPage = () => {
                   </HeadingH2Com>
                 )}
                 <GapYCom></GapYCom>
-                <Link to={`/checkout/${slug}`}>
+                <Link
+                  to={
+                    courseBySlug?.price === 0
+                      ? `/learn/${slug}`
+                      : `/checkout/${slug}`
+                  }
+                >
                   <ButtonCom backgroundColor="gradient">
                     Enrolling Now
                   </ButtonCom>
@@ -356,40 +394,35 @@ const CourseDetailPage = () => {
         {/* Free Course */}
         <HeadingH2Com
           className="text-tw-primary"
-          number={relatedCourse && relatedCourse.length}
+          number={newRelatedCourse && newRelatedCourse.length}
         >
           Related Course
         </HeadingH2Com>
         <GapYCom></GapYCom>
         <CourseGridMod>
-          {relatedCourse && relatedCourse.length > 0 ? (
-            relatedCourse.map((course, index) => {
+          {newRelatedCourse && newRelatedCourse.length > 0 ? (
+            newRelatedCourse.map((course, index) => {
               if (index >= startIndex && index < endIndex) {
-                if (course.id !== courseBySlug.id) {
-                  return (
-                    <CourseItemMod
-                      key={v4()}
-                      isPaid={false}
-                      isMyCourse={false}
-                      course={course}
-                      url={`/courses/${course?.slug}`}
-                    ></CourseItemMod>
-                  );
-                }
+                return (
+                  <CourseItemMod
+                    key={v4()}
+                    isPaid={false}
+                    course={course}
+                    url={`/courses/${course?.slug}`}
+                  ></CourseItemMod>
+                );
               }
               return null;
             })
           ) : (
-            <HeadingH2Com className="text-black text-4xl text-center py-10">
-              No data
-            </HeadingH2Com>
+            <EmptyDataCom text="No data" />
           )}
         </CourseGridMod>
-        {relatedCourse.length > relatedCourseLimitPage && (
+        {newRelatedCourse.length > relatedCourseLimitPage && (
           <Pagination
             current={currentPage}
             defaultPageSize={relatedCourseLimitPage}
-            total={relatedCourse.length}
+            total={newRelatedCourse.length}
             onChange={handleChangePage}
             className="mt-[1rem] text-end"
           />
@@ -399,7 +432,7 @@ const CourseDetailPage = () => {
   );
 };
 
-const ArchiveItems = ({ title }) => (
+export const ArchiveItems = ({ title }) => (
   <div className="archive-item col-sm-6 mb-3">
     <div className="flex gap-x-2 items-center">
       <IconCheckCom className="text-tw-success"></IconCheckCom>

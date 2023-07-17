@@ -19,7 +19,7 @@ import { SelectDefaultAntCom } from "../ant";
 import { ButtonCom } from "../button";
 import GapYCom from "../common/GapYCom";
 import { IconEditCom, IconTrashCom } from "../icon";
-import { DialogConfirm } from "../mui";
+import { DialogConfirmMuiCom } from "../mui";
 import { TextEditorQuillCom } from "../texteditor";
 
 const lessonItems = [
@@ -208,7 +208,7 @@ const NoteCom = ({
 
   return (
     <div>
-      <DialogConfirm
+      <DialogConfirmMuiCom
         title="Warning"
         content="Do you want to delete this note?"
         confirmContent="Yes"
@@ -280,6 +280,7 @@ const NoteCom = ({
               }}
               placeholder={placeholder}
               focus={isFocus}
+              isUploadImage={false}
             ></TextEditorQuillCom>
             <GapYCom className="mb-5"></GapYCom>
             <div>

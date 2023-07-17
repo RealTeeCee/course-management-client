@@ -2,8 +2,9 @@ import { Pagination } from "antd";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
+import EmptyDataCom from "../../components/common/EmptyDataCom";
 import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com } from "../../components/heading";
+import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import { LIMIT_PAGE } from "../../constants/config";
 import usePagination from "../../hooks/usePagination";
 import { CourseGridMod, CourseItemMod } from "../../modules/course";
@@ -21,7 +22,8 @@ const MyCoursePage = () => {
     if (user) {
       dispatch(onMyCourseLoading(user.id));
     }
-  }, [dispatch, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <>
       <HeadingH1Com number={formatNumber(data?.length)}>
@@ -29,43 +31,33 @@ const MyCoursePage = () => {
       </HeadingH1Com>
       <GapYCom></GapYCom>
       <CourseGridMod>
-        {data
-          ? data.map((course, index) => {
-              if (index >= startIndex && index < endIndex) {
-                return (
-                  <CourseItemMod
-                    key={v4()}
-                    isPaid={true}
-                    isMyCourse={true}
-                    url={`/learn/${course.slug}`}
-                    course={course}
-                  ></CourseItemMod>
-                );
-              }
-              return null;
-            })
-          : Array(5)
-              .fill(0)
-              .map((item, index) => {
-                if (index >= startIndex && index < endIndex) {
-                  return (
-                    <CourseItemMod
-                      key={v4()}
-                      isPaid={true}
-                      url="/learn/php-01?id=1"
-                    ></CourseItemMod>
-                  );
-                }
-                return null;
-              })}
+        {data?.length > 0 ? (
+          data.map((course, index) => {
+            if (index >= startIndex && index < endIndex) {
+              return (
+                <CourseItemMod
+                  key={v4()}
+                  isPaid={true}
+                  url={`/learn/${course.slug}`}
+                  course={course}
+                ></CourseItemMod>
+              );
+            }
+            return null;
+          })
+        ) : (
+          <EmptyDataCom text="No data" />
+        )}
       </CourseGridMod>
-      <Pagination
-        current={currentPage}
-        defaultPageSize={LIMIT_PAGE}
-        total={data?.length}
-        onChange={handleChangePage}
-        className="mt-[1rem] text-center"
-      />
+      {data?.length > LIMIT_PAGE && (
+        <Pagination
+          current={currentPage}
+          defaultPageSize={LIMIT_PAGE}
+          total={data?.length}
+          onChange={handleChangePage}
+          className="mt-[1rem] text-center"
+        />
+      )}
     </>
   );
 };

@@ -1,62 +1,54 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import ImageUploader from "quill-image-uploader";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom/dist";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { axiosBearer } from "../../../api/axiosInstance";
+import { BreadcrumbCom } from "../../../components/breadcrumb";
+import { ButtonCom } from "../../../components/button";
+import GapYCom from "../../../components/common/GapYCom";
 import { HeadingH1Com } from "../../../components/heading";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { ButtonCom } from "../../../components/button";
-import "react-quill/dist/quill.snow.css";
-import GapYCom from "../../../components/common/GapYCom";
-import { toast } from "react-toastify";
+import { TextEditorQuillCom } from "../../../components/texteditor";
 import {
-  MESSAGE_FIELD_REQUIRED,
-  MESSAGE_UPLOAD_REQUIRED,
-  MESSAGE_VIDEO_FILE_INVALID,
-  MESSAGE_CAPTION_FILE_INVALID,
-  VIDEO_EXT_VALID,
   CAPTION_EXT_REGEX,
   CAPTION_EXT_VALID,
+  MESSAGE_CAPTION_FILE_INVALID,
+  MESSAGE_FIELD_REQUIRED,
+  MESSAGE_GENERAL_FAILED,
   MESSAGE_NUMBER_REQUIRED,
+  MESSAGE_UPLOAD_REQUIRED,
+  MESSAGE_VIDEO_FILE_INVALID,
+  VIDEO_EXT_VALID,
 } from "../../../constants/config";
-import axiosInstance, { axiosBearer } from "../../../api/axiosInstance";
-import ButtonBackCom from "../../../components/button/ButtonBackCom";
-import { useParams } from "react-router-dom";
-import {
-  API_LESSON_URL,
-  API_SECTION_URL,
-  IMG_BB_URL,
-} from "../../../constants/endpoint";
-import { useNavigate } from "react-router-dom/dist";
-import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
-import ImageUploader from "quill-image-uploader";
-import "react-quill/dist/quill.snow.css";
-import ReactQuill, { Quill } from "react-quill";
-import { TextEditorQuillCom } from "../../../components/texteditor";
-import { BreadcrumbCom } from "../../../components/breadcrumb";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  onCourseLoading,
-  onSelectedCourse,
-} from "../../../store/course/courseSlice";
+import { API_LESSON_URL, API_SECTION_URL } from "../../../constants/endpoint";
 import { selectAllCourseState } from "../../../store/course/courseSelector";
+import { onCourseLoading } from "../../../store/course/courseSlice";
+import { getDurationFromVideo, showMessageError } from "../../../utils/helper";
 Quill.register("modules/imageUploader", ImageUploader);
 
 /********* Validation for Section function ********* */
 const schemaValidation = yup.object().shape({
-  name: yup.string().required(MESSAGE_FIELD_REQUIRED),
+  name: yup.string().trim().required(MESSAGE_FIELD_REQUIRED),
   ordered: yup.number(MESSAGE_NUMBER_REQUIRED),
-  videoFile: yup
-    .mixed()
-    .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
-      if (value) return true;
-    })
-    .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
-      if (!value) return true;
-      const extValidArr = VIDEO_EXT_VALID.split(", ");
-      const videoFileExt = value[0]?.name.split(".").pop().toLowerCase();
-      return extValidArr.includes(videoFileExt);
-    }),
+  // videoFile: yup
+  //   .mixed()
+  //   .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
+  //     if (value) return true;
+  //   })
+  //   .test("fileFormat", MESSAGE_VIDEO_FILE_INVALID, function (value) {
+  //     if (!value) return true;
+  //     const extValidArr = VIDEO_EXT_VALID.split(", ");
+  //     const videoFileExt = value[0]?.name.split(".").pop().toLowerCase();
+  //     return extValidArr.includes(videoFileExt);
+  //   }),
   captionFiles: yup
     .mixed()
     .test("fileRequired", MESSAGE_UPLOAD_REQUIRED, function (value) {
@@ -89,8 +81,7 @@ const AdminCreateLessonPage = () => {
 
   /********* API State ********* */
   const [lessons, setLessons] = useState([]);
-  // const [section, setSection] = useState({});
-  // const [course, setCourse] = useState({});
+  const [videoFile, setVideoFile] = useState([]);
   /********* END API State ********* */
 
   const [isLoading, setIsLoading] = useState(false);
@@ -98,10 +89,6 @@ const AdminCreateLessonPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [description, setDescription] = useState("");
-  const resetValues = () => {
-    // setcourseSelected(null);
-    reset();
-  };
   const { data } = useSelector(selectAllCourseState);
 
   useEffect(() => {
@@ -111,8 +98,25 @@ const AdminCreateLessonPage = () => {
   }, [dispatch, isSuccess]);
 
   const handleSubmitForm = async (values) => {
-    const { name, duration, description, ordered, videoFile, captionFiles } =
-      values;
+    if (videoFile && videoFile.length === 0) {
+      toast.error(MESSAGE_GENERAL_FAILED);
+      setError("videoFile", { message: MESSAGE_UPLOAD_REQUIRED });
+      setValue("videoFile", null);
+      return;
+    } else if (videoFile && videoFile.length > 0) {
+      const extValidArr = VIDEO_EXT_VALID.split(", ");
+      const file = videoFile[0];
+      const videoFileExt = file.name.split(".").pop().toLowerCase();
+
+      if (!extValidArr.includes(videoFileExt)) {
+        toast.error(MESSAGE_GENERAL_FAILED);
+        setError("videoFile", { message: MESSAGE_VIDEO_FILE_INVALID });
+        setValue("videoFile", null);
+        return;
+      }
+    }
+    const { name, duration, description, ordered, captionFiles } = values;
+
     let lessonId;
     try {
       setIsLoading(true);
@@ -154,11 +158,18 @@ const AdminCreateLessonPage = () => {
 
   const getLatestLessonId = async () => {
     try {
-      const res = await axiosBearer.get(`/section/${sectionId}/lesson`);
-      return res.data[0].id;
+      const res = await axiosBearer.get(`/section/${sectionId}/lesson/last`);
+      // return res.data[0].id;
+      return res.data;
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleGetDurationForVideo = (e) => {
+    const file = e.target.files;
+    setVideoFile(file);
+    getDurationFromVideo(file[0]);
   };
 
   return (
@@ -245,7 +256,7 @@ const AdminCreateLessonPage = () => {
                       register={register}
                       placeholder="Upload video"
                       errorMsg={errors.videoFile?.message}
-                      onChange={(e) => getDurationFromVideo(e, setValue)}
+                      onChange={(e) => handleGetDurationForVideo(e)}
                     ></InputCom>
                   </div>
                   <div className="col-sm-6">

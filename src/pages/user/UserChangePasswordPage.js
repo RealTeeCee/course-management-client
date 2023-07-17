@@ -89,7 +89,7 @@ const UserChangePasswordPage = () => {
       </div>
       <GapYCom></GapYCom>
       <div className="login-card bg-none block p-0">
-        <div className="login-main m-0">
+        <div className="login-main mx-auto">
           <form
             className="theme-form"
             onSubmit={handleSubmit(handleSubmitForm)}
@@ -133,8 +133,12 @@ const UserChangePasswordPage = () => {
                 errorMsg={errors.confirmPassword?.message}
               ></InputCom>
             </FormGroupCom>
-            <div className="card-footer">
-              <ButtonCom type="submit" isLoading={isLoading}>
+            <div className="card-footer p-0">
+              <ButtonCom
+                type="submit"
+                isLoading={isLoading}
+                className="w-full mt-2"
+              >
                 Save
               </ButtonCom>
             </div>

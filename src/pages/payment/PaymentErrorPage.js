@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import ButtonBackCom from "../../components/button/ButtonBackCom";
+import { BreadcrumbCom } from "../../components/breadcrumb";
 import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 
@@ -9,7 +9,22 @@ const PaymentErrorPage = () => {
     <>
       <div className="flex justify-between items-center">
         <HeadingH1Com>Payment</HeadingH1Com>
-        <ButtonBackCom></ButtonBackCom>
+        <BreadcrumbCom
+          items={[
+            {
+              title: "Home",
+              slug: "/",
+            },
+            {
+              title: "Course",
+              slug: "/courses",
+            },
+            {
+              title: "Payment",
+              isActive: true,
+            },
+          ]}
+        />
       </div>
       <GapYCom></GapYCom>
       <div className="row">

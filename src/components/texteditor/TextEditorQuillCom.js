@@ -11,11 +11,14 @@ import ImageUploader from "quill-image-uploader";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const TextEditorQuillCom = ({
-  value = "",
   onChange = (value) => {},
+  value = "",
+  errorMsg = "",
   focus = false,
   placeholder = "Write your description...",
   className = "h-36",
+  isUploadImage = true,
+  ...rest
 }) => {
   const ref = useRef(null);
 
@@ -25,16 +28,17 @@ const TextEditorQuillCom = ({
     }
   }, [focus]);
 
-  const modules = useMemo(
-    () => ({
-      toolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["link", "image"],
-      ],
+  const modules = useMemo(() => {
+    const toolbar = [
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote"],
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ];
+    if (isUploadImage) toolbar.push(["link", "image"]);
+    return {
+      toolbar,
       imageUploader: {
         upload: async (file) => {
           const fd = new FormData();
@@ -55,27 +59,45 @@ const TextEditorQuillCom = ({
           }
         },
       },
-    }),
-    []
-  );
+    };
+  }, [isUploadImage]);
   return (
-    <ReactQuill
-      ref={ref}
-      modules={modules}
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={className}
-    ></ReactQuill>
+    <>
+      <style>{`
+        .ql-error .ql-container {
+          border: red solid 1px !important;
+        }
+        .ql-read-only .ql-container {
+          background: #e9ecef !important;
+        }
+      `}</style>
+      <ReactQuill
+        ref={ref}
+        modules={modules}
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`break-all ${className} ${
+          errorMsg?.length > 0 && "ql-error"
+        } ${rest.readOnly && "ql-read-only"}`}
+        {...rest}
+      ></ReactQuill>
+      {errorMsg?.length > 0 && (
+        <span className="text-tw-danger text-sm">{errorMsg}</span>
+      )}
+    </>
   );
-}; 
+};
 
 TextEditorQuillCom.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
+  errorMsg: PropTypes.string,
+  focus: PropTypes.bool,
   placeholder: PropTypes.string,
   className: PropTypes.string,
+  isUploadImage: PropTypes.bool,
 };
 
 export default withErrorBoundary(TextEditorQuillCom, {

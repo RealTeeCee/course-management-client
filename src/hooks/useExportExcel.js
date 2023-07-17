@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { APP_KEY_NAME } from "../constants/config";
 
-export default function useExcelExport(fileName = APP_KEY_NAME) {
+export default function useExportExcel(fileName = APP_KEY_NAME) {
   const [excelData, setExcelData] = useState([]);
   const [excelHeaders, setExcelHeaders] = useState([]);
 
@@ -20,6 +20,7 @@ export default function useExcelExport(fileName = APP_KEY_NAME) {
 
   useEffect(() => {
     if (excelData.length > 0 && excelHeaders.length > 0) handleExportExcel();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [excelData, excelHeaders]);
 
   const handleExportExcel = () => {

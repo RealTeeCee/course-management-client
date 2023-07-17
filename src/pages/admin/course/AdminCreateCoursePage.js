@@ -33,13 +33,18 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../constants/config";
-import { API_AUTHOR_URL, API_TAG_URL } from "../../../constants/endpoint";
+import {
+  API_AUTHOR_URL,
+  API_COURSE_URL,
+  API_TAG_URL,
+} from "../../../constants/endpoint";
 import useOnChange from "../../../hooks/useOnChange";
 import { convertStrMoneyToInt, showMessageError } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
     .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
@@ -137,7 +142,7 @@ const AdminCreateCoursePage = () => {
         //     "Content-type": "multipart/form-data",
         //   },
         // });
-        const res = await axiosBearer.post(`/course`, fd);
+        const res = await axiosBearer.post(API_COURSE_URL, fd);
         toast.success(`${res.data.message}`);
         resetValues();
         navigate("/admin/courses");
@@ -152,6 +157,7 @@ const AdminCreateCoursePage = () => {
   const getTags = async () => {
     try {
       const res = await axiosBearer.get(`${API_TAG_URL}`);
+      console.log("tag res:", res);
       const newRes = res.data.map((item) => {
         const tagNames = item.name.split(" ");
         // ['Spring', 'Boot']
@@ -163,6 +169,7 @@ const AdminCreateCoursePage = () => {
           label: capitalLabelArr.join(" "),
         };
       });
+      console.log("newRes:", newRes);
       setTagItems(newRes);
     } catch (error) {
       showMessageError(error);
@@ -209,7 +216,7 @@ const AdminCreateCoursePage = () => {
     const hasSpecialChar = itemsArrs.some((item) => regex.test(item));
     // const hasComma = itemsArrs.some((item) => item.includes(","));
     if (hasSpecialChar) {
-      toast.error("Invalid tag! Only accept: - for special character");
+      toast.error("Invalid tag! Only accept: - for case special character");
       setValue("tags", "");
       setError("tags", { message: MESSAGE_FIELD_INVALID });
       return;
@@ -229,7 +236,15 @@ const AdminCreateCoursePage = () => {
   // itemsArrs = ["PHP", "PROGRAMMING"]
   const handleChangeAchievements = (itemsArrs) => {
     // Cut the space and - if more than one
-    const strReplace = itemsArrs.map((item) => item.replace(/\s+/g, " "));
+    const strReplace = itemsArrs
+      .filter((item, index) => {
+        if (item.includes(",")) {
+          toast.error("Achievements not accept the Comma !");
+          return false;
+        }
+        return true;
+      })
+      .map((item) => item.replace(/\s+/g, " "));
     const itemsString = strReplace.join(",");
 
     setValue("achievements", itemsString);
@@ -276,157 +291,137 @@ const AdminCreateCoursePage = () => {
               className="theme-form"
               onSubmit={handleSubmit(handleSubmitForm)}
             >
+              {/* <div className="card-header">
+                <h5>Form Create Course</h5>
+                <span>Lorem ipsum dolor sit amet consectetur</span>
+              </div> */}
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-10">
-                    <LabelCom htmlFor="name" isRequired>
-                      Course Name
-                    </LabelCom>
-                    <InputCom
-                      type="text"
-                      control={control}
-                      name="name"
-                      register={register}
-                      placeholder="Input Course Name"
-                      errorMsg={errors.name?.message}
-                    ></InputCom>
-                  </div>
-                  <div className="col-sm-2 relative">
-                    <LabelCom htmlFor="image" isRequired>
-                      Image
-                    </LabelCom>
-                    {/* <InputCom
-                      type="file"
-                      control={control}
-                      name="image"
-                      register={register}
-                      placeholder="Upload image"
-                      errorMsg={errors.image?.message}
-                    ></InputCom> */}
-                    <div className="absolute w-full">
-                      <ImageCropUploadAntCom
-                        name="image"
-                        onSetValue={setValue}
-                        errorMsg={errors.image?.message}
-                      ></ImageCropUploadAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="image"
-                        register={register}
-                      ></InputCom>
-                    </div>
-                  </div>
-                  {/* <div className="col-sm-3">
-                    <LabelCom htmlFor="status">Status</LabelCom>
-                    <div>
-                      <SelectDefaultAntCom
-                        listItems={statusItems}
-                        onChange={handleChangeStatus}
-                        status={
-                          errors.status && errors.status.message && "error"
-                        }
-                        errorMsg={errors.status?.message}
-                        placeholder="Choose Status"
-                        defaultValue={0}
-                      ></SelectDefaultAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="status"
-                        register={register}
-                        defaultValue={1}
-                      ></InputCom>
-                    </div>
-                  </div> */}
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
                   <div className="col-sm-5">
-                    <LabelCom htmlFor="price" subText="($)">
-                      Price
-                    </LabelCom>
-                    <InputCom
-                      type="text"
-                      control={control}
-                      name="price"
-                      register={register}
-                      placeholder="Input Price"
-                      errorMsg={errors.price?.message}
-                      onChange={handleChangePrice}
-                      defaultValue={price}
-                      value={price}
-                    ></InputCom>
-                  </div>
-                  <div className="col-sm-5">
-                    <LabelCom htmlFor="net_price" subText="($)">
-                      Net Price
-                    </LabelCom>
-                    <InputCom
-                      type="text"
-                      control={control}
-                      name="net_price"
-                      register={register}
-                      placeholder="Input Net Price"
-                      errorMsg={errors.net_price?.message}
-                      onChange={handleChangeNetPrice}
-                      defaultValue={net_price}
-                      value={net_price}
-                    ></InputCom>
-                  </div>
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="category_id" isRequired>
-                      Choose Category
-                    </LabelCom>
-                    <div>
-                      <SelectSearchAntCom
-                        selectedValue={categorySelected}
-                        listItems={categoryItems}
-                        onChange={handleChangeCategory}
-                        className="w-full py-1"
-                        status={
-                          errors.category_id &&
-                          errors.category_id.message &&
-                          "error"
-                        }
-                        errorMsg={errors.category_id?.message}
-                        placeholder="Search categories"
-                      ></SelectSearchAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="category_id"
-                        register={register}
-                      ></InputCom>
+                    <div className="row">
+                      <div className="col-sm-12 text-center">
+                        <LabelCom htmlFor="name" isRequired>
+                          Course Name
+                        </LabelCom>
+                        <InputCom
+                          type="text"
+                          control={control}
+                          name="name"
+                          register={register}
+                          placeholder="Input course's name"
+                          errorMsg={errors.name?.message}
+                        ></InputCom>
+                      </div>
+                      {/* <div className="col-sm-3">
+                        <LabelCom htmlFor="status">Status</LabelCom>
+                        <div>
+                          <SelectDefaultAntCom
+                            listItems={statusItems}
+                            onChange={handleChangeStatus}
+                            status={
+                              errors.status && errors.status.message && "error"
+                            }
+                            errorMsg={errors.status?.message}
+                            placeholder="Choose Status"
+                            defaultValue={0}
+                          ></SelectDefaultAntCom>
+                          <InputCom
+                            type="hidden"
+                            control={control}
+                            name="status"
+                            register={register}
+                            defaultValue={1}
+                          ></InputCom>
+                        </div>
+                      </div> */}
                     </div>
-                  </div>
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="author_id">Author</LabelCom>
-                    <div>
-                      <SelectSearchAntCom
-                        selectedValue={authorSelected}
-                        listItems={authorItems}
-                        onChange={handleChangeAuthor}
-                        className="w-full py-1"
-                        status={
-                          errors.author_id &&
-                          errors.author_id.message &&
-                          "error"
-                        }
-                        errorMsg={errors.author_id?.message}
-                        placeholder="Search authors"
-                      ></SelectSearchAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="author_id"
-                        register={register}
-                      ></InputCom>
+                    <GapYCom className="mb-3"></GapYCom>
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <LabelCom htmlFor="price" subText="($)">
+                          Price
+                        </LabelCom>
+                        <InputCom
+                          type="text"
+                          control={control}
+                          name="price"
+                          register={register}
+                          placeholder="Input Price"
+                          errorMsg={errors.price?.message}
+                          onChange={handleChangePrice}
+                          defaultValue={price}
+                          value={price}
+                        ></InputCom>
+                      </div>
+                      <div className="col-sm-6">
+                        <LabelCom htmlFor="net_price" subText="($)">
+                          Net Price
+                        </LabelCom>
+                        <InputCom
+                          type="text"
+                          control={control}
+                          name="net_price"
+                          register={register}
+                          placeholder="Input Net Price"
+                          errorMsg={errors.net_price?.message}
+                          onChange={handleChangeNetPrice}
+                          defaultValue={net_price}
+                          value={net_price}
+                        ></InputCom>
+                      </div>
                     </div>
-                    {/* <div>
+                    <GapYCom className="mb-3"></GapYCom>
+                    <div className="row">
+                      <div className="col-sm-4">
+                        <LabelCom htmlFor="category_id" isRequired>
+                          Category
+                        </LabelCom>
+                        <div>
+                          <SelectSearchAntCom
+                            selectedValue={categorySelected}
+                            listItems={categoryItems}
+                            onChange={handleChangeCategory}
+                            className="w-full py-1"
+                            status={
+                              errors.category_id &&
+                              errors.category_id.message &&
+                              "error"
+                            }
+                            errorMsg={errors.category_id?.message}
+                            placeholder="Search categories"
+                          ></SelectSearchAntCom>
+                          <InputCom
+                            type="hidden"
+                            control={control}
+                            name="category_id"
+                            register={register}
+                          ></InputCom>
+                        </div>
+                      </div>
+                      <div className="col-sm-4">
+                        <LabelCom htmlFor="author_id">Author</LabelCom>
+                        <div>
+                          <SelectSearchAntCom
+                            selectedValue={authorSelected}
+                            listItems={authorItems}
+                            onChange={handleChangeAuthor}
+                            className="w-full py-1"
+                            status={
+                              errors.author_id &&
+                              errors.author_id.message &&
+                              "error"
+                            }
+                            errorMsg={errors.author_id?.message}
+                            placeholder="Search authors"
+                          ></SelectSearchAntCom>
+                          <InputCom
+                            type="hidden"
+                            control={control}
+                            name="author_id"
+                            register={register}
+                          ></InputCom>
+                        </div>
+                        {/* <div>
                       <SelectDefaultAntCom
                         listItems={authors}
                         onChange={handleChangeLevel}
@@ -439,91 +434,128 @@ const AdminCreateCoursePage = () => {
                         defaultValue={0}
                       ></InputCom>
                     </div> */}
-                  </div>
-                  <div className="col-sm-4">
-                    <LabelCom htmlFor="level">Level</LabelCom>
-                    <div>
-                      <SelectDefaultAntCom
-                        listItems={levelItems}
-                        onChange={handleChangeLevel}
-                        defaultValue={0}
-                      ></SelectDefaultAntCom>
-                      <InputCom
-                        type="hidden"
-                        control={control}
-                        name="level"
-                        register={register}
-                        defaultValue={0}
-                      ></InputCom>
+                      </div>
+                      <div className="col-sm-4">
+                        <LabelCom htmlFor="level" className="pb-[11px]">
+                          Level
+                        </LabelCom>
+                        <div>
+                          <SelectDefaultAntCom
+                            listItems={levelItems}
+                            onChange={handleChangeLevel}
+                            defaultValue={0}
+                          ></SelectDefaultAntCom>
+                          <InputCom
+                            type="hidden"
+                            control={control}
+                            name="level"
+                            register={register}
+                            defaultValue={0}
+                          ></InputCom>
+                        </div>
+                      </div>
+                    </div>
+                    <GapYCom className="mb-3"></GapYCom>
+                    <div className="row">
+                      <div className="col-sm-12">
+                        <LabelCom
+                          htmlFor="tags"
+                          isRequired
+                          subText="'enter' every tags"
+                          className="mb-1"
+                        >
+                          Tags
+                        </LabelCom>
+                        <SelectTagAntCom
+                          listItems={tagItems}
+                          selectedValue={tagsSelected}
+                          onChange={handleChangeTags}
+                          placeholder="Search or Input new Tags..."
+                          status={errors.tags && errors.tags.message && "error"}
+                          errorMsg={errors.tags?.message}
+                        ></SelectTagAntCom>
+                        <InputCom
+                          type="hidden"
+                          control={control}
+                          name="tags"
+                          register={register}
+                        ></InputCom>
+                      </div>
+                      <GapYCom className="mb-3"></GapYCom>
+                      <div className="col-sm-12">
+                        <LabelCom
+                          htmlFor="achievements"
+                          subText="'enter' every achievement"
+                          className="mb-1"
+                        >
+                          Achievement
+                        </LabelCom>
+                        <SelectTagAntCom
+                          listItems={[]}
+                          selectedValue={achievementSelected}
+                          onChange={handleChangeAchievements}
+                          placeholder="Input the achievement..."
+                          status={
+                            errors.achievements &&
+                            errors.achievements.message &&
+                            "error"
+                          }
+                          errorMsg={errors.achievements?.message}
+                        ></SelectTagAntCom>
+                        <InputCom
+                          type="hidden"
+                          control={control}
+                          name="achievements"
+                          register={register}
+                        ></InputCom>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
-                  <div className="col-sm-6">
-                    <LabelCom
-                      htmlFor="tags"
-                      isRequired
-                      subText="'enter' every tags"
-                      className="mb-1"
-                    >
-                      Tags
-                    </LabelCom>
-                    <SelectTagAntCom
-                      listItems={tagItems}
-                      selectedValue={tagsSelected}
-                      onChange={handleChangeTags}
-                      placeholder="Search or Input new Tags..."
-                      status={errors.tags && errors.tags.message && "error"}
-                      errorMsg={errors.tags?.message}
-                    ></SelectTagAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="tags"
-                      register={register}
-                    ></InputCom>
-                  </div>
-                  <div className="col-sm-6">
-                    <LabelCom
-                      htmlFor="achievements"
-                      subText="'enter' every achievement"
-                      className="mb-1"
-                    >
-                      Achievement
-                    </LabelCom>
-                    <SelectTagAntCom
-                      listItems={[]}
-                      selectedValue={achievementSelected}
-                      onChange={handleChangeAchievements}
-                      placeholder="Input the achievement..."
-                      status={
-                        errors.achievements &&
-                        errors.achievements.message &&
-                        "error"
-                      }
-                      errorMsg={errors.achievements?.message}
-                    ></SelectTagAntCom>
-                    <InputCom
-                      type="hidden"
-                      control={control}
-                      name="achievements"
-                      register={register}
-                    ></InputCom>
-                  </div>
-                </div>
-                <GapYCom className="mb-3"></GapYCom>
-                <div className="row">
-                  <div className="col-sm-12">
-                    <LabelCom htmlFor="description">Description</LabelCom>
-                    <TextEditorQuillCom
-                      value={description}
-                      onChange={(description) => {
-                        setValue("description", description);
-                        setDescription(description);
-                      }}
-                      placeholder="Describe your course ..."
-                    ></TextEditorQuillCom>
+                  <div className="col-sm-7">
+                    <div className="row">
+                      <div className="col-sm-12 text-center">
+                        <LabelCom htmlFor="image" isRequired>
+                          Image
+                        </LabelCom>
+                        {/* <InputCom
+                          type="file"
+                          control={control}
+                          name="image"
+                          register={register}
+                          placeholder="Upload image"
+                          errorMsg={errors.image?.message}
+                        ></InputCom> */}
+                        <div className="w-full">
+                          <ImageCropUploadAntCom
+                            name="image"
+                            onSetValue={setValue}
+                            errorMsg={errors.image?.message}
+                            isWidthFull
+                          ></ImageCropUploadAntCom>
+                          <InputCom
+                            type="hidden"
+                            control={control}
+                            name="image"
+                            register={register}
+                          ></InputCom>
+                        </div>
+                      </div>
+                    </div>
+                    <GapYCom className="mb-3"></GapYCom>
+                    <div className="row">
+                      <div className="col-sm-12 text-center">
+                        <LabelCom htmlFor="description">Description</LabelCom>
+                        <TextEditorQuillCom
+                          value={description}
+                          onChange={(description) => {
+                            setValue("description", description);
+                            setDescription(description);
+                          }}
+                          placeholder="Describe your course ..."
+                          className="h-[215px]"
+                        ></TextEditorQuillCom>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

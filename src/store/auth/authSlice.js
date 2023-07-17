@@ -11,6 +11,9 @@ const initialState = {
   isResetPasswordSuccess: false,
   isUserChangePasswordSuccess: false,
   errorMessage: null,
+  roles: [],
+  permissions: [],
+  lastUrlAccess: null,
 };
 const authSlice = createSlice({
   name: "auth",
@@ -23,21 +26,22 @@ const authSlice = createSlice({
       ...state,
       isLoading: action.payload,
     }),
-    onLoginSuccess: (state, action) => ({
-      ...state,
-      isLoginSuccess: action.payload,
-    }),
     onLogin: (state, action) => ({
       ...state,
       ...action.payload,
     }),
+    onLoginSuccess: (state, action) => ({
+      ...state,
+      isLoginSuccess: action.payload,
+    }),
     onRegister: (state, action) => ({
       ...state,
-      ...action.payload,
+      isLoading: true,
     }),
     onRegisterSuccess: (state, action) => ({
       ...state,
-      ...action.payload,
+      isRegisterSuccess: action.payload,
+      isLoading: false,
     }),
     onUpdateUserToken: (state, action) => ({
       ...state,
@@ -98,6 +102,32 @@ const authSlice = createSlice({
       ...state,
       isLoading: true,
     }),
+    onUserUpdateNoti: (state, action) => state,
+    onLoadRole: (state, action) => state,
+    onLoadRoleSuccess: (state, action) => ({
+      ...state,
+      roles: action.payload,
+    }),
+    onLoadPermission: (state, action) => state,
+    onLoadPermissionSuccess: (state, action) => ({
+      ...state,
+      permissions: action.payload,
+    }),
+    onUpdatePermission: (state, action) => state,
+    onUpdatePermissionSuccess: (state, action) => state,
+
+    onLoadCurrentUser: (state, action) => ({
+      ...state,
+      user: action.payload,
+    }),
+    onGetLastUrlAccess: (state, action) => ({
+      ...state,
+      lastUrlAccess: null,
+    }),
+    onGetLastUrlAccessSuccess: (state, action) => ({
+      ...state,
+      lastUrlAccess: action.payload,
+    }),
   },
 });
 
@@ -121,6 +151,15 @@ export const {
   onUserChangePassword,
   onUserChangePasswordSuccess,
   onUserUpdateProfile,
+  onUserUpdateNoti,
+  onLoadRole,
+  onLoadRoleSuccess,
+  onLoadPermission,
+  onLoadPermissionSuccess,
+  onUpdatePermission,
+  onLoadCurrentUser,
+  onGetLastUrlAccess,
+  onGetLastUrlAccessSuccess,
 } = authSlice.actions;
-// authReducer
+// reducer
 export default authSlice.reducer;

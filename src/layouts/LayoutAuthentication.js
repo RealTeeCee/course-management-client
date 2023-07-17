@@ -1,20 +1,23 @@
-import React, { useEffect } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import { withErrorBoundary } from "react-error-boundary";
-import ErrorCom from "../components/common/ErrorCom";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { MESSAGE_UNAUTHORIZE } from "../constants/config";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import ErrorCom from "../components/common/ErrorCom";
 
 const LayoutAuthentication = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, lastUrlAccess } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   useEffect(() => {
     if (user) {
-      navigate("/");
+      if (lastUrlAccess) {
+        navigate(lastUrlAccess);
+      } else {
+        navigate("/");
+      }
     }
-  }, [navigate, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, lastUrlAccess]);
   if (user) return <></>;
 
   return (
@@ -28,7 +31,7 @@ const LayoutAuthentication = () => {
                 <Link to="/">
                   <img
                     className="img-fluid for-light w-[300px] object-cover mx-auto"
-                    srcSet="/logo_click_light.png"
+                    srcSet="/logo_click_light.png" 
                     alt="Click and Learn Logo"
                   />
                 </Link>

@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { call, put } from "redux-saga/effects";
+import { call, delay, put } from "redux-saga/effects";
 import {
   MESSAGE_CHANGE_PASSWORD_SUCCESS,
   MESSAGE_FORGET_PASSWORD_SUCCESS,
@@ -10,19 +10,27 @@ import { showMessageError } from "../../utils/helper";
 import {
   requestForgetPassword,
   requestGetUser,
+  requestLoadPermissions,
+  requestLoadRoles,
   requestLogin,
   requestRefreshToken,
   requestRegister,
   requestResetPassword,
+  requestUpdatePermissions,
   requestUserChangePassword,
+  requestUserUpdateNoti,
   requestUserUpdateProfile,
 } from "./authRequests";
 import {
+  onLoadPermissionSuccess,
+  onLoadRoleSuccess,
   onLoading,
   onLoginSuccess,
+  onRegisterSuccess,
   onResetPasswordSuccess,
   onUpdateUserToken,
   onUserChangePasswordSuccess,
+  onGetLastUrlAccessSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -30,6 +38,7 @@ function* handleOnRegister(action) {
     const res = yield call(requestRegister, action.payload);
     if (res.data.type === "success") {
       toast.success(res.data.message);
+      yield put(onRegisterSuccess(true));
     } else if (res.data.type === "warning") {
       toast.warning(res.data.message);
     } else {
@@ -37,6 +46,7 @@ function* handleOnRegister(action) {
     }
   } catch (error) {
     showMessageError(error);
+    yield put(onLoading(false));
   }
 }
 
@@ -44,12 +54,13 @@ function* handleOnLogin(action) {
   try {
     yield put(onLoading(true));
     const res = yield call(requestLogin, action.payload);
+
     if (res.data.type === "success") {
-      yield put(onLoginSuccess(true));
       if (res.data.access_token && res.data.refresh_token) {
         setToken(res.data.access_token, res.data.refresh_token);
         yield call(handleOnGetUser, { payload: res.data.access_token });
       }
+      yield put(onLoginSuccess(true));
       toast.success(res.data.message);
     } else {
       toast.error(res.data.message);
@@ -64,7 +75,7 @@ function* handleOnLogin(action) {
 function* handleOnGetUser({ payload: access_token }) {
   try {
     const res = yield call(requestGetUser, access_token);
-    if (res.data.type === "success") {
+    if (res.status === 200) {
       yield put(
         onUpdateUserToken({
           user: res.data,
@@ -157,8 +168,10 @@ function* handleOnUserChangePassword({ payload }) {
 function* handleOnUserUpdateProfile({ payload }) {
   try {
     const res = yield call(requestUserUpdateProfile, payload);
+    console.log("res handle: ", res);
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
+      console.log("res.data handle: ", res.data);
       toast.success(res.data.message);
     } else {
       toast.error(MESSAGE_GENERAL_FAILED);
@@ -168,6 +181,56 @@ function* handleOnUserUpdateProfile({ payload }) {
   } finally {
     yield put(onLoading(false));
   }
+}
+
+function* handleOnUserUpdateNoti({ payload }) {
+  try {
+    const res = yield call(requestUserUpdateNoti, payload);
+
+    if (res.status === 200) {
+      yield call(handleOnGetUser, { payload: payload.access_token });
+
+      toast.success(res.data.message);
+    } else {
+      toast.error(MESSAGE_GENERAL_FAILED);
+    }
+  } catch (error) {
+    showMessageError(error);
+  }
+}
+function* handleOnLoadRoles() {
+  try {
+    const res = yield call(requestLoadRoles);
+
+    if (res.status === 200) {
+      yield put(onLoadRoleSuccess(res.data));
+    } else {
+    }
+  } catch (error) {}
+}
+function* handleOnLoadPermissions() {
+  try {
+    const res = yield call(requestLoadPermissions);
+
+    if (res.status === 200) {
+      yield put(onLoadPermissionSuccess(res.data));
+    } else {
+    }
+  } catch (error) {}
+}
+function* handleOnUpdatePermissions({ payload }) {
+  try {
+    const res = yield call(requestUpdatePermissions, payload);
+
+    if (res.status === 200) {
+      toast.success(res.data.message);
+    } else {
+    }
+  } catch (error) {}
+}
+
+function* handleOnGetLastUrlAccess({ payload }) {
+  yield put(onGetLastUrlAccessSuccess(payload));
 }
 
 export {
@@ -180,4 +243,9 @@ export {
   handleOnResetPassword,
   handleOnUserChangePassword,
   handleOnUserUpdateProfile,
+  handleOnUserUpdateNoti,
+  handleOnLoadRoles,
+  handleOnLoadPermissions,
+  handleOnUpdatePermissions,
+  handleOnGetLastUrlAccess,
 };
