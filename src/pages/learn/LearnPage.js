@@ -385,7 +385,7 @@ const LearnPage = () => {
             borderRadius: "10px",
           }}
         >
-          <CommentCom />
+          <CommentCom type="COURSE" />
         </Paper>
       ),
     },
