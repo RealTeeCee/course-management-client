@@ -18,13 +18,13 @@ COPY ./.env.dist ./.env
 RUN npm run build
 
 # Production-ready image
-FROM nginx:1.21.1-alpine
+FROM nginx:1.25.1-alpine
 
 # Copy the built React app from the build stage to the NGINX web server
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Expose port 443
+EXPOSE 443
 
 # Start the NGINX server
 CMD ["nginx", "-g", "daemon off;"]
