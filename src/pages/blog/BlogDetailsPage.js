@@ -5,14 +5,14 @@ import { FaEye } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { axiosBearer } from "../../api/axiosInstance";
+import axiosInstance, { axiosBearer } from "../../api/axiosInstance";
 import { SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { CommentCom } from "../../components/comment";
 import GapYCom from "../../components/common/GapYCom";
-import { HeadingH1Com } from "../../components/heading";
 import { ImageCom } from "../../components/image";
 import { NOT_FOUND_URL } from "../../constants/config";
+import { API_BLOG_URL } from "../../constants/endpoint";
 import { onSaveBlogId } from "../../store/admin/blog/blogSlice";
 import { getBlogViewCount, setBlogViewCount } from "../../utils/authBlog";
 
@@ -20,55 +20,56 @@ const BlogDetailsPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
-  console.log("blog:", blog);
   const { user } = useSelector((state) => state.auth);
   const [viewCount, setViewCount] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await updateViewCount(); // Call updateViewCount to update new view_count
-        const response = await axiosBearer.get(`/blog/${slug}`);
+  const fetchData = async () => {
+    try {
+      await updateViewCount(); // Call updateViewCount to update new view_count
+      const response = await axiosInstance.get(`${API_BLOG_URL}/${slug}`);
 
-        if (response.data.user_id !== user?.id && response.data.status !== 1) {
-          navigate(NOT_FOUND_URL);
-        }
-
-        setBlog({
-          id: response.data.id,
-          name: response.data.name,
-          description: response.data.description,
-          image: response.data.image,
-          view_count: response.data.view_count,
-          status: response.data.status,
-          slug: response.data.slug,
-          user_id: response.data.user_id,
-          created_at: response.data.created_at
-            ? moment(response.data.created_at).format("DD/MM/YYYY")
-            : "", // Format the date
-        });
-      } catch (error) {
-        if (error?.response?.status === 404) {
-          toast.error(error.response?.data?.message);
-          navigate(NOT_FOUND_URL);
-        }
-        console.log(error);
+      if (response.data.user_id !== user?.id && response.data.status !== 1) {
+        navigate(NOT_FOUND_URL);
       }
-    };
 
+      setBlog({
+        id: response.data.id,
+        name: response.data.name,
+        description: response.data.description,
+        image: response.data.image,
+        view_count: response.data.view_count,
+        status: response.data.status,
+        slug: response.data.slug,
+        user_id: response.data.user_id,
+        created_at: response.data.created_at
+          ? moment(response.data.created_at).format("DD/MM/YYYY")
+          : "", // Format the date
+      });
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        toast.error(error.response?.data?.message);
+        navigate(NOT_FOUND_URL);
+      }
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   useEffect(() => {
     if (blog) dispatch(onSaveBlogId(blog.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blog]);
 
   const updateViewCount = async () => {
     try {
       const cookieViewCount = getBlogViewCount(slug);
       if (cookieViewCount === 0) {
-        await axiosBearer.put(`/blog/view-count/${slug}`, {
+        await axiosBearer.put(`${API_BLOG_URL}/view-count/${slug}`, {
           view_count: viewCount + 1,
         });
         setViewCount((prevCount) => prevCount + 1);
@@ -82,7 +83,9 @@ const BlogDetailsPage = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <HeadingH1Com>Blog detail</HeadingH1Com>
+        <h2 className="text-3xl font-semibold font-tw-third text-tw-primary">
+          Blog detail
+        </h2>
         <BreadcrumbCom
           items={[
             {
@@ -132,7 +135,6 @@ const BlogDetailsPage = () => {
 
               <h1 className="text-3xl font-medium">{blog.name}</h1>
               <h3 className="my-5 text-lg capitalize leading-7">
-                {/* {ReactHtmlParser(blog.description)} */}
                 <div
                   dangerouslySetInnerHTML={{ __html: blog.description }}
                 ></div>
