@@ -63,7 +63,7 @@
   "scripts": {
     "start": "craco start",
     "dev": "craco start",
-    "build": "react-scripts build && react-inject-env set",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "craco eject"
   },
