@@ -16,10 +16,6 @@ export const objCookies = {
 
 export const setToken = (access_token, refresh_token) => {
   if (access_token && refresh_token) {
-    console.log(
-      "DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-      COOKIE_ACCESS_TOKEN_KEY
-    );
     Cookies.set(COOKIE_ACCESS_TOKEN_KEY, access_token, {
       ...objCookies,
     });

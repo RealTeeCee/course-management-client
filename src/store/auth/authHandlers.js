@@ -57,10 +57,6 @@ function* handleOnLogin(action) {
 
     if (res.data.type === "success") {
       if (res.data.access_token && res.data.refresh_token) {
-        console.log(
-          "DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-          res.data.access_token
-        );
         setToken(res.data.access_token, res.data.refresh_token);
         yield call(handleOnGetUser, { payload: res.data.access_token });
       }
