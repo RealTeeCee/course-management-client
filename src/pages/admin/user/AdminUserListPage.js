@@ -517,7 +517,7 @@ const AdminUserListPage = () => {
           last_name,
           email,
           imageUrl,
-          password,
+          password: newPassword,
         })
       );
     }
