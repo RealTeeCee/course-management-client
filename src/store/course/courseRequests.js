@@ -93,7 +93,7 @@ export const requestLoadAccomplishmentsExam = (data) => {
 export const requestLoadCertificate = (data) => {
   return axiosBearer.post(`/exam-result/certificate`, data, {
     headers: {
-      "Access-Control-Allow-Origin": `http://localhost:3000`,
+      // "Access-Control-Allow-Origin": `http://localhost:3000`,
     },
     responseType: "blob",
   });
