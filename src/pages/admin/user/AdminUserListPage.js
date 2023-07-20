@@ -485,15 +485,7 @@ const AdminUserListPage = () => {
   };
 
   const handleSubmitForm = (values) => {
-    const {
-      id,
-      first_name,
-      last_name,
-      email,
-      imageUrl,
-      password,
-      newPassword,
-    } = values;
+    const { id, first_name, last_name, email, imageUrl, newPassword } = values;
     if (values.newPassword) {
       Swal.fire({
         title: "Are you sure?",
@@ -790,7 +782,7 @@ const AdminUserListPage = () => {
                   <div className="col-sm-12">
                     <LabelCom htmlFor="newPassword">New password</LabelCom>
                     <InputCom
-                      type="newPassword"
+                      type="password"
                       control={control}
                       name="newPassword"
                       register={register}
