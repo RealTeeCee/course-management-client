@@ -123,6 +123,19 @@ const RankingAuthorsCardMuiCom = ({ top3, rank }) => {
           <Typography variant="body2" sx={{ color: "whitesmoke" }}>
             {top3.title !== null ? top3.title : "None Title"}
           </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "whitesmoke",
+              textShadow: "1px 1px 2px rgba(0, 0, 0, 0.6)",
+            }}
+          >
+            Total{" "}
+            <strong style={{ color: "red" }}>
+              {top3.enrollmentCount !== 0 ? top3.enrollmentCount : ""}
+            </strong>{" "}
+            Enrollments
+          </Typography>
         </CardContent>
         {/* Add a badge element based on the ranking of the author */}
 
