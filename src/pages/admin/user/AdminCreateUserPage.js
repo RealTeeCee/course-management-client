@@ -1,10 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { ImageCropUploadAntCom } from "../../../components/ant";
+import {
+  ImageCropUploadAntCom,
+  SelectDefaultAntCom,
+} from "../../../components/ant";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
 import DividerCom from "../../../components/common/DividerCom";
@@ -19,6 +22,7 @@ import {
   MESSAGE_FIELD_REQUIRED,
   MESSAGE_REGEX_NAME,
 } from "../../../constants/config";
+import { ALL_ROLES } from "../../../constants/permissions";
 import { regexName } from "../../../constants/regex";
 import { onCreateUser } from "../../../store/admin/user/userSlice";
 
@@ -65,13 +69,14 @@ const AdminCreateUserPage = () => {
   const navigate = useNavigate();
   const { isPostUserSuccess, isLoading } = useSelector((state) => state.user);
 
+  const [role, setRole] = useState("USER");
+
   useEffect(() => {
     if (isPostUserSuccess) navigate("/admin/users");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostUserSuccess]);
 
   const handleSubmitForm = (values) => {
-    console.log(values);
     dispatch(
       onCreateUser({
         ...values,
@@ -79,6 +84,10 @@ const AdminCreateUserPage = () => {
     );
   };
 
+  const handleChangeRole = (value) => {
+    setValue("role", value);
+    setRole(value);
+  };
   return (
     <>
       <div className="flex justify-between items-center">
@@ -147,6 +156,7 @@ const AdminCreateUserPage = () => {
                     register={register}
                     placeholder="Input email"
                     errorMsg={errors.email?.message}
+                    autoComplete="off"
                   ></InputCom>
                 </div>
               </div>
@@ -163,7 +173,33 @@ const AdminCreateUserPage = () => {
                     register={register}
                     placeholder="Input password"
                     errorMsg={errors.password?.message}
+                    autoComplete="off"
                   ></InputCom>
+                </div>
+              </div>
+              <GapYCom className="mb-3"></GapYCom>
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="role" isRequired>
+                    Role
+                  </LabelCom>
+                  <div>
+                    <SelectDefaultAntCom
+                      selectedValue={role}
+                      listItems={ALL_ROLES.filter((r) => r.value !== "ADMIN")}
+                      defaultValue={ALL_ROLES[3].value}
+                      onChange={handleChangeRole}
+                      className="w-full py-1"
+                      status={
+                        errors.category_id &&
+                        errors.category_id.message &&
+                        "error"
+                      }
+                      errorMsg={errors.role?.message}
+                      placeholder="Choose a role"
+                      autoComplete="off"
+                    ></SelectDefaultAntCom>
+                  </div>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>

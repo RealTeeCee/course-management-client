@@ -73,11 +73,17 @@ const RegisterPage = () => {
   const { value: acceptTerm, handleToggleBoolean: handleToggleTerm } =
     useClickToggleBoolean();
 
+  const {
+    value: isRegisterEmployee,
+    handleToggleBoolean: handleToggleRegisterEmployee,
+  } = useClickToggleBoolean();
+
   const handleRegister = (values) => {
     if (!acceptTerm) {
       toast.warning(MESSAGE_POLICY_REQUIRED);
       return;
     }
+    if (isRegisterEmployee) values = { ...values, status: 0, role: "EMPLOYEE" };
     dispatch(onRegister(values));
   };
 
@@ -148,7 +154,18 @@ const RegisterPage = () => {
           ></InputCom>
         </FormGroupCom>
         <FormGroupCom>
-          {/* If acceptTerm = true will checked */}
+          <CheckBoxCom
+            name="register_employee"
+            checked={isRegisterEmployee}
+            onClick={handleToggleRegisterEmployee}
+          >
+            Register as a employee
+            <span className="ms-2 text-tw-primary hover:opacity-60 tw-transition-all">
+              Employee
+            </span>
+          </CheckBoxCom>
+        </FormGroupCom>
+        <FormGroupCom>
           <CheckBoxCom
             name="term"
             checked={acceptTerm}
