@@ -1,3 +1,5 @@
+import { BASE_DOMAIN_URL } from "../../constants/config";
+
 const {
   default: axiosInstance,
   axiosBearer,
@@ -12,7 +14,7 @@ export const requestLoadOrderHistoryRefund = (data) => {
 export const requestLoadInvoice = (data) => {
   return axiosBearer.post(`/orders/invoice`, data, {
     headers: {
-      // "Access-Control-Allow-Origin": `http://localhost:3000`,
+      "Access-Control-Allow-Origin": BASE_DOMAIN_URL,
     },
     responseType: "blob",
   });
