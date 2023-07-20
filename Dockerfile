@@ -23,6 +23,9 @@ FROM nginx:1.25.1-alpine
 # Copy the built React app from the build stage to the NGINX web server
 COPY --from=build /app/build /usr/share/nginx/html
 
+# Copy the NGINX configuration
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose port 80
 EXPOSE 80
 
