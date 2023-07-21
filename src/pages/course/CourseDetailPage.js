@@ -188,7 +188,6 @@ const CourseDetailPage = () => {
           course_id: courseBySlug?.id,
         });
         if (res?.data?.type === "success") {
-          // Delay nhìn cho nó ngầu xD
           setTimeout(() => {
             toast.success(res?.data?.message);
             setIsLoading(false);

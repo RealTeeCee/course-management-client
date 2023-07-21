@@ -27,7 +27,11 @@ import {
 } from "../../constants/permissions";
 import useShowMore from "../../hooks/useShowMore";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
-import { onGetUsers } from "../../store/admin/user/userSlice";
+import {
+  onGetAllUsers,
+  onGetAllUsersSuccess,
+  onGetUsers,
+} from "../../store/admin/user/userSlice";
 import { selectAllDashboardState } from "../../store/dashboard/dashboardSelector";
 import { onLoadDashboard } from "../../store/dashboard/dashboardSlice";
 import {
@@ -75,7 +79,7 @@ const AdminDashboardPage = () => {
 
   const { dashboard } = useSelector(selectAllDashboardState);
   const {
-    users,
+    usersAllRole,
     isPostUserSuccess,
     isLoading: isUserLoading,
   } = useSelector((state) => state.user);
@@ -85,8 +89,15 @@ const AdminDashboardPage = () => {
     isLoading: isCourseLoading,
     isUpdateCourseSuccess,
   } = useSelector((state) => state.adminCourse);
+
+  const {
+    blogs,
+    isLoading: isBlogLoading,
+    isUpdateBlogSuccess,
+  } = useSelector((state) => state.adminBlog);
   const [sortUsers, setSortUsers] = useState([]);
   const [sortCourses, setSortCourses] = useState([]);
+  const [sortBlogs, setSortBlogs] = useState([]);
 
   const handleChangeSortUser = (value) => {
     setOrderUser(value);
@@ -102,6 +113,11 @@ const AdminDashboardPage = () => {
 
   useEffect(() => {
     dispatch(onGetUsers());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostUserSuccess]);
+
+  useEffect(() => {
+    dispatch(onGetAllUsers());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostUserSuccess]);
 
@@ -124,8 +140,11 @@ const AdminDashboardPage = () => {
   // Handle Sort Users
   useEffect(() => {
     // After fetching, sort users by status
-    if (users) {
-      const filterUsers = [...users].sort((a, b) => {
+    if (usersAllRole) {
+      const filteredUsers = usersAllRole.filter(
+        (item) => item.role === "EMPLOYEE"
+      );
+      const sortUsers = [...filteredUsers].sort((a, b) => {
         const compareStatus = Number(a.status) - Number(b.status);
         if (compareStatus !== 0) return compareStatus;
 
@@ -133,9 +152,9 @@ const AdminDashboardPage = () => {
           ? new Date(a.created_at) - new Date(b.created_at)
           : new Date(b.created_at) - new Date(a.created_at);
       });
-      setSortUsers(filterUsers);
+      setSortUsers(sortUsers);
     }
-  }, [users, orderUser]);
+  }, [usersAllRole, orderUser]);
 
   // Sort Course
   useEffect(() => {
@@ -158,12 +177,35 @@ const AdminDashboardPage = () => {
     }
   }, [courses, orderCourse]);
 
+  // Sort Blog
+  useEffect(() => {
+    // After fetching, sort users by status
+    if (blogs) {
+      const sortBlogs = [...blogs].sort((a, b) => {
+        const compareStatus = Number(a.status) - Number(b.status);
+        if (compareStatus !== 0) return compareStatus;
+
+        return orderUser === "ASC"
+          ? new Date(a.created_at) - new Date(b.created_at)
+          : new Date(b.created_at) - new Date(a.created_at);
+      });
+      setSortBlogs(sortBlogs);
+    }
+  }, [blogs, orderBlog]);
+
   const { showItems, isRemain, handleShowMore } = useShowMore(sortUsers);
   const {
     showItems: showCourseItems,
     isRemain: isCourseRemain,
     handleShowMore: handleShowMoreCourse,
   } = useShowMore(sortCourses);
+
+  const {
+    showItems: showBlogItems,
+    isRemain: isBlogRemain,
+    handleShowMore: handleShowMoreBlog,
+  } = useShowMore(sortBlogs);
+  console.log("showBlogItems:", showBlogItems);
 
   return (
     <>
@@ -309,13 +351,15 @@ const AdminDashboardPage = () => {
                           <table className="table table-bordernone">
                             <tbody>
                               {showItems?.length > 0 &&
-                                showItems.map((item) => (
-                                  <RowUserItem
-                                    key={item?.id}
-                                    item={item}
-                                    users={users}
-                                  />
-                                ))}
+                                showItems.map((item) => {
+                                  return (
+                                    <RowUserItem
+                                      key={item?.id}
+                                      item={item}
+                                      users={usersAllRole}
+                                    />
+                                  );
+                                })}
                             </tbody>
                           </table>
                           {isRemain && (

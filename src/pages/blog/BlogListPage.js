@@ -197,7 +197,7 @@ const BlogListPage = () => {
       name: "Action",
       cell: (row) => (
         <>
-          {row.status !== 1 && (
+          {row.status === 2 && (
             <ButtonCom
               className="px-3 rounded-lg mr-2"
               backgroundColor="info"
@@ -208,14 +208,16 @@ const BlogListPage = () => {
               <IconEditCom className="w-5"></IconEditCom>
             </ButtonCom>
           )}
-          <ButtonCom
-            className="px-3 rounded-lg mr-2"
-            onClick={() => {
-              window.open(`/blogs/${row.slug}`);
-            }}
-          >
-            <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom>
+          {row.status !== 0 && (
+            <ButtonCom
+              className="px-3 rounded-lg mr-2"
+              onClick={() => {
+                window.open(`/blogs/${row.slug}`);
+              }}
+            >
+              <IconEyeCom className="w-5"></IconEyeCom>
+            </ButtonCom>
+          )}
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"

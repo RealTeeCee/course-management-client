@@ -31,6 +31,7 @@ import {
 import { getToken } from "./utils/auth.js";
 import { BASE_API_URL } from "./constants/config.js";
 import { selectUser } from "./store/auth/authSelector.js";
+import { onGetBlogs } from "./store/admin/blog/blogSlice.js";
 
 const AuthorPage = lazy(() => import("./pages/author/AuthorPage.js"));
 const AuthorDetailsPage = lazy(() =>
@@ -212,6 +213,7 @@ function App() {
     dispatch(onAuthorInitialState());
     dispatch(onGetAuthors());
     dispatch(onCourseLoading());
+    dispatch(onGetBlogs());
   }, [dispatch]);
 
   // useEffect(() => {

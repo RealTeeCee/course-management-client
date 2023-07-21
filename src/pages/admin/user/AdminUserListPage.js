@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
@@ -7,11 +8,9 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { v4 } from "uuid";
 import * as yup from "yup";
-import { axiosBearer } from "../../../api/axiosInstance";
 import {
   ImageCropUploadAntCom,
   SelectSearchAntCom,
-  SwitchAntCom,
 } from "../../../components/ant";
 import { BreadcrumbCom } from "../../../components/breadcrumb";
 import { ButtonCom } from "../../../components/button";
@@ -27,6 +26,7 @@ import {
 } from "../../../components/icon";
 import { InputCom } from "../../../components/input";
 import { LabelCom } from "../../../components/label";
+import { MultipleSelectMuiCom } from "../../../components/mui";
 import { TableCom } from "../../../components/table";
 import {
   AVATAR_DEFAULT,
@@ -36,9 +36,7 @@ import {
   MESSAGE_NO_ITEM_SELECTED,
   MESSAGE_READONLY,
   MESSAGE_REGEX_NAME,
-  MESSAGE_UPDATE_STATUS_SUCCESS,
 } from "../../../constants/config";
-import { ALL_ROLES } from "../../../constants/permissions";
 import { regexName } from "../../../constants/regex";
 import {
   onBulkDeleteUser,
@@ -46,15 +44,13 @@ import {
   onGetAllUsers,
   onUpdateUser,
 } from "../../../store/admin/user/userSlice";
-import { getUserNameByEmail, showMessageError } from "../../../utils/helper";
-import { MultipleSelectMuiCom } from "../../../components/mui";
+import { selectRolesAndPermissions } from "../../../store/auth/authSelector";
 import {
   onLoadPermission,
   onLoadRole,
   onUpdatePermission,
 } from "../../../store/auth/authSlice";
-import { selectRolesAndPermissions } from "../../../store/auth/authSelector";
-import { Button } from "@mui/material";
+import { getUserNameByEmail, showMessageError } from "../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   first_name: yup
@@ -96,7 +92,7 @@ const schemaValidationPermission = yup.object().shape({
 
 const AdminUserListPage = () => {
   const dispatch = useDispatch();
-  const { users, isPostUserSuccess, isBulkDeleteSuccess } = useSelector(
+  const { usersAllRole, isPostUserSuccess, isBulkDeleteSuccess } = useSelector(
     (state) => state.user
   );
 
@@ -239,6 +235,7 @@ const AdminUserListPage = () => {
       name: "Role",
       selector: (row) => row.role,
       width: "150px",
+      sortable: true,
     },
     {
       name: "Status",
@@ -345,7 +342,7 @@ const AdminUserListPage = () => {
 
   /********* Search ********* */
   useEffect(() => {
-    const result = users.filter((item) => {
+    const result = usersAllRole.filter((item) => {
       if (user?.role === item.role) {
         return false;
       }
@@ -375,7 +372,7 @@ const AdminUserListPage = () => {
 
     setFilterUser(result);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [users, search]);
+  }, [usersAllRole, search]);
 
   useEffect(() => {
     if (isBulkDeleteSuccess) clearSelectedRows();
@@ -422,9 +419,8 @@ const AdminUserListPage = () => {
   };
   /********* Update Status API ********* */
   const handleChangeStatus = async (userId) => {
-    const { id, email, first_name, last_name, imageUrl, status } = users.find(
-      (user) => user.id === userId
-    );
+    const { id, email, first_name, last_name, imageUrl, status } =
+      usersAllRole.find((user) => user.id === userId);
     const formData = {
       id,
       first_name,
@@ -457,7 +453,7 @@ const AdminUserListPage = () => {
   /********* Update User ********* */
   const getUserById = (userId, action = "n/a") => {
     setIsFetching(true);
-    const user = users.find((item) => item.id === userId);
+    const user = usersAllRole.find((item) => item.id === userId);
     switch (action) {
       case "fetch":
         typeof user !== "undefined" ? reset(user) : showMessageError("No data");

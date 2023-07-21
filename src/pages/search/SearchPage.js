@@ -23,12 +23,12 @@ import { formatNumber, sliceText } from "../../utils/helper";
 const SearchPage = () => {
   const { data: courses } = useSelector((state) => state.course);
   const { authors } = useSelector((state) => state.author);
+  const { blogs } = useSelector((state) => state.adminBlog);
 
-  // Đợi store blog để làm tiếp search
   const typesMap = {
     COURSE: courses,
     AUTHOR: authors,
-    // BLOG: blogs,
+    BLOG: blogs,
   };
 
   const params = new URLSearchParams(window.location.search);
@@ -263,7 +263,7 @@ const SearchPage = () => {
                           ? courses
                           : item.type === "AUTHOR"
                           ? authors
-                          : null
+                          : blogs
                       }
                     />
                   );

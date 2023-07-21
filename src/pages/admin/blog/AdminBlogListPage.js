@@ -73,7 +73,6 @@ const AdminBlogListPage = () => {
     isPostBlogSuccess,
     isBulkDeleteSuccess,
   } = useSelector((state) => state.adminBlog);
-  console.log("adminBlogs:", blogs);
   /********* State ********* */
   //API State
   const [image, setImage] = useState([]);
