@@ -399,7 +399,9 @@ const AdminCreateCoursePage = () => {
                         </div>
                       </div>
                       <div className="col-sm-4">
-                        <LabelCom htmlFor="author_id">Author</LabelCom>
+                        <LabelCom htmlFor="author_id" isRequired>
+                          Author
+                        </LabelCom>
                         <div>
                           <SelectSearchAntCom
                             selectedValue={authorSelected}

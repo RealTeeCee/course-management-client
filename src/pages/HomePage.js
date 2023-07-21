@@ -94,7 +94,11 @@ const HomePage = () => {
                       {sliceText(c.name, 50)}
                     </h2>
                     {c.price === 0 ? (
-                      "Free"
+                      <p className="mb-[.75rem] text-xl">
+                        <span className="text-tw-light-pink font-bold">
+                          Free Course
+                        </span>
+                      </p>
                     ) : c.net_price > 0 ? (
                       <p className="mb-[.75rem] text-xl">
                         Only{" "}
@@ -114,14 +118,19 @@ const HomePage = () => {
                       {c.tags
                         .split(",")
                         .slice(0, 3)
-                        .map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-4 py-2 border border-white rounded-md"
-                          >
-                            {tag.toUpperCase()}
-                          </span>
-                        ))}
+                        .map((tag) => {
+                          if (tag !== "") {
+                            return (
+                              <span
+                                key={tag}
+                                className="px-4 py-2 border border-white rounded-md"
+                              >
+                                {tag.toUpperCase()}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })}
                     </div>
                     <ButtonCom
                       className="font-tw-secondary font-semibold"

@@ -24,11 +24,19 @@ const userSlice = createSlice({
       users: action.payload,
       isLoading: false,
     }),
-    onGetAllUsers: (state, action) => ({
-      ...state,
-      isLoading: true,
-      isPostUserSuccess: false,
-    }),
+    // isUpdatePermissionSuccess
+    onGetAllUsers: (state, action) => {
+      // const isUpdatePermissionSuccess = useSelector(selectIsUpdatePermissionSuccess);
+      // console.log(
+      //   "state isUpdatePermissionSuccess: ",
+      //   isUpdatePermissionSuccess
+      // );
+      return {
+        ...state,
+        isLoading: true,
+        isPostUserSuccess: false,
+      };
+    },
     onGetAllUsersSuccess: (state, action) => ({
       ...state,
       isLoading: false,

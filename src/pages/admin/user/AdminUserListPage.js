@@ -674,22 +674,15 @@ const AdminUserListPage = () => {
                       selectedValue={permission}
                       permissions={permissionList}
                     ></MultipleSelectMuiCom>
-
-                    {/* <InputCom
-                      type="hidden"
-                      control={control}
-                      name="role"
-                      register={register}
-                    ></InputCom> */}
                   </div>
                 </div>
               </div>
               <GapYCom className="mb-3"></GapYCom>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
-              <Button type="submit" disabled={permission.length === 0}>
+              <ButtonCom type="submit" disabled={permission.length === 0}>
                 Update
-              </Button>
+              </ButtonCom>
             </div>
           </form>
         </div>

@@ -35,7 +35,7 @@ import {
 import { API_AUTHOR_URL } from "../../../../constants/endpoint";
 import useExportExcel from "../../../../hooks/useExportExcel";
 import { onGetAuthors } from "../../../../store/author/authorSlice";
-import { showMessageError } from "../../../../utils/helper";
+import { showMessageError, sliceText } from "../../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   name: yup
@@ -121,15 +121,17 @@ const AdminAuthorListPage = () => {
       selector: (row) => (
         <img width={50} height={50} src={`${row.image}`} alt={row.name} />
       ),
+      width: "80px",
     },
     {
       name: "Author Name",
       selector: (row) => row.name,
       sortable: true,
+      width: "150px",
     },
     {
       name: "Title",
-      selector: (row) => row.title,
+      selector: (row) => sliceText(row.title, 50),
       sortable: true,
     },
     {

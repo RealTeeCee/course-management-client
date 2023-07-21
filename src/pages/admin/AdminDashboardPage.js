@@ -5,8 +5,8 @@ import { NavLink } from "react-router-dom";
 import { SelectDefaultAntCom, SpinAntCom } from "../../components/ant";
 import { BreadcrumbCom } from "../../components/breadcrumb";
 import { ButtonCom } from "../../components/button";
-import GapYCom from "../../components/common/GapYCom";
 import CardItemModalCom from "../../components/common/card/CardItemModalCom";
+import GapYCom from "../../components/common/GapYCom";
 import { HeadingH1Com, HeadingH2Com } from "../../components/heading";
 import {
   IconAdminCom,
@@ -17,7 +17,11 @@ import {
 } from "../../components/icon";
 import { ImageCom } from "../../components/image";
 import { ChartsMuiCom } from "../../components/mui";
-import { RowCourseItem, RowUserItem } from "../../components/table/dashboard";
+import {
+  RowBlogItem,
+  RowCourseItem,
+  RowUserItem,
+} from "../../components/table/dashboard";
 import { categoryItems, sortItems } from "../../constants/config";
 import {
   ALLOWED_ADMIN_MANAGER,
@@ -26,12 +30,9 @@ import {
   TITLE_POSITION_LIST,
 } from "../../constants/permissions";
 import useShowMore from "../../hooks/useShowMore";
+import { onGetBlogsForAdmin } from "../../store/admin/blog/blogSlice";
 import { onGetCourses } from "../../store/admin/course/courseSlice";
-import {
-  onGetAllUsers,
-  onGetAllUsersSuccess,
-  onGetUsers,
-} from "../../store/admin/user/userSlice";
+import { onGetAllUsers, onGetUsers } from "../../store/admin/user/userSlice";
 import { selectAllDashboardState } from "../../store/dashboard/dashboardSelector";
 import { onLoadDashboard } from "../../store/dashboard/dashboardSlice";
 import {
@@ -91,9 +92,9 @@ const AdminDashboardPage = () => {
   } = useSelector((state) => state.adminCourse);
 
   const {
-    blogs,
+    adminBlogs: blogs,
     isLoading: isBlogLoading,
-    isUpdateBlogSuccess,
+    isPostBlogSuccess,
   } = useSelector((state) => state.adminBlog);
   const [sortUsers, setSortUsers] = useState([]);
   const [sortCourses, setSortCourses] = useState([]);
@@ -125,6 +126,11 @@ const AdminDashboardPage = () => {
     dispatch(onGetCourses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateCourseSuccess]);
+
+  useEffect(() => {
+    dispatch(onGetBlogsForAdmin());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostBlogSuccess]);
 
   // const currentDate = getCurrentDate();
   // const usersRegisteredToday = users.filter((item, index) => {
@@ -179,18 +185,25 @@ const AdminDashboardPage = () => {
 
   // Sort Blog
   useEffect(() => {
-    // After fetching, sort users by status
     if (blogs) {
-      const sortBlogs = [...blogs].sort((a, b) => {
-        const compareStatus = Number(a.status) - Number(b.status);
-        if (compareStatus !== 0) return compareStatus;
+      // Get all blog which have status 1 && 2
+      const filteredBlogs = blogs.filter((blog) =>
+        [1, 2].includes(blog.status)
+      );
 
-        return orderUser === "ASC"
-          ? new Date(a.created_at) - new Date(b.created_at)
-          : new Date(b.created_at) - new Date(a.created_at);
+      const sortBlogs = filteredBlogs.sort((a, b) => {
+        if (a.status === b.status) {
+          return orderBlog === "ASC"
+            ? new Date(a.created_at) - new Date(b.created_at)
+            : new Date(b.created_at) - new Date(a.created_at);
+        } else {
+          return a.status === 2 ? -1 : 1;
+        }
       });
+
       setSortBlogs(sortBlogs);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blogs, orderBlog]);
 
   const { showItems, isRemain, handleShowMore } = useShowMore(sortUsers);
@@ -446,26 +459,26 @@ const AdminDashboardPage = () => {
                     </div>
                   </div>
                   <div className="card-body pt-0">
-                    {isCourseLoading ? (
+                    {isBlogLoading ? (
                       <SpinAntCom loadingText={"Loading ..."} />
                     ) : (
                       <div className="appointment-table table-responsive">
                         <table className="table table-bordernone">
                           <tbody>
-                            {showCourseItems?.length > 0 &&
-                              showCourseItems.map((item) => (
-                                <RowCourseItem
+                            {showBlogItems?.length > 0 &&
+                              showBlogItems.map((item) => (
+                                <RowBlogItem
                                   key={item?.id}
                                   item={item}
-                                  courses={courses}
+                                  blogs={blogs}
                                 />
                               ))}
                           </tbody>
                         </table>
-                        {isCourseRemain && (
+                        {isBlogRemain && (
                           <ButtonCom
                             className="w-full mt-2"
-                            onClick={handleShowMoreCourse}
+                            onClick={handleShowMoreBlog}
                           >
                             Show more
                           </ButtonCom>
@@ -495,11 +508,10 @@ const AdminDashboardPage = () => {
                     } else {
                       const empPermissions = getEmployeePermission(user);
                       if (empPermissions && empPermissions.length > 0) {
-                        for (let empPer of empPermissions) {
-                          if (!item.area.includes(empPer)) {
-                            return null;
-                          }
-                        }
+                        const empPer = empPermissions.find((empPer) =>
+                          item.area.includes(empPer)
+                        );
+                        if (!empPer) return null;
                       }
 
                       return (

@@ -10,6 +10,7 @@ const initialState = {
   isRegisterSuccess: false,
   isResetPasswordSuccess: false,
   isUserChangePasswordSuccess: false,
+  isUpdatePermissionSuccess: false,
   errorMessage: null,
   roles: [],
   permissions: [],
@@ -113,9 +114,15 @@ const authSlice = createSlice({
       ...state,
       permissions: action.payload,
     }),
-    onUpdatePermission: (state, action) => state,
-    onUpdatePermissionSuccess: (state, action) => state,
-
+    onUpdatePermission: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    onUpdatePermissionSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      isUpdatePermissionSuccess: action.payload,
+    }),
     onLoadCurrentUser: (state, action) => ({
       ...state,
       user: action.payload,
@@ -157,6 +164,7 @@ export const {
   onLoadPermission,
   onLoadPermissionSuccess,
   onUpdatePermission,
+  onUpdatePermissionSuccess,
   onLoadCurrentUser,
   onGetLastUrlAccess,
   onGetLastUrlAccessSuccess,

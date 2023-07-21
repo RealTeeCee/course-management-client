@@ -55,7 +55,10 @@ const AdminCreateSectionPage = () => {
       const res = await axiosBearer.get(
         `${API_COURSE_URL}/${courseId}/section/max-ordered`
       );
-      setValue("ordered", res?.data > 0 ? res?.data + 1 : 0);
+      setValue(
+        "ordered",
+        res?.data > 0 ? res?.data + 1 : res?.data === 0 ? 1 : 0
+      );
     } catch (error) {
       console.log(error);
     }
