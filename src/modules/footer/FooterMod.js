@@ -1,5 +1,6 @@
 import React from "react";
 import ScrollToTopCom from "../../components/common/ScrollToTopCom";
+import { Link } from "react-router-dom";
 
 const FooterMod = () => {
   return (
@@ -8,11 +9,13 @@ const FooterMod = () => {
       <footer className="bg-black text-white">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 pt-3 px-28">
+          <Link to="/" className="inline-block">
             <img
               className=" w-[200px] object-cover"
               src="/logo_click_light.png"
               alt="Click and Learn Logo"
             />
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 px-28 pb-3">
             {/* Column 1 */}

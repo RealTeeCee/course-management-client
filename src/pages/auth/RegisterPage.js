@@ -159,8 +159,8 @@ const RegisterPage = () => {
             checked={isRegisterEmployee}
             onClick={handleToggleRegisterEmployee}
           >
-            Register as a
-            <span className="ms-2 text-tw-light-pink tw-transition-all">
+            Register as an
+            <span className="ms-2 text-tw-light-pink hover:opacity-60 tw-transition-all">
               Employee
             </span>
           </CheckBoxCom>
