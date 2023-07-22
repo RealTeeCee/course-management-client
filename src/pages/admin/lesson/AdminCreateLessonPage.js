@@ -102,8 +102,10 @@ const AdminCreateLessonPage = () => {
       const res = await axiosBearer.get(
         `${API_SECTION_URL}/${sectionId}/lesson/max-ordered`
       );
-      console.log("max:", res.data);
-      setValue("ordered", res?.data > 0 ? res?.data + 1 : 0);
+      setValue(
+        "ordered",
+        res?.data > 0 ? res?.data + 1 : res?.data === 0 ? 1 : 0
+      );
     } catch (error) {
       console.log(error);
     }

@@ -4,6 +4,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     users: [],
+    usersAllRole: [],
     isLoading: false,
     isPostUserSuccess: false,
     isBulkDeleteSuccess: false,
@@ -18,15 +19,28 @@ const userSlice = createSlice({
       isLoading: true,
       isPostUserSuccess: false,
     }),
-    onGetAllUsers: (state, action) => ({
-      ...state,
-      isLoading: true,
-      isPostUserSuccess: false,
-    }),
     onGetUsersSuccess: (state, action) => ({
       ...state,
       users: action.payload,
       isLoading: false,
+    }),
+    // isUpdatePermissionSuccess
+    onGetAllUsers: (state, action) => {
+      // const isUpdatePermissionSuccess = useSelector(selectIsUpdatePermissionSuccess);
+      // console.log(
+      //   "state isUpdatePermissionSuccess: ",
+      //   isUpdatePermissionSuccess
+      // );
+      return {
+        ...state,
+        isLoading: true,
+        isPostUserSuccess: false,
+      };
+    },
+    onGetAllUsersSuccess: (state, action) => ({
+      ...state,
+      isLoading: false,
+      usersAllRole: action.payload,
     }),
     onCreateUser: (state, action) => ({
       ...state,
@@ -67,8 +81,9 @@ const userSlice = createSlice({
 export const {
   onLoading,
   onGetUsers,
-  onGetAllUsers,
   onGetUsersSuccess,
+  onGetAllUsers,
+  onGetAllUsersSuccess,
   onCreateUser,
   onUpdateUser,
   onPostUserSuccess,

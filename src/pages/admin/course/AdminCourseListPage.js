@@ -186,6 +186,13 @@ const AdminCourseListPage = () => {
     //   width: "60px",
     // },
     {
+      name: "Image",
+      selector: (row) => (
+        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+      ),
+      width: "80px",
+    },
+    {
       name: "Course Name",
       selector: (row) => row.name,
       sortable: true,
@@ -196,13 +203,6 @@ const AdminCourseListPage = () => {
       selector: (row) => row.category_name,
       sortable: true,
       width: "150px",
-    },
-    {
-      name: "Image",
-      selector: (row) => (
-        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
-      ),
-      width: "80px",
     },
     // {
     //   name: "Status",
@@ -224,15 +224,34 @@ const AdminCourseListPage = () => {
     {
       name: "Status",
       selector: (row) => (
-        <SwitchAntCom
-          defaultChecked={row.status === 1 ? true : false}
-          className={`${
-            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
-          }`}
-          onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
-        />
+        // <SwitchAntCom
+        //   defaultChecked={row.status === 1 ? true : false}
+        //   className={`${
+        //     row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
+        //   }`}
+        //   onChange={(isChecked) => handleChangeSwitch(row.id, isChecked)}
+        // />
+        <>
+          {row.status === 1 ? (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id, true)}
+              backgroundColor="success"
+              className="px-3 rounded-lg !text-[12px]"
+            >
+              Active
+            </ButtonCom>
+          ) : (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id, false)}
+              backgroundColor="danger"
+              className="px-3 rounded-lg !text-[12px]"
+            >
+              InActive
+            </ButtonCom>
+          )}
+        </>
       ),
-      width: "80px",
+      width: "120px",
     },
     {
       name: "Section",
@@ -530,6 +549,7 @@ const AdminCourseListPage = () => {
           );
           getCourses();
           reset(res.data);
+          clearSelectedRows();
           toast.success(res.data.message);
         } catch (error) {
           showMessageError(error);
@@ -654,6 +674,39 @@ const AdminCourseListPage = () => {
       showMessageError(error);
     }
   };
+
+  const handleChangeStatus = async (courseId, isChecked) => {
+    const fd = helperChangeStatusCourse(isChecked, courseId, courses);
+    if (!isChecked) {
+      Swal.fire({
+        title: "Are you sure?",
+        html: "After change, this course will public to client",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#7366ff",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, continue!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axiosBearer.put(`/course`, fd);
+            toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+            getCourses();
+          } catch (error) {
+            showMessageError(error);
+          }
+        }
+      });
+    } else {
+      try {
+        await axiosBearer.put(`/course`, fd);
+        toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+        getCourses();
+      } catch (error) {
+        showMessageError(error);
+      }
+    }
+  };
   // Bulk Delete
   const handleBulkDelete = () => {
     if (selectedRows.length === 0) {
@@ -687,6 +740,7 @@ const AdminCourseListPage = () => {
         } finally {
           getCourses();
           clearSelectedRows();
+          console.log("catch");
         }
       }
     });

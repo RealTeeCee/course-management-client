@@ -17,6 +17,7 @@ import SearchItemMod from "./SearchItemMod";
 const HomeSearchMod = () => {
   const { data: courses } = useSelector((state) => state.course);
   const { authors } = useSelector((state) => state.author);
+  const { blogs } = useSelector((state) => state.adminBlog);
 
   const [isSearch, setIsSearch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -176,7 +177,7 @@ const HomeSearchMod = () => {
                                   ? courses
                                   : item.type === "AUTHOR"
                                   ? authors
-                                  : null
+                                  : blogs
                               }
                             />
                           </div>

@@ -15,6 +15,7 @@ import {
   onDeleteUserSuccess,
   onBulkDeleteUserSuccess,
   onGetAllUsers,
+  onGetAllUsersSuccess,
 } from "./userSlice";
 
 function* handleOnGetUsers() {
@@ -30,7 +31,7 @@ function* handleOnGetUsers() {
 function* handleOnGetAllUsers() {
   try {
     const res = yield call(requestGetAllUsers);
-    if (res.status === 200) yield put(onGetUsersSuccess(res.data));
+    if (res.status === 200) yield put(onGetAllUsersSuccess(res.data));
   } catch (error) {
     yield put(onLoading(false));
     console.log(error);

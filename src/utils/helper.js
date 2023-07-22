@@ -236,12 +236,8 @@ export function convertCoreObjectItems(
       }</span>`;
       break;
     case "BLOG":
-      // Đợi store blog để làm tiếp search, sẽ bỏ gán cứng newItems = {...item}
-      newItems = {
-        ...item,
-      };
-      // newItems = originalObj.find((o) => o.id === item.id);
-      slug = `/blogs/${newItems?.id}`;
+      newItems = originalObj.find((o) => o.id === item.id);
+      slug = `/blogs/${newItems?.slug}`;
       description = sliceText(newItems?.description, limitText);
 
       countText = `View: <span class="text-tw-light-pink">${
@@ -249,7 +245,7 @@ export function convertCoreObjectItems(
       }</span>`;
 
       createdBy = `Author: <span class="text-tw-light-pink">${
-        newItems.author_name || "N/A"
+        newItems?.createdBy || "N/A"
       }</span>, Category: <span class="text-tw-light-pink">${
         newItems?.category_name || "N/A"
       }`;

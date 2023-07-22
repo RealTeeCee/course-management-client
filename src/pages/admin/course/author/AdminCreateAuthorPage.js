@@ -22,9 +22,20 @@ import { axiosBearer } from "../../../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { showMessageError } from "../../../../utils/helper";
 import { API_AUTHOR_URL } from "../../../../constants/endpoint";
+import { TextAreaCom } from "../../../../components/textarea";
 
 const schemaValidation = yup.object().shape({
   name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  title: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  information: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
@@ -90,7 +101,7 @@ const AdminCreateAuthorPage = () => {
       </div>
       <GapYCom></GapYCom>
       <div className="row">
-        <div className="col-sm-12">
+        <div className="col-sm-6 offset-3">
           <div className="card">
             <form
               className="theme-form"
@@ -98,7 +109,7 @@ const AdminCreateAuthorPage = () => {
             >
               <div className="card-body">
                 <div className="row">
-                  <div className="col-sm-12 text-center">
+                  <div className="col-sm-6">
                     <LabelCom htmlFor="name" isRequired>
                       Author Name
                     </LabelCom>
@@ -109,6 +120,19 @@ const AdminCreateAuthorPage = () => {
                       register={register}
                       placeholder="Input author name"
                       errorMsg={errors.name?.message}
+                    ></InputCom>
+                  </div>
+                  <div className="col-sm-6">
+                    <LabelCom htmlFor="title" isRequired>
+                      Title
+                    </LabelCom>
+                    <InputCom
+                      type="text"
+                      control={control}
+                      name="title"
+                      register={register}
+                      placeholder="Input author title"
+                      errorMsg={errors.title?.message}
                     ></InputCom>
                   </div>
                 </div>
@@ -124,6 +148,7 @@ const AdminCreateAuthorPage = () => {
                         onSetValue={setValue}
                         errorMsg={errors.image?.message}
                         aspect={4 / 4}
+                        isWidthFull
                       ></ImageCropUploadAntCom>
                       <InputCom
                         type="hidden"
@@ -135,9 +160,25 @@ const AdminCreateAuthorPage = () => {
                   </div>
                 </div>
                 <GapYCom className="mb-3"></GapYCom>
+                <div className="row">
+                  <div className="col-sm-12 text-center">
+                    <LabelCom htmlFor="information">Information</LabelCom>
+                    <TextAreaCom
+                      name="information"
+                      control={control}
+                      register={register}
+                      placeholder="Description information of author..."
+                    ></TextAreaCom>
+                  </div>
+                </div>
+                <GapYCom className="mb-3"></GapYCom>
               </div>
               <div className="card-footer flex justify-end gap-x-5">
-                <ButtonCom type="submit" isLoading={isLoading}>
+                <ButtonCom
+                  type="submit"
+                  isLoading={isLoading}
+                  className="w-full"
+                >
                   Create
                 </ButtonCom>
               </div>

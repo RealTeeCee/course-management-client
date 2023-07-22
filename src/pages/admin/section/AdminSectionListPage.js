@@ -102,16 +102,37 @@ const AdminSectionListPage = () => {
     },
     {
       name: "Status",
-      cell: (row) => (
-        <SwitchAntCom
-          defaultChecked={row.status === 1 ? true : false}
-          className={`${
-            row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
-          }`}
-          onChange={(isChecked) =>
-            handleChangeSwitch(row.id, courseId, isChecked)
-          }
-        />
+      // cell: (row) => (
+      //   <SwitchAntCom
+      //     defaultChecked={row.status === 1 ? true : false}
+      //     className={`${
+      //       row.status === 1 ? "" : "bg-tw-danger hover:!bg-tw-orange"
+      //     }`}
+      //     onChange={(isChecked) =>
+      //       handleChangeSwitch(row.id, courseId, isChecked)
+      //     }
+      //   />
+      // ),
+      selector: (row) => (
+        <>
+          {row.status === 1 ? (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id, courseId, true)}
+              backgroundColor="success"
+              className="px-3 rounded-lg !text-[12px]"
+            >
+              Active
+            </ButtonCom>
+          ) : (
+            <ButtonCom
+              onClick={() => handleChangeStatus(row.id, courseId, false)}
+              backgroundColor="danger"
+              className="px-3 rounded-lg !text-[12px]"
+            >
+              InActive
+            </ButtonCom>
+          )}
+        </>
       ),
       sortable: true,
     },
@@ -351,23 +372,38 @@ const AdminSectionListPage = () => {
   };
 
   //********* Update Area *********
-  const handleChangeStatus = (value) => {
-    setValue("status", value);
-    setError("status", { message: "" });
-  };
+  // const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
+  //   try {
+  //     const newSections = sections.map((section) =>
+  //       section.id === sectionId
+  //         ? {
+  //             ...section,
+  //             status: isChecked ? 1 : 0,
+  //           }
+  //         : section
+  //     );
 
-  const handleChangeSwitch = async (sectionId, courseId, isChecked) => {
+  //     const dataBody = newSections.find((section) => section.id === sectionId);
+  //     await axiosBearer.put(`${API_COURSE_URL}/${courseId}/section`, dataBody);
+  //     toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
+  //     getSectionsByCourseId();
+  //   } catch (error) {
+  //     showMessageError(error);
+  //   }
+  // };
+
+  const handleChangeStatus = async (sectionId, courseId, isChecked) => {
+    const newSections = sections.map((section) =>
+      section.id === sectionId
+        ? {
+            ...section,
+            status: isChecked ? 0 : 1,
+          }
+        : section
+    );
+
+    const dataBody = newSections.find((section) => section.id === sectionId);
     try {
-      const newSections = sections.map((section) =>
-        section.id === sectionId
-          ? {
-              ...section,
-              status: isChecked ? 1 : 0,
-            }
-          : section
-      );
-
-      const dataBody = newSections.find((section) => section.id === sectionId);
       await axiosBearer.put(`${API_COURSE_URL}/${courseId}/section`, dataBody);
       toast.success(MESSAGE_UPDATE_STATUS_SUCCESS);
       getSectionsByCourseId();

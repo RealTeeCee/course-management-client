@@ -29,7 +29,9 @@ const ButtonCom = (props) => {
     children
   );
 
-  let defaultClassName = `btn-block rounded-md transition-all duration-300 ${minHeight} ${padding} ${className} ${
+  let defaultClassName = `btn-block rounded-md transition-all duration-300 ${
+    rest.disabled ? "cursor-not-allowed" : ""
+  } ${minHeight} ${padding} ${className} ${
     !!isLoading ? "opacity-80 pointer-events-none" : "hover:opacity-80"
   }`;
   switch (backgroundColor) {

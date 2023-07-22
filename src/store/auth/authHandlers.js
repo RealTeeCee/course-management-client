@@ -31,6 +31,7 @@ import {
   onUpdateUserToken,
   onUserChangePasswordSuccess,
   onGetLastUrlAccessSuccess,
+  onUpdatePermissionSuccess,
 } from "./authSlice";
 
 function* handleOnRegister(action) {
@@ -168,7 +169,6 @@ function* handleOnUserChangePassword({ payload }) {
 function* handleOnUserUpdateProfile({ payload }) {
   try {
     const res = yield call(requestUserUpdateProfile, payload);
-    console.log("res handle: ", res);
     if (res.status === 200) {
       yield call(handleOnGetUser, { payload: payload.access_token });
       console.log("res.data handle: ", res.data);
@@ -221,12 +221,14 @@ function* handleOnLoadPermissions() {
 function* handleOnUpdatePermissions({ payload }) {
   try {
     const res = yield call(requestUpdatePermissions, payload);
-
     if (res.status === 200) {
       toast.success(res.data.message);
-    } else {
+      yield put(onUpdatePermissionSuccess(true));
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    yield put(onLoading(false));
+  }
 }
 
 function* handleOnGetLastUrlAccess({ payload }) {

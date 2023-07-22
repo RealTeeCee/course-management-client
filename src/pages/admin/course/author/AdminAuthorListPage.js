@@ -1,22 +1,28 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ReactModal from "react-modal";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { v4 } from "uuid";
+import * as yup from "yup";
 import { axiosBearer } from "../../../../api/axiosInstance";
+import { ImageCropUploadAntCom } from "../../../../components/ant";
 import { BreadcrumbCom } from "../../../../components/breadcrumb";
 import { ButtonCom } from "../../../../components/button";
 import GapYCom from "../../../../components/common/GapYCom";
 import { HeadingFormH5Com, HeadingH1Com } from "../../../../components/heading";
 import {
   IconEditCom,
+  IconEyeCom,
   IconRemoveCom,
   IconTrashCom,
 } from "../../../../components/icon";
+import { InputCom } from "../../../../components/input";
+import { LabelCom } from "../../../../components/label";
 import { TableCom } from "../../../../components/table";
-import { API_AUTHOR_URL } from "../../../../constants/endpoint";
-import { showMessageError } from "../../../../utils/helper";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { TextAreaCom } from "../../../../components/textarea";
 import {
   AVATAR_DEFAULT,
   IMAGE_DEFAULT,
@@ -28,15 +34,23 @@ import {
   MESSAGE_UPLOAD_REQUIRED,
   MIN_LENGTH_NAME,
 } from "../../../../constants/config";
-import { v4 } from "uuid";
-import { InputCom } from "../../../../components/input";
-import { LabelCom } from "../../../../components/label";
-import ReactModal from "react-modal";
-import { ImageCropUploadAntCom } from "../../../../components/ant";
+import { API_AUTHOR_URL } from "../../../../constants/endpoint";
 import useExportExcel from "../../../../hooks/useExportExcel";
+import { onGetAuthors } from "../../../../store/author/authorSlice";
+import { showMessageError, sliceText } from "../../../../utils/helper";
 
 const schemaValidation = yup.object().shape({
   name: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  title: yup
+    .string()
+    .required(MESSAGE_FIELD_REQUIRED)
+    .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
+    .max(MAX_LENGTH_NAME, MESSAGE_FIELD_MAX_LENGTH_NAME),
+  information: yup
     .string()
     .required(MESSAGE_FIELD_REQUIRED)
     .min(MIN_LENGTH_NAME, MESSAGE_FIELD_MIN_LENGTH_NAME)
@@ -45,6 +59,7 @@ const schemaValidation = yup.object().shape({
 });
 
 const AdminAuthorListPage = () => {
+  const dispatch = useDispatch();
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
 
@@ -59,10 +74,12 @@ const AdminAuthorListPage = () => {
 
   const { handleExcelData } = useExportExcel("author");
   const handleExport = () => {
-    const headers = ["No", "Author Name", "Avatar"];
+    const headers = ["No", "Author Name", "Title", "Information", "Avatar"];
     const data = authors.map((item, index) => [
       index + 1,
       item.name,
+      item.title,
+      item.information,
       item.image,
     ]);
     handleExcelData(headers, data);
@@ -102,11 +119,6 @@ const AdminAuthorListPage = () => {
       width: "70px",
     },
     {
-      name: "Author Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
       name: "Image",
       selector: (row) => (
         <img
@@ -116,6 +128,18 @@ const AdminAuthorListPage = () => {
           alt={row.name}
         />
       ),
+      width: "80px",
+    },
+    {
+      name: "Author Name",
+      selector: (row) => row.name,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Title",
+      selector: (row) => sliceText(row.title, 50),
+      sortable: true,
     },
     {
       name: "Actions",
@@ -130,14 +154,14 @@ const AdminAuthorListPage = () => {
           >
             <IconEditCom className="w-5"></IconEditCom>
           </ButtonCom>
-          {/* <ButtonCom
+          <ButtonCom
             className="px-3 rounded-lg mr-2"
             onClick={() => {
-              alert(`View Section id: ${row.id}`);
+              window.open(`/authors/${row.id}`, "_blank");
             }}
           >
             <IconEyeCom className="w-5"></IconEyeCom>
-          </ButtonCom> */}
+          </ButtonCom>
           <ButtonCom
             className="px-3 rounded-lg"
             backgroundColor="danger"
@@ -211,6 +235,11 @@ const AdminAuthorListPage = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    dispatch(onGetAuthors());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authors]);
 
   useEffect(() => {
     getAuthors();
@@ -420,7 +449,7 @@ const AdminAuthorListPage = () => {
             ></InputCom>
             <div className="card-body">
               <div className="row">
-                <div className="col-sm-12 text-center">
+                <div className="col-sm-6">
                   <LabelCom htmlFor="name" isRequired>
                     Author Name
                   </LabelCom>
@@ -432,6 +461,20 @@ const AdminAuthorListPage = () => {
                     placeholder="Input author name"
                     errorMsg={errors.name?.message}
                     defaultValue={watch("name")}
+                  ></InputCom>
+                </div>
+                <div className="col-sm-6">
+                  <LabelCom htmlFor="title" isRequired>
+                    Title
+                  </LabelCom>
+                  <InputCom
+                    type="text"
+                    control={control}
+                    name="title"
+                    register={register}
+                    placeholder="Input author title"
+                    errorMsg={errors.title?.message}
+                    defaultValue={watch("title")}
                   ></InputCom>
                 </div>
               </div>
@@ -448,6 +491,7 @@ const AdminAuthorListPage = () => {
                       errorMsg={errors.image?.message}
                       editImage={image}
                       aspect={4 / 4}
+                      isWidthFull
                     ></ImageCropUploadAntCom>
                     <InputCom
                       type="hidden"
@@ -458,9 +502,24 @@ const AdminAuthorListPage = () => {
                   </div>
                 </div>
               </div>
+              <GapYCom className="mb-3"></GapYCom>
+
+              <div className="row">
+                <div className="col-sm-12">
+                  <LabelCom htmlFor="information">Information</LabelCom>
+                  <TextAreaCom
+                    name="information"
+                    control={control}
+                    register={register}
+                    placeholder="Description information of author..."
+                  >
+                    {watch("information")}
+                  </TextAreaCom>
+                </div>
+              </div>
             </div>
             <div className="card-footer flex justify-end gap-x-5">
-              <ButtonCom type="submit" isLoading={isLoading}>
+              <ButtonCom type="submit" isLoading={isLoading} className="w-full">
                 Update
               </ButtonCom>
             </div>
