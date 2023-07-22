@@ -76,7 +76,7 @@ const CommentCom = ({
     return () => {
       sse.close();
     };
-  }, []);
+  }, [blogId, courseId, type]);
 
   const user = useSelector(selectUser);
 
