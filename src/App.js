@@ -171,13 +171,21 @@ function App() {
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   if (access_token) {
+  //     let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
+  //     return () => {
+  //       clearTimeout(timer1);
+  //     };
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // });
+
   useEffect(() => {
-    let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
-    return () => {
-      clearTimeout(timer1);
-    };
+    if (access_token) dispatch(onGetUser(access_token));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, [access_token]);
 
   useEffect(() => {
     if (user) {

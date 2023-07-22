@@ -269,6 +269,8 @@ const CommentParent = ({
   deletePost,
 }) => {
   const user = useSelector(selectUser);
+  const navigate = useNavigate();
+
   const [isLiked, setLiked] = useState(
     likeUsers.find((like) => like.id === user?.id) ? true : false
   );
@@ -298,17 +300,31 @@ const CommentParent = ({
   const dispatch = useDispatch();
 
   const handleLike = () => {
-    setLiked(!isLiked);
-    if (!isLiked) {
-      setLikeNum(likeNum + 1);
+    if (!user) {
+      toast.warn(MESSAGE_LOGIN_REQUIRED);
+      dispatch(onGetLastUrlAccess(window.location.pathname));
+      navigate("/login");
+      return;
     } else {
-      setLikeNum(likeNum - 1);
+      setLiked(!isLiked);
+      if (!isLiked) {
+        setLikeNum(likeNum + 1);
+      } else {
+        setLikeNum(likeNum - 1);
+      }
+      dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
     }
-    dispatch(onSaveLikeOfPost({ postId, userId: user.id }));
   };
 
   const handleReply = (isReply) => {
-    setIsReply(!isReply);
+    if (!user) {
+      toast.warn(MESSAGE_LOGIN_REQUIRED);
+      dispatch(onGetLastUrlAccess(window.location.pathname));
+      navigate("/login");
+      return;
+    } else {
+      setIsReply(!isReply);
+    }
   };
   // Comment Parent
   const handleSubmitForm = ({ comment }) => {
