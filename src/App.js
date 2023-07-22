@@ -16,6 +16,7 @@ import OAuth2RedirectPage from "./pages/auth/OAuth2RedirectPage.js";
 import ExamPage from "./pages/exam/ExamPage.js";
 import {
   onAuthInitialState,
+  onGetUser,
   onLoadCurrentUser,
   onRemoveToken,
 } from "./store/auth/authSlice.js";
@@ -170,13 +171,13 @@ function App() {
   const { access_token } = getToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
-  //   return () => {
-  //     clearTimeout(timer1);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // });
+  useEffect(() => {
+    let timer1 = setTimeout(() => dispatch(onGetUser(access_token)), 5000);
+    return () => {
+      clearTimeout(timer1);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
 
   useEffect(() => {
     if (user) {

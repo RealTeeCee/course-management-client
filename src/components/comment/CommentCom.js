@@ -137,6 +137,9 @@ const CommentCom = ({
     const newPosts = posts.filter((p) => p.id !== postId);
     setPosts(newPosts);
   };
+
+  console.log("posts:", posts);
+
   return (
     <section className="comment-box">
       {title && (

@@ -31,6 +31,7 @@ const userSlice = createSlice({
       //   "state isUpdatePermissionSuccess: ",
       //   isUpdatePermissionSuccess
       // );
+      console.log(state.auth);
       return {
         ...state,
         isLoading: true,
