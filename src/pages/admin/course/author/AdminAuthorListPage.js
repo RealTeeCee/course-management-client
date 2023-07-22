@@ -18,6 +18,8 @@ import { showMessageError } from "../../../../utils/helper";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
+  AVATAR_DEFAULT,
+  IMAGE_DEFAULT,
   MAX_LENGTH_NAME,
   MESSAGE_FIELD_MAX_LENGTH_NAME,
   MESSAGE_FIELD_MIN_LENGTH_NAME,
@@ -107,7 +109,12 @@ const AdminAuthorListPage = () => {
     {
       name: "Image",
       selector: (row) => (
-        <img width={50} height={50} src={`${row.image}`} alt={row.name} />
+        <img
+          width={50}
+          height={50}
+          src={`${row.image === null ? AVATAR_DEFAULT : row.image}`}
+          alt={row.name}
+        />
       ),
     },
     {
