@@ -162,7 +162,7 @@ const NotificationListPage = () => {
       return false;
     });
     setFilterNoti(result);
-  }, [notifications, isAllDeleteNotification, search]);
+  }, [notifications, search]);
 
   /********* Get All Notification ********* */
   useEffect(() => {
