@@ -504,7 +504,7 @@ function* handleAllDeleteNotification({ payload }) {
     const res = yield call(requestAllDeleteNotification, payload);
     if (res.status === 200) {
       toast.success("Delete all selected notifications success");
-      yield put(onAllDeleteNotificationSuccess(payload));
+      // yield put(onAllDeleteNotificationSuccess(payload));
     }
   } catch (error) {
     showMessageError(error);

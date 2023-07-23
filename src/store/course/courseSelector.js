@@ -26,6 +26,7 @@ export const selectAllCourseState = createSelector(
     notifs: courseSlice.notifs,
     notifToastList: courseSlice.notifToastList,
     updatedNotif: courseSlice.updatedNotif,
+    isAllDeleteNotification: courseSlice.isAllDeleteNotification,
     rating: courseSlice.rating,
     userRating: courseSlice.userRating,
     courseRating: courseSlice.courseRating,

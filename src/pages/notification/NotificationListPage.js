@@ -9,39 +9,33 @@ import {
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { ButtonCom } from "../../components/button";
 import GapYCom from "../../components/common/GapYCom";
 import LoadingCom from "../../components/common/LoadingCom";
 import { IconTrashCom } from "../../components/icon";
 import { TableCom } from "../../components/table";
-import { MESSAGE_NO_ITEM_SELECTED } from "../../constants/config";
+import { selectAllCourseState } from "../../store/course/courseSelector";
 import {
   onAllDeleteNotification,
   onAllNotification,
   onDeleteNotification,
 } from "../../store/course/courseSlice";
-import {
-  convertSecondToDiffForHumans,
-  showMessageError,
-} from "../../utils/helper";
+import { convertSecondToDiffForHumans } from "../../utils/helper";
 
 const NotificationListPage = () => {
   // Local State
   const [selectedRows, setSelectedRows] = useState([]);
   const [tableKey, setTableKey] = useState(0);
   const [search, setSearch] = useState("");
-  const [notifs, setNotifs] = useState([]);
+
   const [filterNoti, setFilterNoti] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
 
   //State Redux
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { notifications, isAllDeleteNotification } = useSelector(
-    (state) => state.course
-  );
+  const { notifs } = useSelector(selectAllCourseState);
 
   const userToId = user.id;
 
@@ -138,7 +132,7 @@ const NotificationListPage = () => {
   ];
   /********* Search ********* */
   useEffect(() => {
-    const result = notifications.filter((notif) => {
+    const result = notifs.filter((notif) => {
       const keys = Object.keys(notif);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
@@ -159,20 +153,20 @@ const NotificationListPage = () => {
       return false;
     });
     setFilterNoti(result);
-  }, [notifications, search]);
+  }, [notifs, search]);
 
   /********* Get All Notification ********* */
   useEffect(() => {
     if (user) {
-      const data = dispatch(onAllNotification({ userToId }));
-      setNotifs(data);
+      dispatch(onAllNotification({ userToId }));
+      // setNotifs(data);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  useEffect(() => {
-    if (isAllDeleteNotification) clearSelectedRows();
-  }, [isAllDeleteNotification]);
+  // useEffect(() => {
+  //   if (isAllDeleteNotification) clearSelectedRows();
+  // }, [isAllDeleteNotification]);
 
   /********* Delete one API ********* */
   const clearSelectedRows = () => {
@@ -205,7 +199,7 @@ const NotificationListPage = () => {
   const handleBulkDelete = () => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You will delete all notifications",
+      text: "You will delete all notifs",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#7366ff",

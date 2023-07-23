@@ -460,21 +460,20 @@ const courseSlice = createSlice({
         notifications: updatedNotifications,
       };
     },
-    onAllDeleteNotification: (state, action) => ({
-      ...state,
-      isAllDeleteNotification: false,
-    }),
-    onAllDeleteNotificationSuccess: (state, action) => {
-      const { id } = action.payload;
-      const updatedNotifications = state.notifications.filter(
-        (user) => user.id === id
-      );
-      return {
-        ...state,
-        notifications: updatedNotifications,
-        isAllDeleteNotification: true,
-      };
-    },
+    onAllDeleteNotification: (state, action) => state,
+    // isAllDeleteNotification: false,
+
+    // onAllDeleteNotificationSuccess: (state, action) => {
+    //   const { id } = action.payload;
+    //   const updatedNotifications = state.notifications.filter(
+    //     (user) => user.id === id
+    //   );
+    //   return {
+    //     ...state,
+    //     notifications: updatedNotifications,
+    //     isAllDeleteNotification: true,
+    //   };
+    // },
     onUnloadExam: (state, action) => ({
       ...state,
       prevTime: action.payload,
@@ -563,7 +562,7 @@ export const {
   onDeleteNotification,
   onDeleteNotificationSuccess,
   onAllDeleteNotification,
-  onAllDeleteNotificationSuccess,
+  // onAllDeleteNotificationSuccess,
 } = courseSlice.actions;
 // courseReducer
 export default courseSlice.reducer;
